@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<api context="/promotion" name="PromotionCheck" xmlns="http://ws.apache.org/ns/synapse">
+    <resource methods="POST" uri-template="/new?minimumBillAmount={minimumBillAmount}">
+        <inSequence>
+            <variable name="customerId" type="STRING" value="CUST123"/>
+            <variable name="isEligible" type="STRING" expression="${length($.orders[?(@.customerID==vars.customerId &amp;&amp; @.total &gt; params.queryParams.minimumBillAmount)]) &gt; configs.promo_bill_count ? 'eligible' : 'not eligible'}"/>
+            <log>
+                <message>${vars.isEligible}</message>
+            </log>
+        </inSequence>
+        <faultSequence>
+        </faultSequence>
+    </resource>
+    <resource methods="POST" uri-template="/old?minimumBillAmount={minimumBillAmount}&amp;promoBillCount={promoBillCount}">
+        <inSequence>
+            <property name="customerId" type="STRING" value="CUST123"/>
+            <property name="billCount" type="STRING" expression="get-property('query.param.promoBillCount')"/>
+            <property name="billAmount" type="INTEGER" expression="get-property('query.param.minimumBillAmount')"/>
+            <property name="filterResult" type="JSON" expression="json-eval($.orders[?(@.customerID=='{$ctx:customerId}' &amp;&amp; @.total &gt; {$ctx:billAmount})])"/>
+            <property name="filterLength" type="STRING" expression="json-eval($ctx:filterResult.length())"/>
+            <filter source="$ctx:filterLength > $ctx:billCount" regex="true">
+                <then>
+                    <log>
+                        <property name="result" value="eligible"/>
+                    </log>
+                </then>
+                <else>
+                    <log>
+                        <property name="result" value="not eligible"/>
+                    </log>
+                </else>
+            </filter>
+        </inSequence>
+        <faultSequence>
+        </faultSequence>
+    </resource>
+</api>

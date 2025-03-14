@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<template name="seqTemplate1" xmlns="http://ws.apache.org/ns/synapse">
+    <parameter isMandatory="false" name="templateParameter1"/>
+    <sequence>
+        <log category="INFO">
+            <message>Access function parameters : ${params.functionParams.templateParameter1}</message>
+        </log>
+    </sequence>
+</template>
