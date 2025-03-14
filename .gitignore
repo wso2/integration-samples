@@ -24,36 +24,29 @@
 hs_err_pid*
 replay_pid*
 
-# Build files
-target
-Build
-.classpath
-.settings
-.project
-*.iml
-*.iws
-*.ipr
-.idea
-.m2
-.vscode/
-.iml
-.code
+# MacOS system files
+.DS_Store
+
+# Excluding target directories
+**/target
+
+**/.idea
+**/*.iml
+.env
+**/.mvn/
+
+# VSCode files
+.vscode
+
+# Excluding maven wrapper files
+mvnw
+mvnw.cmd
 
 # Ignore ballerina files
 accessToken.bal
 temp.bal.ballerina/
 target/
 generated/
-.DS_Store
 *Ballerina.lock
 .ballerina
 **/Config.toml
-
-# Ignore Gradle project-specific cache directory
-.gradle
-
-# Ignore Gradle build output directory
-build
-
-# Ignore Docker env file
-docker.env
