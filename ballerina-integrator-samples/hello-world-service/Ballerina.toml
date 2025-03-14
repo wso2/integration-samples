@@ -1,0 +1,5 @@
+[package]
+org = "wso2"
+name = "hello_world_service"
+version = "0.1.0"
+distribution = "2201.12.0"
