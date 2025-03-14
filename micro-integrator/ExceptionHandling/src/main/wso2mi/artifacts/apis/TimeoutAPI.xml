@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<api context="/timeout" name="TimeoutAPI" xmlns="http://ws.apache.org/ns/synapse">
+    <resource faultSequence="TimeoutFailureSeq" methods="GET">
+        <inSequence>
+            <http.get configKey="DelayHttpEndpoint">
+                <relativePath></relativePath>
+                <headers>[]</headers>
+                <forceScAccepted>false</forceScAccepted>
+                <disableChunking>false</disableChunking>
+                <forceHttp10>false</forceHttp10>
+                <noKeepAlive>false</noKeepAlive>
+                <responseVariable>http_get_response</responseVariable>
+                <overwriteBody>true</overwriteBody>
+            </http.get>
+            <respond description="Send response back to client"/>
+        </inSequence>
+    </resource>
+</api>

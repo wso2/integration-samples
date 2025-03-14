@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<api context="/email" name="EmailService" xmlns="http://ws.apache.org/ns/synapse">
+    <resource methods="POST" uri-template="/send">
+        <inSequence>
+            <email.send configKey="smtpsconnection">
+                <from>{${payload.from}}</from>
+                <to>{${payload.to}}</to>
+                <cc></cc>
+                <bcc></bcc>
+                <replyTo></replyTo>
+                <subject>{${payload.subject}}</subject>
+                <content>{${payload.content}}</content>
+                <contentType>{${payload.contentType}}</contentType>
+                <encoding>UTF-8</encoding>
+                <attachments></attachments>
+                <contentTransferEncoding>Base64</contentTransferEncoding>
+            </email.send>
+            <respond/>
+        </inSequence>
+        <faultSequence/>
+    </resource>
+    <resource methods="POST" uri-template="/retrieve">
+        <inSequence>
+            <email.list configKey="imapsconnection">
+                <deleteAfterRetrieve>false</deleteAfterRetrieve>
+                <receivedSince></receivedSince>
+                <receivedUntil></receivedUntil>
+                <sentSince></sentSince>
+                <sentUntil></sentUntil>
+                <subjectRegex>{${payload.subjectRegex}}</subjectRegex>
+                <fromRegex></fromRegex>
+                <seen></seen>
+                <answered></answered>
+                <deleted></deleted>
+                <recent></recent>
+                <offset>0</offset>
+                <limit>10</limit>
+                <folder>Inbox</folder>
+            </email.list>
+            <foreach collection="${xpath('//emails/email')}"  parallel-execution="true" update-original="true"      continue-without-aggregation="false" >
+                <sequence>
+                    <email.getEmailBody>
+                        <emailIndex>{${xpath('//email/index/text()')}}</emailIndex>
+                    </email.getEmailBody>
+                    <payloadFactory media-type="xml">
+                        <format>
+                            <email xmlns="">
+                                <emailID>${xpath('//email/emailID')}</emailID>
+                                <to>${xpath('//email/to')}</to>
+                                <from>${xpath('//email/from')}</from>
+                                <subject>${xpath('//email/subject')}</subject>
+                                <textContent>${properties.synapse.TEXT_CONTENT}</textContent>
+                            </email>
+                        </format>
+                    </payloadFactory>
+                </sequence>
+            </foreach>
+            <property name="messageType" scope="axis2" type="STRING" value="application/json"/>
+            <respond/>
+        </inSequence>
+        <faultSequence>
+            <log category="INFO" logMessageID="false" logFullPayload="false">
+                <message></message>
+                <property name="ERROR CODE" expression="${properties.synapse.ERROR_CODE}"/>
+                <property name="ERROR MESSAGE" expression="${properties.synapse.ERROR_MESSAGE}"/>
+            </log>
+        </faultSequence>
+    </resource>
+</api>esource>
+</api>

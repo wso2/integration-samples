@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<api context="/phones" name="PhoneVerifyAPI" xmlns="http://ws.apache.org/ns/synapse">
+    <resource methods="GET" uri-template="/validate/{phoneNumber}">
+        <inSequence>
+            <property name="REST_URL_POSTFIX" scope="axis2" action="remove"/>
+            <variable name="phoneNumber" type="STRING" expression="${params.pathParams.phoneNumber}" description="Read the phone number in the resource URL"/>
+            <log category="INFO" description="Log the phone number">
+                <message></message>
+                <property name="PhoneNumber" expression="${vars.phoneNumber}"/>
+            </log>
+            <filter description="Check phone number has 10 digits" xpath="${length(vars.phoneNumber)==10}">
+                <then>
+                    <http.get configKey="PhoneVerifyEndpoint">
+                        <relativePath>/phoneverify.asmx/CheckPhoneNumber?PhoneNumber=${params.pathParams.phoneNumber}&amp;LicenseKey=0</relativePath>
+                        <headers>[]</headers>
+                        <forceScAccepted>false</forceScAccepted>
+                        <disableChunking>false</disableChunking>
+                        <forceHttp10>false</forceHttp10>
+                        <noKeepAlive>false</noKeepAlive>
+                        <responseVariable>http_get_742</responseVariable>
+                        <overwriteBody>true</overwriteBody>
+                    </http.get>
+                </then>
+                <else>
+                    <payloadFactory description="Create response payload for invalid phone numbers" media-type="xml" template-type="default">
+                        <format>
+                            <Message xmlns="">Invalid Phone Number</Message>
+                        </format>
+                    </payloadFactory>
+                </else>
+            </filter>
+            <respond description="Send response back to the client"/>
+        </inSequence>
+        <faultSequence/>
+    </resource>
+</api>

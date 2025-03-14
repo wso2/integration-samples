@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sequence name="ErrorHandling" trace="disable" xmlns="http://ws.apache.org/ns/synapse">
+    <!-- <log level="custom">
+        <property name="text" value="An unexpected error occured for stock SUN"/>
+        <property expression="get-property('ERROR_MESSAGE')" name="message"/>
+    </log> -->
+    <log category="INFO" logMessageID="false" logFullPayload="false">
+        <message>An unexpected error occured for stock SUN</message>
+        <property name="message" expression="${properties.synapse.ERROR_MESSAGE}"/>
+    </log>
+    <drop/>
+</sequence>

@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sequence name="TimeoutFailureSeq" trace="disable" xmlns="http://ws.apache.org/ns/synapse">
+    <log category="INFO" description="Log error details in case of failure">
+        <message></message>
+        <property name="REST_API" expression="${properties.synapse.SYNAPSE_REST_API}"/>
+        <property name="ERROR_CODE" expression="${properties.synapse.ERROR_CODE}"/>
+        <property name="ERROR_MESSAGE" expression="${properties.synapse.ERROR_MESSAGE}"/>
+        <property name="ERROR_DETAIL" expression="${properties.synapse.ERROR_DETAIL}"/>
+        <property name="ERROR_EXCEPTION" expression="${properties.synapse.ERROR_EXCEPTION}"/>
+        <property name="MESSAGE" value="An unexpected error occurred."/>
+    </log>
+    <payloadFactory description="Build payload with error information" media-type="json" template-type="default">
+        <format>{
+            "MESSAGE": "An unexpected error occurred.",
+            "REST_API": "${properties.synapse.SYNAPSE_REST_API}",
+            "ERROR_CODE": ${properties.synapse.ERROR_CODE},
+            "ERROR_MESSAGE": ${properties.synapse.ERROR_MESSAGE},
+            "ERROR_DETAIL": ${properties.synapse.ERROR_DETAIL},
+            "ERROR_EXCEPTION": ${properties.synapse.ERROR_EXCEPTION}
+            }
+        </format>
+    </payloadFactory>
+    <respond description="Respond back to client with custom error payload"/>
+</sequence>

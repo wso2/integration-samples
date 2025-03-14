@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sequence name="SalesOrderQueueErrorSeq" trace="disable" xmlns="http://ws.apache.org/ns/synapse">
+    <log category="INFO" description="Log error details in case of failure">
+        <message>An unexpected error occurred.</message>
+        <property name="REST_API" expression="${properties.synapse.SYNAPSE_REST_API}"/>
+        <property name="ERROR_CODE" expression="${properties.synapse.ERROR_CODE}"/>
+        <property name="ERROR_MESSAGE" expression="${properties.synapse.ERROR_MESSAGE}"/>
+        <property name="ERROR_DETAIL" expression="${properties.synapse.ERROR_DETAIL}"/>
+        <property name="ERROR_EXCEPTION" expression="${properties.synapse.ERROR_EXCEPTION}"/>
+    </log>
+</sequence>

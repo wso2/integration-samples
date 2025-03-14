@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<api context="/laboratory" name="ScienceLabAPI" xmlns="http://ws.apache.org/ns/synapse">
+    <resource methods="POST" url-mapping="/users">
+        <inSequence>
+            <payloadFactory description="Build JSON payload from XML request" media-type="json" template-type="default">
+                <format>{
+                    "name": "${xpath('//user/name')}",
+                    "job": "${xpath('//user/job')}"
+                    }
+                </format>
+            </payloadFactory>
+            <http.get configKey="ScienceLabEPConnection">
+                <relativePath >/users</relativePath>
+                <headers >[]</headers>
+                <forceScAccepted >false</forceScAccepted>
+                <disableChunking >false</disableChunking>
+                <forceHttp10 >false</forceHttp10>
+                <noKeepAlive >false</noKeepAlive>
+                <responseVariable >http_get_1</responseVariable>
+                <overwriteBody >true</overwriteBody>
+            </http.get>
+            <!-- <call description="Send request payload to endpoint">
+                <endpoint key="ScienceLabEP"/>
+            </call> -->
+            <payloadFactory description="Build XML payload from JSON response" media-type="xml" template-type="default">
+                <format>
+                    <response xmlns="">
+                        <status>successful</status>
+                        <id>${$.id}</id>
+                        <name>${$.name}</name>
+                        <job>${$.job}</job>
+                        <createdAt>${$.createdAt}</createdAt>
+                    </response>
+                </format>
+            </payloadFactory>
+            <respond description="Send response back to client"/>
+        </inSequence>
+        <faultSequence/>
+    </resource>
+</api>
