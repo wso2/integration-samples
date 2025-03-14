@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<localEntry key="smtpsconnection" xmlns="http://ws.apache.org/ns/synapse">
+  <email.init>
+    <connectionType>SMTPS</connectionType>
+    <host>smtp.gmail.com</host>
+    <port>465</port>
+    <username></username>
+    <password></password>
+    <requireTLS>true</requireTLS>
+    <name>smtpsconnection</name>
+  </email.init>
+</localEntry>

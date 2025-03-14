@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<localEntry key="DelayHttpEndpoint" xmlns="http://ws.apache.org/ns/synapse">
+  <http.init>
+    <connectionType>HTTP</connectionType>
+    <baseUrl>http://www.mocky.io/v2/5185415ba171ea3a00704eed?mocky-delay=60s</baseUrl>
+    <authType>None</authType>
+    <timeoutDuration>1000</timeoutDuration>
+    <timeoutAction>Fault</timeoutAction>
+    <retryCount>1</retryCount>
+    <retryDelay>1500</retryDelay>
+    <suspendInitialDuration>1000</suspendInitialDuration>
+    <suspendProgressionFactor>1</suspendProgressionFactor>
+    <name>DelayHttpEndpoint</name>
+  </http.init>
+</localEntry>

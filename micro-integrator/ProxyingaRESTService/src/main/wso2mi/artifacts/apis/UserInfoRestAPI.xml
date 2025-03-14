@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<api context="/userInfo" name="UserInfoRestAPI" xmlns="http://ws.apache.org/ns/synapse">
+    <resource methods="GET" url-mapping="/users">
+        <inSequence>
+            <log category="INFO" description="Log customer message">
+                <message></message>
+                <property name="MESSAGE" value="Request received to /users resource."/>
+            </log>
+            <http.get configKey="UsersHttpEPConnection">
+                <relativePath >/users</relativePath>
+                <headers >[]</headers>
+                <forceScAccepted >false</forceScAccepted>
+                <disableChunking >false</disableChunking>
+                <forceHttp10 >false</forceHttp10>
+                <noKeepAlive >false</noKeepAlive>
+                <responseVariable >http_get_178</responseVariable>
+                <overwriteBody >true</overwriteBody>
+            </http.get>
+            <respond description="Send Response Back to Client"/>
+        </inSequence>
+        <faultSequence/>
+    </resource>
+</api>

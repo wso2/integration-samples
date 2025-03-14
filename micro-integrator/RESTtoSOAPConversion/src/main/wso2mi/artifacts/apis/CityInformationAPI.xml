@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<api context="/city" name="CityInformationAPI" xmlns="http://ws.apache.org/ns/synapse">
+    <resource methods="GET" uri-template="/lookup/{zipCode}">
+        <inSequence>
+            <payloadFactory description="Build Request Payload" media-type="xml" template-type="default">
+                <format>
+                    <tem:LookupCity xmlns:tem="http://tempuri.org">
+                        <tem:zip>${params.pathParams.zipCode}</tem:zip>
+                    </tem:LookupCity>
+                </format>
+            </payloadFactory>
+            <header description="Set SOAPAction header" name="Action" scope="default" value="http://tempuri.org/SOAP.Demo.LookupCity"/>
+            <property action="remove" description="Avoid appending resource to endpoint URL" name="REST_URL_POSTFIX" scope="axis2"/>
+            <call description="Send Request Payload to SOAP endpoint">
+                <endpoint key="CityLookupEP"/>
+            </call>
+            <enrich description="Take particular child element from response and enrich message context">
+                <source clone="true" xpath="//*[local-name() = 'LookupCityResult']"/>
+                <target type="body"/>
+            </enrich>
+            <property description="Convert XML payload to JSON" name="messageType" scope="axis2" type="STRING" value="application/json"/>
+            <respond description="Send respose payload to the client"/>
+        </inSequence>
+        <faultSequence/>
+    </resource>
+</api>

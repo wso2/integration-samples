@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<api context="/publishweatherdata" name="WeatherDataPublishAPI" xmlns="http://ws.apache.org/ns/synapse">
+    <resource methods="POST">
+        <inSequence>
+            <kafkaTransport.publishMessages configKey="KafkaConnection">
+                <topic>weatherdatatopic</topic>
+                <partitionNo>0</partitionNo>
+                <keySchemaSoftDeleted>false</keySchemaSoftDeleted>
+                <valueSchemaSoftDeleted>false</valueSchemaSoftDeleted>
+            </kafkaTransport.publishMessages>
+            <payloadFactory  media-type="json" template-type="default">
+                <format>{"topic":"${properties.synapse.topic}", "partition":"${properties.synapse.partition}", "offset":"${properties.synapse.offset}"}</format>
+            </payloadFactory>
+            <property name="messageType" scope="axis2" type="STRING" value="application/json"/>
+            <respond/>
+        </inSequence>
+        <faultSequence/>
+    </resource>
+</api>

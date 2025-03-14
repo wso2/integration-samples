@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sequence name="UserRegistrationResponseSeq" trace="disable" xmlns="http://ws.apache.org/ns/synapse">
+    <filter description="Check HTTP status code 200 or 201 return from the backend" regex="2[0-9][0-9]" source="${properties.axis2.HTTP_SC}">
+        <then>
+            <payloadFactory description="Record successful registration" media-type="json" template-type="default">
+                <format>
+                    {
+                        "Response":{
+                        "User ID" : "$1",
+                        "Name" : "$2",
+                        "Registration" : "Successful"
+                        }
+                    }
+                </format>
+            </payloadFactory>
+        </then>
+        <else>
+            <payloadFactory description="Record failure registration" media-type="json" template-type="default">
+                <format>{
+                        "Response":{
+                        "User ID" : "${$.id}",
+                        "Name" : "${$.name}",
+                        "Registration" : "Fail"
+                        }
+                    }</format>
+            </payloadFactory>
+        </else>
+    </filter>
+    <log category="INFO" description="Log Response">
+        <message></message>
+        <property name="Response" expression="${payload}"/>
+    </log>
+</sequence>

@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sequence name="DoctorsRecordsSyncSeq" trace="disable" xmlns="http://ws.apache.org/ns/synapse">
+    <log category="INFO">
+        <message></message>
+        <property name="Message" value="Doctor records sync task running."/>
+    </log>
+    <header name="Action" scope="default" value="urn:ReadDoctors"/>
+    <payloadFactory description="Request payload to send to data service endpoint" media-type="xml">
+        <format>
+            <dat:ReadDoctors xmlns:dat="http://ws.wso2.org/dataservice"/>
+        </format>
+    </payloadFactory>
+    <call>
+        <endpoint key="DoctorsDataServiceEP"/>
+    </call>
+    <log category="INFO">
+        <message></message>
+        <property name="Record"  expression="${xpath(&quot;//*[local-name() = 'Doctors']&quot;)}"   />
+    </log>
+    <header name="Action" scope="default" value="urn:request_box"/>
+    <payloadFactory description="Request payload to send to data service endpoint" media-type="xml" template-type="default">
+        <format>
+            <dat:request_box xmlns:dat="http://ws.wso2.org/dataservice">
+                <dat:ReadDoctorsNotSync/>
+                <dat:UpdateDoctorsSyncStatus/>
+            </dat:request_box>
+        </format>
+    </payloadFactory>
+    <call>
+        <endpoint key="DoctorsDataServiceEP"/>
+    </call>
+    <log category="INFO">
+        <message></message>
+        <property name="Message" value="Update sync record."/>
+    </log>
+</sequence>

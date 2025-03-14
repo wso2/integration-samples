@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<api context="/salesforceaccountapi" name="SalesForceAccountServiceAPI" xmlns="http://ws.apache.org/ns/synapse">
+    <resource methods="GET">
+        <inSequence>
+            <salesforcerest.query configKey="SalesforceConnection1">
+                <queryString>select id from Account</queryString>
+            </salesforcerest.query>
+            <respond/>
+        </inSequence>
+        <faultSequence/>
+    </resource>
+</api>

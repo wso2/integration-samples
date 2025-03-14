@@ -1,0 +1,72 @@
+<unit-test>
+  <artifacts>
+    <test-artifact>
+      <artifact>src/main/wso2mi/artifacts/apis/PhoneVerifyAPI.xml</artifact>
+    </test-artifact>
+    <supportive-artifacts>
+      <artifact>src/main/wso2mi/artifacts/local-entries/PhoneVerifyEndpoint.xml</artifact>
+    </supportive-artifacts>
+    <registry-resources></registry-resources>
+    <connector-resources>
+      <connector-resource>src/main/wso2mi/resources/connectors/mi-connector-http-0.1.7.zip</connector-resource>
+    </connector-resources>
+  </artifacts>
+  <test-cases>
+    <test-case name="ValidPhoneNumber">
+      <input>
+        <request-path>/validate/7575449510</request-path>
+        <request-method>GET</request-method>
+      </input>
+      <assertions>
+        <assertEquals>
+          <actual>$body</actual>
+          <expected><![CDATA[<?xml version="1.0" encoding="utf-8"?>
+<PhoneReturn xmlns="http://ws.cdyne.com/PhoneVerify/query" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <Company>Vonage Network</Company>
+  <Valid>true</Valid>
+  <Use>Assigned to a code holder for normal use.</Use>
+  <State>VA</State>
+  <RC>NORFOLK-BUTE ST</RC>
+  <OCN>197D</OCN>
+  <OriginalNumber>7575449510</OriginalNumber>
+  <CleanNumber>7575449510</CleanNumber>
+  <SwitchName>NRFLVABSMMD</SwitchName>
+  <SwitchType/>
+  <Country>United States</Country>
+  <CLLI>NRFLVABS</CLLI>
+  <PrefixType>IPES</PrefixType>
+  <LATA>252  </LATA>
+  <sms>IPES</sms>
+  <AssignDate>21/12/2017</AssignDate>
+  <TelecomCity>Norfolk</TelecomCity>
+  <TelecomCounty>Norfolk city</TelecomCounty>
+  <TelecomState>VA</TelecomState>
+  <TelecomZip>23510</TelecomZip>
+  <TimeZone/>
+  <Lat/>
+  <Long/>
+  <Wireless>false</Wireless>
+  <LRN/>
+</PhoneReturn>]]></expected>
+          <message>ValidPhoneNumber Test Case failed.</message>
+        </assertEquals>
+      </assertions>
+    </test-case>
+    <test-case name="InvalidPhoneNumber">
+      <input>
+        <request-path>/validate/75754495</request-path>
+        <request-method>GET</request-method>
+      </input>
+      <assertions>
+        <assertEquals>
+          <actual>$body</actual>
+          <expected>&lt;Message&gt;Invalid Phone Number&lt;/Message&gt;</expected>
+          <message>InvalidPhoneNumber Test Case failed.</message>
+        </assertEquals>
+      </assertions>
+    </test-case>
+  </test-cases>
+  <mock-services>
+    <mock-service>src/test/resources/mock-services/PhoneVerifyEPMockService.xml</mock-service>
+  </mock-services>
+</unit-test>

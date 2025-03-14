@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<api context="/custom" name="business-logic" xmlns="http://ws.apache.org/ns/synapse">
+    <resource methods="GET">
+        <inSequence>
+            <property name="body" scope="default" type="STRING" expression="${params.queryParams.url_key}"/>
+            <log category="INFO" logMessageID="false" logFullPayload="false">
+                <message>${properties.synapse.body}</message>
+            </log>
+            <sequence key="secondaryFlow"/>
+            <switch source="${props.synapse.flowValue}">
+                <case regex="flowValue_1">
+                    <payloadFactory description="Set Response Payload" media-type="text">
+                        <format>responsePayload_1</format>
+                    </payloadFactory>
+                </case>
+                <default>
+                    <payloadFactory description="Set Response Payload" media-type="text">
+                        <format>responsePayload_2</format>
+                    </payloadFactory>
+                </default>
+            </switch>
+            <!-- <switch source="get-property('flowValue')">
+                <case regex="flowValue_1">
+                    <payloadFactory description="Set Response Payload" media-type="text">
+                        <format>responsePayload_1</format>
+                        <args/>
+                    </payloadFactory>
+                </case>
+                <default>
+                    <payloadFactory description="Set Response Payload" media-type="text">
+                        <format>responsePayload_2</format>
+                        <args/>
+                    </payloadFactory>
+                </default>
+            </switch> -->
+            <respond description="respond"/>
+        </inSequence>
+        <faultSequence>
+            <sequence key="ErrorHandling"/>
+        </faultSequence>
+    </resource>
+</api>

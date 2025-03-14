@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<localEntry key="PhoneVerifyEndpoint" xmlns="http://ws.apache.org/ns/synapse">
+  <http.init>
+    <connectionType>HTTP</connectionType>
+    <baseUrl>http://ws.cdyne.com/phoneverify</baseUrl>
+    <authType>None</authType>
+    <timeoutAction>Never</timeoutAction>
+    <retryCount>0</retryCount>
+    <retryDelay>0</retryDelay>
+    <suspendInitialDuration>-1</suspendInitialDuration>
+    <suspendProgressionFactor>1</suspendProgressionFactor>
+    <name>PhoneVerifyEndpoint</name>
+  </http.init>
+</localEntry>
