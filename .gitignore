@@ -18,7 +18,42 @@
 *.zip
 *.tar.gz
 *.rar
+*.deb
 
 # virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
 hs_err_pid*
-replay_pid*
+
+# Build files
+target
+Build
+.classpath
+.settings
+.project
+*.iml
+*.iws
+*.ipr
+.idea
+.m2
+.vscode/
+.iml
+.code
+
+# Ignore ballerina files
+accessToken.bal
+temp.bal.ballerina/
+target/
+generated/
+.DS_Store
+*Ballerina.lock
+.ballerina
+**/Config.toml
+
+# Ignore Gradle project-specific cache directory
+.gradle
+
+# Ignore Gradle build output directory
+build
+
+# Ignore Docker env file
+docker.env
+
