@@ -10,7 +10,7 @@ This implementation utilizes Pinecone as the vector database and OpenAI for embe
 
 To integrate your company's HR policies into the system, simply feed them into the vector store within Pinecone using Devant's ingestion tools.
 
-## Ingest HR ploicies data to the vector store
+## Ingest HR Policies data to the vector store
 
 ### Step 1: Initialize Vector Store
 
@@ -19,9 +19,7 @@ Large Language Models (LLMs) process contextual information as numerical vectors
 1. Select `Pinecone` as the vector database.
 
 2. Enter the API key in the `API Key` field.
-
-    ???+ info "Info"
-        To create an API key, refer to the [Pinecone API Key documentation](https://docs.pinecone.io/guides/projects/manage-api-keys#create-an-api-key).
+    To create an API key, refer to the [Pinecone API Key documentation](https://docs.pinecone.io/guides/projects/manage-api-keys#create-an-api-key).
 
 3. Enter the `Collection Name`. If the collection does not exist, it will be created automatically.
 
@@ -32,9 +30,7 @@ Large Language Models (LLMs) process contextual information as numerical vectors
 1. Select `text-embedding-ada-002` from the OpenAI embedding model dropdown.
 
 2. Enter the API key in the `Embedding Model API Key` field.
-
-    ???+ info "Info"
-        To create an API key, refer to the [OpenAI Platform documentation](https://platform.openai.com/docs/guides/embeddings).
+    To create an API key, refer to the [OpenAI Platform documentation](https://platform.openai.com/docs/guides/embeddings).
 
 3. Click Next.
 
@@ -43,10 +39,9 @@ Large Language Models (LLMs) process contextual information as numerical vectors
 Chunking helps break large documents into smaller, manageable sections for efficient processing.
 Chunking strategy, Max segment size, and Max overlap size are pre-filled with default values but can be modified as needed.
 
-???+ info "Info"
-    - **Chunking strategy** defines how text is split into smaller, manageable pieces (chunks).
-    - **Max segment size** determines the maximum length of tokens for each chunk.
-    - **Max overlap size** defines how many tokens repeat between consecutive chunks.
+    - Chunking strategy: Defines how text is split into smaller, manageable pieces (chunks).
+    - Max segment size: Determines the maximum length of tokens for each chunk.
+    - Max overlap size: Defines how many tokens repeat between consecutive chunks.
 
 ### Step 4: Upload Source Files
 
@@ -54,10 +49,7 @@ Next, upload your source files (e.g., PDFs, CSVs, or text documents) for process
 
 1. Click Select Files to open your file explorer.
 2. Choose the files you want to upload.
-3. Click Upload.
-
-    !!! note
-        When you click **Upload** it will generate embeddings for the uploaded files and store them in the vector database.
+3. Click Upload. When you click **Upload** it will generate embeddings for the uploaded files and store them in the vector database.
 
 ## Deploy the agent in Devant
 
