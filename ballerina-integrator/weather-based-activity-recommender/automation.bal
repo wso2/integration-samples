@@ -1,7 +1,3 @@
-import ballerina/http;
-import ballerina/io;
-import ballerinax/openai.chat;
-
 public function main() returns error? {
     // Get weather data
     json weatherData = check getWeatherData();
@@ -15,4 +11,3 @@ public function main() returns error? {
     // Print the recommendations
     showActivityInfo(weatherSummary, recommendations);
 }
-
