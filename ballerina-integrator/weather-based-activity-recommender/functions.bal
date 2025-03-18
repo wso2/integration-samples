@@ -2,20 +2,18 @@ import ballerina/http;
 import ballerina/io;
 import ballerinax/openai.chat;
 
-function generateWeatherSummary(json weatherData) returns string {
+function generateWeatherSummary(json weatherData) returns string|error {
+    do {
+        float temperature = check weatherData.main.temp - 273.15;
+        string weatherCondition = check (<json[]>(check weatherData.weather))[0].main;
+        string weatherDescription = check (<json[]>(check weatherData.weather))[0].description;
 
-    // Extract relevant weather information
-    map<json> weather = <map<json>>weatherData;
-    map<json> main = <map<json>>weather.get("main");
-    map<json>[] weatherDetails = <map<json>[]>weather.get("weather");
-
-    float temperature = <float>main.get("temp") - 273.15; // Convert from Kelvin to Celsius
-    string weatherCondition = <string>weatherDetails[0].get("main");
-    string weatherDescription = <string>weatherDetails[0].get("description");
-
-    // Prepare the weather summary
-    string weatherSummary = string `Current weather in ${cityName}: ${weatherCondition} (${weatherDescription}) with temperature of ${temperature.toFixedString(1)}°C`;
-    return weatherSummary;
+        // Prepare the weather summary
+        string weatherSummary = string `Current weather in ${cityName}: ${weatherCondition} (${weatherDescription}) with temperature of ${temperature.toFixedString(1)}°C`;
+        return weatherSummary;
+    } on fail error e {
+        return error("Failed to generate weather summary: " + e.message());
+    }
 }
 
 function getWeatherData() returns json|error {
