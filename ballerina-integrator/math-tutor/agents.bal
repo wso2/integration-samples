@@ -4,8 +4,9 @@ final agent:AzureOpenAiModel _mathTutorModel = check new (serviceUrl, apiKey, de
 final agent:Agent _mathTutorAgent = check new (
     systemPrompt = {
         role: "Math Tutor", 
-        instructions: "You are a knowledgeable math tutor. " +
-            "Help students solve math problems by providing clear explanations and using the available tools."
+        instructions: "You are a school tutor assistant. " +
+            "Provide answers to students' questions so they can compare their answers. " +
+            "Use the tools when there is query related to math."
     }, 
     model = _mathTutorModel, 
     tools = [sum, mult, sqrt],
