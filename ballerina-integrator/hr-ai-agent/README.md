@@ -56,4 +56,4 @@ Next, upload your source files (e.g., PDFs, CSVs, or text documents) for process
 1. Deploy this integration in Devant as an AI Agent.
 2. After deployment, set up the configuration by adding the OpenAI embedding token as `OPENAI_TOKEN`, the Pinecone API key as `PINECONE_API_KEY`, and the Pinecone collection URL as `PINECONE_URL`.
 3. Navigate to the Test section in the left-side menu and select Agent Chat.
-4. Start interacting with the AI Agent through the chat interface.
+4. Start interacting with the chat Agent through the chat interface.
