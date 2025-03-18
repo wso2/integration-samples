@@ -1,0 +1,180 @@
+openapi: 3.0.3
+info:
+  title: Pizza Shop Order Management API
+  version: 1.0.0
+  description: API for managing pizza orders and menu items
+
+servers:
+  - url: https://api.pizzashop.com/v1
+
+paths:
+  /pizzas:
+    get:
+      summary: Retrieve available pizzas
+      operationId: listPizzas
+      responses:
+        '200':
+          description: List of available pizzas
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Pizza'
+
+  /orders:
+    post:
+      summary: Create a new pizza order
+      operationId: createOrder
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OrderRequest'
+      responses:
+        '201':
+          description: Order created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Order'
+        '400':
+          description: Invalid order request
+
+    get:
+      summary: Retrieve customer's orders
+      operationId: listOrders
+      parameters:
+        - name: customerId
+          in: query
+          required: false
+          schema:
+            type: string
+      responses:
+        '200':
+          description: List of orders
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Order'
+
+  /orders/{orderId}:
+    get:
+      summary: Get specific order details
+      operationId: getOrder
+      parameters:
+        - name: orderId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Order details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Order'
+        '404':
+          description: Order not found
+
+    patch:
+      summary: Update order status
+      operationId: updateOrder
+      parameters:
+        - name: orderId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OrderUpdate'
+      responses:
+        '200':
+          description: Order updated successfully
+        '400':
+          description: Invalid update request
+
+components:
+  schemas:
+    Pizza:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+        basePrice:
+          type: number
+        toppings:
+          type: array
+          items:
+            type: string
+
+    OrderRequest:
+      type: object
+      required:
+        - customerId
+        - pizzas
+      properties:
+        customerId:
+          type: string
+        pizzas:
+          type: array
+          items:
+            type: object
+            properties:
+              pizzaId:
+                type: string
+              quantity:
+                type: integer
+              customizations:
+                type: array
+                items:
+                  type: string
+
+    Order:
+      type: object
+      properties:
+        id:
+          type: string
+        customerId:
+          type: string
+        status:
+          type: string
+          enum:
+            - PENDING
+            - PREPARING
+            - OUT_FOR_DELIVERY
+            - DELIVERED
+            - CANCELLED
+        totalPrice:
+          type: number
+        pizzas:
+          type: array
+          items:
+            type: object
+            properties:
+              pizzaId:
+                type: string
+              quantity:
+                type: integer
+
+    OrderUpdate:
+      type: object
+      properties:
+        status:
+          type: string
+          enum:
+            - PREPARING
+            - OUT_FOR_DELIVERY
+            - DELIVERED
+            - CANCELLED
