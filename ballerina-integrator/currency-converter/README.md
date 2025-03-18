@@ -23,6 +23,12 @@ exchange rates using Redis to improve performance and reduce external API calls.
     - `to` (default: `LKR`): The target currency.
     - `amount` (default: `1`): The amount to be converted.
 
+### Deploy on **Devant**
+
+1. Deploy this integration on **Devant** as an **Integration as API**.
+2. Configure ExchangeRate API `apiKey`, and `redisConnectionString` before running the integration.
+3. Once deployed, click on **"Test"** to try out the API.
+
 ## How It Works
 
 - The service listens on port `9090` for incoming HTTP requests.
