@@ -4,5 +4,12 @@
 A scheduled task that logs the current timestamp every five seconds. Useful for tracking time-based executions.
 
 ## Usage Instructions
-1. Deploy this integration in **Devant** as a scheduled job.
+
+### Deploy on **Devant**
+
+1. Deploy this integration on **Devant** as an **Automation**.
 2. Once deployed, it will log the current timestamp every five seconds.
+
+## References
+
+- [Schedule Your First Automation](https://wso2.com/devant/docs/quick-start-guides/schedule-your-first-automation)

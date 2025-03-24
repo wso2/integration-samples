@@ -1,0 +1,4 @@
+[package]
+org = "wso2"
+name = "hr_ai_chat_agent"
+version = "0.1.0"

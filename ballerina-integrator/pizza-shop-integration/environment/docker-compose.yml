@@ -1,0 +1,20 @@
+version: "2.14.0"
+
+services:
+  mysql:
+    image: "mysql:8-oracle"
+    container_name: mysql
+    ports:
+      - 3306:3306
+    network_mode: "host"
+    environment:
+      - MYSQL_ROOT_PASSWORD=root
+      - MYSQL_DATABASE=pizza_shop
+      - MYSQL_USER=user
+      - MYSQL_PASSWORD=userpass
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      timeout: 20s
+      retries: 10
+    volumes:
+      - "./init.sql:/docker-entrypoint-initdb.d/1.sql"

@@ -1,0 +1,186 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<api context="/test" name="SynapseExpressions" xmlns="http://ws.apache.org/ns/synapse">
+    <resource methods="GET" uri-template="/literals">
+        <inSequence>
+            <log category="INFO">
+                <message>
+                    Literal values in Synapse Expressions
+                    ${&quot;Hello World&quot;}
+                    ${2025}
+                    ${true}
+                    ${null}
+                </message>
+            </log>
+            <respond/>
+        </inSequence>
+        <faultSequence>
+        </faultSequence>
+    </resource>
+    <resource methods="POST" uri-template="/accessingValues/{pParamKey}?qParamKey={queryParameter1}">
+        <inSequence>
+            <variable name="var1" type="STRING" expression="${payload.books}"/>
+            <property name="synProp1" scope="default" type="STRING" value="This is a synapse property"/>
+            <property name="axis2Prop1" scope="axis2" type="STRING" value="This is an axis2 property"/>
+            <log category="INFO">
+                <message>
+                    Accessing values in Synapse Expressions
+                    Access paylod values : ${$.books[*].title}
+                    Access variable : ${vars.var1[*].price}
+                    Access headers : ${headers[&quot;Content-Type&quot;]}
+                    Access synapse property : ${props.synapse.synProp1}
+                    Access axis2 property : ${props.axis2.axis2Prop1}
+                    Access query param : ${params.queryParams.qParamKey}
+                    Access path param : ${params.pathParams.pParamKey}
+                    Access config values : ${configs.myConfigKey}
+                </message>
+            </log>
+            <call-template target="seqTemplate1">
+                <with-param name="templateParameter1" value="Template value"/>
+            </call-template>
+        </inSequence>
+        <faultSequence>
+        </faultSequence>
+    </resource>
+    <resource methods="POST" uri-template="/operators">
+        <inSequence>
+            <log category="INFO">
+                <message>
+                    Operations in Synapse Expressions
+
+                    Arithmetic Operations
+                    Addition : ${$.num1 + $.num2}
+                    Subtraction : ${$.num1 - $.num2}
+                    Multiplication : ${$.num1 * $.num3}
+                    Division : ${$.num1 / $.num2}
+                    Modulus : ${$.num1 % $.num2}
+
+                    Comparison Operations
+                    Equal : ${$.num1 == $.num1}
+                    Not Equal : ${$.num1 != $.num2}
+                    Greater Than : ${$.num1 &gt; $.num2}
+                    Greater Than or Equal : ${$.num1 &gt;= $.num2}
+                    Less Than : ${$.num1 &lt; $.num2}
+                    Less Than or Equal : ${$.num1 &lt;= $.num2}
+
+                    Logical Operations
+                    AND : ${true and true}
+                    OR : ${true || false}
+                    Control presedence : ${$.num1 + ($.num2 * $.num3) - $.num4}
+                </message>
+            </log>
+            <respond/>
+        </inSequence>
+        <faultSequence>
+        </faultSequence>
+    </resource>
+    <resource methods="POST" uri-template="/conditional">
+        <inSequence>
+            <log category="INFO">
+                <message>
+                    Conditional Expressions
+                    ${$.age &gt; 18 ? &quot;Adult&quot; : &quot;Child&quot;}
+                </message>
+            </log>
+            <respond/>
+        </inSequence>
+        <faultSequence>
+        </faultSequence>
+    </resource>
+    <resource methods="POST" uri-template="/filters">
+        <inSequence>
+            <log category="INFO">
+                <message>
+                    Filter Expressions
+                    Filter books of category 'biography' : ${$.store.books[?(@.category == &quot;biography&quot;)]}
+                    Filter expensive books : ${$.store.books[?(@.price &gt; $.expensive)]}
+                </message>
+            </log>
+            <respond/>
+        </inSequence>
+        <faultSequence>
+        </faultSequence>
+    </resource>
+    <resource methods="POST" uri-template="/functions">
+        <inSequence>
+            <log category="INFO">
+                <message>
+                    Functions in Synapse Expressions
+
+                    String functions
+                    Length : ${length($.text)}
+                    Upper case : ${toUpper($.text)}
+                    Lower case : ${toLower($.text)}
+                    Substring : ${subString($.text,5)} , ${subString($.text,2,6)}
+                    Starts with : ${startsWith($.text,&quot;Hello&quot;)} , ${startsWith($.text,&quot;World&quot;)}
+                    Ends with : ${endsWith($.text,&quot;Hello&quot;)} , ${endsWith($.text,&quot;World&quot;)}
+                    Contains : ${contains($.text,&quot;Hello&quot;)} , ${contains($.text,&quot;Woorld&quot;)}
+                    Trim : ${trim($.trimText)}
+                    Replace : ${replace($.text,&quot;Hello&quot;,&quot;Hi&quot;)}
+                    Split : ${split($.text,&quot; &quot;)}
+                    Char at : ${charAt($.text,6)}
+                    Index of : ${indexOf($.text,&quot;World&quot;)} , ${indexOf($.text,&quot;l&quot;,5)}
+
+                    Numeric functions
+                    Absoulte : ${abs($.num1)}
+                    Floor : ${floor($.num2)}
+                    Ceil : ${ceil($.num1)}
+                    Square root : ${sqrt($.num3)}
+                    log : ${log($.num3)} , ${log($.num3,2)}
+                    Power : ${pow($.num1,2)}
+                    Round : ${round($.num2)}, ${round($.num2,2)}
+                    Encode and Decode functions
+                    Base64 encode : ${base64encode($.text)}, ${base64encode($.text, &quot;ISO-8859-1&quot;)}
+                    Base64 decode : ${base64decode($.encoded)}
+                    URL encode : ${urlEncode($.url)}
+                    URL decode : ${urlDecode($.encodedURL)}
+
+                    Type checking functions
+                    Is number : ${isNumber($.num1)}, ${isNumber($.text)}
+                    Is string : ${isString($.text)}, ${isString($.num1)}
+                    Is Array : ${isArray($.array)}, ${isArray($.text)}
+                    Is Object : ${isObject(payload)}, ${isObject($.object)}, ${isObject($.text)}
+
+                    Type conversion functions
+                    To Integer : ${integer($.convert_int)}
+                    To Float : ${float($.convert_float)}
+                    To String : ${string($.num1)}
+                    To Boolean : ${boolean($.convert_boolean)}
+                    To Object : ${object($.object)}, ${object($.object).a}
+                    To Array : ${array($.convert_array)}, ${array($.convert_array)[1]}
+
+                    Registry functions
+                    Read from registry : ${registry(&quot;gov:/mi-resources/json/testResource.json&quot;)}
+                    Access content inside registry resource : ${registry(&quot;gov:/mi-resources/json/testResource.json&quot;).person.name}
+                    
+                    Date/Time functions
+                    Now : ${now()}
+                    Format given date/time : ${formatDateTime(now(),&quot;yyyy-MM-dd HH:mm:ss&quot;)}
+                    Change to a new format : ${formatDateTime(&quot;2018-12-31 23:59:59&quot;,&quot;yyyy-MM-dd HH:mm:ss&quot;,&quot;yyyy-MM-dd&quot;)}
+                    
+                    Check exist
+                    Check if a property exists : ${exists(&quot;$.num1&quot;)}, ${exists(&quot;$.nonExisting&quot;)}
+                    
+                    Invert function
+                    Invert a boolean value : ${not(true)}, ${not(false)}
+                </message>
+            </log>
+            <respond/>
+        </inSequence>
+        <faultSequence>
+        </faultSequence>
+    </resource>
+    <resource methods="POST" uri-template="/xpath">
+        <inSequence>
+            <variable name="text" type="STRING" expression="${xpath('//a:parent/b:child/a:value')}" xmlns:a="http://namespaceA.com" xmlns:b="http://namespaceB.com"/>
+            <log category="INFO">
+                <message>
+                    XPATH functions
+                    Accessing XML elements with namespaces : ${vars.text}
+                </message>
+            </log>
+            <respond/>
+        </inSequence>
+        <faultSequence>
+        </faultSequence>
+    </resource>
+</api>

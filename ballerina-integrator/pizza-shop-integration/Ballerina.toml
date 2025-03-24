@@ -1,0 +1,4 @@
+[package]
+org = "admin"
+name = "pizza"
+version = "0.1.0"
