@@ -6,3 +6,5 @@ A scheduled task that reads a local text file, counts the number of words, and l
 ## Usage Instructions
 1. Deploy this integration in **Devant** as a scheduled job.
 2. Once deployed, it will read the file and log the word count every five minutes.
+
+Note: If scheduling this job is not a requirement, you can execute the integration locally using the Run button in Ballerina Integrator.

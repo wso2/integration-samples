@@ -20,6 +20,8 @@ Ballerina with an external email service.
 4. If you want to schedule the email to be sent daily at 8 AM, deploy this integration in **Devant** as a scheduled job.
    Once deployed, it will send the email every day at 8 AM.
 
+Note: If scheduling this job is not a requirement, you can execute the integration locally using the Run button in Ballerina Integrator.
+
 ## How It Works
 
 - The application constructs an email message with a subject and body.
