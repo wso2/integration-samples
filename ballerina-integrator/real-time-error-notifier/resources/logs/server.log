@@ -1,0 +1,13 @@
+INFO: Server started successfully on port 8080.
+INFO: Database connection established to jdbc:mysql://localhost:3306/app_db.
+WARNING: High memory usage detected - 85% utilized.
+INFO: User 'admin' logged in from IP 192.168.1.10.
+ERROR: Database connection failed - timeout exceeded.
+INFO: API request received - GET /api/v1/products.
+WARNING: Slow query detected - execution time 12.5s (Query: SELECT * FROM orders).
+ERROR: Unable to write to log file - permission denied.
+INFO: Cache refreshed successfully at 2025-04-03T10:15:32Z.
+INFO: Background job 'daily_report_generator' started execution.
+WARNING: Disk space running low - 10% remaining on /var/log.
+INFO: Email sent successfully to user@example.com.
+INFO: SSL certificate renewed automatically.
