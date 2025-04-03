@@ -1,0 +1,4 @@
+[package]
+org = "gayaldassanayake"
+name = "real_time_error_detection"
+version = "0.1.0"
