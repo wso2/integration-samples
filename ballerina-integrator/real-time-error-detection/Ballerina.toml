@@ -1,4 +1,4 @@
 [package]
-org = "gayaldassanayake"
-name = "real_time_error_detection"
+org = "wso2"
+name = "real_time_error_notifier"
 version = "0.1.0"

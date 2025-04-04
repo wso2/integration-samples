@@ -1,10 +1,7 @@
-# Real-Time Error Detection and Alerting
+# Real-Time Error Notifier
 
 ## Description
-
 This integration continuously monitors application logs in real time, detects critical errors, and instantly sends alerts to a designated Slack channel. By using a directory listener, it captures changes in log files and filters out critical errors. This integration is particularly useful for developers, DevOps engineers, and system administrators who need real-time visibility into critical application failures.
-
-
 
 ## Prerequisites
 - Create a [Slack app](https://api.slack.com/quickstart#creating) and obtain a token for sending messages to a channel.
@@ -18,7 +15,9 @@ directoryToListen = "./resources/logs"
 ```
 
 ## Usage Instructions
-TODO: How is this deployed in devant?
+1. Deploy this integration on **Devant** as an **File Integration**.
+2. Configure `slackChannel`, `slackToken`, and `directoryToListen` before running the integration.
+3. Once deployed, click on **"Test"** to try out the API.
 
 ## How It Works
 - This integration uses a directory listener to monitor log files in real time. 
