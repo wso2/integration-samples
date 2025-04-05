@@ -1,0 +1,4 @@
+[package]
+org = "wso2"
+name = "stock_price_data_manager"
+version = "0.1.0"
