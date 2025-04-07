@@ -20,7 +20,7 @@ service file:Service on directoryService {
                         string timestamp = time:utcToString(time:utcNow());
                         string slackMessage = "Error notification\n" + timestamp + ": " + lastLog;
                         slack:ChatPostMessageResponse slackResponse = check slackClient->/chat\.postMessage.post({channel: slackChannel, text: slackMessage});
-                        if slackResponse.ok == true {
+                        if slackResponse.ok {
                             log:printInfo("Error reported successfully");
                         } else {
                             log:printError("Error reporting failed");
