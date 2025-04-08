@@ -2,7 +2,7 @@
     <description/>
     <config id="DoctorsDatasource">
         <property name="username">root</property>
-        <property name="password">Sajinie@2015</property>
+        <property name="password">root</property>
         <property name="url">jdbc:mysql://localhost:3306/hospital_db</property>
         <property name="driverClassName">com.mysql.jdbc.Driver</property>
     </config>
