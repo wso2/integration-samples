@@ -1,6 +1,6 @@
 import ballerina/sql;
 import ballerina/uuid;
-import ballerinax/ai.agent;
+import ballerinax/ai;
 import ballerinax/mysql;
 import ballerinax/mysql.driver as _;
 
@@ -15,7 +15,7 @@ final mysql:Client dbClient = check new (
 # Retrieves all available pizzas.
 #
 # + return - Array of pizzas or error
-@agent:Tool
+@ai:AgentTool
 @display {
     label: "",
     iconPath: ""
@@ -32,7 +32,7 @@ isolated function getPizzas() returns Pizza[]|error {
 #
 # + orderRequest - The order details
 # + return - Created order or error
-@agent:Tool
+@ai:AgentTool
 @display {
     label: "",
     iconPath: ""
@@ -63,7 +63,7 @@ isolated function createOrder(OrderRequest orderRequest) returns Order|error {
 #
 # + customerId - Optional customer ID to filter orders
 # + return - Array of orders or error
-@agent:Tool
+@ai:AgentTool
 @display {
     label: "",
     iconPath: ""
@@ -91,7 +91,7 @@ isolated function getOrders(string? customerId = ()) returns Order[]|error {
 #
 # + orderId - ID of the order to retrieve
 # + return - Order details or error
-@agent:Tool
+@ai:AgentTool
 @display {
     label: "",
     iconPath: ""
@@ -111,7 +111,7 @@ isolated function getOrder(string orderId) returns Order|error {
 # + orderId - ID of the order to update
 # + orderUpdate - New status for the order
 # + return - Updated order or error
-@agent:Tool
+@ai:AgentTool
 @display {
     label: "",
     iconPath: ""
