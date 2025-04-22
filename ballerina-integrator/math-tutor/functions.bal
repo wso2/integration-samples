@@ -1,11 +1,15 @@
-isolated function getSum(decimal a, decimal b) returns decimal {
-    return a + b;
+isolated function sum(int num1, int num2) returns int {
+    return num1 + num2;
 }
 
-isolated function getMult(decimal a, decimal b) returns decimal {
-    return a * b;
+isolated function substract(int num1, int num2) returns int {
+    return num1 - num2;
 }
 
-isolated function getSqrt(float a) returns float {
-    return a.sqrt();
+isolated function mult(int num1, int num2) returns int {
+    return num1 * num2;
+}
+
+isolated function divide(int num1, int num2) returns int {
+    return num1 / num2;
 }
