@@ -5,7 +5,7 @@
     <host>imap.gmail.com</host>
     <port>993</port>
     <username>username</username>
-    <password></password>
+    <password>password</password>
     <maxActiveConnections>4</maxActiveConnections>
     <enableOAuth2>false</enableOAuth2>
     <name>imapsconnection</name>
