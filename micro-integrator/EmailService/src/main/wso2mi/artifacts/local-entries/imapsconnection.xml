@@ -4,8 +4,8 @@
     <connectionType>IMAPS</connectionType>
     <host>imap.gmail.com</host>
     <port>993</port>
-    <username>sajiniekavindya@gmail.com</username>
-    <password>qcofzepznbzlpazd</password>
+    <username>username</username>
+    <password>password</password>
     <maxActiveConnections>4</maxActiveConnections>
     <enableOAuth2>false</enableOAuth2>
     <name>imapsconnection</name>
