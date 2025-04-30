@@ -1,0 +1,4 @@
+[package]
+org = "ç"
+name = "event_message"
+version = "0.1.0"
