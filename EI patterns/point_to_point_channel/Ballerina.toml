@@ -1,0 +1,4 @@
+[package]
+org = "chirans"
+name = "point_to_point_channel"
+version = "0.1.0"
