@@ -5,7 +5,7 @@ public function main() returns error? {
     http:Response metaData = check s3Client->/employee_names.head();
     int fileSize = check int:fromString(check metaData.getHeader("Content-Length"));
 
-    () varo = check io:fileWriteBytes("./resources/employee_names.txt", []);
+    () var3 = check io:fileWriteBytes("./resources/employee_names.txt", []);
 
     int numberOfChunks = (fileSize + 10 - 1) / 10;
     foreach int i in 0 ..< numberOfChunks {

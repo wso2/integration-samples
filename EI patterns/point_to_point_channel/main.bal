@@ -1,5 +1,3 @@
-import ballerina/http;
-
 public function main() returns error? {
     var product = {
         "Description": "Cell phone service for call center operators",
