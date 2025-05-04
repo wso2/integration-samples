@@ -1,0 +1,4 @@
+[package]
+org = "wso2"
+name = "content_enricher"
+version = "0.1.0"
