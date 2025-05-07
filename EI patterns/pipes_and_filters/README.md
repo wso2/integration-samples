@@ -9,7 +9,7 @@ For more detailed information on the **Pipes and Filters** pattern, visit the [P
 
 The **Architecture Diagram** visualizes the overall system structure. It shows how different components (filters) are connected through pipes, demonstrating the data flow and interaction between the independent processing steps in the pipeline.
 
-![Architecture Diagram](architecture-diagram.png)
+![Design View](design-view.png)
 
 ## Integration Flow
 
