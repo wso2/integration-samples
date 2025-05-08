@@ -1,4 +1,4 @@
-## Integration with Process Manager Pattern with Splitter Pattern Using Ballerina Integrator (BI)
+## Integration with Process Manager Pattern Using Ballerina Integrator (BI)
 
 ### Overview
 

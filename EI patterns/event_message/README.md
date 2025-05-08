@@ -2,10 +2,10 @@
 
 ### Overview
 
-The **Event Message** neglects the uninterested messages based on criteria and publishes the filtered message to another channel. 
+The **Event Message** notifies other applications about something that happened. Unlike document message, the focus is on the timing of the message rather than the content. 
 This integration is built using **Ballerina Integrator (BI)** to showcase the ease of implementing such patterns within a low-code integration environment.
 
-For more detailed information on the **Event Message** pattern, visit the [Event Message documentation](https://www.enterpriseintegrationpatterns.com/patterns/messaging/Filter.html).
+For more detailed information on the **Event Message** pattern, visit the [Event Message documentation](https://www.enterpriseintegrationpatterns.com/patterns/messaging/EventMessage.html).
 
 ## Design View
 

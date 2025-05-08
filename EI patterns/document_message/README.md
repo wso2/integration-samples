@@ -5,7 +5,7 @@
 The **Document Message** transfers data from one application to another. The focus is on the data and reliability, not on the timing of the transfer.
 This integration is built using **Ballerina Integrator (BI)** to showcase the ease of implementing such patterns within a low-code integration environment.
 
-For more detailed information on the **Message Filter** pattern, visit the [Document Message documentation](https://www.enterpriseintegrationpatterns.com/patterns/messaging/DocumentMessage.html).
+For more detailed information on the **Document Message** pattern, visit the [Document Message documentation](https://www.enterpriseintegrationpatterns.com/patterns/messaging/DocumentMessage.html).
 
 ## Design View
 

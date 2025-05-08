@@ -2,10 +2,10 @@
 
 ### Overview
 
-The **Message Endpoint** neglects the uninterested messages based on criteria and publishes the filtered message to another channel. 
+The **Message Endpoint** is a client of the messaging channel. It abstracts the details of communication to the application. 
 This integration is built using **Ballerina Integrator (BI)** to showcase the ease of implementing such patterns within a low-code integration environment.
 
-For more detailed information on the **Message Endpoint** pattern, visit the [Message Filter documentation](https://www.enterpriseintegrationpatterns.com/patterns/messaging/MessageEndpoint.html).
+For more detailed information on the **Message Endpoint** pattern, visit the [Message Endpoint documentation](https://www.enterpriseintegrationpatterns.com/patterns/messaging/MessageEndpoint.html).
 
 ## Design View
 

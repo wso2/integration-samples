@@ -1,4 +1,4 @@
-## Integration with Point-to-Point Channel Pattern with Splitter Pattern Using Ballerina Integrator (BI)
+## Integration with Point-to-Point Channel Pattern Using Ballerina Integrator (BI)
 
 ### Overview
 

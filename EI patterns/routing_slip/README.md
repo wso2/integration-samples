@@ -1,4 +1,4 @@
-## Integration with Routing Slip Pattern with Splitter Pattern Using Ballerina Integrator (BI)
+## Integration with Routing Slip Pattern Using Ballerina Integrator (BI)
 
 ### Overview
 

@@ -2,10 +2,10 @@
 
 ### Overview
 
-The ** Content Enricher** adds data that was not sent by the original sender to the message.
+The **Content Enricher** adds data that was not sent by the original sender to the message.
 This integration is built using **Ballerina Integrator (BI)** to showcase the ease of implementing such patterns within a low-code integration environment.
 
-For more detailed information on the **Message Filter** pattern, visit the [ Content Enricher documentation](https://www.enterpriseintegrationpatterns.com/patterns/messaging/DataEnricher.html).
+For more detailed information on the **Content Enricher** pattern, visit the [ Content Enricher documentation](https://www.enterpriseintegrationpatterns.com/patterns/messaging/DataEnricher.html).
 
 ## Design View
 

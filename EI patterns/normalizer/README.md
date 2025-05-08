@@ -1,4 +1,4 @@
-## Integration with Normalizer Pattern with Splitter Pattern Using Ballerina Integrator (BI)
+## Integration with Normalizer Pattern Using Ballerina Integrator (BI)
 
 ### Overview
 

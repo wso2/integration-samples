@@ -2,10 +2,10 @@
 
 ### Overview
 
-The ** Content Filter** removes data from the original message and can also be employed to simplify the message structure.
+The **Content Filter** removes data from the original message and can also be employed to simplify the message structure.
 This integration is built using **Ballerina Integrator (BI)** to showcase the ease of implementing such patterns within a low-code integration environment.
 
-For more detailed information on the **Message Filter** pattern, visit the [ Content Filter documentation](https://www.enterpriseintegrationpatterns.com/patterns/messaging/ContentFilter.html).
+For more detailed information on the **Content Filter** pattern, visit the [ Content Filter documentation](https://www.enterpriseintegrationpatterns.com/patterns/messaging/ContentFilter.html).
 
 ## Design View
 

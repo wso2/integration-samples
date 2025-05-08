@@ -22,7 +22,7 @@ The **Design View** visualizes the overall system structure. It shows how differ
 
 ## Steps to Open with Ballerina Integrator (BI)
 
-Follow these steps to open the project and start working with the **Pipes and Filters** integration using **Ballerina Integrator (BI)** in **VSCode**:
+Follow these steps to open the project and start working with the **Message Translator** integration using **Ballerina Integrator (BI)** in **VSCode**:
 
 1. **Clone the Repository:**
    Clone the repository to your local machine by running the following command:
