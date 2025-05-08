@@ -5,15 +5,15 @@
 This integration demonstrates the **Pipes and Filters** pattern, where a large processing task is divided into smaller, independent steps (filters). These filters are connected by channels (pipes), and data flows through the pipeline, undergoing transformations at each stage. This integration is built using **Ballerina Integrator (BI)** to showcase the ease of implementing such patterns within a low-code integration environment.
 For more detailed information on the **Pipes and Filters** pattern, visit the [Pipes and Filters documentation](https://www.enterpriseintegrationpatterns.com/patterns/messaging/PipesAndFilters.html).
 
-## Architecture Diagram
+## Design View
 
-The **Architecture Diagram** visualizes the overall system structure. It shows how different components (filters) are connected through pipes, demonstrating the data flow and interaction between the independent processing steps in the pipeline.
+The **Design View** visualizes the overall system structure. It shows how different components (filters) are connected through pipes, demonstrating the data flow and interaction between the independent processing steps in the pipeline.
 
 ![Design View](design-view.png)
 
 ## Integration Flow
 
-![Flow Diagram](integration-flow.png)
+![Flow Diagram](flow.png)
 
 ## Sequence Diagram
 
