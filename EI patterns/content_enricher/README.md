@@ -30,6 +30,6 @@ Follow these steps to open the project and start working with the **Content Enri
    git clone https://github.com/wso2/docs-bi.git
    ```
 2. Open VS Code.
-3. Once VS Code is opened, go to `File > Open Folder....`
+3. Once VS Code is opened, go to `File > Open Folder...`.
 4. Navigate to the directory where you cloned the repository.
 5. Select the project folder and open it.
