@@ -25,12 +25,11 @@ The **Design View** visualizes the overall system structure.
 
 Follow these steps to open the project and start working with the **Message Filter** integration using **Ballerina Integrator (BI)** in **VSCode**:
 
-1. **Clone the Repository:**
-   Clone the repository to your local machine by running the following command:
+1. Clone the repository to your local machine by running the following command.
    ```bash
    git clone https://github.com/wso2/docs-bi.git
 
-2. Open VSCode.
-3. Once VSCode is opened, go to File > Open Folder....
+2. Open VS Code.
+3. Once VS Code is opened, go to File > Open Folder....
 4. Navigate to the directory where you cloned the repository.
 5. Select the project folder and open it.
