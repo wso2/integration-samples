@@ -2,7 +2,7 @@
 
 ## Overview
 
-This integration demonstrates the **Pipes and Filters** pattern, where a large processing task is divided into smaller, independent steps (filters). These filters are connected by channels (pipes), and data flows through the pipeline, undergoing transformations at each stage. This integration is built using **Ballerina Integrator (BI)** to showcase the ease of implementing such patterns within a low-code integration environment.
+This integration demonstrates the **Pipes and Filters** pattern, where a large processing task is divided into smaller, independent steps (filters). These filters are connected by channels (pipes), and data flows through the pipeline, undergoing transformations at each stage. 
 This integration is built using **WSO2 Integrator:BI** to showcase the ease of implementing such patterns within a low-code integration environment.
 
 For more detailed information on the **Pipes and Filters** pattern, visit the [Pipes and Filters documentation](https://www.enterpriseintegrationpatterns.com/patterns/messaging/PipesAndFilters.html).
@@ -28,7 +28,7 @@ Follow these steps to open the project and start working with the **Pipes and Fi
 1. Clone the repository to your local machine by running the following command.
    ```bash
    git clone https://github.com/wso2/docs-bi.git
-
+   ```
 2. Open VS Code.
 3. Once VS Code is opened, go to File > Open Folder....
 4. Navigate to the directory where you cloned the repository.

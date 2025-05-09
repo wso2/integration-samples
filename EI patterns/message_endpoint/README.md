@@ -24,7 +24,7 @@ Follow these steps to open the project and start working with the **Message Endp
 1. Clone the repository to your local machine by running the following command.
    ```bash
    git clone https://github.com/wso2/docs-bi.git
-
+   ```
 2. Open VS Code.
 3. Once VS Code is opened, go to File > Open Folder....
 4. Navigate to the directory where you cloned the repository.
