@@ -27,6 +27,6 @@ function lookupMessageSlip(PaymentRequest request) returns string[]|error {
 
 function isRegisteredToPointsService(string mobileNumber) returns boolean|error {
     http:Client openLoyalty = check new ("http://mob.points.hub.com.balmock.io");
-    anydata|error memberCheck = openLoyalty->/api/[mobileNumber]/member/'check/get();
+    anydata|error memberCheck = openLoyalty->/api/[mobileNumber]/member/'check/get.get();
     return memberCheck is error ? false : true;
 }

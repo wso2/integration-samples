@@ -8,7 +8,7 @@ service /api/v1 on httpListener {
         Message message = {...request, routingSlip: routingSlip};
         Points points = {};
         if message.routingSlip.length() > 0 {
-            http:Client pointHandler = check new ("http://localhost:8081/loyaltyPoints");
+            final http:Client pointHandler = check new ("http://localhost:8081/loyaltyPoints");
             json payload = {
                 storeCode: message.storeCode,
                 mobileNumber: message.mobileNumber,

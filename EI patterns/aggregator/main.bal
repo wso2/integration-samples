@@ -10,7 +10,7 @@ service /api/v1 on httpListener {
             json[] newSurvey = [formData];
             partialSurveys[userId] = newSurvey;
         } else {
-            surveyData.push(formData);
+            () var1 = surveyData.push(formData);
             if surveyData.length() == 3 {
                 http:Response response = check formSubmitClient->/survey/[id]/submit.post({userId: surveyData}, targetType = http:Response);
                 json[] remove = partialSurveys.remove(userId);
