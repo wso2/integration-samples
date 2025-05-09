@@ -1,9 +1,9 @@
-## Integration with Document Message Pattern Using Ballerina Integrator (BI)
+## Integration with Document Message Pattern Using WSO2 Integrator:BI
 
 ### Overview
 
 The **Document Message** transfers data from one application to another. The focus is on the data and reliability, not on the timing of the transfer.
-This integration is built using **Ballerina Integrator (BI)** to showcase the ease of implementing such patterns within a low-code integration environment.
+This integration is built using **WSO2 Integrator:BI** to showcase the ease of implementing such patterns within a low-code integration environment.
 
 For more detailed information on the **Document Message** pattern, visit the [Document Message documentation](https://www.enterpriseintegrationpatterns.com/patterns/messaging/DocumentMessage.html).
 
@@ -21,9 +21,9 @@ The **Design View** visualizes the overall system structure.
 
 ![Flow Diagram](sequence.png)
 
-## Steps to Open with Ballerina Integrator (BI)
+## Steps to Open with WSO2 Integrator:BI
 
-Follow these steps to open the project and start working with the **Document Message** integration using **Ballerina Integrator (BI)** in **VSCode**:
+Follow these steps to open the project and start working with the **Document Message** integration using **WSO2 Integrator:BI** in **VS Code**:
 
 1. Clone the repository to your local machine by running the following command.
    ```bash

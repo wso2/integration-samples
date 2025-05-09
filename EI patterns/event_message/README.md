@@ -1,9 +1,9 @@
-## Integration with Event Message Pattern Using Ballerina Integrator (BI)
+## Integration with Event Message Pattern Using WSO2 Integrator:BI
 
 ### Overview
 
 The **Event Message** notifies other applications about something that happened. Unlike document message, the focus is on the timing of the message rather than the content. 
-This integration is built using **Ballerina Integrator (BI)** to showcase the ease of implementing such patterns within a low-code integration environment.
+This integration is built using **WSO2 Integrator:BI** to showcase the ease of implementing such patterns within a low-code integration environment.
 
 For more detailed information on the **Event Message** pattern, visit the [Event Message documentation](https://www.enterpriseintegrationpatterns.com/patterns/messaging/EventMessage.html).
 
@@ -21,9 +21,9 @@ The **Design View** visualizes the overall system structure.
 
 ![Flow Diagram](sequence.png)
 
-## Steps to Open with Ballerina Integrator (BI)
+## Steps to Open with WSO2 Integrator:BI
 
-Follow these steps to open the project and start working with the **Event Message** integration using **Ballerina Integrator (BI)** in **VSCode**:
+Follow these steps to open the project and start working with the **Event Message** integration using **WSO2 Integrator:BI** in **VS Code**:
 
 1. Clone the repository to your local machine by running the following command.
    ```bash

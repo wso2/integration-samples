@@ -1,9 +1,9 @@
-## Integration with Splitter Pattern Using Ballerina Integrator (BI)
+## Integration with Splitter Pattern Using WSO2 Integrator:BI
 
 ### Overview
 
 The **Splitter** splits the message into multiple messages, each containing one of the elements.
-This integration is built using **Ballerina Integrator (BI)** to showcase the ease of implementing such patterns within a low-code integration environment.
+This integration is built using **WSO2 Integrator:BI** to showcase the ease of implementing such patterns within a low-code integration environment.
 
 For more detailed information on the **Splitter** pattern, visit the [Splitter documentation](https://www.enterpriseintegrationpatterns.com/patterns/messaging/Sequencer.html).
 
@@ -21,9 +21,9 @@ The **Design View** visualizes the overall system structure.
 
 ![Flow Diagram](sequence.png)
 
-## Steps to Open with Ballerina Integrator (BI)
+## Steps to Open with WSO2 Integrator:BI
 
-Follow these steps to open the project and start working with the **Splitter** integration using **Ballerina Integrator (BI)** in **VSCode**:
+Follow these steps to open the project and start working with the **Splitter** integration using **WSO2 Integrator:BI** in **VS Code**:
 
 1. Clone the repository to your local machine by running the following command.
    ```bash

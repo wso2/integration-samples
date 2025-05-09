@@ -1,9 +1,9 @@
-## Integration with  Message Endpoint Pattern Using Ballerina Integrator (BI)
+## Integration with  Message Endpoint Pattern Using WSO2 Integrator:BI
 
 ### Overview
 
 The **Message Endpoint** is a client of the messaging channel. It abstracts the details of communication to the application. 
-This integration is built using **Ballerina Integrator (BI)** to showcase the ease of implementing such patterns within a low-code integration environment.
+This integration is built using **WSO2 Integrator:BI** to showcase the ease of implementing such patterns within a low-code integration environment.
 
 For more detailed information on the **Message Endpoint** pattern, visit the [Message Endpoint documentation](https://www.enterpriseintegrationpatterns.com/patterns/messaging/MessageEndpoint.html).
 
@@ -17,9 +17,9 @@ The **Design View** visualizes the overall system structure.
 
 ![Flow Diagram](flow.png)
 
-## Steps to Open with Ballerina Integrator (BI)
+## Steps to Open with WSO2 Integrator:BI
 
-Follow these steps to open the project and start working with the **Message Endpoint** integration using **Ballerina Integrator (BI)** in **VSCode**:
+Follow these steps to open the project and start working with the **Message Endpoint** integration using **WSO2 Integrator:BI** in **VS Code**:
 
 1. Clone the repository to your local machine by running the following command.
    ```bash

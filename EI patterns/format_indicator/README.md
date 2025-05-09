@@ -1,9 +1,9 @@
-## Integration with Format Indicator Pattern Using Ballerina Integrator (BI)
+## Integration with Format Indicator Pattern Using WSO2 Integrator:BI
 
 ### Overview
 
 The **Format Indicator**  will identify the message format based on the version or structure and process it. 
-This integration is built using **Ballerina Integrator (BI)** to showcase the ease of implementing such patterns within a low-code integration environment.
+This integration is built using **WSO2 Integrator:BI** to showcase the ease of implementing such patterns within a low-code integration environment.
 
 For more detailed information on the **Format Indicator** pattern, visit the [Format Indicator documentation](https://www.enterpriseintegrationpatterns.com/patterns/messaging/FormatIndicator.html).
 
@@ -25,9 +25,9 @@ The **Design View** visualizes the overall system structure.
   <img src="sequence_1.png" alt="Flow Diagram" style="width: 45%;"/>
 </div>
 
-## Steps to Open with Ballerina Integrator (BI)
+## Steps to Open with WSO2 Integrator:BI
 
-Follow these steps to open the project and start working with the **Format Indicator** integration using **Ballerina Integrator (BI)** in **VSCode**:
+Follow these steps to open the project and start working with the **Format Indicator** integration using **WSO2 Integrator:BI** in **VS Code**:
 
 1. Clone the repository to your local machine by running the following command.
    ```bash

@@ -1,8 +1,9 @@
-## Integration with Message Sequence Pattern Using Ballerina Integrator (BI)
+## Integration with Message Sequence Pattern Using WSO2 Integrator:BI
 
 ### Overview
 
-The **Message Sequence** pattern sends data as a sequence of messages and marks each message with sequence identification fields. This integration is built using **Ballerina Integrator (BI)** to showcase the ease of implementing such patterns within a low-code integration environment.
+The **Message Sequence** pattern sends data as a sequence of messages and marks each message with sequence identification fields. 
+This integration is built using **WSO2 Integrator:BI** to showcase the ease of implementing such patterns within a low-code integration environment.
 
 For more detailed information on the **Message Sequence** pattern, visit the [Message Sequence documentation](https://www.enterpriseintegrationpatterns.com/patterns/messaging/MessageSequence.html).
 
@@ -20,9 +21,9 @@ The **Design View** visualizes the overall system structure.
 
 ![Flow Diagram](sequence.png)
 
-## Steps to Open with Ballerina Integrator (BI)
+## Steps to Open with WSO2 Integrator:BI
 
-Follow these steps to open the project and start working with the **Message Sequence** integration using **Ballerina Integrator (BI)** in **VSCode**:
+Follow these steps to open the project and start working with the **Message Sequence** integration using **WSO2 Integrator:BI** in **VS Code**:
 
 1. Clone the repository to your local machine by running the following command.
    ```bash

@@ -1,9 +1,9 @@
-## Integration Message Using Ballerina Integrator (BI)
+## Integration Message Using WSO2 Integrator:BI
 
 ### Overview
 
 The **Message** is a data record that the messaging system can transmit through a message channel.
-This integration is built using **Ballerina Integrator (BI)** to showcase the ease of implementing such patterns within a low-code integration environment.
+This integration is built using **WSO2 Integrator:BI** to showcase the ease of implementing such patterns within a low-code integration environment.
 
 For more detailed information on the **Message** pattern, visit the [Message documentation](https://www.enterpriseintegrationpatterns.com/patterns/messaging/Message.html).
 
@@ -21,9 +21,9 @@ The **Design View** visualizes the overall system structure.
 
 ![Flow Diagram](sequence.png)
 
-## Steps to Open with Ballerina Integrator (BI)
+## Steps to Open with WSO2 Integrator:BI
 
-Follow these steps to open the project and start working with the **Message** integration using **Ballerina Integrator (BI)** in **VSCode**:
+Follow these steps to open the project and start working with the **Message** integration using **WSO2 Integrator:BI** in **VS Code**:
 
 1. Clone the repository to your local machine by running the following command.
    ```bash

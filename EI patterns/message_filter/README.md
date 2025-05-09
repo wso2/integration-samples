@@ -1,9 +1,9 @@
-## Integration with Message Filter Pattern Using Ballerina Integrator (BI)
+## Integration with Message Filter Pattern Using WSO2 Integrator:BI
 
 ### Overview
 
 The **Message Filter** neglects the uninterested messages based on criteria and publishes the filtered message to another channel. 
-This integration is built using **Ballerina Integrator (BI)** to showcase the ease of implementing such patterns within a low-code integration environment.
+This integration is built using **WSO2 Integrator:BI** to showcase the ease of implementing such patterns within a low-code integration environment.
 
 For more detailed information on the **Message Filter** pattern, visit the [Message Filter documentation](https://www.enterpriseintegrationpatterns.com/patterns/messaging/Filter.html).
 
@@ -21,9 +21,9 @@ The **Design View** visualizes the overall system structure.
 
 ![Flow Diagram](sequence.png)
 
-## Steps to Open with Ballerina Integrator (BI)
+## Steps to Open with WSO2 Integrator:BI
 
-Follow these steps to open the project and start working with the **Message Filter** integration using **Ballerina Integrator (BI)** in **VSCode**:
+Follow these steps to open the project and start working with the **Message Filter** integration using **WSO2 Integrator:BI** in **VS Code**:
 
 1. Clone the repository to your local machine by running the following command.
    ```bash

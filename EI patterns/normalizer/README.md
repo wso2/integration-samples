@@ -1,9 +1,9 @@
-## Integration with Normalizer Pattern Using Ballerina Integrator (BI)
+## Integration with Normalizer Pattern Using WSO2 Integrator:BI
 
 ### Overview
 
 The **Normalizer** routes each message type through a custom message translator so that the resulting messages match a common format.
-This integration is built using **Ballerina Integrator (BI)** to showcase the ease of implementing such patterns within a low-code integration environment.
+This integration is built using **WSO2 Integrator:BI** to showcase the ease of implementing such patterns within a low-code integration environment.
 
 For more detailed information on the **Normalizer** pattern, visit the [Normalizer documentation](https://www.enterpriseintegrationpatterns.com/patterns/messaging/Normalizer.html).
 
@@ -21,9 +21,9 @@ The **Design View** visualizes the overall system structure.
 
 ![Flow Diagram](sequence.png)
 
-## Steps to Open with Ballerina Integrator (BI)
+## Steps to Open with WSO2 Integrator:BI
 
-Follow these steps to open the project and start working with the **Normalizer** integration using **Ballerina Integrator (BI)** in **VSCode**:
+Follow these steps to open the project and start working with the **Normalizer** integration using **WSO2 Integrator:BI** in **VS Code**:
 
 1. Clone the repository to your local machine by running the following command.
    ```bash
