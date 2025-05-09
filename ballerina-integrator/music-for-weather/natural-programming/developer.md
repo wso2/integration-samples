@@ -1,0 +1,1 @@
+User requests a function to map weather codes to music moods, given a list of weather conditions as input, and requires tests to be generated for the MusicMood service. Additionally, empty playlist values need to be removed from MusicSuggestion records.
