@@ -27,7 +27,7 @@ Follow these steps to open the project and start working with the **Command Mess
 
 1. Clone the repository to your local machine by running the following command.
    ```bash
-   git clone https://github.com/wso2/docs-bi.git
+   git clone https://github.com/wso2/integration-samples.git
    ```
 2. Open VS Code.
 3. Once VS Code is opened, go to `File > Open Folder...`.
