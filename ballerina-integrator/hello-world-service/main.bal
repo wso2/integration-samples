@@ -1,11 +1,10 @@
 import ballerina/http;
 
-listener http:Listener httpDefaultListener = http:getDefaultListener();
+service / on new http:Listener(9090) {
 
-service / on httpDefaultListener {
-
-    resource function get greeting(string name = "world") returns string {
-        // Returns the greeting message as a string
-        return "Hello, " + name;
+    // This function responds with `string` value `Hello, World!` to HTTP GET requests.
+    resource function get greeting() returns string {
+        return "Hello, World!";
     }
 }
+
