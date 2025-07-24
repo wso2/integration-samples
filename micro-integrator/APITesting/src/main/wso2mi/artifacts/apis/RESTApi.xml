@@ -1,43 +1,31 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<api context="/api" name="RESTApi" xmlns="http://ws.apache.org/ns/synapse">
-    <resource methods="GET" url-mapping="/unittest">
+<api context="/personapi" name="PersonAPI" xmlns="http://ws.apache.org/ns/synapse">
+    
+    <!-- Recurso GET para retornar uma saudação simples -->
+    <resource methods="GET" uri-template="/">
         <inSequence>
-            <property name="HTTP_SC" scope="transport" type="STRING" value="200"/>
-            <payloadFactory media-type="text" template-type="default">
-                <format>GET RESPONSE</format>
+            <payloadFactory media-type="json" template-type="default">
+                <format>{
+                    "greetings": "Welcome to the Person API!"
+                }</format>
             </payloadFactory>
             <respond/>
         </inSequence>
         <faultSequence/>
     </resource>
-    <resource methods="POST" url-mapping="/unittest">
+
+    <!-- Recurso POST para processar o JSON de uma pessoa -->
+    <resource methods="POST" uri-template="/person">
         <inSequence>
-            <property name="HTTP_SC" scope="axis2" type="STRING" value="201"/>
-            <payloadFactory media-type="text" template-type="default">
-                <format>POST RESPONSE</format>
+            <!-- Passar o payload completo sem modificações -->
+            <payloadFactory media-type="json" template-type="default">
+                <format>${payload}</format>  <!-- Retorna o payload exatamente como recebido -->
             </payloadFactory>
+
+            <!-- Responder com o payload completo recebido -->
             <respond/>
         </inSequence>
         <faultSequence/>
     </resource>
-    <resource methods="PUT" url-mapping="/unittest">
-        <inSequence>
-            <property name="HTTP_SC" scope="axis2" type="STRING" value="201"/>
-            <payloadFactory media-type="text" template-type="default">
-                <format>PUT RESPONSE</format>
-            </payloadFactory>
-            <respond/>
-        </inSequence>
-        <faultSequence/>
-    </resource>
-    <resource methods="DELETE" url-mapping="/unittest">
-        <inSequence>
-            <property name="HTTP_SC" scope="transport" type="STRING" value="200"/>
-            <payloadFactory media-type="text" template-type="default">
-                <format>DELETE RESPONSE</format>
-            </payloadFactory>
-            <respond/>
-        </inSequence>
-        <faultSequence/>
-    </resource>
+
 </api>
