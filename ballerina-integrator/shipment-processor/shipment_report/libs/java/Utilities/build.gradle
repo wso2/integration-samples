@@ -1,0 +1,56 @@
+plugins {
+        id 'java'
+        id 'application'
+    }
+
+    group = 'org.example'
+    version = '1.0-SNAPSHOT'
+
+    repositories {
+        mavenCentral()
+    }
+
+    dependencies {
+        // --- Testing ---
+        testImplementation platform('org.junit:junit-bom:5.10.0')
+        testImplementation 'org.junit.jupiter:junit-jupiter'
+        testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+
+        // --- Database ---
+        implementation 'mysql:mysql-connector-java:8.0.33'
+
+        // --- JSON Parsing (Jackson) ---
+        implementation 'com.fasterxml.jackson.core:jackson-databind:2.17.2'
+
+        // --- PDF Generation (OpenPDF) ---
+        implementation 'com.github.librepdf:openpdf:1.3.39'
+
+        // --- SFTP/SSH (JSch) ---
+        implementation 'com.jcraft:jsch:0.1.55'
+    }
+
+    // Specify the main class
+    application {
+        mainClass = 'org.Utilities.Util'
+    }
+
+    // Create a fat JAR with all dependencies
+    jar {
+        manifest {
+            attributes(
+                    'Main-Class': 'org.Utilities.Util'
+            )
+        }
+
+        // Include all runtime dependencies
+        from {
+            configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
+        }
+
+        // Handle duplicate files
+        duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+    }
+
+    test {
+        useJUnitPlatform()
+    }
