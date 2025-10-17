@@ -1,0 +1,8 @@
+[package]
+org = "wso2"
+name = "shipment_report"
+version = "0.1.0"
+title = "Shipment Report"
+
+[[platform.java17.dependency]]
+path = "./libs/java/Utilities.jar"
