@@ -1,9 +1,9 @@
 # DEMO
-<img width="1115" height="635" alt="image" src="https://github.com/user-attachments/assets/4be8f2c0-9ea7-44af-8a50-18155720e6f9" />
+<img width="1115" height="635" alt="image" src="images/OverView.png" />
 
 
 **Flow - Diagram**
-<img width="1434" height="613" alt="image" src="https://github.com/user-attachments/assets/4ac345c7-4299-4c3f-af0e-2789de7f8120" />
+<img width="1434" height="613" alt="image" src="images/DataFlow.png" />
 
 **README – File Processing Steps**
 1. Add the shared CSV files(/data) to one of the following directories:
@@ -30,12 +30,12 @@
  
 Click Generate URL
  
- <img width="750" height="242" alt="image" src="https://github.com/user-attachments/assets/978ef99e-c68b-40a6-8711-62a6b29be5ba" />
+ <img width="750" height="242" alt="image" src="images/GenerateUrl.png" />
  Try out 
- <img width="1349" height="233" alt="image" src="https://github.com/user-attachments/assets/9d42cdfd-3b36-4ffa-863a-2837247bf01d" />
+ <img width="1349" height="233" alt="image" src="images/Ndjson.png" />
 
 
-<img width="1301" height="612" alt="image" src="https://github.com/user-attachments/assets/68ce7528-a424-4015-97b0-faa74ab66e38" />
+<img width="1301" height="612" alt="image" src="images/Response1.png" />
 
 
 7. Any quarantine records will be added to the quarantine_records table.
@@ -43,7 +43,7 @@ Click Generate URL
 
    
 8. Email will be sent for each shipoments 
-<img width="852" height="403" alt="image" src="https://github.com/user-attachments/assets/24e11b4b-3b06-4262-b9a2-6db215bf0f85" />
+<img width="852" height="403" alt="image" src="images/Email.png" />
 
 9. Generate customer-wise PDF reports
    /reports
@@ -75,23 +75,23 @@ Click Generate URL
     "currency": "USD",
     "shipmentId": "SH001"
   }
-<img width="1281" height="277" alt="image" src="https://github.com/user-attachments/assets/5746696b-f9ce-472e-a23c-5e628023dae5" />
+<img width="1281" height="277" alt="image" src="images/Invoice.png" />
 
-<img width="1281" height="537" alt="image" src="https://github.com/user-attachments/assets/3d46fc25-becf-46cd-afe3-02c76571ab06" />
+<img width="1281" height="537" alt="image" src="images/Invoice2.png" />
 
 11. You may execute /shipments/{shipment_id} to get shipment details
-    <img width="1281" height="560" alt="image" src="https://github.com/user-attachments/assets/892dcd77-017f-4273-986e-4f9cb3d90cc2" />
-    <img width="1281" height="560" alt="image" src="https://github.com/user-attachments/assets/7aadec32-583c-4ece-a48c-1eacff0118a1" />
+    <img width="1281" height="560" alt="image" src="images/Shipments.png" />
+    <img width="1281" height="560" alt="image" src="images/Shipments2.png" />
 
 
 
 
-13. You may execute /shipments/ids to get distinct shipment ids
-<img width="1281" height="537" alt="image" src="https://github.com/user-attachments/assets/c359482b-b945-4b6a-ab25-202f1b59ab6f" />
-<img width="1281" height="537" alt="image" src="https://github.com/user-attachments/assets/6e898cc9-e134-4c56-83f7-42c248064069" />
+12. You may execute /shipments/ids to get distinct shipment ids
+<img width="1281" height="537" alt="image" src="images/ShipmentIds.png" />
+<img width="1281" height="537" alt="image" src="images/ShipmentIds2.png" />
 
 
-14. You can observe logs under Observability section
+13. You can observe logs under Observability section
 
 2025-10-16T16:22:47.642Z Application Logs v1.0 Production INFO Downloading file 250915_2k_shipments.csv to /tmp/file_processing/250915_2k_shipments.csv_proc {"module":"shashika/shipmentprocessor","correlationId":"4262b622-8052-4b7f-9a20-622136db152a"}
 2025-10-16T16:22:49.968Z Application Logs v1.0 Production INFO Successfully downloaded and saved 250915_2k_shipments.csv as /tmp/file_processing/250915_2k_shipments.csv_proc {"module":"shashika/shipmentprocessor","correlationId":"4262b622-8052-4b7f-9a20-622136db152a"}
@@ -109,5 +109,4 @@ Click Generate URL
 
 2025-10-16T16:27:58.255Z Application Logs v1.0 Production INFO CSV processing completed: 250915_2k_shipments.csv, batches: 3, total: 2025 {"module":"shashika/shipmentprocessor","correlationId":"ea532551-450a-49d4-959c-0fc364cce0d9"}
 2025-10-16T16:27:58.258Z Application Logs v1.0 Production INFO File processing completed: 250915_2k_shipments.csv, total: 2025, successful: 2025, failed: 0, quarantined: 0, enriched: 2025, ndjson files: 3, db inserted: 2025 {"module":"shashika/shipmentprocessor","correlationId":"ea532551-450a-49d4-959c-0fc364cce0d9"}
-
 
