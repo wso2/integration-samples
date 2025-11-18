@@ -1,0 +1,9 @@
+[package]
+org = "admin"
+name = "salesforceops_to_googlesheets"
+version = "0.1.0"
+title = "Salesforce Opportunities to Google Sheets"
+distribution = "2201.12.10"
+
+[build-options]
+sticky = true
