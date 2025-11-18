@@ -1,14 +1,13 @@
 
-function mapOpportunityToRow(Opportunity account) returns string[] {
+function mapOpportunityToRow(Opportunity account) returns SheetRow {
      return [
          account.Id ?: "",
          account.Name ?: "",
-         account.Amount.toString(),
+         account.Amount ?: "",
          account.OwnerId ?: "",
          account.LastActivityDate ?: "",
          account.Description ?: "",
-         account.Probability.toString(),
+         account.Probability ?: "",
          account.NextStep ?: ""
      ];
  }
- 

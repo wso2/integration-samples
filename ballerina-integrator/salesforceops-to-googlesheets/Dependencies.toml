@@ -8,6 +8,20 @@ dependencies-toml-version = "2"
 distribution-version = "2201.12.10"
 
 [[package]]
+org = "admin"
+name = "salesforceops_to_googlesheets"
+version = "0.1.0"
+dependencies = [
+	{org = "ballerina", name = "log"},
+	{org = "ballerina", name = "time"},
+	{org = "ballerinax", name = "googleapis.sheets"},
+	{org = "ballerinax", name = "salesforce"}
+]
+modules = [
+	{org = "admin", packageName = "salesforceops_to_googlesheets", moduleName = "salesforceops_to_googlesheets"}
+]
+
+[[package]]
 org = "ballerina"
 name = "auth"
 version = "2.13.0"
@@ -372,19 +386,5 @@ modules = [
 	{org = "ballerinax", packageName = "salesforce", moduleName = "salesforce.soap"},
 	{org = "ballerinax", packageName = "salesforce", moduleName = "salesforce.types"},
 	{org = "ballerinax", packageName = "salesforce", moduleName = "salesforce.utils"}
-]
-
-[[package]]
-org = "haritha"
-name = "salesforcetosheets"
-version = "0.1.0"
-dependencies = [
-	{org = "ballerina", name = "log"},
-	{org = "ballerina", name = "time"},
-	{org = "ballerinax", name = "googleapis.sheets"},
-	{org = "ballerinax", name = "salesforce"}
-]
-modules = [
-	{org = "haritha", packageName = "salesforcetosheets", moduleName = "salesforcetosheets"}
 ]
 

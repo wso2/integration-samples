@@ -47,3 +47,5 @@ type Opportunity record {
     string? LastViewedDate;
     string? LastReferencedDate;
 };
+
+type SheetRow (int|string|decimal|boolean|float)[];
