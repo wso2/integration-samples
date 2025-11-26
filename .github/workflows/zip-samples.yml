@@ -1,0 +1,89 @@
+name: Zip Ballerina Integrator Samples
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  zip-samples:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          fetch-depth: 0
+
+      - name: Read meta.json and create zip files
+        run: |
+          cd ballerina-integrator
+
+          # Read meta.json and create zip files for each project
+          python3 << 'EOF'
+          import json
+          import os
+          import subprocess
+          import sys
+
+          # Read meta.json
+          with open('samples/meta.json', 'r') as f:
+              projects = json.load(f)
+
+          # Create zip files for each project
+          for project in projects:
+              project_id = project['id']
+              project_dir = project_id
+              
+              if os.path.isdir(project_dir):
+                  zip_path = f"samples/{project_id}.zip"
+                  print(f"Zipping {project_id}...")
+                  
+                  # Create zip file excluding git and system files
+                  result = subprocess.run(
+                      ['zip', '-r', zip_path, project_dir, 
+                       '-x', '*.git*', '*.DS_Store*'],
+                      capture_output=True,
+                      text=True
+                  )
+                  
+                  if result.returncode == 0:
+                      print(f"✓ Created {zip_path}")
+                  else:
+                      print(f"✗ Error creating {zip_path}: {result.stderr}")
+                      sys.exit(1)
+              else:
+                  print(f"⚠ Warning: Project folder '{project_dir}' not found, skipping...")
+
+          print("\nAll zip files created successfully!")
+          EOF
+
+      - name: List created zip files
+        run: |
+          cd ballerina-integrator/samples
+          ls -lh *.zip || echo "No zip files found"
+
+      - name: Stage zip files
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git add ballerina-integrator/samples/*.zip
+
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@v5
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          commit-message: "Update ballerina-integrator sample zip files"
+          title: "Update ballerina-integrator sample zip files"
+          body: |
+            This PR updates the ballerina-integrator sample zip files based on the projects listed in meta.json.
+
+            The following zip files have been created/updated:
+            - All projects listed in `ballerina-integrator/samples/meta.json`
+
+            **Note:** This PR was automatically created by the Zip Samples workflow.
+          branch: update-sample-zips
+          delete-branch: true
