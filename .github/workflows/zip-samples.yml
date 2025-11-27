@@ -66,24 +66,53 @@ jobs:
           cd ballerina-integrator/samples
           ls -lh *.zip || echo "No zip files found"
 
-      - name: Stage zip files
+      - name: Configure Git
         run: |
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
+
+      - name: Authenticate with GitHub CLI
+        run: |
+          echo "${{ secrets.GITHUB_TOKEN }}" | gh auth login --with-token
+
+      - name: Create branch, commit, and create PR
+        run: |
+          BRANCH="update-sample-zips"
+
+          # Check if there are any changes to commit
           git add ballerina-integrator/samples/*.zip
+          if git diff --staged --quiet; then
+            echo "No changes to commit"
+            exit 0
+          fi
 
-      - name: Create Pull Request
-        uses: peter-evans/create-pull-request@v7
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          commit-message: "Update ballerina-integrator sample zip files"
-          title: "Update ballerina-integrator sample zip files"
-          body: |
-            This PR updates the ballerina-integrator sample zip files based on the projects listed in meta.json.
+          # Create or switch to branch
+          git checkout -b $BRANCH || git checkout $BRANCH
 
-            The following zip files have been created/updated:
-            - All projects listed in `ballerina-integrator/samples/meta.json`
+          # Commit changes
+          git commit -m "Update ballerina-integrator sample zip files"
 
-            **Note:** This PR was automatically created by the Zip Samples workflow.
-          branch: update-sample-zips
-          delete-branch: true
+          # Push branch
+          git push origin $BRANCH --force
+
+          # Create or update PR
+          PR_BODY="This PR updates the ballerina-integrator sample zip files based on the projects listed in meta.json.
+
+          The following zip files have been created/updated:
+          - All projects listed in \`ballerina-integrator/samples/meta.json\`
+
+          **Note:** This PR was automatically created by the Zip Samples workflow."
+
+          # Check if PR already exists
+          PR_NUMBER=$(gh pr list --head $BRANCH --json number --jq '.[0].number' || echo "")
+
+          if [ -z "$PR_NUMBER" ]; then
+            # Create new PR
+            gh pr create \
+              --title "Update ballerina-integrator sample zip files" \
+              --body "$PR_BODY" \
+              --head $BRANCH
+          else
+            # Update existing PR
+            gh pr comment $PR_NUMBER --body "Updated zip files"
+          fi
