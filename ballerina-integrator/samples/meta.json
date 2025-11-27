@@ -1,0 +1,123 @@
+[
+    {
+        "id": "automated-file-processor",
+        "category": "Automation",
+        "title": "Automated File Processor",
+        "description": "A scheduled task that reads a local text file, counts the number of words, and logs the result every five minutes.",
+        "icon": "automation",
+        "isEnabled": true
+    },
+    {
+        "id": "weather-data-listener",
+        "category": "File Integration",
+        "title": "Weather Data FTP Listener",
+        "description": "An FTP listener that connects to the National Weather Service FTP server, retrieves new weather data files, and logs them.",
+        "icon": "file",
+        "isEnabled": true
+    },
+    {
+        "id": "stock-price-data-manager",
+        "category": "Automation",
+        "title": "Stock Price Data Manager",
+        "description": "Retrieves a daily summary of stock price data from a public API and uploads it to an FTP server in CSV format.",
+        "icon": "automation",
+        "isEnabled": true
+    },
+    
+    {
+        "id": "weather-based-activity-recommender",
+        "category": "Automation",
+        "title": "Weather-Based Activity Recommender",
+        "description": "Combines weather data and AI-powered recommendations to suggest personalized activities based on current weather conditions and user interests.",
+        "icon": "automation",
+        "isEnabled": true
+    },
+    {
+        "id": "shipment-processor",
+        "category": "Integration",
+        "title": "Shipment Processing Use Case",
+        "description": "A comprehensive integration that processes shipment CSV files from SFTP, enriches data, stores in database, generates reports, and sends email notifications.",
+        "icon": "integration",
+        "isEnabled": true
+    },
+    {
+        "id": "real-time-error-notifier",
+        "category": "Integration",
+        "title": "Real-Time Error Notifier",
+        "description": "Continuously monitors application logs in real time, detects critical errors, and instantly sends alerts to a designated Slack channel.",
+        "icon": "integration",
+        "isEnabled": true
+    },
+    {
+        "id": "scheduled-logger",
+        "category": "Automation",
+        "title": "Scheduled Logger",
+        "description": "A scheduled task that logs the current timestamp every five seconds. Useful for tracking time-based executions.",
+        "icon": "automation",
+        "isEnabled": true
+    },
+    {
+        "id": "pizza-shop-integration",
+        "category": "AI Agent",
+        "title": "Pizza Order Management Agent",
+        "description": "An AI-powered agent for managing pizza orders, developed with Ballerina Copilot, that assists with order management workflows.",
+        "icon": "ai",
+        "isEnabled": true
+    },
+    {
+        "id": "music-for-weather",
+        "category": "Integration as API",
+        "title": "Weather-Based Music Recommender",
+        "description": "A REST API that suggests Spotify playlists based on the current weather at your location by fetching real-time weather data.",
+        "icon": "api",
+        "isEnabled": true
+    },
+    {
+        "id": "math-tutor",
+        "category": "AI Agent",
+        "title": "Math Tutor",
+        "description": "An AI-powered math tutor that uses Azure OpenAI's GPT models to assist with specific mathematical operations like sum, multiply, and square root.",
+        "icon": "ai",
+        "isEnabled": true
+    },
+    {
+        "id": "hr-ai-chat-agent",
+        "category": "AI Agent",
+        "title": "AI Chat Agent for HR Information",
+        "description": "An AI-powered chat agent that provides assistance with HR-related inquiries by referencing company-specific HR policies using RAG with Pinecone vector database.",
+        "icon": "ai",
+        "isEnabled": true
+    },
+    {
+        "id": "json-to-xml-converter",
+        "category": "Integration as API",
+        "title": "JSON to XML Converter",
+        "description": "A REST API that converts incoming JSON payloads into XML format and returns the transformed response.",
+        "icon": "api",
+        "isEnabled": true
+    },
+    {
+        "id": "currency-converter",
+        "category": "Integration as API",
+        "title": "Currency Converter API",
+        "description": "A REST API that converts currency from one unit to another using an external exchange rate API with Redis caching for improved performance.",
+        "icon": "api",
+        "isEnabled": true
+    },
+    {
+        "id": "daily-email-notifier",
+        "category": "Automation",
+        "title": "Daily Email Notifier",
+        "description": "A scheduled task that sends a daily email update at 8 AM using the Gmail API, demonstrating integration with external email services.",
+        "icon": "automation",
+        "isEnabled": true
+    },
+    {
+        "id": "hello-world-service",
+        "category": "Integration as API",
+        "title": "Hello World Service",
+        "description": "A basic REST API that responds with a personalized greeting when accessed, sending back a hello message based on the query parameter provided.",
+        "icon": "api",
+        "isEnabled": true
+    }
+]
