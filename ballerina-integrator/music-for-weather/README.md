@@ -2,8 +2,6 @@
 
 This application suggests Spotify playlists based on the **current weather** at your location. It fetches real-time weather data using [WeatherAPI](https://www.weatherapi.com/) and maps the weather condition to a music **mood**, then retrieves a relevant playlist from the **Spotify Web API**.
 
-📍 GitHub Repo: [https://github.com/anuruddhal/MusicForWeather](https://github.com/anuruddhal/MusicForWeather)
-
 ---
 
 ## 🚀 Features
