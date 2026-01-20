@@ -1,0 +1,8 @@
+[package]
+org = "wso2"
+name = "frauddetectionsystem"
+version = "0.1.0"
+title = "FraudDetectionSystem"
+
+[build-options]
+sticky = true

@@ -1,0 +1,10 @@
+configurable string gmailRefreshToken = ?;
+configurable string gmailClientId = ?;
+configurable string gmailClientSecret = ?;
+configurable string mssqlHost = "localhost";
+configurable int mssqlPort = 1433;
+configurable string mssqlUsername = ?;
+configurable string mssqlPassword = ?;
+configurable string mssqlDatabase = "finance_db";
+configurable string mssqlTxTable = "finance_db.dbo.transactions";
+configurable string mailRecipient = ?;
