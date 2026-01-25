@@ -8,8 +8,7 @@ This integration automates the process of syncing sales data from retail stores 
 
 Retail stores generate daily sales reports as JSON files and upload them to a central FTP server. Your integration must automatically detect new files, parse the sales data, and insert each item as a separate row in a database.
 
-<a href="{{base_path}}/assets/img/integration-guides/file-integration/sales-data-sync/architecture.png">
-<img src="{{base_path}}/assets/img/integration-guides/file-integration/sales-data-sync/architecture.png" alt="Sales Data Sync Architecture Diagram" width="90%"></a>
+<img width="1000" height="auto" alt="image" src="resources/architecture.png" />
 
 **Flow:**
 
