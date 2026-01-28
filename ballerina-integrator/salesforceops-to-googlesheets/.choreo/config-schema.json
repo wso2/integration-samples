@@ -1,0 +1,197 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "properties": {
+    "ballerina": {
+      "type": "object",
+      "properties": {
+        "log": {
+          "type": "object",
+          "properties": {
+            "enableSensitiveDataMasking": {
+              "type": "boolean",
+              "description": ""
+            },
+            "destinations": {
+              "type": "array",
+              "items": {
+                "anyOf": [
+                  {
+                    "type": "object",
+                    "properties": {
+                      "type": {
+                        "enum": [
+                          "stderr",
+                          "stdout"
+                        ]
+                      }
+                    },
+                    "additionalProperties": false,
+                    "required": [
+                      "type"
+                    ],
+                    "name": "ballerina/log:2.14.0:StandardDestination"
+                  },
+                  {
+                    "type": "object",
+                    "properties": {
+                      "type": {
+                        "enum": [
+                          "file"
+                        ]
+                      },
+                      "path": {
+                        "type": "string"
+                      },
+                      "mode": {
+                        "enum": [
+                          "APPEND",
+                          "TRUNCATE"
+                        ]
+                      }
+                    },
+                    "additionalProperties": false,
+                    "required": [
+                      "type",
+                      "path",
+                      "mode"
+                    ],
+                    "name": "ballerina/log:2.14.0:FileOutputDestination"
+                  }
+                ]
+              },
+              "description": ""
+            },
+            "modules": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string"
+                  },
+                  "level": {
+                    "enum": [
+                      "WARN",
+                      "INFO",
+                      "ERROR",
+                      "DEBUG"
+                    ]
+                  }
+                },
+                "additionalProperties": false,
+                "required": [
+                  "name",
+                  "level"
+                ],
+                "name": "ballerina/log:2.14.0:Module"
+              },
+              "description": ""
+            },
+            "keyValues": {
+              "type": "object",
+              "properties": {
+                "msg": {},
+                "error": {},
+                "stackTrace": {},
+                "module": {}
+              },
+              "additionalProperties": false,
+              "name": "ballerina/log:2.14.0:AnydataKeyValues",
+              "description": ""
+            },
+            "format": {
+              "enum": [
+                "logfmt",
+                "json"
+              ],
+              "description": ""
+            },
+            "level": {
+              "enum": [
+                "WARN",
+                "INFO",
+                "ERROR",
+                "DEBUG"
+              ],
+              "description": ""
+            }
+          },
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    },
+    "wso2": {
+      "type": "object",
+      "properties": {
+        "salesforceops_to_googlesheets": {
+          "type": "object",
+          "properties": {
+            "salesforceConfig": {
+              "type": "object",
+              "properties": {
+                "refreshToken": {
+                  "type": "string"
+                },
+                "clientId": {
+                  "type": "string"
+                },
+                "clientSecret": {
+                  "type": "string"
+                },
+                "refreshUrl": {
+                  "type": "string"
+                },
+                "baseUrl": {
+                  "type": "string"
+                }
+              },
+              "additionalProperties": false,
+              "required": [
+                "refreshToken",
+                "clientId",
+                "clientSecret",
+                "refreshUrl",
+                "baseUrl"
+              ],
+              "description": ""
+            },
+            "googleConfig": {
+              "type": "object",
+              "properties": {
+                "refreshToken": {
+                  "type": "string"
+                },
+                "clientId": {
+                  "type": "string"
+                },
+                "clientSecret": {
+                  "type": "string"
+                }
+              },
+              "additionalProperties": false,
+              "required": [
+                "refreshToken",
+                "clientId",
+                "clientSecret"
+              ],
+              "description": ""
+            },
+            "timezone": {
+              "type": "string",
+              "description": ""
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "salesforceConfig",
+            "googleConfig"
+          ]
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false
+}
