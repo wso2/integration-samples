@@ -13,3 +13,14 @@ configurable record {
 } googleConfig = ?;
 
 configurable string timezone = "Asia/Colombo";
+configurable string? spreadsheetId = ();
+
+enum TimeFrame {
+    YESTERDAY = "YESTERDAY",
+    LAST_WEEK = "LAST_WEEK",
+    LAST_MONTH = "LAST_MONTH",
+    LAST_QUARTER = "LAST_QUARTER",
+    ALL = "ALL"
+};
+
+configurable TimeFrame timeFrame = "ALL";

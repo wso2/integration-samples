@@ -3,12 +3,38 @@ import ballerinax/googleapis.sheets as sheets;
 
 
 SheetRow columns = ["Id", "Name", "Amount", "OwnerId", "LastActivityDate", "Description", "Probability %", "NextStep"];
-string spreadSheetName = string `Opportunities ${check getFormattedCurrentTimeStamp()}`;
+string currentTimeStamp = check getFormattedCurrentTimeStamp();
 
 public function main() returns error? {
-    do { 
+    do {         
+        string query = "SELECT FIELDS(STANDARD) FROM Opportunity";
+        string prefix = "All Opportunities";
 
-        stream<Opportunity, error?> opportunities = check salesforceClient->query("SELECT FIELDS(STANDARD) FROM Opportunity");
+        match timeFrame {
+            YESTERDAY => {
+                query += " WHERE CreatedDate >= YESTERDAY";
+                prefix = "New Opportunities Since Yesterday";
+            }
+            LAST_WEEK => {
+                query += " WHERE CreatedDate >= LAST_WEEK";
+                prefix = "New Opportunities Since Last Week";
+            }
+            LAST_MONTH => {
+                query += " WHERE CreatedDate >= LAST_MONTH";
+                prefix = "New Opportunities Since Last Month";
+            }
+            LAST_QUARTER => {
+                query += " WHERE CreatedDate >= LAST_QUARTER";
+                prefix = "New Opportunities Since Last Quarter";
+            }
+        }
+        string spreadSheetName = string `${prefix} ${currentTimeStamp}`;
+
+        log:printInfo("Time frame selected: " + timeFrame);
+        log:printInfo("Executing query: " + query);
+        
+
+        stream<Opportunity, error?> opportunities = check salesforceClient->query(query);
 
         SheetRow[] opportunityValues = check from Opportunity account in opportunities select mapOpportunityToRow(account);
 
@@ -20,19 +46,28 @@ public function main() returns error? {
         SheetRow[] allValues = [columns];
         allValues.push(...opportunityValues);
 
-        sheets:Spreadsheet spreadsheet = check sheetsClient->createSpreadsheet(spreadSheetName);
-
-        log:printInfo("Spreadsheet created with name: " + spreadSheetName);
+        sheets:Sheet sheet;
+        string workingSpreadsheetId;
+        if spreadsheetId is string {
+            workingSpreadsheetId = spreadsheetId ?: "";
+            log:printInfo("Using existing spreadsheet with ID: " + workingSpreadsheetId);
+            sheet = check sheetsClient->addSheet(workingSpreadsheetId, spreadSheetName);
+        } else {
+            sheets:Spreadsheet spreadsheet = check sheetsClient->createSpreadsheet(spreadSheetName);
+            log:printInfo("Spreadsheet created with name: " + spreadSheetName);
+            workingSpreadsheetId = spreadsheet.spreadsheetId;
+            sheet = spreadsheet.sheets[0];
+        }
 
         _ = check sheetsClient->appendValues(
-            spreadsheet.spreadsheetId, 
+            workingSpreadsheetId, 
             allValues, 
             { 
-                sheetName: spreadsheet.sheets[0].properties.title 
+                sheetName: sheet.properties.title 
             }
         );
 
-        log:printInfo(`${opportunityValues.length()} ${opportunityValues.length() == 1 ? "opportunity" : "opportunities"} added to the spreadsheet successfully.`);
+        log:printInfo(string `${opportunityValues.length()} ${opportunityValues.length() == 1 ? "opportunity" : "opportunities"} added to the spreadsheet successfully.`);
     } on fail error e {
         log:printError("Error occurred", 'error = e);
         return e;

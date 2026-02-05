@@ -36,3 +36,25 @@ This integration uses refresh token flow for auth. [Learn how to set up Salesfor
 This integration uses refresh token flow for auth. [Learn how to Develop on Google Workspace](https://developers.google.com/workspace/guides/get-started).
 
 </details>
+
+<details> 
+
+<summary>Additional Configurations</summary>
+
+1. `timeZone`
+    - Time zone to be used for timestamping the spreadsheet name (e.g., "America/New_York")
+2. `timeFrame`: 
+    - Time frame to filter new opportunities. Possible values:
+        - `YESTERDAY`
+        - `LAST_WEEK`
+        - `LAST_MONTH`
+        - `LAST_QUARTER`
+        - `ALL` (default)
+3. `spreadsheetId`: 
+    - ID of an existing Google Sheets spreadsheet to append data to. Below is how to find the spreadsheet ID.
+        - `https://docs.google.com/spreadsheets/d/<spreadsheetId>/`
+        - Use this `spreadsheetId` as the value.
+    - A new sheet will be created in the spreadsheet with a timestamped name.
+    - If not provided, a new spreadsheet will be created.
+
+</details>

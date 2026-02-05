@@ -8,58 +8,12 @@
         "log": {
           "type": "object",
           "properties": {
-            "enableSensitiveDataMasking": {
-              "type": "boolean",
+            "format": {
+              "type": "string",
               "description": ""
             },
-            "destinations": {
-              "type": "array",
-              "items": {
-                "anyOf": [
-                  {
-                    "type": "object",
-                    "properties": {
-                      "type": {
-                        "enum": [
-                          "stderr",
-                          "stdout"
-                        ]
-                      }
-                    },
-                    "additionalProperties": false,
-                    "required": [
-                      "type"
-                    ],
-                    "name": "ballerina/log:2.14.0:StandardDestination"
-                  },
-                  {
-                    "type": "object",
-                    "properties": {
-                      "type": {
-                        "enum": [
-                          "file"
-                        ]
-                      },
-                      "path": {
-                        "type": "string"
-                      },
-                      "mode": {
-                        "enum": [
-                          "APPEND",
-                          "TRUNCATE"
-                        ]
-                      }
-                    },
-                    "additionalProperties": false,
-                    "required": [
-                      "type",
-                      "path",
-                      "mode"
-                    ],
-                    "name": "ballerina/log:2.14.0:FileOutputDestination"
-                  }
-                ]
-              },
+            "level": {
+              "type": "string",
               "description": ""
             },
             "modules": {
@@ -71,12 +25,7 @@
                     "type": "string"
                   },
                   "level": {
-                    "enum": [
-                      "WARN",
-                      "INFO",
-                      "ERROR",
-                      "DEBUG"
-                    ]
+                    "type": "string"
                   }
                 },
                 "additionalProperties": false,
@@ -84,36 +33,8 @@
                   "name",
                   "level"
                 ],
-                "name": "ballerina/log:2.14.0:Module"
+                "name": "ballerina/log:2.9.0:Module"
               },
-              "description": ""
-            },
-            "keyValues": {
-              "type": "object",
-              "properties": {
-                "msg": {},
-                "error": {},
-                "stackTrace": {},
-                "module": {}
-              },
-              "additionalProperties": false,
-              "name": "ballerina/log:2.14.0:AnydataKeyValues",
-              "description": ""
-            },
-            "format": {
-              "enum": [
-                "logfmt",
-                "json"
-              ],
-              "description": ""
-            },
-            "level": {
-              "enum": [
-                "WARN",
-                "INFO",
-                "ERROR",
-                "DEBUG"
-              ],
               "description": ""
             }
           },
@@ -180,6 +101,27 @@
             },
             "timezone": {
               "type": "string",
+              "description": ""
+            },
+            "spreadsheetId": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": ""
+                }
+              ],
+              "description": ""
+            },
+            "timeFrame": {
+              "enum": [
+                "ALL",
+                "LAST_QUARTER",
+                "LAST_MONTH",
+                "LAST_WEEK",
+                "YESTERDAY"
+              ],
               "description": ""
             }
           },
