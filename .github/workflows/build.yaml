@@ -1,0 +1,99 @@
+name: Build and Push Images
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+    inputs:
+      build_path:
+        description: 'Specific project path to build, or * to build all projects'
+        type: string
+        default: '*'
+
+jobs:
+  load-config:
+    name: Load Projects
+    runs-on: ubuntu-latest
+    outputs:
+      projects: ${{ steps.set-matrix.outputs.projects }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Get changed files
+        id: changed-files
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          BEFORE_SHA: ${{ github.event.before }}
+          AFTER_SHA: ${{ github.sha }}
+        run: .github/scripts/get-changed-files.sh
+
+      - name: Load project config
+        id: set-matrix
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          BUILD_PATH: ${{ inputs.build_path }}
+          CHANGED_FILES: ${{ steps.changed-files.outputs.changed_files }}
+          BEFORE_SHA: ${{ github.event.before }}
+        run: .github/scripts/load-projects.sh
+
+  build:
+    name: Build ${{ matrix.project.path }}
+    needs: load-config
+    if: ${{ needs.load-config.outputs.projects != '[]' }}
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        project: ${{ fromJSON(needs.load-config.outputs.projects) }}
+      fail-fast: false
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Read Ballerina TOML File
+        working-directory: ${{ matrix.project.path }}
+        run: |
+          set -e
+
+          REPOSITORY=$(yq -oy '.package.name' Ballerina.toml)
+          [ -n "$REPOSITORY" ] && [ "$REPOSITORY" != "null" ] || { echo "Error: package.name not found in Ballerina.toml"; exit 1; }
+          echo "REPOSITORY=$REPOSITORY" >> $GITHUB_ENV
+          echo "Repository: $REPOSITORY"
+
+          BALLERINA_VERSION=$(yq -oy '.package.distribution' Ballerina.toml)
+          [ -n "$BALLERINA_VERSION" ] && [ "$BALLERINA_VERSION" != "null" ] || { echo "Error: package.distribution not found in Ballerina.toml"; exit 1; }
+          echo "BALLERINA_VERSION=$BALLERINA_VERSION" >> $GITHUB_ENV
+          echo "Ballerina Version: $BALLERINA_VERSION"
+
+          TAG=$(yq -oy '.package.version' Ballerina.toml)
+          [ -n "$TAG" ] && [ "$TAG" != "null" ] || { echo "Error: package.version not found in Ballerina.toml"; exit 1; }
+          echo "TAG=$TAG" >> $GITHUB_ENV
+          echo "Tag: $TAG"
+
+      - name: Set up Ballerina
+        uses: ballerina-platform/setup-ballerina@v1.1.3
+        with:
+          version: ${{ env.BALLERINA_VERSION }}
+
+      - name: Build Docker image
+        working-directory: ${{ matrix.project.path }}
+        run: bal build --cloud=docker
+
+      - name: Login to Azure Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ secrets.REGISTRY_URL }}
+          username: ${{ secrets.REGISTRY_USERNAME }}
+          password: ${{ secrets.REGISTRY_SECRET }}
+
+      - name: Tag Docker image
+        working-directory: ${{ matrix.project.path }}
+        run: docker tag ${{ env.REPOSITORY }}:latest ${{ secrets.REGISTRY_URL }}/${{ env.REPOSITORY }}:${{ env.TAG }}
+
+      - name: Push Docker image
+        working-directory: ${{ matrix.project.path }}
+        run: docker push ${{ secrets.REGISTRY_URL }}/${{ env.REPOSITORY }}:${{ env.TAG }}
