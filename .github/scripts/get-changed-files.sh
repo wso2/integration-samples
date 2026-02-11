@@ -1,4 +1,5 @@
 #!/bin/bash
+set -euo pipefail
 
 # Get changed files based on event type
 # Outputs: changed_files (newline-separated list of changed files)

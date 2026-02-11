@@ -29,7 +29,7 @@ jobs:
           EVENT_NAME: ${{ github.event_name }}
           BEFORE_SHA: ${{ github.event.before }}
           AFTER_SHA: ${{ github.sha }}
-        run: .github/scripts/get-changed-files.sh
+        run: bash .github/scripts/get-changed-files.sh
 
       - name: Load project config
         id: set-matrix
@@ -38,7 +38,7 @@ jobs:
           BUILD_PATH: ${{ inputs.build_path }}
           CHANGED_FILES: ${{ steps.changed-files.outputs.changed_files }}
           BEFORE_SHA: ${{ github.event.before }}
-        run: .github/scripts/load-projects.sh
+        run: bash .github/scripts/load-projects.sh
 
   build:
     name: Build ${{ matrix.project.path }}

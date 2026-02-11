@@ -1,4 +1,5 @@
 #!/bin/bash
+set -euo pipefail
 
 # Load and filter projects based on changed files and new project additions
 #
@@ -7,6 +8,12 @@
 #   BUILD_PATH    - Specific project path to build, or * to build all projects
 #   CHANGED_FILES - Newline-separated list of changed files
 #   BEFORE_SHA    - SHA before the push event
+
+# Validate projects.json exists and contains valid JSON
+if ! jq -e . .github/workflows/projects.json > /dev/null 2>&1; then
+  echo "Error: .github/workflows/projects.json is missing or contains invalid JSON"
+  exit 1
+fi
 
 ALL_PROJECTS=$(cat .github/workflows/projects.json)
 
