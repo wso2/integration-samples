@@ -17,7 +17,7 @@ if [ "$EVENT_NAME" == "push" ]; then
     CHANGED_FILES=$(git diff --name-only "$BEFORE_SHA" "$AFTER_SHA")
   fi
 else
-  # For workflow_dispatch, fall back to HEAD~1
+  # For workflow_dispatch, we don't have to check for changes, we will build based on the provided path or all projects
   CHANGED_FILES=""
 fi
 

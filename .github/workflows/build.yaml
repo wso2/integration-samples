@@ -61,17 +61,17 @@ jobs:
 
           REPOSITORY=$(yq -oy '.package.name' Ballerina.toml)
           [ -n "$REPOSITORY" ] && [ "$REPOSITORY" != "null" ] || { echo "Error: package.name not found in Ballerina.toml"; exit 1; }
-          echo "REPOSITORY=$REPOSITORY" >> $GITHUB_ENV
+          echo "REPOSITORY=$REPOSITORY" >> "$GITHUB_ENV"
           echo "Repository: $REPOSITORY"
 
           BALLERINA_VERSION=$(yq -oy '.package.distribution' Ballerina.toml)
           [ -n "$BALLERINA_VERSION" ] && [ "$BALLERINA_VERSION" != "null" ] || { echo "Error: package.distribution not found in Ballerina.toml"; exit 1; }
-          echo "BALLERINA_VERSION=$BALLERINA_VERSION" >> $GITHUB_ENV
+          echo "BALLERINA_VERSION=$BALLERINA_VERSION" >> "$GITHUB_ENV"
           echo "Ballerina Version: $BALLERINA_VERSION"
 
           TAG=$(yq -oy '.package.version' Ballerina.toml)
           [ -n "$TAG" ] && [ "$TAG" != "null" ] || { echo "Error: package.version not found in Ballerina.toml"; exit 1; }
-          echo "TAG=$TAG" >> $GITHUB_ENV
+          echo "TAG=$TAG" >> "$GITHUB_ENV"
           echo "Tag: $TAG"
 
       - name: Set up Ballerina
