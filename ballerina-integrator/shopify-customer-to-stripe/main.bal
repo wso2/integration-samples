@@ -4,8 +4,12 @@ import ballerina/log;
 
 service shopify:CustomersService on shopifyListener {
     remote function onCustomersCreate(shopify:CustomerEvent event) returns error? {
+        if ((event?.first_name == () && event?.last_name == ()) || event?.email == ()) {
+            log:printInfo("Skipping customer creation in Stripe for Shopify customer with missing details: " + (event?.id.toString()));
+            return;
+        }
         stripe:customers_body customer = {
-            name: (event?.first_name ?: "") + " " + (event?.last_name ?: ""),
+            name: string:'join(" ", event?.first_name ?: "", event?.last_name ?: "").trim(),
             email: event?.email
         };
         _ = check stripe->/customers.post(customer);
