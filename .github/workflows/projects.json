@@ -1,5 +1,8 @@
 [
   {
     "path": "ballerina-integrator/salesforceops-to-googlesheets"
+  },
+  {
+    "path": "ballerina-integrator/signup-sfchatsync"
   }
 ]
