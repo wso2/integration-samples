@@ -2,48 +2,6 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "type": "object",
   "properties": {
-    "wso2": {
-      "type": "object",
-      "properties": {
-        "shopify_customer_to_stripe": {
-          "type": "object",
-          "properties": {
-            "shopifyConfig": {
-              "type": "object",
-              "properties": {
-                "apiSecretKey": {
-                  "type": "string"
-                }
-              },
-              "additionalProperties": false,
-              "required": [
-                "apiSecretKey"
-              ],
-              "description": ""
-            },
-            "stripeConfig": {
-              "type": "object",
-              "properties": {
-                "secretKey": {
-                  "type": "string"
-                }
-              },
-              "additionalProperties": false,
-              "required": [
-                "secretKey"
-              ],
-              "description": ""
-            }
-          },
-          "additionalProperties": false,
-          "required": [
-            "shopifyConfig",
-            "stripeConfig"
-          ]
-        }
-      },
-      "additionalProperties": false
-    },
     "ballerina": {
       "type": "object",
       "properties": {
@@ -160,6 +118,48 @@
             }
           },
           "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    },
+    "wso2": {
+      "type": "object",
+      "properties": {
+        "shopify_customer_to_stripe": {
+          "type": "object",
+          "properties": {
+            "shopifyConfig": {
+              "type": "object",
+              "properties": {
+                "apiSecretKey": {
+                  "type": "string"
+                }
+              },
+              "additionalProperties": false,
+              "required": [
+                "apiSecretKey"
+              ],
+              "description": ""
+            },
+            "stripeConfig": {
+              "type": "object",
+              "properties": {
+                "secretKey": {
+                  "type": "string"
+                }
+              },
+              "additionalProperties": false,
+              "required": [
+                "secretKey"
+              ],
+              "description": ""
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "shopifyConfig",
+            "stripeConfig"
+          ]
         }
       },
       "additionalProperties": false
