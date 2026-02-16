@@ -4,7 +4,7 @@ import ballerina/log;
 listener http:Listener httpDefaultListener = http:getDefaultListener();
 
 service / on httpDefaultListener {
-    resource function post .(@http:Payload User payload) returns error|json {
+    resource function post .(@http:Payload User payload) returns error|http:STATUS_CREATED {
         do {
             _ = check salesforceClient->create("Contact", {
                 "FirstName": payload.firstName,
@@ -21,7 +21,7 @@ service / on httpDefaultListener {
                     ]
                 }, key = googleChatConfig.key, token = googleChatConfig.token);
             log:printInfo("User signup processed: " + payload.firstName + " " + payload.lastName + ", " + payload.email);
-            return {"status": "Success"};
+            return http:STATUS_CREATED;
         } on fail error err {
             return error("unhandled error", err);
         }

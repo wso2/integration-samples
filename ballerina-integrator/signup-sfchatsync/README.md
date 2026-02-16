@@ -63,4 +63,4 @@ The following configurations are required to connect Salesforce and Google Chat.
 3. Select the **Technology** as `WSO2 Integrator: BI`.
 4. Choose the **Integration** Type as `Automation` and click **Create**.
 5. Once the build is successful, click **Configure to Continue** and set up the required environment variables.
-9. Once tested, you may promote the integration to production. Make sure to set the relevant environment variables in the production environment as well.
+6. Once tested, you may promote the integration to production. Make sure to set the relevant environment variables in the production environment as well.
