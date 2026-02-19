@@ -152,11 +152,11 @@ EOF"
 |-------|-------|
 | `ftpHost` | `localhost` |
 | `ftpPort` | `21` |
-| `ftpUsername` | `ftpuser` |
+| `ftpUser` | `ftpuser` |
 | `ftpPassword` | `ftppass` |
 | `mysqlHost` | `localhost` |
 | `mysqlPort` | `3307` |
-| `mysqlUsername` | `root` |
+| `mysqlUser` | `root` |
 | `mysqlPassword` | `root@123` |
 
 ### Step 3: Run the Integration
@@ -168,7 +168,7 @@ EOF"
 
 1. Check the BI logs - you should see:
    - `Processing file from store STORE-42`
-   - `File moved to processed: store.json`
+   - `File moved to processed: store42.json`
 
 2. Verify data in MySQL:
 
@@ -189,7 +189,7 @@ ls sales/new
 # Should be empty
 
 ls sales/processed
-# Should contain store42-2024-01-15.json
+# Should contain store42.json
 
 bye
 ```

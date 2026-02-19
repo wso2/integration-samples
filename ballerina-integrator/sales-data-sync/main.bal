@@ -2,7 +2,7 @@ import ballerina/ftp;
 import ballerina/log;
 import ballerina/sql;
 
-listener ftp:Listener ftpListener = new (protocol = ftp:FTP, host = "string `${ftpHost}`", auth = {credentials: {username: string `${ftpUser}`, password: string `${ftpPassword}`}}, port = ftpPort, path = "/sales/new");
+listener ftp:Listener ftpListener = new (protocol = ftp:FTP, host = string `${ftpHost}`, auth = {credentials: {username: string `${ftpUser}`, password: string `${ftpPassword}`}}, port = ftpPort, path = "/sales/new");
 
 service on ftpListener {
     remote function onFileJson(SalesReport content, ftp:FileInfo fileInfo, ftp:Caller caller) returns error? {

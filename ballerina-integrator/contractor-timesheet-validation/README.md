@@ -130,7 +130,7 @@ EOF"
 
 1. Open VS Code with WSO2 Integrator: BI installed
 2. Click on the BI icon on the sidebar
-3. Open the `data-validation-routing` project
+3. Open the `contractor-timesheet-validation` project
 
 ### Step 2: Configure Variables
 
