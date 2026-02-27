@@ -3,6 +3,6 @@
     "path": "ballerina-integrator/salesforceops-to-googlesheets"
   },
   {
-    "path": "ballerina-integrator/shopify-customer-to-stripe"
+    "path": "ballerina-integrator/new-shopify-customer-to-stripe"
   }
 ]

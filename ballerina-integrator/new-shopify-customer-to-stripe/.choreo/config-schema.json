@@ -125,7 +125,7 @@
     "wso2": {
       "type": "object",
       "properties": {
-        "shopify_customer_to_stripe": {
+        "new_shopify_customer_to_stripe": {
           "type": "object",
           "properties": {
             "shopifyConfig": {

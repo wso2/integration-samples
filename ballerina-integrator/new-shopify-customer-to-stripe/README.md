@@ -1,4 +1,4 @@
-# Create Shopify Customers in Stripe Integration
+# Create a Stripe Customer when a Shopify Customer is Created
 
 ## Description
 
