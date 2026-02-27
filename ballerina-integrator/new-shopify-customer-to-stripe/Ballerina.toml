@@ -1,0 +1,9 @@
+[package]
+org = "wso2"
+name = "new_shopify_customer_to_stripe"
+version = "0.1.0"
+title = "new-shopify-customer-to-stripe"
+distribution= "2201.13.1"
+
+[build-options]
+sticky = true
