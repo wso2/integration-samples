@@ -1,0 +1,9 @@
+[package]
+org = "wso2"
+name = "signup_sfchatsync"
+version = "0.1.0"
+title = "API Integration to create Salesforce Contact and notify on Google Chat"
+distribution= "2201.12.10"
+
+[build-options]
+sticky = true
