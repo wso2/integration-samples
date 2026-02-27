@@ -4,5 +4,8 @@
   },
   {
     "path": "ballerina-integrator/new-shopify-customer-to-stripe"
+  }, 
+  {
+    "path": "ballerina-integrator/signup-sfchatsync"
   }
 ]
