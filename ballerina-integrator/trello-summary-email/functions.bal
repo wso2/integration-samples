@@ -258,115 +258,94 @@ function groupCards(CardSummary[] cards) returns GroupedSummary[] {
     return groupedSummaries;
 }
 
-// Generate HTML email content
-function generateEmailContent(GroupedSummary[] groupedSummaries, int totalCards, int overdueCount) returns string {
-    string html = string `<!DOCTYPE html>
-<html>
-<head>
-    <style>
-        body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
-        .container { max-width: 800px; margin: 0 auto; padding: 20px; }
-        h1 { color: #0079bf; border-bottom: 3px solid #0079bf; padding-bottom: 10px; }
-        h2 { color: #172b4d; margin-top: 30px; background-color: #f4f5f7; padding: 10px; border-radius: 3px; }
-        .card { background-color: #fff; border: 1px solid #dfe1e6; border-radius: 3px; padding: 15px; margin: 10px 0; box-shadow: 0 1px 2px rgba(0,0,0,0.1); }
-        .card-title { font-size: 16px; font-weight: bold; color: #172b4d; margin-bottom: 8px; }
-        .card-title a { color: #0079bf; text-decoration: none; }
-        .card-title a:hover { text-decoration: underline; }
-        .card-meta { font-size: 13px; color: #5e6c84; margin: 5px 0; }
-        .overdue { color: #eb5a46; font-weight: bold; }
-        .label { display: inline-block; padding: 2px 8px; border-radius: 3px; font-size: 12px; margin-right: 5px; background-color: #61bd4f; color: white; }
-        .member { display: inline-block; padding: 2px 8px; border-radius: 3px; font-size: 12px; margin-right: 5px; background-color: #0079bf; color: white; }
-        .summary { background-color: #f4f5f7; padding: 15px; border-radius: 3px; margin-bottom: 20px; }
-        .description { font-size: 13px; color: #5e6c84; margin-top: 8px; white-space: pre-wrap; }
-    </style>
-</head>
-<body>
-    <div class="container">
-        <h1>Trello Cards Summary</h1>
-        <div class="summary">
-            <strong>Total Cards:</strong> ${totalCards.toString()}<br/>`;
+// Format a UTC timestamp as a human-readable string
+function getFormattedTimestamp(time:Utc utcTime) returns string {
+    time:Civil civil = time:utcToCivil(utcTime);
+    return string `${civil.year}-${civil.month.toString().padZero(2)}-${civil.day.toString().padZero(2)} ${civil.hour.toString().padZero(2)}:${civil.minute.toString().padZero(2)} UTC`;
+}
 
-    if summaryConfig.highlightOverdueCards && overdueCount > 0 {
-        html += string `            <strong class="overdue">Overdue Cards:</strong> ${overdueCount.toString()}<br/>`;
-    }
+// Render a single group of cards as HTML table rows
+function getHtmlFormattedGroup(GroupedSummary group) returns string {
+    string cardsHtml = "";
+    foreach CardSummary card in group.cards {
+        string leftBorder = card.isOverdue
+            ? " style=\"border-left: 3px solid #de350b; padding: 16px 30px; border-bottom: 1px solid #e1e4e8;\""
+            : (card.isStale
+                ? " style=\"border-left: 3px solid #ff8b00; padding: 16px 30px; border-bottom: 1px solid #e1e4e8;\""
+                : " style=\"padding: 16px 30px; border-bottom: 1px solid #e1e4e8;\"");
 
-    html += string `            <strong>Grouped By:</strong> ${summaryConfig.grouping.toString()}<br/>
-            <strong>Generated:</strong> ${time:utcToString(time:utcNow())}
-        </div>`;
-
-    foreach GroupedSummary group in groupedSummaries {
-        html += string `
-        <h2>${group.groupName} (${group.cards.length().toString()} cards)</h2>`;
-
-        foreach CardSummary card in group.cards {
-            string overdueIndicator = summaryConfig.highlightOverdueCards && card.isOverdue ? " <span class=\"overdue\">OVERDUE</span>" : "";
-
-            html += string `
-        <div class="card">
-            <div class="card-title"><a href="${card.url}" target="_blank">${card.name}</a>${overdueIndicator}</div>
-            <div class="card-meta"><strong>Board:</strong> ${card.boardName} | <strong>List:</strong> ${card.listName}</div>`;
-
-            if card.dueDate is time:Civil {
-                time:Civil dueDate = <time:Civil>card.dueDate;
-                string dueDateStr = string `${dueDate.year}-${dueDate.month.toString().padZero(2)}-${dueDate.day.toString().padZero(2)}`;
-                html += string `
-            <div class="card-meta"><strong>Due Date:</strong> ${dueDateStr}</div>`;
-            }
-
-            if card.labels.length() > 0 {
-                html += string `
-            <div class="card-meta"><strong>Labels:</strong> `;
-                foreach string label in card.labels {
-                    html += string `<span class="label">${label}</span>`;
-                }
-                html += "</div>";
-            }
-
-            if card.members.length() > 0 {
-                html += string `
-            <div class="card-meta"><strong>Members:</strong> `;
-                foreach string member in card.members {
-                    html += string `<span class="member">${member}</span>`;
-                }
-                html += "</div>";
-            }
-
-            if card.description.trim().length() > 0 {
-                string truncatedDesc = card.description.length() > 200 ? card.description.substring(0, 200) + "..." : card.description;
-                html += string `
-            <div class="description">${truncatedDesc}</div>`;
-            }
-
-            // Show card age
-            if summaryConfig.showCardAge {
-                html += string `
-            <div class="card-meta"><strong>Card Age:</strong> ${card.cardAgeDays.toString()} days</div>`;
-            }
-
-            // Show attachment count
-            if summaryConfig.showAttachmentCount && card.attachmentCount > 0 {
-                html += string `
-            <div class="card-meta"><strong>Attachments:</strong> ${card.attachmentCount.toString()}</div>`;
-            }
-
-            // Show checklist progress
-            if summaryConfig.showChecklistProgress && card.checklistItemsTotal > 0 {
-                string checklistPercentage = formatPercentageTwoDecimals(card.checklistCompletionPercentage);
-                html += string `
-            <div class="card-meta"><strong>Checklist:</strong> ${card.checklistItemsCompleted.toString()}/${card.checklistItemsTotal.toString()} (${checklistPercentage}%)</div>`;
-            }
-
-            html += string `
-        </div>`;
+        string dueDateHtml = "";
+        time:Civil? dueDate = card.dueDate;
+        if dueDate is time:Civil {
+            string dueDateStr = string `${dueDate.year}-${dueDate.month.toString().padZero(2)}-${dueDate.day.toString().padZero(2)}`;
+            string dueDateColor = card.isOverdue ? "#de350b" : "#586069";
+            dueDateHtml = string `<span style="color: ${dueDateColor};">Due: ${dueDateStr}</span>&nbsp;&nbsp;`;
         }
+
+        string labelsHtml = "";
+        foreach string label in card.labels {
+            labelsHtml += string `<span style="display: inline-block; padding: 2px 6px; border-radius: 3px; font-size: 11px; background-color: #61bd4f; color: white; margin-right: 4px;">${label}</span>`;
+        }
+
+        string membersHtml = "";
+        foreach string member in card.members {
+            membersHtml += member + " ";
+        }
+
+        string cardAgeHtml = summaryConfig.showCardAge
+            ? string `<span style="color: #586069;">Age: ${card.cardAgeDays.toString()} days</span>&nbsp;&nbsp;` : "";
+
+        string attachmentsHtml = summaryConfig.showAttachmentCount && card.attachmentCount > 0
+            ? string `<span style="color: #586069;">Attachments: ${card.attachmentCount.toString()}</span>&nbsp;&nbsp;` : "";
+
+        string checklistHtml = "";
+        if summaryConfig.showChecklistProgress && card.checklistItemsTotal > 0 {
+            string pct = formatPercentageTwoDecimals(card.checklistCompletionPercentage);
+            checklistHtml = string `<span style="color: #586069;">Checklist: ${card.checklistItemsCompleted.toString()}/${card.checklistItemsTotal.toString()} (${pct}%)</span>`;
+        }
+
+        string descHtml = "";
+        if card.description.trim().length() > 0 {
+            string truncatedDesc = card.description.length() > 200
+                ? card.description.substring(0, 200) + "..." : card.description;
+            descHtml = string `<div style="font-size: 13px; color: #586069; margin-top: 8px; white-space: pre-wrap;">${truncatedDesc}</div>`;
+        }
+
+        string overdueTag = summaryConfig.highlightOverdueCards && card.isOverdue
+            ? "<span style=\"background-color: #de350b; color: white; font-size: 11px; padding: 1px 6px; border-radius: 3px; margin-left: 6px;\">OVERDUE</span>"
+            : "";
+
+        string metaHtml = dueDateHtml + cardAgeHtml + attachmentsHtml + checklistHtml;
+        string labelsRow = labelsHtml.length() > 0 ? string `<div style="margin-top: 6px;">${labelsHtml}</div>` : "";
+        string membersRow = membersHtml.trim().length() > 0
+            ? string `<div style="font-size: 12px; color: #586069; margin-top: 6px;">Members: ${membersHtml.trim()}</div>` : "";
+
+        cardsHtml += string `
+                            <tr>
+                                <td${leftBorder}>
+                                    <a href="${card.url}" target="_blank" style="font-family: sans-serif; font-size: 14px; font-weight: 600; color: #0052cc; text-decoration: none;">${card.name}</a>${overdueTag}
+                                    <div style="font-size: 12px; color: #586069; margin-top: 6px;">${metaHtml}</div>
+                                    ${labelsRow}
+                                    ${membersRow}
+                                    ${descHtml}
+                                </td>
+                            </tr>`;
     }
 
-    html += string `
-    </div>
-</body>
-</html>`;
-
-    return html;
+    return string `
+                <tr>
+                    <td style="background-color: #f6f8fa; padding: 10px 30px; border-left: 1px solid #e1e4e8; border-right: 1px solid #e1e4e8; border-bottom: 1px solid #e1e4e8;">
+                        <span style="font-family: sans-serif; font-size: 14px; font-weight: 600; color: #24292e;">${group.groupName}</span>
+                        <span style="font-family: sans-serif; font-size: 13px; font-weight: 400; color: #586069;"> (${group.cards.length().toString()} cards)</span>
+                    </td>
+                </tr>
+                <tr>
+                    <td style="background-color: #ffffff; border-left: 1px solid #e1e4e8; border-right: 1px solid #e1e4e8;">
+                        <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%">
+                            ${cardsHtml}
+                        </table>
+                    </td>
+                </tr>`;
 }
 
 function formatPercentageTwoDecimals(decimal value) returns string {
@@ -375,6 +354,105 @@ function formatPercentageTwoDecimals(decimal value) returns string {
     int decimalPart = <int>((rounded - <decimal>wholePart) * 100);
 
     return string `${wholePart.toString()}.${decimalPart.toString().padZero(2)}`;
+}
+
+// Generate HTML email content using a responsive table-based layout
+function generateEmailContent(GroupedSummary[] groupedSummaries, int totalCards, int overdueCount) returns string {
+    int staleCount = 0;
+    foreach GroupedSummary group in groupedSummaries {
+        foreach CardSummary card in group.cards {
+            if card.isStale {
+                staleCount += 1;
+            }
+        }
+    }
+
+    string groupedByStr = summaryConfig.grouping.toString();
+    string generatedAt = getFormattedTimestamp(time:utcNow());
+
+    string groupsHtml = "";
+    foreach GroupedSummary group in groupedSummaries {
+        groupsHtml += getHtmlFormattedGroup(group);
+    }
+
+    string overdueCountDisplay = summaryConfig.highlightOverdueCards ? overdueCount.toString() : "-";
+
+    return string `<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <meta name="x-apple-disable-message-reformatting">
+    <title>Trello Cards Summary</title>
+    <style type="text/css">
+        table, td { border-collapse: collapse; mso-table-lspace: 0pt; mso-table-rspace: 0pt; }
+        img { border: 0; height: auto; line-height: 100%; outline: none; text-decoration: none; }
+        body { height: 100% !important; margin: 0 !important; padding: 0 !important; width: 100% !important; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif; -webkit-text-size-adjust: 100%; }
+        @media screen and (max-width: 600px) {
+            .email-container { width: 100% !important; margin: auto !important; }
+        }
+    </style>
+</head>
+<body width="100%" style="margin: 0; padding: 0 !important; mso-line-height-rule: exactly; background-color: #f6f8fa;">
+    <center style="width: 100%; background-color: #f6f8fa;">
+
+        <div style="display: none; font-size: 1px; line-height: 1px; max-height: 0px; max-width: 0px; opacity: 0; overflow: hidden; mso-hide: all; font-family: sans-serif;">
+            Trello Cards Summary: ${totalCards.toString()} total, ${overdueCount.toString()} overdue, grouped by ${groupedByStr}
+        </div>
+
+        <table align="center" role="presentation" cellspacing="0" cellpadding="0" border="0" width="600" style="margin: auto;" class="email-container">
+
+            <tr><td height="40" style="font-size: 0; line-height: 0;">&nbsp;</td></tr>
+
+            <tr>
+                <td style="background-color: #0052cc; padding: 30px; border-radius: 6px 6px 0 0; text-align: left;">
+                    <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%">
+                        <tr>
+                            <td style="font-family: sans-serif; font-size: 20px; font-weight: 600; color: #ffffff; line-height: 24px;">
+                                Trello Cards Summary
+                                <div style="font-size: 14px; color: #b3d0ff; font-weight: 400; margin-top: 5px;">Grouped by ${groupedByStr} &bull; ${generatedAt}</div>
+                            </td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+
+            <tr>
+                <td style="background-color: #ffffff; padding: 20px 0; border-bottom: 1px solid #e1e4e8; border-left: 1px solid #e1e4e8; border-right: 1px solid #e1e4e8;">
+                    <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%">
+                        <tr>
+                            <td width="33%" align="center" valign="top" style="font-family: sans-serif;">
+                                <div style="font-size: 24px; font-weight: bold; color: #24292e;">${totalCards.toString()}</div>
+                                <div style="font-size: 11px; color: #586069; text-transform: uppercase; letter-spacing: 0.5px; padding-top: 5px;">Total Cards</div>
+                            </td>
+                            <td width="33%" align="center" valign="top" style="font-family: sans-serif; border-left: 1px solid #eeeeee; border-right: 1px solid #eeeeee;">
+                                <div style="font-size: 24px; font-weight: bold; color: #de350b;">${overdueCountDisplay}</div>
+                                <div style="font-size: 11px; color: #586069; text-transform: uppercase; letter-spacing: 0.5px; padding-top: 5px;">Overdue</div>
+                            </td>
+                            <td width="33%" align="center" valign="top" style="font-family: sans-serif;">
+                                <div style="font-size: 24px; font-weight: bold; color: #ff8b00;">${staleCount.toString()}</div>
+                                <div style="font-size: 11px; color: #586069; text-transform: uppercase; letter-spacing: 0.5px; padding-top: 5px;">Stale</div>
+                            </td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+
+            ${groupsHtml}
+
+            <tr>
+                <td style="padding: 30px; text-align: center; font-family: sans-serif; font-size: 12px; color: #6a737d; line-height: 18px; border-left: 1px solid #e1e4e8; border-right: 1px solid #e1e4e8; border-bottom: 1px solid #e1e4e8; border-radius: 0 0 6px 6px;">
+                    <p style="margin: 0;">You are receiving this Trello summary because it was scheduled via the Trello Summary Email integration.</p>
+                </td>
+            </tr>
+
+            <tr><td height="40" style="font-size: 0; line-height: 0;">&nbsp;</td></tr>
+
+        </table>
+
+    </center>
+</body>
+</html>`;
 }
 
 // Send email with summary using Mailchimp

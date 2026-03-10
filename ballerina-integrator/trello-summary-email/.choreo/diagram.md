@@ -1,4 +1,3 @@
-flowchart TD
     A(["Begin"]):::startNode
     B["Fetch Cards from <br/>Trello Boards & Lists"]:::processNode
     C{"Are there Cards?"}:::decisionNode
