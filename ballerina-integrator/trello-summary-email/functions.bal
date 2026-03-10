@@ -17,7 +17,7 @@ function fetchTrelloCards() returns CardSummary[]|error {
     CardSummary[] allCards = [];
 
     foreach string boardId in trelloConfig.boardIds {
-            trello:Board board = check trelloClient->/boards/[boardId].get(
+        trello:Board board = check trelloClient->/boards/[boardId].get(
             checklists = "none",
             cards = "none",
             customFields = false,
@@ -248,10 +248,10 @@ function groupCards(CardSummary[] cards) returns GroupedSummary[] {
 
     GroupedSummary[] groupedSummaries = [];
     foreach string groupName in groupMap.keys() {
-        CardSummary[] groupCards = groupMap.get(groupName);
+        CardSummary[] groupCardsList = groupMap.get(groupName);
         groupedSummaries.push({
             groupName: groupName,
-            cards: groupCards
+            cards: groupCardsList
         });
     }
 
@@ -282,12 +282,12 @@ function generateEmailContent(GroupedSummary[] groupedSummaries, int totalCards,
 </head>
 <body>
     <div class="container">
-        <h1>📋 Trello Cards Summary</h1>
+        <h1>Trello Cards Summary</h1>
         <div class="summary">
             <strong>Total Cards:</strong> ${totalCards.toString()}<br/>`;
 
     if summaryConfig.highlightOverdueCards && overdueCount > 0 {
-        html += string `            <strong class="overdue">⚠️ Overdue Cards:</strong> ${overdueCount.toString()}<br/>`;
+        html += string `            <strong class="overdue">Overdue Cards:</strong> ${overdueCount.toString()}<br/>`;
     }
 
     html += string `            <strong>Grouped By:</strong> ${summaryConfig.grouping.toString()}<br/>
@@ -299,7 +299,7 @@ function generateEmailContent(GroupedSummary[] groupedSummaries, int totalCards,
         <h2>${group.groupName} (${group.cards.length().toString()} cards)</h2>`;
 
         foreach CardSummary card in group.cards {
-                string overdueIndicator = summaryConfig.highlightOverdueCards && card.isOverdue ? " <span class=\"overdue\">⚠️ OVERDUE</span>" : "";
+            string overdueIndicator = summaryConfig.highlightOverdueCards && card.isOverdue ? " <span class=\"overdue\">OVERDUE</span>" : "";
 
             html += string `
         <div class="card">
@@ -338,19 +338,19 @@ function generateEmailContent(GroupedSummary[] groupedSummaries, int totalCards,
             }
 
             // Show card age
-                if summaryConfig.showCardAge {
+            if summaryConfig.showCardAge {
                 html += string `
             <div class="card-meta"><strong>Card Age:</strong> ${card.cardAgeDays.toString()} days</div>`;
             }
 
             // Show attachment count
-                if summaryConfig.showAttachmentCount && card.attachmentCount > 0 {
+            if summaryConfig.showAttachmentCount && card.attachmentCount > 0 {
                 html += string `
             <div class="card-meta"><strong>Attachments:</strong> ${card.attachmentCount.toString()}</div>`;
             }
 
             // Show checklist progress
-                if summaryConfig.showChecklistProgress && card.checklistItemsTotal > 0 {
+            if summaryConfig.showChecklistProgress && card.checklistItemsTotal > 0 {
                 string checklistPercentage = formatPercentageTwoDecimals(card.checklistCompletionPercentage);
                 html += string `
             <div class="card-meta"><strong>Checklist:</strong> ${card.checklistItemsCompleted.toString()}/${card.checklistItemsTotal.toString()} (${checklistPercentage}%)</div>`;
