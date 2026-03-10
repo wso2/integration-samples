@@ -1,15 +1,15 @@
-# Trello Summary Email
+# Trello Summary Email Integration
 
 ## Description
 
-This integration fetches cards from one or more Trello boards and lists, generates a grouped HTML summary, and sends it as an email campaign through Mailchimp on a configurable schedule. It is designed to give teams a regular digest of active Trello cards, highlighting overdue items, card ages, attachment counts, and checklist progress.
+This integration fetches cards from one or more Trello boards and lists, generates a grouped summary, and sends it as an email campaign through Mailchimp on a configurable schedule. It is designed to give teams a regular digest of active Trello cards, highlighting overdue items, card ages, attachment counts, and checklist progress.
 
 ### What It Does
 
-- Fetches cards from specified Trello boards and lists using the Trello API
+- Fetches cards from specified Trello boards and lists
 - Applies optional filters by label, member, or due date range
 - Groups cards by **List**, **Member**, or **Label**
-- Generates a formatted HTML email with:
+- Generates a formatted email with:
   - Total card count and overdue card count
   - Per-card details: board, list, due date, labels, members, description, card age, attachments, and checklist progress
 - Creates and sends a Mailchimp email campaign to a configured audience list
@@ -27,7 +27,7 @@ Before running this integration, you need:
    - **Token** – generate a token from the same page
 3. The **Board IDs** of the boards you want to include
    - Open a board in Trello, click **Share**, and copy the short link. The ID is the alphanumeric part (e.g., `https://trello.com/b/<boardId>/...`)
-4. (Optional) The **List IDs** of specific lists to filter — leave empty to include all lists on the board
+4. (Optional) The **List IDs** of specific lists to filter - leave empty to include all lists on the board
 
 ### Mailchimp Setup
 
