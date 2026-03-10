@@ -5,7 +5,7 @@ schemaVersion: 1.2
 endpoints:
   # +required Unique name for the endpoint.
   # This name will be used when generating the managed API
-  - name: shopifyCustomerSyncWebhook
+  - name: shopify_customer_sync_webhook
     # +optional Display name for the endpoint.
     displayName: Shopify Customer Sync WebHook
     # +required Service section has the user service endpoint details
