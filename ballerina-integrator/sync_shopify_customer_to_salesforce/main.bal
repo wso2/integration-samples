@@ -1,4 +1,3 @@
-import ballerina/http;
 import ballerina/log;
 import ballerinax/trigger.shopify;
 
@@ -49,10 +48,5 @@ service shopify:CustomersService on shopifyListener {
         log:printInfo("Customer marketing consent updated", customerId = eventId.toString());
         // Add your business logic here
     }
-}
-
-listener http:Listener httpDefaultListener = http:getDefaultListener();
-
-service / on httpDefaultListener {
 }
 
