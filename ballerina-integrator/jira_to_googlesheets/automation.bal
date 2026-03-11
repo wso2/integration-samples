@@ -13,21 +13,54 @@ SheetRow columns = [
 
 string currentTimeStamp = check getFormattedCurrentTimeStamp();
 
+function getOrCreateSpreadsheet(string sheetName) returns [string, sheets:Sheet]|error {
+    string? configuredSpreadsheetId = spreadsheetId;
+    if configuredSpreadsheetId is string {
+        string trimmedId = configuredSpreadsheetId.trim();
+        if trimmedId != "" {
+            log:printInfo("Using existing spreadsheet with ID: " + trimmedId);
+            sheets:Sheet sheet = check sheetsClient->addSheet(trimmedId, sheetName);
+            return [trimmedId, sheet];
+        }
+    }
+    
+    sheets:Spreadsheet spreadsheet = check sheetsClient->createSpreadsheet(name = sheetName);
+    log:printInfo("Spreadsheet created with name: " + sheetName);
+    return [spreadsheet.spreadsheetId, spreadsheet.sheets[0]];
+}
+
 public function runAutomation() returns error? {
 
      do {
+         if jiraProjectKey.trim() == "" {
+             return error("jiraProjectKey cannot be empty");
+         }
          string jql = string `project=${jiraProjectKey}`;
          string prefix = "Jira Issues";
+
+         if timeFrame == YESTERDAY {
+             jql += " AND created >= -1d";
+             prefix = "New Jira Issues Since Yesterday";
+         } else if timeFrame == LAST_WEEK {
+             jql += " AND created >= -7d";
+             prefix = "New Jira Issues Since Last Week";
+         } else if timeFrame == LAST_MONTH {
+             jql += " AND created >= -30d";
+             prefix = "New Jira Issues Since Last Month";
+         } else if timeFrame == LAST_QUARTER {
+             jql += " AND created >= -90d";
+             prefix = "New Jira Issues Since Last Quarter";
+         }
          string spreadSheetName = string `${prefix} ${currentTimeStamp}`;
 
+         string selectedTimeFrame = timeFrame.toString();
+         log:printInfo("Time frame selected: " + selectedTimeFrame);
          log:printInfo("Executing JQL: " + jql);
 
          jira:SearchAndReconcileResults result = check jiraClient->/api/'3/search/jql(
              jql = jql,
              fields = ["summary", "status", "assignee", "created", "duedate"]
          );
-
-         log:printInfo("Raw result: " + result.toString());
 
          jira:IssueBean[]? issueBeans = result.issues;
          
@@ -36,7 +69,6 @@ public function runAutomation() returns error? {
              return;
          }
 
-         // Convert IssueBean[] to IssueData[]
          IssueData[] issues = from jira:IssueBean bean in issueBeans
                               select convertBeanToIssueData(bean);
 
@@ -47,21 +79,9 @@ public function runAutomation() returns error? {
          SheetRow[] allValues = [columns];
          allValues.push(...issueValues);
 
-         sheets:Sheet sheet;
-         string workingSpreadsheetId;
-         if spreadsheetId is string {
-             workingSpreadsheetId = spreadsheetId ?: "";
-             log:printInfo("Using existing spreadsheet with ID: " + workingSpreadsheetId);
-             sheet = check sheetsClient->addSheet(workingSpreadsheetId, spreadSheetName);
-         } else {
-             sheets:Spreadsheet spreadsheet =
-                 check sheetsClient->createSpreadsheet(name = spreadSheetName);
-
-             log:printInfo("Spreadsheet created with name: " + spreadSheetName);
-
-             workingSpreadsheetId = spreadsheet.spreadsheetId;
-             sheet = spreadsheet.sheets[0];
-         }
+         [string, sheets:Sheet] spreadsheetResult = check getOrCreateSpreadsheet(spreadSheetName);
+         string workingSpreadsheetId = spreadsheetResult[0];
+         sheets:Sheet sheet = spreadsheetResult[1];
 
          sheets:A1Range a1Range = {
              sheetName: sheet.properties.title

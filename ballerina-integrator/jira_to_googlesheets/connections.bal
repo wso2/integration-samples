@@ -1,4 +1,4 @@
-import ballerinax/googleapis.sheets;
+import ballerinax/googleapis.sheets as sheets;
 import ballerinax/jira;
 
 final jira:Client jiraClient = check new (

@@ -1,6 +1,5 @@
 import ballerina/time;
 import ballerinax/jira;
-import ballerina/log;
 import ballerina/os;
 
 function convertBeanToIssueData(jira:IssueBean bean) returns IssueData {
@@ -9,55 +8,47 @@ function convertBeanToIssueData(jira:IssueBean bean) returns IssueData {
     AssigneeData? assignee = ();
     string created = "";
     string dueDate = "";
-
-    log:printInfo("Processing issue bean: " + bean.toString());
     
-    // Safely extract fields from the bean using index notation for dynamic records
-    if bean.fields !is () {
-        var fields = bean.fields;
-        log:printInfo("Fields found: " + fields.toString());
+    record {| anydata...; |}? beanFields = bean.fields;
+    if beanFields is record {} {
+        map<anydata> fields = beanFields;
         
-        // Extract summary
-        if fields["summary"] is string {
+        if fields.hasKey("summary") && fields["summary"] is string {
             summary = <string>fields["summary"];
-            log:printDebug("Summary: " + summary);
         }
         
-        // Extract created
-        if fields["created"] is string {
+        if fields.hasKey("created") && fields["created"] is string {
             created = formatIsoDateTime(<string>fields["created"]);
-            log:printDebug("Created: " + created);
         }
         
-        // Extract dueDate
-        if fields["duedate"] is string {
-            dueDate = <string>fields["duedate"];
-            log:printDebug("Due Date: " + dueDate);
-        }
-        
-        // Extract status
-        if fields["status"] !is () {
-            var status = fields["status"];
-            if status is record {} && status["name"] is string {
-                statusName = <string>status["name"];
-                log:printDebug("Status: " + statusName);
+        if fields.hasKey("duedate") {
+            anydata duedateValue = fields["duedate"];
+            if duedateValue is string {
+                dueDate = duedateValue;
             }
         }
         
-        // Extract assignee
-        if fields["assignee"] !is () {
-            var assigneeRec = fields["assignee"];
-            if assigneeRec is record {} && assigneeRec["displayName"] is string {
-                string displayName = <string>assigneeRec["displayName"];
-                assignee = {displayName: displayName};
-                log:printDebug("Assignee: " + displayName);
+        if fields.hasKey("status") {
+            anydata statusValue = fields["status"];
+            if statusValue is record {} {
+                map<anydata> statusMap = statusValue;
+                if statusMap.hasKey("name") && statusMap["name"] is string {
+                    statusName = <string>statusMap["name"];
+                }
             }
         }
-    } else {
-        log:printDebug("No fields found in bean");
+        
+        if fields.hasKey("assignee") {
+            anydata assigneeValue = fields["assignee"];
+            if assigneeValue is record {} {
+                map<anydata> assigneeMap = assigneeValue;
+                if assigneeMap.hasKey("displayName") && assigneeMap["displayName"] is string {
+                    string displayName = <string>assigneeMap["displayName"];
+                    assignee = {displayName: displayName};
+                }
+            }
+        }
     }
-
-    log:printInfo(string `Converted issue - Key: ${bean.key ?: "EMPTY"}, Summary: ${summary}, Status: ${statusName}`);
 
     return {
         key: bean.key ?: "",
@@ -95,15 +86,4 @@ function getFormattedCurrentTimeStamp() returns string|error {
         return string `${currentTime.year.toString()}-${currentTime.month.toString().padZero(2)}-${currentTime.day.toString().padZero(2)} ${currentTime.hour.toString().padZero(2)}:${currentTime.minute.toString().padZero(2)}`;
     }
     return error("Invalid time zone: " + detectedTz);
-}
-
-function mapIssueToRow(IssueData issue) returns SheetRow {
-    string key = issue.key;
-    string summary = issue.fields.summary;
-    string status = issue.fields.status.name;
-    string assignee = issue.fields.assignee?.displayName ?: "Unassigned";
-    string created = issue.fields.created;
-    string dueDate = issue.fields.dueDate;
-
-    return [key, summary, status, assignee, created, dueDate];
 }
