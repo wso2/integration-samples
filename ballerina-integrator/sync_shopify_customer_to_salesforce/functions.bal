@@ -3,7 +3,7 @@ import ballerinax/salesforce;
 import ballerinax/trigger.shopify;
 
 // Check if contact exists by email (duplicate check)
-public function findContactByEmail(string email) returns string?|error {
+public function findContactByEmail(string email) returns ContactQueryResult?|error {
     string soqlQuery = string `SELECT Id, Email, FirstName, LastName, AccountId FROM Contact WHERE Email = '${email}' LIMIT 1`;
     stream<ContactQueryResult, error?> resultStream = check salesforceClient->query(soql = soqlQuery);
     
@@ -11,7 +11,7 @@ public function findContactByEmail(string email) returns string?|error {
     check resultStream.close();
     
     if result is record {|ContactQueryResult value;|} {
-        return result.value.Id;
+        return result.value;
     }
     return ();
 }
@@ -69,15 +69,36 @@ public function findOrCreateAccount(shopify:CustomerEvent customerEvent) returns
 }
 
 // Create or update Salesforce contact from Shopify customer
-public function createSalesforceContact(shopify:CustomerEvent customerEvent) returns error? {
+public function createOrUpdateSalesforceContact(shopify:CustomerEvent customerEvent) returns error? {
     string? email = customerEvent?.email;
     
     // Duplicate check by email
     if email is string && email.trim() != "" {
-        string? existingContactId = check findContactByEmail(email);
+        ContactQueryResult? existingContact = check findContactByEmail(email);
         
-        if existingContactId is string {
-            log:printInfo("Contact already exists with this email", contactId = existingContactId, email = email);
+        if existingContact is ContactQueryResult {
+            string existingContactId = existingContact.Id;
+            log:printInfo("Contact already exists, updating", contactId = existingContactId, email = email);
+            
+            // Find or create associated account
+            string? accountId = check findOrCreateAccount(customerEvent);
+            
+            // Map Shopify customer to Salesforce contact for update
+            SalesforceContact contactUpdate = mapShopifyCustomerToSalesforceContact(customerEvent, accountId = accountId);
+            
+            // Update existing contact
+            error? updateResult = salesforceClient->update(sObjectName = "Contact", id = existingContactId, sObject = contactUpdate);
+            
+            if updateResult is error {
+                log:printError("Failed to update Salesforce contact", 'error = updateResult, contactId = existingContactId);
+                return updateResult;
+            }
+            
+            log:printInfo("Successfully updated Salesforce contact", 
+                contactId = existingContactId,
+                accountId = accountId ?: "None",
+                origin = "Shopify"
+            );
             return;
         }
     }

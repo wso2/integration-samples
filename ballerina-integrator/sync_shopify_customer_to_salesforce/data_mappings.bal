@@ -25,6 +25,41 @@ public function mapShopifyCustomerToSalesforceContact(
         contact.OwnerId = ownerId;
     }
     
+    // Enrich description with order data (total spent and order count)
+    string? totalSpent = customerEvent?.total_spent;
+    int? ordersCount = customerEvent?.orders_count;
+    
+    string enrichedDescription = string `Shopify Customer ID: ${customerId.toString()}`;
+    
+    if totalSpent is string && totalSpent.trim() != "" {
+        enrichedDescription = enrichedDescription + string ` | Total Spent: ${totalSpent}`;
+    }
+    
+    if ordersCount is int {
+        enrichedDescription = enrichedDescription + string ` | Orders: ${ordersCount}`;
+    }
+    
+    // Map marketing consent fields using standard Salesforce fields
+    json customerJson = customerEvent.toJson();
+    json|error emailMarketingConsentJson = customerJson.email_marketing_consent;
+    
+    if emailMarketingConsentJson is json && emailMarketingConsentJson != () {
+        json|error consentStateJson = emailMarketingConsentJson.state;
+        json|error consentUpdatedAtJson = emailMarketingConsentJson.consent_updated_at;
+        
+        if consentStateJson is string {
+            // Map to Salesforce's HasOptedOutOfEmail field
+            contact.HasOptedOutOfEmail = consentStateJson != "subscribed";
+            enrichedDescription = enrichedDescription + string ` | Marketing Consent: ${consentStateJson}`;
+        }
+        
+        if consentUpdatedAtJson is string {
+            enrichedDescription = enrichedDescription + string ` | Consent Updated: ${consentUpdatedAtJson}`;
+        }
+    }
+    
+    contact.Description = enrichedDescription;
+    
     return contact;
 }
 

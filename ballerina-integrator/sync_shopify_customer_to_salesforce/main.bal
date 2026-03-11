@@ -15,10 +15,10 @@ service shopify:CustomersService on shopifyListener {
         int? eventId = event?.id;
         log:printInfo("Received customer created event", customerId = eventId.toString());
 
-        // Create Salesforce contact
-        error? result = createSalesforceContact(event);
+        // Create or update Salesforce contact
+        error? result = createOrUpdateSalesforceContact(event);
         if result is error {
-            log:printError("Failed to create Salesforce contact", 'error = result, customerId = eventId.toString());
+            log:printError("Failed to create or update Salesforce contact", 'error = result, customerId = eventId.toString());
             return result;
         }
         

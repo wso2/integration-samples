@@ -31,6 +31,8 @@ public type SalesforceContact record {
     string LeadSource?;
     string OwnerId?;
     string RecordTypeId?;
+    boolean HasOptedOutOfEmail?;
+    boolean EmailBouncedReason?;
 };
 
 // Salesforce Account record
