@@ -13,7 +13,7 @@ configurable string salesforceRefreshUrl = "https://login.salesforce.com/service
 // Salesforce default values
 configurable string defaultRecordType = "Standard";
 configurable string defaultLeadSource = "Shopify";
-configurable string defaultOwnerId = ?;
+configurable string? defaultOwnerId = ();
 
 // HTTP listener configuration for Shopify webhooks
 public type ShopifyListenerConfig record {|

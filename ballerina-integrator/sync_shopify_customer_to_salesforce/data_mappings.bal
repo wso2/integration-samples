@@ -10,15 +10,22 @@ public function mapShopifyCustomerToSalesforceContact(
     string? email = customerEvent?.email;
     int? customerId = customerEvent?.id;
     
-    return {
+    SalesforceContact contact = {
         LastName: lastName ?: "Unknown",
         FirstName: firstName,
         Email: email,
         Description: string `Shopify Customer ID: ${customerId.toString()}`,
         AccountId: accountId,
-        LeadSource: defaultLeadSource,
-        OwnerId: defaultOwnerId
+        LeadSource: defaultLeadSource
     };
+    
+    // Only include OwnerId if it's provided and not empty
+    string? ownerId = defaultOwnerId;
+    if ownerId is string && ownerId.trim() != "" {
+        contact.OwnerId = ownerId;
+    }
+    
+    return contact;
 }
 
 // Extract domain from email for account matching
