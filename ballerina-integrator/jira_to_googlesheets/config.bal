@@ -2,9 +2,8 @@ configurable record {
     string baseUrl;
     string email;
     string apiToken;
+    string projectKey;
 } jiraConfig = ?;
-
-configurable string jiraProjectKey = ?;
 
 configurable record {
     string refreshToken;

@@ -32,10 +32,10 @@ function getOrCreateSpreadsheet(string sheetName) returns [string, sheets:Sheet]
 public function runAutomation() returns error? {
 
      do {
-         if jiraProjectKey.trim() == "" {
+         if jiraConfig.projectKey.trim() == "" {
              return error("jiraProjectKey cannot be empty");
          }
-         string jql = string `project=${jiraProjectKey}`;
+         string jql = string `project=${jiraConfig.projectKey}`;
          string prefix = "Jira Issues";
 
          if timeFrame == YESTERDAY {
