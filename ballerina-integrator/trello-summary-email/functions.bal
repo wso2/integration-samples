@@ -12,7 +12,6 @@ function fetchListCardsAsJson(string listId) returns json[]|error {
     return check cardsJson.ensureType();
 }
 
-// Fetch all cards from specified boards and lists
 function fetchTrelloCards() returns CardSummary[]|error {
     CardSummary[] allCards = [];
 
@@ -37,7 +36,6 @@ function fetchTrelloCards() returns CardSummary[]|error {
         );
         string boardName = board.name ?: "Unknown Board";
 
-        // Get lists from board - workaround for ambiguous resource access
         json boardJson = board.toJson();
         json listsJson = check boardJson.lists;
         json[] listsArray = check listsJson.ensureType();
@@ -46,12 +44,10 @@ function fetchTrelloCards() returns CardSummary[]|error {
             string listId = check listJson.id;
             string listName = check listJson.name;
 
-            // Filter by list IDs if specified
             if (trelloConfig.listIds.length() > 0 && trelloConfig.listIds.indexOf(listId) is ()) {
                 continue;
             }
 
-            // Fetch as raw JSON to tolerate Trello payload shape changes.
             json[] cardsArray = check fetchListCardsAsJson(listId);
 
             foreach json cardJson in cardsArray {
@@ -66,7 +62,6 @@ function fetchTrelloCards() returns CardSummary[]|error {
     return allCards;
 }
 
-// Process a single card from JSON and apply filters
 function processCardFromJson(json cardJson, string listName, string boardName) returns CardSummary?|error {
     string cardId = check cardJson.id;
     string cardName = check cardJson.name;
@@ -74,7 +69,6 @@ function processCardFromJson(json cardJson, string listName, string boardName) r
     string? cardDesc = check cardJson.desc;
     string description = cardDesc is string ? cardDesc : "";
 
-    // Calculate card age
     int cardAgeDays = 0;
     boolean isStale = false;
     string? dateLastActivity = check cardJson.dateLastActivity;
@@ -86,7 +80,6 @@ function processCardFromJson(json cardJson, string listName, string boardName) r
             isStale = cardAgeDays >= summaryConfig.staleCardDays;
     }
 
-    // Get attachment count and checklist progress from badges
     int attachmentCount = 0;
     int checklistItemsTotal = 0;
     int checklistItemsCompleted = 0;
@@ -107,7 +100,6 @@ function processCardFromJson(json cardJson, string listName, string boardName) r
         }
     }
 
-    // Extract labels
     string[] labelNames = [];
     json? labelsJson = check cardJson.labels;
     if labelsJson is json[] {
@@ -119,7 +111,6 @@ function processCardFromJson(json cardJson, string listName, string boardName) r
         }
     }
 
-    // Apply label filter
     if filterConfig.labels.length() > 0 {
         boolean hasMatchingLabel = false;
         foreach string filterLabel in filterConfig.labels {
@@ -133,7 +124,6 @@ function processCardFromJson(json cardJson, string listName, string boardName) r
         }
     }
 
-    // Extract member information
     string[] memberNames = [];
     json? membersJson = check cardJson.idMembers;
     if membersJson is json[] {
@@ -151,7 +141,6 @@ function processCardFromJson(json cardJson, string listName, string boardName) r
         }
     }
 
-    // Apply member filter
     if filterConfig.members.length() > 0 {
         boolean hasMatchingMember = false;
         foreach string filterMember in filterConfig.members {
@@ -165,7 +154,6 @@ function processCardFromJson(json cardJson, string listName, string boardName) r
         }
     }
 
-    // Parse due date
     time:Civil? dueDate = ();
     boolean isOverdue = false;
     string? dueDateStr = check cardJson.due;
@@ -174,13 +162,11 @@ function processCardFromJson(json cardJson, string listName, string boardName) r
         time:Utc dueDateUtc = check time:utcFromString(dueDateStr);
         dueDate = time:utcToCivil(dueDateUtc);
 
-        // Check if overdue
         time:Utc currentTime = time:utcNow();
         if dueDateUtc < currentTime {
             isOverdue = true;
         }
 
-        // Apply due date filter
         if filterConfig.includeDueDateFilter {
             time:Utc futureTime = time:utcAddSeconds(currentTime, filterConfig.dueDateDaysAhead * 24 * 60 * 60);
             if dueDateUtc > futureTime {
@@ -209,7 +195,6 @@ function processCardFromJson(json cardJson, string listName, string boardName) r
     };
 }
 
-// Group cards based on configuration
 function groupCards(CardSummary[] cards) returns GroupedSummary[] {
     map<CardSummary[]> groupMap = {};
 
@@ -258,13 +243,11 @@ function groupCards(CardSummary[] cards) returns GroupedSummary[] {
     return groupedSummaries;
 }
 
-// Format a UTC timestamp as a human-readable string
 function getFormattedTimestamp(time:Utc utcTime) returns string {
     time:Civil civil = time:utcToCivil(utcTime);
     return string `${civil.year}-${civil.month.toString().padZero(2)}-${civil.day.toString().padZero(2)} ${civil.hour.toString().padZero(2)}:${civil.minute.toString().padZero(2)} UTC`;
 }
 
-// Render a single group of cards as HTML table rows
 function getHtmlFormattedGroup(GroupedSummary group) returns string {
     string cardsHtml = "";
     foreach CardSummary card in group.cards {
@@ -356,7 +339,6 @@ function formatPercentageTwoDecimals(decimal value) returns string {
     return string `${wholePart.toString()}.${decimalPart.toString().padZero(2)}`;
 }
 
-// Generate HTML email content using a responsive table-based layout
 function generateEmailContent(GroupedSummary[] groupedSummaries, int totalCards, int overdueCount) returns string {
     int staleCount = 0;
     foreach GroupedSummary group in groupedSummaries {
@@ -441,8 +423,13 @@ function generateEmailContent(GroupedSummary[] groupedSummaries, int totalCards,
             ${groupsHtml}
 
             <tr>
-                <td style="padding: 30px; text-align: center; font-family: sans-serif; font-size: 12px; color: #6a737d; line-height: 18px; border-left: 1px solid #e1e4e8; border-right: 1px solid #e1e4e8; border-bottom: 1px solid #e1e4e8; border-radius: 0 0 6px 6px;">
-                    <p style="margin: 0;">You are receiving this Trello summary because it was scheduled via the Trello Summary Email integration.</p>
+                <td style="padding: 30px; text-align: center; font-family: sans-serif; font-size: 12px; color: #6a737d; line-height: 20px; border-left: 1px solid #e1e4e8; border-right: 1px solid #e1e4e8; border-bottom: 1px solid #e1e4e8; border-radius: 0 0 6px 6px;">
+                    <p style="margin: 0 0 10px 0;">You are receiving this Trello summary because it was scheduled via the Trello Summary Email integration.</p>
+                    <p style="margin: 0;">
+                        <a href="*|UNSUB|*" style="color: #6a737d; text-decoration: underline;">Unsubscribe</a>
+                        &nbsp;&bull;&nbsp;
+                        <a href="*|UPDATE_PROFILE|*" style="color: #6a737d; text-decoration: underline;">Update preferences</a>
+                    </p>
                 </td>
             </tr>
 
@@ -455,11 +442,11 @@ function generateEmailContent(GroupedSummary[] groupedSummaries, int totalCards,
 </html>`;
 }
 
-// Send email with summary using Mailchimp
 function sendEmailSummary(string htmlContent) returns error? {
-    string subject = string `${mailchimpConfig.subjectPrefix} - ${time:utcToString(time:utcNow())}`;
+    time:Civil currentDate = time:utcToCivil(time:utcNow());
+    string dateStr = string `${currentDate.year}-${currentDate.month.toString().padZero(2)}-${currentDate.day.toString().padZero(2)}`;
+    string subject = string `${mailchimpConfig.subjectPrefix} - ${dateStr}`;
 
-    // Create a campaign
     mailchimp:Campaign1 campaign = check mailchimpClient->postCampaigns({
         'type: "regular",
         recipients: {
@@ -478,7 +465,6 @@ function sendEmailSummary(string htmlContent) returns error? {
         return error("Failed to create campaign: Campaign ID is null");
     }
 
-    // Set campaign content
     _ = check mailchimpClient->putCampaignsIdContent(
         campaignId = campaignId,
         payload = {
@@ -486,11 +472,9 @@ function sendEmailSummary(string htmlContent) returns error? {
         }
     );
 
-    // Send the campaign
     _ = check mailchimpClient->postCampaignsIdActionsSend(campaignId = campaignId);
 }
 
-// Calculate overdue count
 function countOverdueCards(CardSummary[] cards) returns int {
     int count = 0;
     foreach CardSummary card in cards {
