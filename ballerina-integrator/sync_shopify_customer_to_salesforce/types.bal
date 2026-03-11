@@ -21,18 +21,61 @@ public type CustomerDeletedEvent record {
     string id;
 };
 
-// Salesforce Contact record
+// Salesforce Contact record with all standard fields
 public type SalesforceContact record {
+    // Required fields
     string LastName;
+    
+    // Name fields
     string FirstName?;
+    string Salutation?;
+    string MiddleName?;
+    string Suffix?;
+    
+    // Contact information
     string Email?;
-    string Description?;
+    string Phone?;
+    string MobilePhone?;
+    string HomePhone?;
+    string OtherPhone?;
+    string Fax?;
+    
+    // Mailing address
+    string MailingStreet?;
+    string MailingCity?;
+    string MailingState?;
+    string MailingPostalCode?;
+    string MailingCountry?;
+    
+    // Other address
+    string OtherStreet?;
+    string OtherCity?;
+    string OtherState?;
+    string OtherPostalCode?;
+    string OtherCountry?;
+    
+    // Account relationship
     string AccountId?;
+    
+    // Marketing and communication preferences
+    boolean HasOptedOutOfEmail?;
+    boolean HasOptedOutOfFax?;
+    boolean DoNotCall?;
+    
+    // Lead and ownership
     string LeadSource?;
     string OwnerId?;
     string RecordTypeId?;
-    boolean HasOptedOutOfEmail?;
-    boolean EmailBouncedReason?;
+    
+    // Additional information
+    string Title?;
+    string Department?;
+    string Description?;
+    string AssistantName?;
+    string AssistantPhone?;
+    
+    // Dates
+    string Birthdate?;
 };
 
 // Salesforce Account record

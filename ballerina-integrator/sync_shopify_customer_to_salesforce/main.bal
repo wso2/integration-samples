@@ -27,8 +27,16 @@ service shopify:CustomersService on shopifyListener {
 
     remote function onCustomersUpdate(shopify:CustomerEvent event) returns error? {
         int? eventId = event?.id;
-        log:printInfo("Customer updated", customerId = eventId.toString());
-        // Add your business logic here
+        log:printInfo("Received customer updated event", customerId = eventId.toString());
+
+        // Create or update Salesforce contact with all updated details
+        error? result = createOrUpdateSalesforceContact(event);
+        if result is error {
+            log:printError("Failed to update Salesforce contact", 'error = result, customerId = eventId.toString());
+            return result;
+        }
+        
+        log:printInfo("Successfully processed customer updated event", customerId = eventId.toString());
     }
 
     remote function onCustomersDelete(shopify:CustomerEvent event) returns error? {
