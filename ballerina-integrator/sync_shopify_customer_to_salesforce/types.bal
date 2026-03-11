@@ -31,8 +31,6 @@ public type SalesforceContact record {
     string LeadSource?;
     string OwnerId?;
     string RecordTypeId?;
-    string Customer_Origin__c?;
-    string Shopify_Customer_ID__c?;
 };
 
 // Salesforce Account record

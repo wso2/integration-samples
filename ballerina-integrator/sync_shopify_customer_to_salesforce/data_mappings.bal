@@ -17,9 +17,7 @@ public function mapShopifyCustomerToSalesforceContact(
         Description: string `Shopify Customer ID: ${customerId.toString()}`,
         AccountId: accountId,
         LeadSource: defaultLeadSource,
-        OwnerId: defaultOwnerId,
-        Customer_Origin__c: "Shopify",
-        Shopify_Customer_ID__c: customerId.toString()
+        OwnerId: defaultOwnerId
     };
 }
 
