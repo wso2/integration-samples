@@ -1,44 +1,6 @@
 // Shopify Order event types
-public type OrderCreatedEvent record {
-    string id;
-    string email?;
-    decimal total_price?;
-    string financial_status?;
-    string fulfillment_status?;
-};
-
-public type OrderUpdatedEvent record {
-    string id;
-    string email?;
-    decimal total_price?;
-    string financial_status?;
-    string fulfillment_status?;
-};
-
-public type OrderCancelledEvent record {
-    string id;
-    string cancel_reason?;
-    string cancelled_at?;
-};
 
 // Shopify Product event types
-public type ProductCreatedEvent record {
-    string id;
-    string title;
-    string product_type?;
-    string vendor?;
-};
-
-public type ProductUpdatedEvent record {
-    string id;
-    string title;
-    string product_type?;
-    string vendor?;
-};
-
-public type ProductDeletedEvent record {
-    string id;
-};
 
 // Shopify Customer event types
 public type CustomerCreatedEvent record {

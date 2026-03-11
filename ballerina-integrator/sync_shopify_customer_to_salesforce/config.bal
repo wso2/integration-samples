@@ -1,4 +1,5 @@
 // Shopify webhook configuration
+// This should be the webhook secret from Shopify (used for HMAC SHA256 validation)
 configurable string shopifySecret = ?;
 configurable int port = 8090;
 

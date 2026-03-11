@@ -13,10 +13,16 @@ service shopify:CustomersService on shopifyListener {
 
     remote function onCustomersCreate(shopify:CustomerEvent event) returns error? {
         int? eventId = event?.id;
-        log:printInfo("Customer created", customerId = eventId.toString());
+        log:printInfo("Received customer created event", customerId = eventId.toString());
 
         // Create Salesforce contact
-        check createSalesforceContact(event);
+        error? result = createSalesforceContact(event);
+        if result is error {
+            log:printError("Failed to create Salesforce contact", 'error = result, customerId = eventId.toString());
+            return result;
+        }
+        
+        log:printInfo("Successfully processed customer created event", customerId = eventId.toString());
     }
 
     remote function onCustomersUpdate(shopify:CustomerEvent event) returns error? {
