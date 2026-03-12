@@ -56,6 +56,7 @@ listId = "<mailchimp-audience-list-id>"
 fromName = "<Sender Name>"
 fromAddress = "<sender@example.com>"
 subjectPrefix = "Trello Cards Summary"   # Optional, has default
+includeDateInSubject = true              # If true, today's date is shown in the subject
 
 [scheduleConfig]
 cron = "0 9 * * 1"   # Every Monday at 9:00 AM (default)
@@ -96,6 +97,7 @@ showChecklistProgress = true
 | `fromName` | Sender display name for the email campaign |
 | `fromAddress` | Sender reply-to email address |
 | `subjectPrefix` | Prefix for the email subject line (default: `Trello Cards Summary`) |
+| `includeDateInSubject` | If `true` (default), today's date is included in the email subject (e.g., `Trello Cards Summary - 2026-03-12`) |
 
 #### `scheduleConfig`
 

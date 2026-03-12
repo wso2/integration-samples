@@ -1,13 +1,11 @@
 import ballerina/time;
 
-// Summary grouping options
 public enum SummaryGrouping {
     LIST,
     MEMBER,
     LABEL
 }
 
-// Card summary record
 public type CardSummary record {|
     string id;
     string name;
@@ -27,7 +25,6 @@ public type CardSummary record {|
     decimal checklistCompletionPercentage;
 |};
 
-// Grouped summary
 public type GroupedSummary record {|
     string groupName;
     CardSummary[] cards;
