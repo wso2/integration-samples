@@ -1,95 +1,140 @@
+import ballerina/log;
 import ballerina/time;
+import ballerinax/trigger.shopify;
 import ballerinax/shopify.admin;
 import ballerinax/twilio;
 
-// Function to fetch products from Shopify
-function getShopifyProducts() returns Product[]|error {
-    admin:ProductList response = check adminClient->getProducts();
+// Fetch current inventory for all variants of a product from Shopify Admin API.
+function getProductInventory(int productId) returns map<ProductInventoryInfo>|error {
+    admin:ProductList response = check adminClient->getProducts(ids = productId.toString());
     anydata productsData = response["products"];
     if productsData is () {
-        return [];
+        return {};
     }
     admin:Product[] adminProducts = check productsData.cloneWithType();
+    if adminProducts.length() == 0 {
+        return {};
+    }
 
-    Product[] products = [];
-    foreach admin:Product adminProduct in adminProducts {
-        int id = adminProduct?.id ?: 0;
-        string title = adminProduct?.title ?: "";
-        string? vendor = adminProduct?.vendor;
-
-        ProductVariant[] variants = [];
-        admin:ProductVariant[]? adminVariants = adminProduct?.variants;
-        if adminVariants is admin:ProductVariant[] {
-            foreach admin:ProductVariant adminVariant in adminVariants {
-                variants.push({
-                    id: adminVariant?.id ?: 0,
-                    title: adminVariant?.title ?: "",
-                    inventory_quantity: adminVariant?.inventory_quantity,
-                    sku: adminVariant?.sku
-                });
+    map<ProductInventoryInfo> variantInventory = {};
+    admin:Product product = adminProducts[0];
+    string productTitle = product?.title ?: "";
+    admin:ProductVariant[]? variants = product?.variants;
+    if variants is admin:ProductVariant[] {
+        foreach admin:ProductVariant variant in variants {
+            int variantId = variant?.id ?: 0;
+            if variantId == 0 {
+                continue;
             }
-        }
-
-        products.push({id, title, vendor, variants});
-    }
-
-    return products;
-}
-
-// Function to filter products based on configured product IDs
-function filterProducts(Product[] products) returns Product[] {
-    if productIdsToMonitor.length() == 0 {
-        return products;
-    }
-
-    Product[] filteredProducts = [];
-    foreach Product product in products {
-        if productIdsToMonitor.indexOf(product.id) is int {
-            filteredProducts.push(product);
-        }
-    }
-
-    return filteredProducts;
-}
-
-// Function to check if inventory is below threshold
-function checkInventoryLevels(Product[] products) returns map<ProductInventoryInfo> {
-    map<ProductInventoryInfo> lowInventoryProducts = {};
-
-    foreach Product product in products {
-        foreach ProductVariant variant in product.variants {
-            int? inventoryQuantity = variant?.inventory_quantity;
-            if inventoryQuantity is int && inventoryQuantity < inventoryThreshold {
-                string? sku = variant?.sku;
-                string skuValue = sku is string ? sku : "";
-                string productKey = skuValue != "" ? skuValue : string `${product.title} - ${variant.title}`;
-
-                lowInventoryProducts[productKey] = {
-                    productId: product.id,
-                    productName: product.title,
-                    variantTitle: variant.title,
-                    sku: skuValue,
-                    inventory: inventoryQuantity
+            int? inventoryQty = variant?.inventory_quantity;
+            if inventoryQty is int {
+                variantInventory[variantId.toString()] = {
+                    productId: productId,
+                    productName: productTitle,
+                    variantTitle: variant?.title ?: "",
+                    sku: variant?.sku ?: "",
+                    inventory: inventoryQty
                 };
             }
         }
     }
+    return variantInventory;
+}
 
-    return lowInventoryProducts;
+// Process line items from a new Shopify order: for each ordered product variant,
+// fetch current inventory and send an SMS alert if below the threshold.
+function processOrderedLineItems(shopify:LineItem[] lineItems) returns error? {
+    foreach shopify:LineItem lineItem in lineItems {
+        int productId = lineItem?.product_id ?: 0;
+        int variantId = lineItem?.variant_id ?: 0;
+        if productId == 0 || variantId == 0 {
+            continue;
+        }
+
+        // Fetch current inventory from Shopify Admin API
+        map<ProductInventoryInfo>|error inventoryResult = getProductInventory(productId);
+        if inventoryResult is error {
+            log:printError("Failed to fetch inventory for product",
+                productId = productId, 'error = inventoryResult);
+            continue;
+        }
+
+        ProductInventoryInfo? productInfo = inventoryResult[variantId.toString()];
+        if productInfo is () {
+            continue;
+        }
+
+        if productInfo.inventory >= inventoryThreshold {
+            log:printDebug("Inventory above threshold, skipping alert",
+                product = productInfo.productName,
+                sku = productInfo.sku,
+                inventory = productInfo.inventory,
+                threshold = inventoryThreshold);
+            continue;
+        }
+
+        string sku = productInfo.sku;
+        string skuKey = "sku:" + sku;
+
+        // Skip if SKU-level cooldown has not expired
+        if !isCooldownExpired(skuKey, cooldownTracker) {
+            log:printInfo("Skipping alert: cooldown period active for SKU",
+                sku = sku,
+                cooldownPeriodHours = cooldownPeriodHours);
+            continue;
+        }
+
+        log:printWarn("Low inventory detected for ordered product",
+            product = productInfo.productName,
+            sku = sku,
+            inventory = productInfo.inventory,
+            threshold = inventoryThreshold);
+
+        RecipientDeliveryResult[] deliveryResults = sendInventoryAlert(productInfo);
+        int successCount = 0;
+        decimal currentTime = time:monotonicNow();
+
+        foreach RecipientDeliveryResult result in deliveryResults {
+            if result.success {
+                successCount += 1;
+                cooldownTracker["recipient:" + result.recipient + "|sku:" + sku] = {
+                    lastAlertTime: currentTime,
+                    inventory: productInfo.inventory
+                };
+            } else {
+                string detail = result.errorDetail ?: "unknown error";
+                log:printError("Failed to send alert to recipient",
+                    recipient = maskPhone(result.recipient),
+                    product = productInfo.productName,
+                    detail = detail);
+            }
+        }
+
+        if successCount > 0 {
+            log:printInfo("Inventory alert sent",
+                successCount = successCount,
+                totalRecipients = deliveryResults.length());
+        }
+
+        // Set SKU-level cooldown only when all recipients were notified successfully
+        if successCount == deliveryResults.length() && deliveryResults.length() > 0 {
+            cooldownTracker[skuKey] = {
+                lastAlertTime: currentTime,
+                inventory: productInfo.inventory
+            };
+        }
+    }
 }
 
 // Function to check if cooldown period has passed
-function isCooldownExpired(string sku, map<AlertCooldown> cooldownTracker) returns boolean {
-    AlertCooldown? cooldownInfo = cooldownTracker[sku];
-
+function isCooldownExpired(string key, map<AlertCooldown> cooldownTracker) returns boolean {
+    AlertCooldown? cooldownInfo = cooldownTracker[key];
     if cooldownInfo is () {
         return true;
     }
-
     decimal currentTime = time:monotonicNow();
     decimal timeDifference = currentTime - cooldownInfo.lastAlertTime;
     decimal cooldownSeconds = cooldownPeriodHours * 3600.0;
-
     return timeDifference >= cooldownSeconds;
 }
 
@@ -107,21 +152,43 @@ function formatSmsMessage(ProductInventoryInfo productInfo) returns string {
     message = inventoryPattern.replaceAll(message, productInfo.inventory.toString());
     message = skuPattern.replaceAll(message, productInfo.sku);
     message = thresholdPattern.replaceAll(message, inventoryThreshold.toString());
-
     return message;
 }
 
-// Function to send SMS via Twilio to multiple recipients
-function sendInventoryAlert(ProductInventoryInfo productInfo) returns error? {
-    string messageBody = formatSmsMessage(productInfo);
+// Returns a masked representation of a phone number for safe logging.
+function maskPhone(string phone) returns string {
+    int len = phone.length();
+    if len <= 4 {
+        return "****";
+    }
+    string maskedPrefix = re `\d`.replaceAll(phone.substring(0, len - 4), "*");
+    return maskedPrefix + phone.substring(len - 4);
+}
 
-    foreach string recipientNumber in twilioRecipientNumbers {
+// Send SMS via Twilio to all configured recipients.
+// Returns per-recipient delivery results so callers can track cooldown state individually.
+function sendInventoryAlert(ProductInventoryInfo productInfo) returns RecipientDeliveryResult[] {
+    string messageBody = formatSmsMessage(productInfo);
+    RecipientDeliveryResult[] results = [];
+
+    foreach string recipientNumber in twilioConfig.recipientNumbers {
+        // Skip recipients whose individual cooldown has not expired
+        if !isCooldownExpired("recipient:" + recipientNumber + "|sku:" + productInfo.sku, cooldownTracker) {
+            continue;
+        }
+
         twilio:CreateMessageRequest messageRequest = {
             To: recipientNumber,
-            From: twilioFromNumber,
+            From: twilioConfig.fromNumber,
             Body: messageBody
         };
 
-        twilio:Message _ = check twilioClient->createMessage(messageRequest);
+        twilio:Message|error sendResult = twilioClient->createMessage(messageRequest);
+        if sendResult is error {
+            results.push({recipient: recipientNumber, success: false, errorDetail: sendResult.message()});
+        } else {
+            results.push({recipient: recipientNumber, success: true, errorDetail: ()});
+        }
     }
+    return results;
 }

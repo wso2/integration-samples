@@ -7,7 +7,3 @@ distribution = "2201.13.1"
 
 [build-options]
 sticky = false
-
-[dependencies]
-"ballerinax/shopify.admin" = "2.5.0"
-"ballerinax/twilio" = "5.0.1"
