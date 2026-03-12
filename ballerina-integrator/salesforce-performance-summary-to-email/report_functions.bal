@@ -3,12 +3,12 @@ import ballerinax/salesforce;
 
 public function getReportMetadata(string reportId) returns map<json>|error {
     string endpoint = string `/services/data/v59.0/analytics/reports/${reportId}/describe`;
-    http:Client baseClient = check new (salesforceBaseUrl, {
+    http:Client baseClient = check new (salesforceConfig.baseUrl, {
         auth: {
-            clientId: salesforceClientId,
-            clientSecret: salesforceClientSecret,
-            refreshToken: salesforceRefreshToken,
-            refreshUrl: salesforceRefreshUrl
+            clientId: salesforceConfig.clientId,
+            clientSecret: salesforceConfig.clientSecret,
+            refreshToken: salesforceConfig.refreshToken,
+            refreshUrl: salesforceConfig.refreshUrl
         }
     });
 
@@ -206,7 +206,12 @@ public function generateReportSummary(
         string previousStartDate,
         string previousEndDate
 ) returns ReportSummary|error {
-    map<json> metadata = check getReportMetadata(reportId);
+    map<json>|error metadata = getReportMetadata(reportId);
+    if metadata is error {
+        string errorMsg = metadata.message();
+        return error(string `Failed to access report '${reportId}': ${errorMsg}`);
+    }
+    
     MetricInfo[] metricTemplate = check extractMetricLabels(metadata);
 
     string reportName = "Salesforce Performance Report";
@@ -239,6 +244,10 @@ public function generateReportSummary(
             metricTemplate,
             previousResult.rawFactMap
     );
+
+    if currentMetrics.length() == 0 {
+        return error("No metrics found in report. The report may be empty or missing aggregated fields.");
+    }
 
     return {
         reportId: reportId,

@@ -1,6 +1,0 @@
-[package]
-org = "wso2"
-name = "monthly_salesforce_performance_email"
-version = "0.1.0"
-title = "send-monthly-salesforce-performance-email"
-distribution= "2201.13.1"

@@ -5,35 +5,77 @@
     "wso2": {
       "type": "object",
       "properties": {
-        "monthly_salesforce_performance_email": {
+        "salesforce_performance_summary_to_email": {
           "type": "object",
           "properties": {
-            "salesforceBaseUrl": {
-              "type": "string",
+            "salesforceConfig": {
+              "type": "object",
+              "properties": {
+                "refreshToken": {
+                  "type": "string"
+                },
+                "clientId": {
+                  "type": "string"
+                },
+                "clientSecret": {
+                  "type": "string"
+                },
+                "refreshUrl": {
+                  "type": "string"
+                },
+                "baseUrl": {
+                  "type": "string"
+                }
+              },
+              "additionalProperties": false,
+              "required": [
+                "refreshToken",
+                "clientId",
+                "clientSecret",
+                "refreshUrl",
+                "baseUrl"
+              ],
               "description": ""
             },
-            "salesforceClientId": {
-              "type": "string",
+            "mailchimpConfig": {
+              "type": "object",
+              "properties": {
+                "mandrilApiKey": {
+                  "type": "string"
+                }
+              },
+              "additionalProperties": false,
+              "required": [
+                "mandrilApiKey"
+              ],
               "description": ""
             },
-            "salesforceClientSecret": {
-              "type": "string",
-              "description": ""
-            },
-            "salesforceRefreshToken": {
-              "type": "string",
-              "description": ""
-            },
-            "salesforceRefreshUrl": {
-              "type": "string",
-              "description": ""
-            },
-            "mailchimpApiKey": {
-              "type": "string",
-              "description": ""
-            },
-            "scheduleDayOfMonth": {
-              "type": "integer",
+            "emailConfig": {
+              "type": "object",
+              "properties": {
+                "fromEmail": {
+                  "type": "string"
+                },
+                "fromName": {
+                  "type": "string"
+                },
+                "recipientEmails": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "subjectTemplate": {
+                  "type": "string"
+                }
+              },
+              "additionalProperties": false,
+              "required": [
+                "fromEmail",
+                "fromName",
+                "recipientEmails",
+                "subjectTemplate"
+              ],
               "description": ""
             },
             "salesforceReportId": {
@@ -41,54 +83,18 @@
               "description": ""
             },
             "timePeriod": {
-              "type": "string",
-              "description": ""
-            },
-            "recipientEmails": {
-              "type": "array",
-              "items": {
-                "type": "string"
-              },
-              "description": ""
-            },
-            "emailSubjectTemplate": {
-              "type": "string",
+              "enum": [
+                "yearly",
+                "quarterly",
+                "monthly"
+              ],
               "description": ""
             },
             "comparisonPeriod": {
-              "type": "string",
-              "description": ""
-            },
-            "filterByTeam": {
-              "type": "string",
-              "description": ""
-            },
-            "filterByTerritory": {
-              "type": "string",
-              "description": ""
-            },
-            "filterByOwner": {
-              "type": "string",
-              "description": ""
-            },
-            "fromEmail": {
-              "type": "string",
-              "description": ""
-            },
-            "fromName": {
-              "type": "string",
-              "description": ""
-            },
-            "targetRevenue": {
-              "type": "number",
-              "description": ""
-            },
-            "targetDealsCount": {
-              "type": "integer",
-              "description": ""
-            },
-            "targetPipelineValue": {
-              "type": "number",
+              "enum": [
+                "YoY",
+                "MoM"
+              ],
               "description": ""
             },
             "includePerRepBreakdown": {
@@ -98,14 +104,10 @@
           },
           "additionalProperties": false,
           "required": [
-            "salesforceBaseUrl",
-            "salesforceClientId",
-            "salesforceClientSecret",
-            "salesforceRefreshToken",
-            "salesforceRefreshUrl",
-            "mailchimpApiKey",
-            "salesforceReportId",
-            "fromEmail"
+            "salesforceConfig",
+            "mailchimpConfig",
+            "emailConfig",
+            "salesforceReportId"
           ]
         }
       },
@@ -117,64 +119,6 @@
         "log": {
           "type": "object",
           "properties": {
-            "format": {
-              "enum": [
-                "logfmt",
-                "json"
-              ],
-              "description": ""
-            },
-            "level": {
-              "enum": [
-                "WARN",
-                "INFO",
-                "ERROR",
-                "DEBUG"
-              ],
-              "description": ""
-            },
-            "modules": {
-              "type": "array",
-              "items": {
-                "type": "object",
-                "properties": {
-                  "name": {
-                    "type": "string"
-                  },
-                  "level": {
-                    "enum": [
-                      "WARN",
-                      "INFO",
-                      "ERROR",
-                      "DEBUG"
-                    ]
-                  }
-                },
-                "additionalProperties": false,
-                "required": [
-                  "name",
-                  "level"
-                ],
-                "name": "ballerina/log:2.17.0:Module"
-              },
-              "description": ""
-            },
-            "keyValues": {
-              "type": "object",
-              "properties": {
-                "msg": {},
-                "message": {},
-                "time": {},
-                "level": {},
-                "error": {},
-                "stackTrace": {},
-                "module": {},
-                "icp\\.runtimeId": {}
-              },
-              "additionalProperties": false,
-              "name": "ballerina/log:2.17.0:AnydataKeyValues",
-              "description": ""
-            },
             "destinations": {
               "type": "array",
               "items": {
@@ -252,6 +196,64 @@
                   }
                 ]
               },
+              "description": ""
+            },
+            "modules": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string"
+                  },
+                  "level": {
+                    "enum": [
+                      "WARN",
+                      "INFO",
+                      "ERROR",
+                      "DEBUG"
+                    ]
+                  }
+                },
+                "additionalProperties": false,
+                "required": [
+                  "name",
+                  "level"
+                ],
+                "name": "ballerina/log:2.17.0:Module"
+              },
+              "description": ""
+            },
+            "keyValues": {
+              "type": "object",
+              "properties": {
+                "msg": {},
+                "message": {},
+                "time": {},
+                "level": {},
+                "error": {},
+                "stackTrace": {},
+                "module": {},
+                "icp\\.runtimeId": {}
+              },
+              "additionalProperties": false,
+              "name": "ballerina/log:2.17.0:AnydataKeyValues",
+              "description": ""
+            },
+            "format": {
+              "enum": [
+                "logfmt",
+                "json"
+              ],
+              "description": ""
+            },
+            "level": {
+              "enum": [
+                "WARN",
+                "INFO",
+                "ERROR",
+                "DEBUG"
+              ],
               "description": ""
             },
             "enableSensitiveDataMasking": {

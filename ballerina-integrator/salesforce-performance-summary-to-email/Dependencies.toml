@@ -32,14 +32,6 @@ dependencies = [
 
 [[package]]
 org = "ballerina"
-name = "cloud"
-version = "4.0.0"
-modules = [
-	{org = "ballerina", packageName = "cloud", moduleName = "cloud"}
-]
-
-[[package]]
-org = "ballerina"
 name = "constraint"
 version = "1.7.0"
 dependencies = [
@@ -282,7 +274,7 @@ dependencies = [
 [[package]]
 org = "ballerina"
 name = "observe"
-version = "1.7.0"
+version = "1.7.1"
 dependencies = [
 	{org = "ballerina", name = "jballerina.java"}
 ]
@@ -406,10 +398,9 @@ modules = [
 
 [[package]]
 org = "wso2"
-name = "monthly_salesforce_performance_email"
+name = "salesforce_performance_summary_to_email"
 version = "0.1.0"
 dependencies = [
-	{org = "ballerina", name = "cloud"},
 	{org = "ballerina", name = "http"},
 	{org = "ballerina", name = "io"},
 	{org = "ballerina", name = "lang.regexp"},
@@ -420,6 +411,6 @@ dependencies = [
 	{org = "ballerinax", name = "salesforce"}
 ]
 modules = [
-	{org = "wso2", packageName = "monthly_salesforce_performance_email", moduleName = "monthly_salesforce_performance_email"}
+	{org = "wso2", packageName = "salesforce_performance_summary_to_email", moduleName = "salesforce_performance_summary_to_email"}
 ]
 
