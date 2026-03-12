@@ -1,0 +1,118 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "properties": {
+    "wso2": {
+      "type": "object",
+      "properties": {
+        "hubspot_contacts_to_google_sheet": {
+          "type": "object",
+          "properties": {
+            "hubspotAccessToken": {
+              "type": "string",
+              "description": ""
+            },
+            "googleClientId": {
+              "type": "string",
+              "description": ""
+            },
+            "googleClientSecret": {
+              "type": "string",
+              "description": ""
+            },
+            "googleRefreshToken": {
+              "type": "string",
+              "description": ""
+            },
+            "googleRefreshUrl": {
+              "type": "string",
+              "description": ""
+            },
+            "spreadsheetId": {
+              "type": "string",
+              "description": ""
+            },
+            "subscriberSheetName": {
+              "type": "string",
+              "description": ""
+            },
+            "leadSheetName": {
+              "type": "string",
+              "description": ""
+            },
+            "marketingqualifiedleadSheetName": {
+              "type": "string",
+              "description": ""
+            },
+            "salesqualifiedleadSheetName": {
+              "type": "string",
+              "description": ""
+            },
+            "opportunitySheetName": {
+              "type": "string",
+              "description": ""
+            },
+            "customerSheetName": {
+              "type": "string",
+              "description": ""
+            },
+            "evangelistSheetName": {
+              "type": "string",
+              "description": ""
+            },
+            "otherSheetName": {
+              "type": "string",
+              "description": ""
+            },
+            "defaultSheetName": {
+              "type": "string",
+              "description": ""
+            },
+            "fields": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "description": ""
+            },
+            "scheduleIntervalSeconds": {
+              "type": "integer",
+              "description": ""
+            },
+            "lastSyncTimestamp": {
+              "type": "string",
+              "description": ""
+            },
+            "contactFilterProperty": {
+              "type": "string",
+              "description": ""
+            },
+            "contactFilterValue": {
+              "type": "string",
+              "description": ""
+            },
+            "maxRows": {
+              "type": "integer",
+              "description": ""
+            },
+            "syncMode": {
+              "type": "string",
+              "description": ""
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "hubspotAccessToken",
+            "googleClientId",
+            "googleClientSecret",
+            "googleRefreshToken",
+            "spreadsheetId"
+          ]
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+   "additionalProperties": false,
+     "requiredLevel": 3
+}
