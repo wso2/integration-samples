@@ -1,0 +1,6 @@
+[package]
+org = "wso2"
+name = "salesforce_slack_notification"
+version = "0.1.0"
+distribution = "2201.13.1"
+title = "salesforce-slack-notification"
