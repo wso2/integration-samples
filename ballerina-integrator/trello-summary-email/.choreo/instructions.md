@@ -38,19 +38,21 @@
 <summary>Additional Configurations</summary>
 
 1. `scheduleConfig.cron`
-    - Cron expression controlling when the summary is sent (default: `0 9 * * 1` - every Monday at 9:00 AM)
+  - Cron expression controlling when the summary is sent (default: `0 9 * * 1` - every Monday at 9:00 AM)
 2. `filterConfig.labels`
-    - Filter cards by label name. Leave empty to include all labels.
+  - Filter cards by label name. Leave empty to include all labels.
 3. `filterConfig.members`
-    - Filter cards by member full name. Leave empty to include all members.
+  - Filter cards by member full name. Leave empty to include all members.
 4. `filterConfig.includeDueDateFilter`
-    - Set to `true` to only include cards due within the next `dueDateDaysAhead` days.
-5. `summaryConfig.grouping`
-    - How to group cards in the email. Possible values:
-        - `LIST` (default)
-        - `MEMBER`
-        - `LABEL`
-6. `summaryConfig.staleCardDays`
-    - Cards with no activity for this many days are considered stale (default: `30`).
+  - Set to `true` to only include cards due within the next `dueDateDaysAhead` days.
+5. `mailchimpConfig.includeDateInSubject`
+  - If `true` (default), today's date is included in the email subject (e.g., `Trello Cards Summary - 2026-03-12`).
+6. `summaryConfig.grouping`
+  - How to group cards in the email. Possible values:
+    - `LIST` (default)
+    - `MEMBER`
+    - `LABEL`
+7. `summaryConfig.staleCardDays`
+  - Cards with no activity for this many days are considered stale (default: `30`).
 
 </details>

@@ -443,9 +443,12 @@ function generateEmailContent(GroupedSummary[] groupedSummaries, int totalCards,
 }
 
 function sendEmailSummary(string htmlContent) returns error? {
-    time:Civil currentDate = time:utcToCivil(time:utcNow());
-    string dateStr = string `${currentDate.year}-${currentDate.month.toString().padZero(2)}-${currentDate.day.toString().padZero(2)}`;
-    string subject = string `${mailchimpConfig.subjectPrefix} - ${dateStr}`;
+    string subject = mailchimpConfig.subjectPrefix;
+    if mailchimpConfig.includeDateInSubject {
+        time:Civil currentDate = time:utcToCivil(time:utcNow());
+        string dateStr = string `${currentDate.year}-${currentDate.month.toString().padZero(2)}-${currentDate.day.toString().padZero(2)}`;
+        subject = string `${mailchimpConfig.subjectPrefix} - ${dateStr}`;
+    }
 
     mailchimp:Campaign1 campaign = check mailchimpClient->postCampaigns({
         'type: "regular",

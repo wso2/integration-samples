@@ -12,6 +12,7 @@ configurable record {
     string fromName;
     string fromAddress;
     string subjectPrefix = "Trello Cards Summary";
+    boolean includeDateInSubject = true;
 } mailchimpConfig = ?;
 
 configurable record {
