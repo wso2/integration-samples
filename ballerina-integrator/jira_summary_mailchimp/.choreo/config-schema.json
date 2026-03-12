@@ -180,6 +180,10 @@
                 "recipients"
               ],
               "description": ""
+            },
+            "maxIssuesToDisplay": {
+              "type": "integer",
+              "description": "Maximum number of Jira issues to include in the email summary."
             }
           },
           "additionalProperties": false,

@@ -14,3 +14,5 @@ configurable record {
 
     string[] recipients;
 } mailchimpConfig = ?;
+
+configurable int maxIssuesToDisplay = 5;

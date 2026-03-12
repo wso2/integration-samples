@@ -29,7 +29,8 @@ const string STYLE_BORDER_BOX = "border:1px solid " + COLOR_BORDER + ";";
 
 function sendIssueSummary(Issue[] issues) returns error? {
     int totalIssues = issues.length();
-    int displayCount = totalIssues < 5 ? totalIssues : 5;
+    int maxDisplayCount = maxIssuesToDisplay > 0 ? maxIssuesToDisplay : 5;
+    int displayCount = totalIssues < maxDisplayCount ? totalIssues : maxDisplayCount;
     Issue[] displayIssues = issues.slice(0, displayCount);
     int remainingCount = totalIssues - displayCount;
 
