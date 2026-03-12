@@ -15,9 +15,7 @@ configurable record {
     boolean includeDateInSubject = true;
 } mailchimpConfig = ?;
 
-configurable record {
-    string cron = "0 9 * * 1";
-} scheduleConfig = {};
+
 
 configurable record {
     string[] labels = [];

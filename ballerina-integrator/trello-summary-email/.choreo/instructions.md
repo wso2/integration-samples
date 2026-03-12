@@ -4,7 +4,7 @@
 - Applies optional filters by label, member, or due date range
 - Groups cards by **List**, **Member**, or **Label**
 - Generates a formatted email summarising all cards, including overdue status, card age, attachments, and checklist progress
-- Creates and sends a Mailchimp email campaign to a configured audience list on a cron schedule (default: every Monday at 9:00 AM)
+- Creates and sends a Mailchimp email campaign to a configured audience list when triggered by Devant automation
 
 <details>
 
@@ -37,9 +37,7 @@
 
 <summary>Additional Configurations</summary>
 
-1. `scheduleConfig.cron`
-  - Cron expression controlling when the summary is sent (default: `0 9 * * 1` - every Monday at 9:00 AM)
-2. `filterConfig.labels`
+1. `filterConfig.labels`
   - Filter cards by label name. Leave empty to include all labels.
 3. `filterConfig.members`
   - Filter cards by member full name. Leave empty to include all members.
