@@ -13,7 +13,7 @@ This integration fetches cards from one or more Trello boards and lists, generat
   - Total card count and overdue card count
   - Per-card details: board, list, due date, labels, members, description, card age, attachments, and checklist progress
 - Creates and sends a Mailchimp email campaign to a configured audience list
-- Runs automatically on a configurable cron schedule (default: every Monday at 9:00 AM)
+- Executes when triggered by Devant automation (scheduling is handled by Devant)
 
 ## Prerequisites
 
@@ -58,9 +58,6 @@ fromAddress = "<sender@example.com>"
 subjectPrefix = "Trello Cards Summary"   # Optional, has default
 includeDateInSubject = true              # If true, today's date is shown in the subject
 
-[scheduleConfig]
-cron = "0 9 * * 1"   # Every Monday at 9:00 AM (default)
-
 [filterConfig]
 labels = []                  # Filter by label names; empty means no filter
 members = []                 # Filter by member full names; empty means no filter
@@ -99,12 +96,6 @@ showChecklistProgress = true
 | `subjectPrefix` | Prefix for the email subject line (default: `Trello Cards Summary`) |
 | `includeDateInSubject` | If `true` (default), today's date is included in the email subject (e.g., `Trello Cards Summary - 2026-03-12`) |
 
-#### `scheduleConfig`
-
-| Field | Description |
-|---|---|
-| `cron` | Cron expression for the schedule (default: `0 9 * * 1` — Mondays at 9 AM) |
-
 #### `filterConfig`
 
 | Field | Description |
@@ -132,7 +123,6 @@ showChecklistProgress = true
 3. Select the **Technology** as `WSO2 Integrator: BI`.
 4. Choose the **Integration** type as `Automation` and click **Create**.
 5. Once the build is successful, click **Configure to Continue** and set up the required environment variables for Trello and Mailchimp credentials.
-6. Click **Schedule** to schedule the automation.
-7. In the **BY INTERVAL** tab, configure the desired schedule (e.g., weekly on Monday mornings).
-8. Click **Update**.
-9. Once tested, you may promote the integration to production. Make sure to set the relevant environment variables in the production environment as well.
+6. Configure the schedule in Devant's automation scheduler (e.g., weekly on Monday mornings).
+7. Devant will trigger this automation on the configured schedule and handle all scheduling.
+8. Once tested, you may promote the integration to production. Make sure to set the relevant environment variables in the production environment as well.
