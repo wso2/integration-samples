@@ -1,15 +1,15 @@
-# Salesforce Opportunities to Google Sheets Integration
+# Salesforce Leads to Google Sheets Integration
 
-A Ballerina automation integration that exports Salesforce Opportunity records to a Google Sheets spreadsheet on a configurable schedule.
+A Ballerina automation integration that exports Salesforce Lead records to a Google Sheets spreadsheet on a configurable schedule.
 
 ## Description
 
-This integration extracts all Opportunity records from Salesforce and creates a spreadsheet in Google Sheets with key opportunity information. Each execution creates a new spreadsheet with a timestamp, providing a historical snapshot of your opportunities over time.
+This integration extracts all Lead records from Salesforce and creates a spreadsheet in Google Sheets with key lead information. Each execution creates a new spreadsheet with a timestamp, providing a historical snapshot of your leads over time.
 
 ## What It Does
 
-- Queries Salesforce Opportunity records using customizable SOQL filters
-- Maps selected Salesforce Opportunity fields to Google Sheets columns
+- Queries Salesforce Lead records using customizable SOQL filters
+- Maps selected Salesforce Lead fields to Google Sheets columns
 - Creates a new Google Sheets spreadsheet with a timestamped name (e.g., "Salesforce Leads 2025-01-17 14:30")
 - Optionally appends to an existing spreadsheet as a new sheet
 - Handles timezone conversion for spreadsheet naming
