@@ -468,7 +468,7 @@ public function generateEmailSubject(string periodStart) returns string {
     string monthName = getMonthName(periodStart);
     string year = getYear(periodStart);
 
-    string subject = emailConfig.subjectTemplate;
+    string subject = emailConfig.subjectTemplate ?: "Monthly Salesforce Performance Summary - {{month}} {{year}}";
     regexp:RegExp monthPattern = re `\{\{month\}\}`;
     subject = monthPattern.replaceAll(subject, monthName);
     regexp:RegExp yearPattern = re `\{\{year\}\}`;
@@ -494,7 +494,7 @@ public function sendPerformanceEmailNew(ReportSummary summary) returns error? {
         html: htmlContent,
         subject: subject,
         fromEmail: emailConfig.fromEmail,
-        fromName: emailConfig.fromName,
+        fromName: emailConfig.fromName?: "Salesforce Performance Report",
         to: recipients,
         trackOpens: true,
         trackClicks: true,

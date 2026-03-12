@@ -13,9 +13,9 @@ configurable record {
 
 configurable record {
     string fromEmail;
-    string fromName = "Salesforce Performance Report";
+    string fromName?;
     string[] recipientEmails;
-    string subjectTemplate = "Monthly Salesforce Performance Summary - {{month}} {{year}}";
+    string subjectTemplate?;
 } emailConfig = ?;
 
 configurable string salesforceReportId = ?;
