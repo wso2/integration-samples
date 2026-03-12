@@ -7,7 +7,7 @@ configurable record {
 } salesforceConfig = ?;
 
 configurable record {
-    string mandrilApiKey;
+    string mandrillApiKey;
 
 } mailchimpConfig = ?;
 

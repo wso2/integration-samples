@@ -62,9 +62,7 @@ public function extractMetricLabels(map<json> metadata) returns MetricInfo[]|err
 }
 
 public function executeReportWithFilters(
-        string reportId,
-        string startDate,
-        string endDate
+        string reportId
 ) returns ReportExecutionResult|error {
     salesforce:ReportInstanceResult reportResult = check salesforceClient->runReportSync(reportId);
 
@@ -149,15 +147,11 @@ public function generateReportBasedSummary(
         string previousEndDate
 ) returns PerformanceSummary|error {
     ReportExecutionResult currentResult = check executeReportWithFilters(
-            reportId,
-            currentStartDate,
-            currentEndDate
+            reportId
     );
 
     ReportExecutionResult previousResult = check executeReportWithFilters(
-            reportId,
-            previousStartDate,
-            previousEndDate
+            reportId
     );
 
     PerformanceMetrics currentMetrics = aggregatesToMetrics(currentResult.aggregates);
@@ -211,7 +205,7 @@ public function generateReportSummary(
         string errorMsg = metadata.message();
         return error(string `Failed to access report '${reportId}': ${errorMsg}`);
     }
-    
+
     MetricInfo[] metricTemplate = check extractMetricLabels(metadata);
 
     string reportName = "Salesforce Performance Report";
@@ -224,15 +218,11 @@ public function generateReportSummary(
     }
 
     ReportExecutionResult currentResult = check executeReportWithFilters(
-            reportId,
-            currentStartDate,
-            currentEndDate
+            reportId
     );
 
     ReportExecutionResult previousResult = check executeReportWithFilters(
-            reportId,
-            previousStartDate,
-            previousEndDate
+            reportId
     );
 
     MetricInfo[] currentMetrics = check populateMetricsFromFactMap(

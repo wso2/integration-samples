@@ -1,6 +1,6 @@
+import ballerina/io;
 import ballerina/lang.regexp;
 import ballerina/time as time;
-import ballerina/io;
 import ballerina/url;
 import ballerinax/mailchimp.'transactional as mailchimp;
 
@@ -171,7 +171,7 @@ public function calculatePercentageChange(decimal current, decimal previous) ret
 
 public function roundToTwoDecimals(decimal value) returns decimal {
     decimal multiplied = value * 100.0;
-    int rounded = <int>multiplied;
+    int rounded = <int>(multiplied + (value >= 0.0d ? 0.5d : -0.5d));
     return <decimal>rounded / 100.0;
 }
 
@@ -353,7 +353,9 @@ public function getSalesforcePerformanceEmail(ReportSummary summary, string peri
 
         foreach int i in 0 ..< metricCount {
             MetricInfo metric = summary.currentMetrics[i];
-            MetricInfo prevMetric = summary.previousMetrics[i];
+            MetricInfo prevMetric = i < summary.previousMetrics.length()
+                ? summary.previousMetrics[i]
+                : {name: metric.name, label: metric.label, value: 0.0};
             decimal change = calculateChange(metric.value, prevMetric.value);
             string changeColor = change >= 0.0d ? "#2ea44f" : "#cb2431";
             string changeSign = change >= 0.0d ? "+" : "";
@@ -494,7 +496,7 @@ public function sendPerformanceEmailNew(ReportSummary summary) returns error? {
         html: htmlContent,
         subject: subject,
         fromEmail: emailConfig.fromEmail,
-        fromName: emailConfig.fromName?: "Salesforce Performance Report",
+        fromName: emailConfig.fromName ?: "Salesforce Performance Report",
         to: recipients,
         trackOpens: true,
         trackClicks: true,
@@ -503,7 +505,7 @@ public function sendPerformanceEmailNew(ReportSummary summary) returns error? {
     };
 
     mailchimp:MessagesSendBody sendRequest = {
-        'key: mailchimpConfig.mandrilApiKey,
+        'key: mailchimpConfig.mandrillApiKey,
         message: message,
         async: false
     };

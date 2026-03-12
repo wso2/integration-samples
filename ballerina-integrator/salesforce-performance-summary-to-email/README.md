@@ -77,8 +77,11 @@ The following configurations are required to connect to Salesforce and Mailchimp
 2. Create a new Integration and follow instructions in the [Documentation](https://wso2.com/devant/docs/references/import-a-repository/) to import this repository.
 3. Select the **Technology** as `WSO2 Integrator: BI`.
 4. Choose the **Integration** Type as `Automation` and click **Create**.
-5. Once the build is successful, click **Configure to Continue** and set up the required environment variables for Salesforce and Mailchimp Transactional credentials.
+5. Once the build is successful, click **Configure to Continue** and set up all required configuration values, including Salesforce credentials, Mailchimp credentials, `salesforceReportId`, and the email sender/recipient settings.
 6. Click **Schedule** to schedule the automation.
-7. In the **BY INTERVAL** tab, select **Month** from the dropdown.
-8. Set the desired day and time for the automation to run monthly and click **Update**.
+7. Choose a schedule cadence that matches `timePeriod`:
+   - `monthly`: run once per month
+   - `quarterly`: run once per quarter
+   - `yearly`: run once per year
+8. Set the desired execution time and click **Update**.
 9. Once tested, you may promote the integration to production. Make sure to set the relevant environment variables in the production environment as well.
