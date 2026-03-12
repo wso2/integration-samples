@@ -13,7 +13,7 @@ via Mailchimp Transactional (Mandrill).
 
 Try this in Devant:
 
-[![Deploy to Devant](https://openindevant.choreoapps.dev/images/DeployDevant.svg)](https://console.devant.dev/new?gh=wso2/integration-samples/tree/main/ballerina-integrator/jira_summary_mailchimp&t=file)
+[![Deploy to Devant](https://openindevant.choreoapps.dev/images/DeployDevant.svg)](https://console.devant.dev/new?gh=wso2/integration-samples/tree/main/jira-summary-mailchimp)
 
 ## Prerequisites
 
@@ -68,6 +68,8 @@ The following configurations are required for the integration:
 - `maxIssuesToDisplay`: maximum number of Jira issues to include in the email summary (default: `5`)
 
 ```toml
+maxIssuesToDisplay = 5
+
 [jiraConfig]
 username = "<your_atlassian_email>"
 password = "<your_atlassian_api_token>"
@@ -79,8 +81,6 @@ mandrillApiKey = "<your_mailchimp_transactional_api_key>"
 fromEmail = "no-reply@example.com"
 fromName = "Jira Summary Bot"
 recipients = ["dev-team@example.com"]
-
-maxIssuesToDisplay = 5
 ```
 
 ## Deploying on WSO2 Integration Platform

@@ -6,63 +6,31 @@
 
 <details>
 
-<summary>Jira Cloud Setup Guide</summary>
+<summary>Jira Setup Guide</summary>
 
-This integration uses **Jira Cloud REST APIs** with **Basic Auth** where:
+1. A Jira Cloud account with API access
+2. Basic Auth credentials:
+   - Base URL (your Jira instance URL, e.g., `https://your-domain.atlassian.net`)
+   - Email (your Jira account email)
+   - API Token (generated from your Jira account)
+   - Project Key (the key of the Jira project to query; e.g., "PROJ", "SUPPORT")
 
-- `jiraConfig.username` = your Atlassian account **email**
-- `jiraConfig.password` = your Atlassian **API token** (not your account password)
+This integration uses basic authentication with email and API token. [Learn how to create a Jira API token](https://support.atlassian.com/atlassian-account/docs/manage-api-tokens-for-your-atlassian-account/).
 
-1. Find your Jira Cloud site domain.
-   - If your Jira URL is `https://<domain>.atlassian.net`, your `jiraConfig.domain` is `<domain>`.
-2. Create an Atlassian API token.
-   - [Atlassian API tokens](https://id.atlassian.com/manage-profile/security/api-tokens)
-3. Pick a JQL query to select the issues you want summarized (example: `project = ABC AND statusCategory != Done`).
-
-Reference:
-
-- [Basic auth for REST APIs (Jira Cloud)](https://developer.atlassian.com/cloud/jira/platform/basic-auth-for-rest-apis/)
+The project key is usually shown in the URL when you open your project in Jira (e.g., in `https://your-domain.atlassian.net/jira/software/projects/<project_key>/boards/1`, the project key is `<project_key>`). You can also find it on the project sidebar or in the project settings.
 
 </details>
 
 <details>
 
-<summary>Mailchimp Transactional (Mandrill) Setup Guide</summary>
+<summary>Mailchimp Transactional Setup Guide</summary>
 
-This integration uses **Mailchimp Transactional** to send emails via the `messages/send` API.
-
-1. Ensure you have access to Mailchimp Transactional (Mandrill).
-2. Generate a Transactional API key and use it as `mailchimpConfig.mandrillApiKey`.
-3. Configure a sender:
-   - `mailchimpConfig.fromEmail`: the From email address you want recipients to see
-   - `mailchimpConfig.fromName`: the From name you want recipients to see
-4. Set recipients:
-   - `mailchimpConfig.recipients`: a list of email addresses to receive the summary
-
-Reference:
-
-- [Mailchimp Transactional developer docs](https://mailchimp.com/developer/transactional/)
-- [Messages API reference](https://mailchimp.com/developer/transactional/api/messages/)
+1. A Mailchimp Transactional account
+2. API Key from Mailchimp Transactional
+   - Log in to Mailchimp Transactional
+   - Navigate to **Settings > API Keys**
+   - Click **Create New Key** and give it a description
+   - Copy the generated API key
+     [Learn how to get Mailchimp Transactional API Keys](https://mailchimp.com/developer/transactional/guides/quick-start/#generate-your-api-key).
 
 </details>
-
-## Configuration
-
-### `jiraConfig`
-
-- `username`: Atlassian account email
-- `password`: Atlassian API token
-- `domain`: Jira Cloud domain (the `<domain>` part of `https://<domain>.atlassian.net`)
-- `jqlQuery`: JQL query used to pick issues for the summary
-
-### `mailchimpConfig`
-
-- `mandrillApiKey`: Mailchimp Transactional API key
-- `fromEmail`: sender email address
-- `fromName`: sender display name
-- `recipients`: list of recipient email addresses
-
-### `maxIssuesToDisplay`
-
-- Maximum number of Jira issues to include in the email summary (default: `5`).
-

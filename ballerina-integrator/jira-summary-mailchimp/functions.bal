@@ -25,7 +25,6 @@ const string STYLE_IMG_RESET = "display:block;border:0;";
 const string STYLE_TEXT_PRIMARY = "color:" + COLOR_TEXT_PRIMARY + ";";
 const string STYLE_TEXT_SECONDARY = "color:" + COLOR_TEXT_SECONDARY + ";";
 const string STYLE_TEXT_MUTED = "color:" + COLOR_TEXT_MUTED + ";";
-const string STYLE_BORDER_BOX = "border:1px solid " + COLOR_BORDER + ";";
 
 function sendIssueSummary(Issue[] issues) returns error? {
     int totalIssues = issues.length();
@@ -64,20 +63,20 @@ function generateEmailHtml(Issue[] issues, int remainingCount) returns string {
         string assigneeSection = "";
         if issue.assignee is IssueAssignee {
             IssueAssignee assignee = <IssueAssignee>issue.assignee;
-            assigneeSection = string `
-                <table role="presentation" cellspacing="0" cellpadding="0" border="0">
+            assigneeSection = assignee.avatarUrl != ""
+                ? string `<table role="presentation" cellspacing="0" cellpadding="0" border="0">
                     <tr>
                         <td valign="middle" style="padding-right:6px;">
                             <img src="${assignee.avatarUrl}"
-                                 alt="${assignee.displayName}"
+                                 alt="${escapeHtml(assignee.displayName)}"
                                  width="18" height="18"
                                  style="${STYLE_IMG_RESET}border-radius:50%;">
                         </td>
                         <td valign="middle" style="${FONT_SANS}font-size:12px;${STYLE_TEXT_SECONDARY}">
-                            ${assignee.displayName}
+                            ${escapeHtml(assignee.displayName)}
                         </td>
                     </tr>
-                </table>`;
+                </table>` : string `<span style="${FONT_SANS}font-size:12px;${STYLE_TEXT_SECONDARY}">${escapeHtml(assignee.displayName)}</span>`;
         } else {
             assigneeSection = string `<span style="${FONT_MONO}font-size:11px;${STYLE_TEXT_MUTED}">Unassigned</span>`;
         }
@@ -90,11 +89,11 @@ function generateEmailHtml(Issue[] issues, int remainingCount) returns string {
                     <tr>
                         <td valign="middle" style="padding-right:4px;">
                             <img src="${priority.iconUrl}"
-                                 alt="${priority.name}"
+                                 alt="${escapeHtml(priority.name)}"
                                  width="13" height="13" style="${STYLE_IMG_RESET}">
                         </td>
                         <td valign="middle" style="${FONT_MONO}font-size:11px;${STYLE_TEXT_SECONDARY}">
-                            ${priority.name}
+                            ${escapeHtml(priority.name)}
                         </td>
                     </tr>
                 </table>`;
@@ -119,7 +118,7 @@ function generateEmailHtml(Issue[] issues, int remainingCount) returns string {
                                         <td valign="middle">
                                             <a href="${issue.issueUrl}"
                                                style="${FONT_MONO}font-size:12px;font-weight:600;${STYLE_TEXT_PRIMARY}text-decoration:none;letter-spacing:0.02em;border-bottom:1px solid ${COLOR_TEXT_PRIMARY};padding-bottom:1px;">
-                                                ${issue.key}
+                                                ${escapeHtml(issue.key)}
                                             </a>
                                         </td>
                                         <td valign="middle" align="right">
@@ -130,7 +129,7 @@ function generateEmailHtml(Issue[] issues, int remainingCount) returns string {
                                                     </td>
                                                     <td valign="middle">
                                                         <span style="display:inline-block;background-color:${statusBg};padding:3px 10px;${FONT_MONO}font-size:11px;font-weight:600;color:${COLOR_WHITE};letter-spacing:0.06em;text-transform:uppercase;">
-                                                            ${issue.status.name}
+                                                            ${escapeHtml(issue.status.name)}
                                                         </span>
                                                     </td>
                                                 </tr>
@@ -145,7 +144,7 @@ function generateEmailHtml(Issue[] issues, int remainingCount) returns string {
                             <td style="padding:6px 20px 12px;">
                                 <a href="${issue.issueUrl}"
                                    style="${FONT_SANS}font-size:14px;font-weight:500;${STYLE_TEXT_PRIMARY}text-decoration:none;line-height:1.5;">
-                                    ${issue.summary}
+                                    ${escapeHtml(issue.summary)}
                                 </a>
                             </td>
                         </tr>
@@ -191,7 +190,7 @@ function generateEmailHtml(Issue[] issues, int remainingCount) returns string {
             </tr>`
         : "";
 
-    int issueCount = issues.length();
+    int totalCount = issues.length() + remainingCount;
 
     return string `<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en">
@@ -212,7 +211,7 @@ function generateEmailHtml(Issue[] issues, int remainingCount) returns string {
 </head>
 <body style="margin:0;padding:0;background-color:${COLOR_WHITE};">
     <div style="display:none;font-size:1px;line-height:1px;max-height:0;max-width:0;opacity:0;overflow:hidden;mso-hide:all;">
-        ${issueCount} Jira issue${issueCount > 1 ? "s" : ""} require your attention
+        ${totalCount} Jira issue${totalCount > 1 ? "s" : ""} require your attention
     </div>
 
     <table align="center" role="presentation" cellspacing="0" cellpadding="0" border="0"
@@ -225,7 +224,7 @@ function generateEmailHtml(Issue[] issues, int remainingCount) returns string {
                         <td>
                             <p style="margin:0 0 4px;${FONT_MONO}font-size:10px;font-weight:600;${STYLE_TEXT_MUTED}letter-spacing:0.12em;text-transform:uppercase;">Issue Summary</p>
                             <p style="margin:0;${FONT_SANS}font-size:22px;font-weight:600;${STYLE_TEXT_PRIMARY}line-height:1.2;">
-                                ${issueCount} open issue${issueCount > 1 ? "s" : ""}
+                                ${totalCount} issue${totalCount > 1 ? "s" : ""} in this summary
                             </p>
                         </td>
                         <td width="36" align="right" valign="top">
@@ -302,17 +301,17 @@ function getProjectSection(Issue issue) returns string {
                     <tr>
                         <td valign="middle" style="padding-right:5px;">
                             <img src="${project.avatarUrl}"
-                                 alt="${project.name}"
+                                 alt="${escapeHtml(project.name)}"
                                  width="18" height="18"
                                  style="${STYLE_IMG_RESET}border-radius:3px;">
                         </td>
                         <td valign="middle" style="${FONT_MONO}font-size:11px;${STYLE_TEXT_SECONDARY}">
-                            ${project.name}
+                            ${escapeHtml(project.name)}
                         </td>
                     </tr>
                 </table>`;
         } else {
-            return string `<span style="${FONT_MONO}font-size:11px;${STYLE_TEXT_SECONDARY}">${project.name}</span>`;
+            return string `<span style="${FONT_MONO}font-size:11px;${STYLE_TEXT_SECONDARY}">${escapeHtml(project.name)}</span>`;
         }
     }
     return "";
@@ -322,13 +321,13 @@ function getMetadataSection(Issue issue) returns string {
     string duePart = "";
     if issue.dueDate is string {
         string formatted = formatDate(<string>issue.dueDate);
-        duePart = string `<span style="${FONT_MONO}font-size:10px;${STYLE_TEXT_SECONDARY}">Due: ${formatted}</span>`;
+        duePart = string `<span style="${FONT_MONO}font-size:10px;${STYLE_TEXT_SECONDARY}">Due: ${escapeHtml(formatted)}</span>`;
     }
 
     string updatedPart = "";
     if issue.updated is string {
         string formatted = formatDate(<string>issue.updated);
-        updatedPart = string `<span style="${FONT_MONO}font-size:10px;${STYLE_TEXT_SECONDARY}">Updated: ${formatted}</span>`;
+        updatedPart = string `<span style="${FONT_MONO}font-size:10px;${STYLE_TEXT_SECONDARY}">Updated: ${escapeHtml(formatted)}</span>`;
     }
 
     if duePart == "" && updatedPart == "" {
@@ -341,6 +340,16 @@ function getMetadataSection(Issue issue) returns string {
         return duePart + separator + updatedPart;
     }
     return duePart != "" ? duePart : updatedPart;
+}
+
+function escapeHtml(string raw) returns string {
+    string result = raw;
+    result = re `&`.replaceAll(result, "&amp;");
+    result = re `<`.replaceAll(result, "&lt;");
+    result = re `>`.replaceAll(result, "&gt;");
+    result = re `"`.replaceAll(result, "&quot;");
+    result = re `'`.replaceAll(result, "&#39;");
+    return result;
 }
 
 function formatDate(string isoDate) returns string {

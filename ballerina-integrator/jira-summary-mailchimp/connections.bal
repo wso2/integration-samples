@@ -9,4 +9,3 @@ final jira:Client jiraClient = check new ({
 }, getJiraApiUrl());
 
 final mailchimp:Client mailchimpClient = check new ();
-
