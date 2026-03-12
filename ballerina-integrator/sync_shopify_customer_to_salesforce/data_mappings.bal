@@ -1,4 +1,6 @@
+import ballerina/log;
 import ballerinax/trigger.shopify;
+import ballerinax/salesforce;
 
 // Map Shopify customer event to Salesforce contact with all available fields
 public function mapShopifyCustomerToSalesforceContact(
@@ -9,7 +11,6 @@ public function mapShopifyCustomerToSalesforceContact(
     string? firstName = customerEvent?.first_name;
     string? lastName = customerEvent?.last_name;
     string? email = customerEvent?.email;
-    int? customerId = customerEvent?.id;
     string? phone = customerEvent?.phone;
     
     // Initialize contact with basic fields
@@ -22,10 +23,13 @@ public function mapShopifyCustomerToSalesforceContact(
         LeadSource: defaultLeadSource
     };
     
-    // Only include OwnerId if it's provided and not empty
-    string? ownerId = defaultOwnerId;
-    if ownerId is string && ownerId.trim() != "" {
-        contact.OwnerId = ownerId;
+    // Set default record type and owner if configured
+    if defaultRecordTypeId is string {
+        contact.RecordTypeId = defaultRecordTypeId;
+    }
+    
+    if ownerIdDefault is string {
+        contact.OwnerId = ownerIdDefault;
     }
     
     // Convert to JSON to access nested fields
@@ -105,13 +109,83 @@ public function mapShopifyCustomerToSalesforceContact(
         }
     }
     
-
-    
     // Build comprehensive description with all metadata
     string enrichedDescription = buildCustomerDescription(customerEvent, customerJson);
     contact.Description = enrichedDescription;
     
     return contact;
+}
+
+// Add Shopify tag to contact after creation/update
+public function addShopifyTagToContact(string contactId) returns error? {
+    // Create tag for Shopify origin
+    salesforce:CreationResponse|error tagResponse = salesforceClient->create(
+        sObjectName = "Tag",
+        sObject = {
+            "Name": "Shopify",
+            "Type": "Public"
+        }
+    );
+    
+    string tagId = "";
+    if tagResponse is salesforce:CreationResponse {
+        if tagResponse.success {
+            tagId = tagResponse.id;
+            log:printInfo("Created Shopify tag", tagId = tagId);
+        } else {
+            // Tag might already exist, try to find it
+            string soqlQuery = "SELECT Id FROM Tag WHERE Name = 'Shopify' LIMIT 1";
+            stream<record {| string Id; |}, error?> resultStream = check salesforceClient->query(soql = soqlQuery);
+            
+            record {|record {| string Id; |} value;|}? result = check resultStream.next();
+            check resultStream.close();
+            
+            if result is record {|record {| string Id; |} value;|} {
+                tagId = result.value.Id;
+                log:printInfo("Found existing Shopify tag", tagId = tagId);
+            } else {
+                log:printError("Failed to create or find Shopify tag");
+                return;
+            }
+        }
+    } else {
+        // Tag might already exist, try to find it
+        string soqlQuery = "SELECT Id FROM Tag WHERE Name = 'Shopify' LIMIT 1";
+        stream<record {| string Id; |}, error?> resultStream = check salesforceClient->query(soql = soqlQuery);
+        
+        record {|record {| string Id; |} value;|}? result = check resultStream.next();
+        check resultStream.close();
+        
+        if result is record {|record {| string Id; |} value;|} {
+            tagId = result.value.Id;
+            log:printInfo("Found existing Shopify tag", tagId = tagId);
+        } else {
+            log:printError("Failed to create or find Shopify tag");
+            return;
+        }
+    }
+    
+    // Associate tag with contact
+    salesforce:CreationResponse|error tagAssocResult = salesforceClient->create(
+        sObjectName = "TagDefinition",
+        sObject = {
+            "TagId": tagId,
+            "EntityId": contactId,
+            "Type": "Contact"
+        }
+    );
+    
+    if tagAssocResult is error {
+        log:printError("Failed to associate tag with contact", 'error = tagAssocResult);
+        return tagAssocResult;
+    }
+    
+    if tagAssocResult is salesforce:CreationResponse && !tagAssocResult.success {
+        log:printError("Failed to associate tag with contact", errors = tagAssocResult.errors);
+        return error("Failed to associate tag");
+    }
+    
+    log:printInfo("Successfully tagged contact as Shopify origin", contactId = contactId);
 }
 
 // Build comprehensive description from all available customer data
@@ -226,7 +300,16 @@ public function extractDomainFromEmail(string email) returns string? {
 
 // Extract company name from customer event
 public function extractCompanyName(shopify:CustomerEvent customerEvent) returns string? {
-    // Company information may be in tags or note fields
-    // This is a placeholder - adjust based on actual Shopify data structure
+    json customerJson = customerEvent.toJson();
+    
+    // Extract company from default address
+    json|error defaultAddressJson = customerJson.default_address;
+    if defaultAddressJson is json && defaultAddressJson != () {
+        json|error companyJson = defaultAddressJson.company;
+        if companyJson is string && companyJson.trim() != "" {
+            return companyJson;
+        }
+    }
+    
     return ();
 }

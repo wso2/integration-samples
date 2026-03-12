@@ -1,10 +1,18 @@
 import ballerina/log;
+import ballerina/lang.regexp;
 import ballerinax/salesforce;
 import ballerinax/trigger.shopify;
 
+// Escape single quotes for SOQL injection prevention
+function escapeSoqlString(string input) returns string {
+    regexp:RegExp singleQuotePattern = re `'`;
+    return singleQuotePattern.replaceAll(input, "\\'");
+}
+
 // Check if contact exists by email (duplicate check)
 public function findContactByEmail(string email) returns ContactQueryResult?|error {
-    string soqlQuery = string `SELECT Id, Email, FirstName, LastName, AccountId FROM Contact WHERE Email = '${email}' LIMIT 1`;
+    string escapedEmail = escapeSoqlString(email);
+    string soqlQuery = string `SELECT Id, Email, FirstName, LastName, AccountId FROM Contact WHERE Email = '${escapedEmail}' LIMIT 1`;
     stream<ContactQueryResult, error?> resultStream = check salesforceClient->query(soql = soqlQuery);
     
     record {|ContactQueryResult value;|}? result = check resultStream.next();
@@ -18,12 +26,18 @@ public function findContactByEmail(string email) returns ContactQueryResult?|err
 
 // Find or create account based on company name or email domain
 public function findOrCreateAccount(shopify:CustomerEvent customerEvent) returns string?|error {
+    // Check if account association is disabled
+    if accountAssociationRule == "none" {
+        return ();
+    }
+    
     string? companyName = extractCompanyName(customerEvent);
     string? email = customerEvent?.email;
     
     // Try to find account by company name
-    if companyName is string && companyName.trim() != "" {
-        string soqlQuery = string `SELECT Id, Name, Website FROM Account WHERE Name = '${companyName}' LIMIT 1`;
+    if (accountAssociationRule == "company" || accountAssociationRule == "domain") && companyName is string && companyName.trim() != "" {
+        string escapedCompanyName = escapeSoqlString(companyName);
+        string soqlQuery = string `SELECT Id, Name, Website FROM Account WHERE Name = '${escapedCompanyName}' LIMIT 1`;
         stream<AccountQueryResult, error?> resultStream = check salesforceClient->query(soql = soqlQuery);
         
         record {|AccountQueryResult value;|}? result = check resultStream.next();
@@ -34,25 +48,28 @@ public function findOrCreateAccount(shopify:CustomerEvent customerEvent) returns
             return result.value.Id;
         }
         
-        // Create new account with company name
-        SalesforceAccount newAccount = {
-            Name: companyName,
-            Description: "Created from Shopify customer"
-        };
-        
-        salesforce:CreationResponse accountResponse = check salesforceClient->create(sObjectName = "Account", sObject = newAccount);
-        
-        if accountResponse.success {
-            log:printInfo("Created new account", accountId = accountResponse.id);
-            return accountResponse.id;
+        // Create new account with company name only if rule is company
+        if accountAssociationRule == "company" {
+            SalesforceAccount newAccount = {
+                Name: companyName,
+                Description: "Created from Shopify customer"
+            };
+            
+            salesforce:CreationResponse accountResponse = check salesforceClient->create(sObjectName = "Account", sObject = newAccount);
+            
+            if accountResponse.success {
+                log:printInfo("Created new account", accountId = accountResponse.id);
+                return accountResponse.id;
+            }
         }
     }
     
     // Try to find account by email domain
-    if email is string {
+    if accountAssociationRule == "domain" && email is string {
         string? domain = extractDomainFromEmail(email);
         if domain is string {
-            string soqlQuery = string `SELECT Id, Name, Website FROM Account WHERE Website LIKE '%${domain}%' LIMIT 1`;
+            string escapedDomain = escapeSoqlString(domain);
+            string soqlQuery = string `SELECT Id, Name, Website FROM Account WHERE Website LIKE '%${escapedDomain}%' LIMIT 1`;
             stream<AccountQueryResult, error?> resultStream = check salesforceClient->query(soql = soqlQuery);
             
             record {|AccountQueryResult value;|}? result = check resultStream.next();
@@ -72,8 +89,8 @@ public function findOrCreateAccount(shopify:CustomerEvent customerEvent) returns
 public function createOrUpdateSalesforceContact(shopify:CustomerEvent customerEvent) returns error? {
     string? email = customerEvent?.email;
     
-    // Duplicate check by email
-    if email is string && email.trim() != "" {
+    // Duplicate check by email (if enabled)
+    if enableDuplicateCheck && email is string && email.trim() != "" {
         ContactQueryResult? existingContact = check findContactByEmail(email);
         
         if existingContact is ContactQueryResult {
@@ -92,6 +109,12 @@ public function createOrUpdateSalesforceContact(shopify:CustomerEvent customerEv
             if updateResult is error {
                 log:printError("Failed to update Salesforce contact", 'error = updateResult, contactId = existingContactId);
                 return updateResult;
+            }
+            
+            // Add Shopify tag to contact
+            error? tagResult = addShopifyTagToContact(existingContactId);
+            if tagResult is error {
+                log:printWarn("Failed to tag contact, but contact was updated", 'error = tagResult);
             }
             
             log:printInfo("Successfully updated Salesforce contact", 
@@ -113,6 +136,12 @@ public function createOrUpdateSalesforceContact(shopify:CustomerEvent customerEv
     salesforce:CreationResponse response = check salesforceClient->create(sObjectName = "Contact", sObject = contact);
     
     if response.success {
+        // Add Shopify tag to contact
+        error? tagResult = addShopifyTagToContact(response.id);
+        if tagResult is error {
+            log:printWarn("Failed to tag contact, but contact was created", 'error = tagResult);
+        }
+        
         log:printInfo("Successfully created Salesforce contact", 
             contactId = response.id, 
             accountId = accountId ?: "None",

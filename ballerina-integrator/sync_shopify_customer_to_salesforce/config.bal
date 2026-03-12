@@ -11,9 +11,11 @@ configurable string salesforceRefreshToken = ?;
 configurable string salesforceRefreshUrl = "https://login.salesforce.com/services/oauth2/token";
 
 // Salesforce default values
-configurable string defaultRecordType = "Standard";
 configurable string defaultLeadSource = "Shopify";
-configurable string? defaultOwnerId = ();
+configurable string? defaultRecordTypeId = ();
+configurable string? ownerIdDefault = ();
+configurable "company"|"domain"|"none" accountAssociationRule = "company";
+configurable boolean enableDuplicateCheck = true;
 
 // HTTP listener configuration for Shopify webhooks
 public type ShopifyListenerConfig record {|

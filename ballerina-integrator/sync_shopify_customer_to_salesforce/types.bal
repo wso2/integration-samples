@@ -1,26 +1,3 @@
-// Shopify Order event types
-
-// Shopify Product event types
-
-// Shopify Customer event types
-public type CustomerCreatedEvent record {
-    string id;
-    string email?;
-    string first_name?;
-    string last_name?;
-};
-
-public type CustomerUpdatedEvent record {
-    string id;
-    string email?;
-    string first_name?;
-    string last_name?;
-};
-
-public type CustomerDeletedEvent record {
-    string id;
-};
-
 // Salesforce Contact record with all standard fields
 public type SalesforceContact record {
     // Required fields
