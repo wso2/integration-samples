@@ -13,7 +13,7 @@ configurable record {
 
 configurable string timezone = "UTC";
 
-configurable string? spreadsheetId = ();
+configurable string spreadsheetId = "";
 
 public enum TimeFrame {
     ALL,

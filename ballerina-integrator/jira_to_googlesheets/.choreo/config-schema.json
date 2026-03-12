@@ -2,6 +2,86 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "type": "object",
   "properties": {
+    "wso2": {
+      "type": "object",
+      "properties": {
+        "jira_to_googlesheets": {
+          "type": "object",
+          "properties": {
+            "jiraConfig": {
+              "type": "object",
+              "properties": {
+                "baseUrl": {
+                  "type": "string"
+                },
+                "email": {
+                  "type": "string"
+                },
+                "apiToken": {
+                  "type": "string"
+                },
+                "projectKey": {
+                  "type": "string"
+                }
+              },
+              "additionalProperties": false,
+              "required": [
+                "baseUrl",
+                "email",
+                "apiToken",
+                "projectKey"
+              ],
+              "description": ""
+            },
+            "googleSheetsConfig": {
+              "type": "object",
+              "properties": {
+                "refreshToken": {
+                  "type": "string"
+                },
+                "clientId": {
+                  "type": "string"
+                },
+                "clientSecret": {
+                  "type": "string"
+                }
+              },
+              "additionalProperties": false,
+              "required": [
+                "refreshToken",
+                "clientId",
+                "clientSecret"
+              ],
+              "description": ""
+            },
+            "timezone": {
+              "type": "string",
+              "description": ""
+            },
+            "spreadsheetId": {
+              "type": "string",
+              "description": ""
+            },
+            "timeFrame": {
+              "enum": [
+                "LAST_QUARTER",
+                "LAST_MONTH",
+                "LAST_WEEK",
+                "YESTERDAY",
+                "ALL"
+              ],
+              "description": ""
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "jiraConfig",
+            "googleSheetsConfig"
+          ]
+        }
+      },
+      "additionalProperties": false
+    },
     "ballerina": {
       "type": "object",
       "properties": {
@@ -118,93 +198,6 @@
             }
           },
           "additionalProperties": false
-        }
-      },
-      "additionalProperties": false
-    },
-    "wso2": {
-      "type": "object",
-      "properties": {
-        "jira_to_googlesheets": {
-          "type": "object",
-          "properties": {
-            "jiraConfig": {
-              "type": "object",
-              "properties": {
-                "projectKey": {
-                  "type": "string"
-                },
-                "baseUrl": {
-                  "type": "string"
-                },
-                "email": {
-                  "type": "string"
-                },
-                "apiToken": {
-                  "type": "string"
-                }
-              },
-              "additionalProperties": false,
-              "required": [
-                "projectKey",
-                "baseUrl",
-                "email",
-                "apiToken"
-              ],
-              "description": ""
-            },
-            "googleSheetsConfig": {
-              "type": "object",
-              "properties": {
-                "clientId": {
-                  "type": "string"
-                },
-                "clientSecret": {
-                  "type": "string"
-                },
-                "refreshToken": {
-                  "type": "string"
-                }
-              },
-              "additionalProperties": false,
-              "required": [
-                "clientId",
-                "clientSecret",
-                "refreshToken"
-              ],
-              "description": ""
-            },
-            "timezone": {
-              "type": "string",
-              "description": ""
-            },
-            "spreadsheetId": {
-              "anyOf": [
-                {
-                  "type": "string"
-                },
-                {
-                  "type": ""
-                }
-              ],
-              "description": ""
-            },
-            "timeFrame": {
-              "enum": [
-                "LAST_QUARTER",
-                "LAST_MONTH",
-                "LAST_WEEK",
-                "YESTERDAY",
-                "ALL"
-              ],
-              "description": ""
-            }
-          },
-          "additionalProperties": false,
-          "required": [
-            "jiraConfig",
-            "googleSheetsConfig"
-          ]
         }
       },
       "additionalProperties": false

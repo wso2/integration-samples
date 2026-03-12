@@ -11,17 +11,12 @@ SheetRow columns = [
     "Due Date"
 ];
 
-string currentTimeStamp = check getFormattedCurrentTimeStamp();
-
 function getOrCreateSpreadsheet(string sheetName) returns [string, sheets:Sheet]|error {
-    string? configuredSpreadsheetId = spreadsheetId;
-    if configuredSpreadsheetId is string {
-        string trimmedId = configuredSpreadsheetId.trim();
-        if trimmedId != "" {
-            log:printInfo("Using existing spreadsheet with ID: " + trimmedId);
-            sheets:Sheet sheet = check sheetsClient->addSheet(trimmedId, sheetName);
-            return [trimmedId, sheet];
-        }
+    string trimmedId = spreadsheetId.trim();
+    if trimmedId != "" {
+        log:printInfo("Using existing spreadsheet with ID: " + trimmedId);
+        sheets:Sheet sheet = check sheetsClient->addSheet(trimmedId, sheetName);
+        return [trimmedId, sheet];
     }
     
     sheets:Spreadsheet spreadsheet = check sheetsClient->createSpreadsheet(name = sheetName);
@@ -32,6 +27,8 @@ function getOrCreateSpreadsheet(string sheetName) returns [string, sheets:Sheet]
 public function runAutomation() returns error? {
 
      do {
+         string currentTimeStamp = check getFormattedCurrentTimeStamp();
+         
          string jql = string `project=${jiraConfig.projectKey}`;
          string prefix = "Jira Issues";
 
@@ -97,6 +94,6 @@ public function runAutomation() returns error? {
 
      } on fail error e {
          log:printError("Error: " + e.message());
-         return ();
+         return e;
      }
  }

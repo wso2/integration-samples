@@ -40,7 +40,7 @@ Before running this integration, you need:
     * Refresh Token
 3.  **Scopes Required:**
     * `https://www.googleapis.com/auth/spreadsheets`
-    * `https://www.googleapis.com/auth/drive.file`
+    * `https://www.googleapis.com/auth/drive`
 
 > This integration uses refresh token flow for auth. [Learn how to Develop on Google Workspace](https://developers.google.com/workspace/guides/get-started).
 
