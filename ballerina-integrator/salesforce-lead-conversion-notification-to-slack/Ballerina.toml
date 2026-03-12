@@ -1,0 +1,11 @@
+[package]
+org = "devantdemos"
+name = "salesforce_lead_conversion_notification_to_slack"
+version = "1.0.0"
+title = "salesforce_lead_conversion_notification_to_slack"
+distribution = "2201.13.1"
+
+[[dependency]]
+org = "ballerinax"
+name = "salesforce"
+version = "8.3.0"
