@@ -32,9 +32,6 @@ function getOrCreateSpreadsheet(string sheetName) returns [string, sheets:Sheet]
 public function runAutomation() returns error? {
 
      do {
-         if jiraConfig.projectKey.trim() == "" {
-             return error("jiraProjectKey cannot be empty");
-         }
          string jql = string `project=${jiraConfig.projectKey}`;
          string prefix = "Jira Issues";
 
@@ -63,14 +60,15 @@ public function runAutomation() returns error? {
          );
 
          jira:IssueBean[]? issueBeans = result.issues;
-         
-         if issueBeans is () {
-             log:printWarn("No issues found in the Jira project.");
-             return;
-         }
 
-         IssueData[] issues = from jira:IssueBean bean in issueBeans
-                              select convertBeanToIssueData(bean);
+         IssueData[] issues = [];
+         if issueBeans is jira:IssueBean[] {
+             if issueBeans.length() == 0 {
+                 return error("No Jira issues found. Please verify your Jira configurations.");
+             }
+             issues = from jira:IssueBean bean in issueBeans
+                      select convertBeanToIssueData(bean);
+         }
 
          SheetRow[] issueValues =
              from IssueData issue in issues
@@ -98,7 +96,7 @@ public function runAutomation() returns error? {
          );
 
      } on fail error e {
-         log:printError("Error occurred", 'error = e);
-         return e;
+         log:printError("Error: " + e.message());
+         return ();
      }
  }
