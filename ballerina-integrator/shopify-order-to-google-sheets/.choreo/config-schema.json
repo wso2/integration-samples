@@ -1,0 +1,256 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "properties": {
+    "ballerina": {
+      "type": "object",
+      "properties": {
+        "log": {
+          "type": "object",
+          "properties": {
+            "destinations": {
+              "type": "array",
+              "items": {
+                "anyOf": [
+                  {
+                    "type": "object",
+                    "properties": {
+                      "type": {
+                        "enum": [
+                          "stderr",
+                          "stdout"
+                        ]
+                      }
+                    },
+                    "additionalProperties": false,
+                    "required": [
+                      "type"
+                    ],
+                    "name": "ballerina/log:2.14.0:StandardDestination"
+                  },
+                  {
+                    "type": "object",
+                    "properties": {
+                      "type": {
+                        "enum": [
+                          "file"
+                        ]
+                      },
+                      "path": {
+                        "type": "string"
+                      },
+                      "mode": {
+                        "enum": [
+                          "APPEND",
+                          "TRUNCATE"
+                        ]
+                      }
+                    },
+                    "additionalProperties": false,
+                    "required": [
+                      "type",
+                      "path",
+                      "mode"
+                    ],
+                    "name": "ballerina/log:2.14.0:FileOutputDestination"
+                  }
+                ]
+              },
+              "description": ""
+            },
+            "modules": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string"
+                  },
+                  "level": {
+                    "enum": [
+                      "WARN",
+                      "INFO",
+                      "ERROR",
+                      "DEBUG"
+                    ]
+                  }
+                },
+                "additionalProperties": false,
+                "required": [
+                  "name",
+                  "level"
+                ],
+                "name": "ballerina/log:2.14.0:Module"
+              },
+              "description": ""
+            },
+            "keyValues": {
+              "type": "object",
+              "properties": {
+                "msg": {},
+                "error": {},
+                "stackTrace": {},
+                "module": {}
+              },
+              "additionalProperties": false,
+              "name": "ballerina/log:2.14.0:AnydataKeyValues",
+              "description": ""
+            },
+            "format": {
+              "enum": [
+                "logfmt",
+                "json"
+              ],
+              "description": ""
+            },
+            "level": {
+              "enum": [
+                "WARN",
+                "INFO",
+                "ERROR",
+                "DEBUG"
+              ],
+              "description": ""
+            },
+            "enableSensitiveDataMasking": {
+              "type": "boolean",
+              "description": ""
+            }
+          },
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    },
+    "wso2": {
+      "type": "object",
+      "properties": {
+        "shopify_order_to_google_sheets": {
+          "type": "object",
+          "properties": {
+            "shopifyWebHookSecret": {
+              "type": "string",
+              "description": ""
+            },
+            "googleClientID": {
+              "type": "string",
+              "description": ""
+            },
+            "googleClientSecret": {
+              "type": "string",
+              "description": ""
+            },
+            "googleRefreshToken": {
+              "type": "string",
+              "description": ""
+            },
+            "googleRefreshURL": {
+              "type": "string",
+              "description": ""
+            },
+            "sheetConfig": {
+              "type": "object",
+              "properties": {
+                "sheetId": {
+                  "type": "string"
+                },
+                "sheetName": {
+                  "type": "string"
+                },
+                "mode": {
+                  "enum": [
+                    "append",
+                    "upsert"
+                  ]
+                }
+              },
+              "additionalProperties": false,
+              "required": [
+                "sheetId",
+                "sheetName",
+                "mode"
+              ],
+              "name": "wso2/shopify_order_to_google_sheets:0.1.0:SheetConfig",
+              "description": ""
+            },
+            "includeLineItems": {
+              "type": "boolean",
+              "description": ""
+            },
+            "dateFormat": {
+              "enum": [
+                "default",
+                "email",
+                "iso8601"
+              ],
+              "description": ""
+            },
+            "groupByMonth": {
+              "type": "boolean",
+              "description": ""
+            },
+            "allowedCountryCodes": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "description": ""
+            },
+            "allowedCurrencies": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "description": ""
+            },
+            "allowedSources": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "description": ""
+            },
+            "allowedPaymentStatuses": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "description": ""
+            },
+            "allowedFulfillmentStatuses": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "description": ""
+            },
+            "requiredTags": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "description": ""
+            },
+            "excludedTags": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "description": ""
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "shopifyWebHookSecret",
+            "googleClientID",
+            "googleClientSecret",
+            "googleRefreshToken",
+            "sheetConfig"
+          ]
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false
+}
