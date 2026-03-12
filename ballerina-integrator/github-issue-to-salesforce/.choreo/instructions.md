@@ -1,0 +1,78 @@
+## What It Does
+- Listens for GitHub issue labeled events via webhook
+- Filters issues based on configurable trigger labels
+- Supports monitoring multiple GitHub repositories simultaneously
+- Creates a Salesforce Case with mapped fields from the GitHub issue
+- Stores the GitHub issue URL in a custom Salesforce field (GitHub_Issue_URL__c)
+
+<details>
+<summary>GitHub Setup Guide</summary>
+
+1. A GitHub account with access to the repositories you want to monitor
+3. Set up a webhook on each repository:
+   - Go to your GitHub repository **Settings → Webhooks → Add webhook**
+   - Set **Payload URL** to your Devant service URL
+   - Set **Content type** to `application/json`
+   - Under events select **"Let me select individual events"**
+   - Check **Issues**
+   - Click **Add webhook**
+
+</details>
+
+<details>
+<summary>Salesforce Setup Guide</summary>
+
+1. A Salesforce account with API access
+2. A Salesforce Connected App or External Client App with:
+   - Access Token
+   - Base URL (your Salesforce instance URL)
+
+> **Note:** Connected Apps creation is restricted as of Salesforce Spring '26.
+> Use External Client Apps instead.
+> [Learn how to create an External Client App](https://help.salesforce.com/s/articleView?id=xcloud.create_a_local_external_client_app.htm&type=5)
+>[Learn how to get access token](https://developer.salesforce.com/docs/atlas.en-us.sfdx_dev.meta/sfdx_dev/sfdx_dev_auth_existing_access_token.htm)
+
+3. Create a custom field on the Salesforce Case object:
+   - Go to **Setup → Object Manager → Case**
+   - Click **Fields & Relationships → New**
+   - Select **URL** as the field type
+   - Set Field Label as `GitHub Issue URL`
+   - Ensure API Name is `GitHub_Issue_URL__c`
+   - Click **Save**
+</details>
+
+<details>
+<summary>Additional Configurations</summary>
+
+1. `triggerLabels`
+   - List of GitHub issue labels that trigger Salesforce case creation
+   - Example: `triggerLabels = ["bug", "support", "help wanted"]`
+
+2. `githubRepositories`
+   - List of GitHub repository URLs to monitor
+   - Example: 
+```
+     githubRepositories = [
+       "https://github.com/org/repo1",
+       "https://github.com/org/repo2"
+     ]
+```
+
+3. `caseStatus`
+   - Default status for newly created Salesforce cases
+   - Example: `"New"`
+
+4. `casePriority`
+   - Default priority for newly created Salesforce cases
+   - Possible values: `"High"`, `"Medium"`, `"Low"`
+
+5. `caseRecordType`
+   - Default type for newly created Salesforce cases
+   - Example: `"Mechanical"`
+
+6. `caseOwnerId`
+   - Salesforce User ID or Queue ID to assign cases to
+   - User ID format: `005XXXXXXXXXXXXXXX`
+   - Queue ID format: `00GXXXXXXXXXXXXXXX`
+
+</details>
