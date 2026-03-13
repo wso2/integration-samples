@@ -9,7 +9,7 @@ function getOpportunity(string opportunityId) returns Opportunity|error {
 // Get contact by role from opportunity
 function getContactByRole(string opportunityId, SignerRole role) returns Contact|error {
     // Query for OpportunityContactRole
-    string soqlQuery = string `SELECT ContactId, Role FROM OpportunityContactRole 
+    string soqlQuery = string `SELECT Id, OpportunityId, ContactId, Role FROM OpportunityContactRole 
                                WHERE OpportunityId = '${opportunityId}' 
                                AND Role = '${role}'
                                LIMIT 1`;
@@ -34,7 +34,7 @@ function getContactByRole(string opportunityId, SignerRole role) returns Contact
 // Get primary contact from opportunity
 function getPrimaryContact(string opportunityId) returns Contact|error {
     // Query for primary contact role
-    string soqlQuery = string `SELECT ContactId FROM OpportunityContactRole 
+    string soqlQuery = string `SELECT Id, OpportunityId, ContactId, IsPrimary FROM OpportunityContactRole 
                                WHERE OpportunityId = '${opportunityId}' 
                                AND IsPrimary = true
                                LIMIT 1`;
