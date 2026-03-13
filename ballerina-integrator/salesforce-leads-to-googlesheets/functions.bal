@@ -96,5 +96,3 @@ public function buildSoqlQuery() returns string|error {
     
     return query;
 }
-
-

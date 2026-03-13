@@ -4,4 +4,3 @@ name = "salesforce_leads_to_googlesheets"
 version = "0.1.0"
 distribution = "2201.13.1"
 title = "salesforce-leads-to-googlesheets"
-

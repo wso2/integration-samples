@@ -86,9 +86,3 @@ The following configurations are required to connect to Salesforce and Google Sh
 7. In the **BY INTERVAL** tab, select a schedule frequency that matches your sync requirements.
 8. Set the desired execution time and click **Update**.
 9. Once tested, promote the integration to production and configure production environment variables.
-
-## License
-
-Copyright (c) 2025, WSO2 LLC. (http://www.wso2.com)
-
-Licensed under the Apache License, Version 2.0.

@@ -48,10 +48,15 @@ This integration uses refresh-token OAuth flow for Google APIs. [Google Workspac
 <summary>Additional Configurations</summary>
 
 1. `timezone`
-  - IANA timezone used for timestamp formatting (e.g., `Asia/Colombo`, `America/New_York`).
+  - IANA timezone used for timestamp formatting.
+  - Default: `"UTC"`.
+  - If omitted, timestamps are formatted in `UTC` automatically.
+  - Example: `timezone: "UTC"`.
+  - Other examples: `Asia/Colombo`, `America/New_York`.
 
 2. `timeframe`
   - Lead creation timeframe filter.
+  - Default: `ALL`.
   - Allowed values: `ALL`, `YESTERDAY`, `LAST_WEEK`, `LAST_MONTH`, `LAST_YEAR`.
 
 3. `spreadsheetId`
@@ -63,25 +68,33 @@ This integration uses refresh-token OAuth flow for Google APIs. [Google Workspac
   - Base worksheet name for the export.
 
 5. `fieldMapping`
-  - Ordered list of Salesforce Lead fields mapped to output columns.
+  - Optional ordered array of Salesforce Lead field names mapped to output columns.
+  - Default order: `Id`, `FirstName`, `LastName`, `Email`, `Phone`, `Company`, `Title`, `Status`, `LeadSource`, `Industry`, `Rating`, `CreatedDate`, `LastModifiedDate`.
+  - Example: `["Id", "FirstName", "LastName", "Email"]`.
 
 6. `soqlFilter`
   - Custom SOQL `WHERE` fragment (without `WHERE`) for advanced filtering.
 
 7. `syncMode`
-  - Output write strategy: `APPEND`, `FULL_REPLACE`, `UPSERT_BY_EMAIL`.
+  - Output write strategy: `APPEND`, `FULL_REPLACE`, `UPSERT_BY_EMAIL`. Default: `APPEND`.
 
 8. `includeConverted`
-  - Set `true` to include converted leads in results.
+  - Set `true` to include converted leads in results. Default: `false` (converted leads are excluded when unset).
 
 9. `enableIncrementalSync` and `lastSyncTimestamp`
   - Use together to fetch only leads modified after a given timestamp.
 
 10. `splitBy`
   - Splits rows into separate sheets by a chosen field (e.g., `Status`, `LeadSource`).
+  - Default: `""` (no splitting).
+  - When empty or unset, all rows are written to the primary sheet instead of separate sheets.
+  - Example: `splitBy: "Status"` creates separate sheets per status, while `splitBy: ""` keeps all rows in a single sheet.
 
 11. `enableAutoFormat`
-  - Toggles automatic sheet formatting behaviors used by the integration.
+  - Default: `true`.
+  - Enables the integration's sheet-formatting hook.
+  - Current behavior logs formatting guidance and keeps headers in the first row.
+  - It does not currently auto-apply header bolding/background, top-row freezing, column auto-fit, number/date formatting, or alternating row styling.
 
 </details>
 
