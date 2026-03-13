@@ -216,7 +216,7 @@ function updateOpportunityStage(string opportunityId, string stageName, string? 
         // Log the error but don't fail the entire process if Salesforce update fails
         // The envelope was already sent successfully
         log:printWarn("Envelope was sent successfully but Salesforce update failed");
-        return updateResult;
+        return;
     }
     
     log:printInfo(string `Successfully updated opportunity ${opportunityId} stage to ${stageName}`);
