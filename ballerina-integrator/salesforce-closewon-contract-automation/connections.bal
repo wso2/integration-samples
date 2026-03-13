@@ -8,7 +8,7 @@ final salesforce:Client salesforceClient = check new ({
     auth: salesforceOAuthConfig
 });
 
-// DocuSign Client Configuration
+// Docusign Client Configuration
 final dsesign:Client docusignClient = check new (
     config = {
         auth: {

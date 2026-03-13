@@ -1,7 +1,7 @@
 import ballerina/log;
 import ballerinax/docusign.dsesign;
 
-// Create and send DocuSign envelope using the connector
+// Create and send Docusign envelope using the connector
 function createAndSendEnvelope(Opportunity opportunity, Contact signer, TemplateConfig templateConfig) returns string|error {
     // Build signer name
     string signerName = buildSignerName(signer);
@@ -30,7 +30,7 @@ function createAndSendEnvelope(Opportunity opportunity, Contact signer, Template
         ccRoutingOrder = ccRoutingOrder + 1;
     }
     
-    // Create envelope definition for DocuSign API
+    // Create envelope definition for Docusign API
     dsesign:EnvelopeDefinition envelopeDefinition = {
         emailSubject: string `Contract for ${opportunity.Name}`,
         templateId: templateConfig.templateId,
@@ -101,25 +101,25 @@ function createAndSendEnvelope(Opportunity opportunity, Contact signer, Template
     
     envelopeDefinition.templateRoles = templateRoles;
     
-    // Create envelope using DocuSign client
+    // Create envelope using Docusign client
     dsesign:EnvelopeSummary|error envelopeSummaryResult = docusignClient->/accounts/[docusignAccountId]/envelopes.post(envelopeDefinition);
     
     if envelopeSummaryResult is error {
-        log:printError(string `Failed to create DocuSign envelope: ${envelopeSummaryResult.message()}`);
-        return error(string `DocuSign API error: ${envelopeSummaryResult.message()}`, envelopeSummaryResult);
+        log:printError(string `Failed to create Docusign envelope: ${envelopeSummaryResult.message()}`);
+        return error(string `Docusign API error: ${envelopeSummaryResult.message()}`, envelopeSummaryResult);
     }
     
     dsesign:EnvelopeSummary envelopeSummary = envelopeSummaryResult;
     string? envelopeId = envelopeSummary.envelopeId;
     
     if envelopeId is () {
-        return error("Failed to create envelope: No envelope ID returned from DocuSign");
+        return error("Failed to create envelope: No envelope ID returned from Docusign");
     }
     
     string? status = envelopeSummary.status;
     string? statusDateTime = envelopeSummary.statusDateTime;
     
-    log:printInfo(string `DocuSign envelope created successfully: ${envelopeId}`);
+    log:printInfo(string `Docusign envelope created successfully: ${envelopeId}`);
     log:printInfo(string `Envelope status: ${status ?: "unknown"}, Status time: ${statusDateTime ?: "unknown"}`);
     
     // Build envelope URL for reference
@@ -170,7 +170,7 @@ function buildSignerName(Contact contact) returns string {
     return lastName;
 }
 
-// Build DocuSign envelope URL for reference
+// Build Docusign envelope URL for reference
 function buildEnvelopeUrl(string envelopeId) returns string {
     // Extract base URL without /restapi suffix
     string baseUrl = docusignBaseUrl;
@@ -214,10 +214,10 @@ public function processOpportunityForContract(string opportunityId) returns erro
     // Select appropriate template
     TemplateConfig templateConfig = selectTemplate(opportunity);
     
-    // Create and send DocuSign envelope
+    // Create and send Docusign envelope
     string envelopeId = check createAndSendEnvelope(opportunity, signer, templateConfig);
     
-    log:printInfo(string `DocuSign envelope ${envelopeId} sent for opportunity ${opportunityId}`);
+    log:printInfo(string `Docusign envelope ${envelopeId} sent for opportunity ${opportunityId}`);
     
     // Update opportunity stage to "Contract Sent" with envelope ID
     check updateOpportunityStage(opportunityId, contractSentStage, envelopeId);
@@ -233,8 +233,8 @@ function hasEnvelopeAlreadySent(string opportunityId, Opportunity opportunity) r
         return true;
     }
     
-    // Check if there's a DocuSign envelope ID stored in a custom field
-    // Note: This requires a custom field on Opportunity object (e.g., DocuSign_Envelope_Id__c)
+    // Check if there's a Docusign envelope ID stored in a custom field
+    // Note: This requires a custom field on Opportunity object (e.g., Docusign_Envelope_Id__c)
     // For now, we rely on stage check as the primary idempotency mechanism
     boolean hasEnvelopeMarker = check checkEnvelopeMarker(opportunityId);
     if hasEnvelopeMarker {
@@ -245,7 +245,7 @@ function hasEnvelopeAlreadySent(string opportunityId, Opportunity opportunity) r
     return false;
 }
 
-// Get envelope status from DocuSign
+// Get envelope status from Docusign
 function getEnvelopeStatus(string envelopeId) returns string|error {
     dsesign:Envelope|error envelopeResult = docusignClient->/accounts/[docusignAccountId]/envelopes/[envelopeId].get();
     

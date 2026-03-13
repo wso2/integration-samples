@@ -1,13 +1,13 @@
-// Data mapping utilities for transforming Salesforce data to DocuSign format
+// Data mapping utilities for transforming Salesforce data to Docusign format
 
 import ballerina/log;
 
-// Map Salesforce opportunity to DocuSign envelope subject
+// Map Salesforce opportunity to Docusign envelope subject
 public function mapEnvelopeSubject(Opportunity opportunity) returns string {
     return string `Contract for ${opportunity.Name}`;
 }
 
-// Map Salesforce contact to DocuSign signer
+// Map Salesforce contact to Docusign signer
 public function mapContactToSigner(Contact contact, string roleName) returns SignerInfo {
     string signerName = buildContactName(contact);
     

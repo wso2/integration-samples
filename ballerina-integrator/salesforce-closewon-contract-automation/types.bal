@@ -27,7 +27,7 @@ public type OpportunityContactRole record {
     boolean IsPrimary?;
 };
 
-// Note: DocuSign types are now provided by ballerinax/docusign.dsesign connector
+// Note: Docusign types are now provided by ballerinax/docusign.dsesign connector
 // Custom types for our specific use case
 
 // Simplified envelope creation request

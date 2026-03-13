@@ -3,7 +3,7 @@ configurable string salesforceUsername = ?;
 
 configurable string salesforcePassword = ?;
 
-// DocuSign Configuration
+// Docusign Configuration
 configurable string docusignAccountId = ?;
 
 configurable string docusignClientId = ?;

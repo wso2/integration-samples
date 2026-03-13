@@ -1,14 +1,14 @@
-# Salesforce to DocuSign Contract Automation
+# Salesforce to Docusign Contract Automation
 
 ## Description
 
-This integration automatically sends DocuSign contracts when Salesforce opportunities are marked as "Closed Won". It listens to Salesforce change events in real-time and triggers contract creation based on configurable business rules.
+This integration automatically sends Docusign contracts when Salesforce opportunities are marked as "Closed Won". It listens to Salesforce change events in real-time and triggers contract creation based on configurable business rules.
 
 ### What It Does
 
 - Listens to Salesforce Opportunity change events and validates they meet business criteria (Closed Won stage, minimum deal value)
-- Retrieves contact details based on configured signer role and selects the appropriate DocuSign template
-- Creates and sends DocuSign envelope with pre-filled fields, configured signers, and CC recipients
+- Retrieves contact details based on configured signer role and selects the appropriate Docusign template
+- Creates and sends Docusign envelope with pre-filled fields, configured signers, and CC recipients
 - Updates Salesforce opportunity stage to track contract status
 
 ## Prerequisites
@@ -31,7 +31,7 @@ This integration uses both username/password authentication for the listener and
 
 ### Docusign Setup
 
-1. A DocuSign account (demo or production)
+1. A Docusign account (demo or production)
 2. Contract templates created with named fields
 3. OAuth2 credentials:
    - Account ID
@@ -43,11 +43,11 @@ This integration uses both username/password authentication for the listener and
    - `signature`
    - `impersonation`
 
-This integration uses the official `ballerinax/docusign.dsesign` connector with OAuth2 refresh token authentication for automatic token renewal. [Learn how to get DocuSign credentials](https://developers.docusign.com/platform/auth/).
+This integration uses the official `ballerinax/docusign.dsesign` connector with OAuth2 refresh token authentication for automatic token renewal. [Learn how to get Docusign credentials](https://developers.docusign.com/platform/auth/).
 
 ## Configuration
 
-The following configurations are required to connect to Salesforce and DocuSign.
+The following configurations are required to connect to Salesforce and Docusign.
 
 ### Salesforce Credentials
 
@@ -61,20 +61,20 @@ The following configurations are required to connect to Salesforce and DocuSign.
 
 **Note**: The integration listens to the `/data/ChangeEvents` channel which captures all object changes. To listen to only Opportunity changes, modify the service path in `main.bal` to `/data/OpportunityChangeEvent`.
 
-### DocuSign Credentials
+### Docusign Credentials
 
-- `docusignAccountId` - Your DocuSign account ID
-- `docusignClientId` - Your DocuSign OAuth2 client ID (Integration Key)
-- `docusignClientSecret` - Your DocuSign OAuth2 client secret
-- `docusignRefreshToken` - Your DocuSign OAuth2 refresh token
-- `docusignRefreshUrl` - DocuSign OAuth2 token endpoint (e.g., `https://account-d.docusign.com/oauth/token` for demo, `https://account.docusign.com/oauth/token` for production)
-- `docusignBaseUrl` - DocuSign API base URL (e.g., `https://demo.docusign.net/restapi` for demo, `https://na1.docusign.net/restapi` for production)
+- `docusignAccountId` - Your Docusign account ID
+- `docusignClientId` - Your Docusign OAuth2 client ID (Integration Key)
+- `docusignClientSecret` - Your Docusign OAuth2 client secret
+- `docusignRefreshToken` - Your Docusign OAuth2 refresh token
+- `docusignRefreshUrl` - Docusign OAuth2 token endpoint (e.g., `https://account-d.docusign.com/oauth/token` for demo, `https://account.docusign.com/oauth/token` for production)
+- `docusignBaseUrl` - Docusign API base URL (e.g., `https://demo.docusign.net/restapi` for demo, `https://na1.docusign.net/restapi` for production)
 
 ### Template Configuration
 
-- `defaultTemplateId` - Default DocuSign template ID to use
+- `defaultTemplateId` - Default Docusign template ID to use
 - `templateConfigs` - Array of template configurations for different product/deal types
-  - `templateId` - DocuSign template ID
+  - `templateId` - Docusign template ID
   - `productType` - Opportunity type to match (optional)
   - `dealType` - Deal type to match (optional)
   - `expirationDays` - Days until expiration reminder (optional)
@@ -86,9 +86,9 @@ The following configurations are required to connect to Salesforce and DocuSign.
 - `ccRecipients` - Array of CC recipients
   - `email` - Recipient email address
   - `name` - Recipient name
-- `fieldMappings` - Array of field mappings from Salesforce to DocuSign
+- `fieldMappings` - Array of field mappings from Salesforce to Docusign
   - `opportunityField` - Salesforce Opportunity field name
-  - `docusignField` - DocuSign template field label
+  - `docusignField` - Docusign template field label
 - `contractSentStage` - Opportunity stage to set after sending contract (default: "Contract Sent")
 - `expirationReminderDays` - Default expiration reminder days (default: 3)
 
@@ -98,7 +98,7 @@ The following configurations are required to connect to Salesforce and DocuSign.
 2. Create a new Integration and follow instructions in [Choreo Documentation](https://wso2.com/choreo/docs/) to import this repository.
 3. Select the **Technology** as `Ballerina`.
 4. Choose the **Integration** Type as `Service` and click **Create**.
-5. Once the build is successful, click **Configure to Continue** and set up the required environment variables for Salesforce and DocuSign credentials.
+5. Once the build is successful, click **Configure to Continue** and set up the required environment variables for Salesforce and Docusign credentials.
 6. Click **Deploy** to deploy the integration.
 7. The integration will start listening to Salesforce change events automatically.
 8. Monitor logs to verify successful contract dispatch.
@@ -112,8 +112,8 @@ The following configurations are required to connect to Salesforce and DocuSign.
    - Verify Salesforce credentials and security token
    - Check OAuth token validity and refresh token
    - Ensure Connected App permissions are correct
-   - Verify DocuSign OAuth credentials (client ID, client secret, refresh token)
-   - Ensure DocuSign refresh URL matches your environment (demo vs production)
+   - Verify Docusign OAuth credentials (client ID, client secret, refresh token)
+   - Ensure Docusign refresh URL matches your environment (demo vs production)
 
 2. **Event Not Received**:
    - Verify Change Data Capture is enabled for Opportunity object in Salesforce
@@ -121,8 +121,8 @@ The following configurations are required to connect to Salesforce and DocuSign.
    - Review Salesforce event monitoring logs
    - Ensure listener credentials have API access
 
-3. **DocuSign Errors**:
-   - Verify template ID exists in your DocuSign account
+3. **Docusign Errors**:
+   - Verify template ID exists in your Docusign account
    - Check field names in template match configured field mappings
    - Ensure access token has required scopes
    - Verify account ID is correct

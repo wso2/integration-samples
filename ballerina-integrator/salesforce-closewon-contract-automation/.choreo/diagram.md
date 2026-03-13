@@ -10,11 +10,11 @@
     J{"Contact <br/> Found?"}:::decisionNode
     K["Fallback to Primary Contact"]:::processNode
     L["Validate Contact Data"]:::processNode
-    M["Select DocuSign Template by Opportunity Type"]:::processNode
+    M["Select Docusign Template by Opportunity Type"]:::processNode
     N["Build Pre-filled Fields from Opportunity"]:::processNode
-    O["Create DocuSign Envelope with Template"]:::processNode
+    O["Create Docusign Envelope with Template"]:::processNode
     P["Add Signer and CC Recipients"]:::processNode
-    Q["Send DocuSign Envelope"]:::processNode
+    Q["Send Docusign Envelope"]:::processNode
     R{"Envelope <br/> Created?"}:::decisionNode
     S["Update Opportunity Stage to 'Contract Sent'"]:::processNode
     T["Log Success with Envelope ID"]:::processNode

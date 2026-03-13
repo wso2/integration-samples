@@ -1,8 +1,8 @@
 ## What It Does
 
 - Listens to Salesforce Opportunity change events and validates business criteria (Closed Won stage, minimum deal value)
-- Retrieves contact details and selects the appropriate DocuSign template based on opportunity type
-- Creates and sends DocuSign envelope with pre-filled fields from Salesforce
+- Retrieves contact details and selects the appropriate Docusign template based on opportunity type
+- Creates and sends Docusign envelope with pre-filled fields from Salesforce
 - Updates Salesforce opportunity stage to "Contract Sent"
 
 <details>
@@ -25,11 +25,11 @@ This integration uses both username/password authentication for the listener and
 
 <details>
 
-<summary>DocuSign Setup Guide</summary>
+<summary>Docusign Setup Guide</summary>
 
 ### Prerequisites
 
-1. A DocuSign account (demo or production)
+1. A Docusign account (demo or production)
 2. Contract templates created with named fields
 3. OAuth2 credentials:
    - Account ID
@@ -41,7 +41,7 @@ This integration uses both username/password authentication for the listener and
 ### Setup Steps
 
 1. **Create Templates**:
-   - Log in to DocuSign
+   - Log in to Docusign
    - Go to Templates → New Template
    - Add fields with labels matching your field mappings (e.g., "OpportunityName", "ContractValue", "CloseDate")
    - Note Template ID from template settings
@@ -52,7 +52,7 @@ This integration uses both username/password authentication for the listener and
    - Generate access token with required scopes
    - Note Account ID and Access Token
 
-This integration uses the official `ballerinax/docusign.dsesign` connector with access token authentication. [Learn how to get DocuSign credentials](https://developers.docusign.com/platform/auth/).
+This integration uses the official `ballerinax/docusign.dsesign` connector with access token authentication. [Learn how to get Docusign credentials](https://developers.docusign.com/platform/auth/).
 
 </details>
 
@@ -71,17 +71,17 @@ This integration uses the official `ballerinax/docusign.dsesign` connector with 
 - `salesforceBaseUrl` - Your Salesforce instance URL (default: `https://login.salesforce.com`)
 - `salesforceChannelName` - Change event channel (default: `/data/ChangeEvents`)
 
-### DocuSign Credentials
+### Docusign Credentials
 
-- `docusignAccountId` - Your DocuSign account ID
-- `docusignAccessToken` - Your DocuSign OAuth2 access token
-- `docusignBaseUrl` - DocuSign API base URL (default: `https://demo.docusign.net/restapi` for demo)
+- `docusignAccountId` - Your Docusign account ID
+- `docusignAccessToken` - Your Docusign OAuth2 access token
+- `docusignBaseUrl` - Docusign API base URL (default: `https://demo.docusign.net/restapi` for demo)
 
 ### Template Configuration
 
-- `defaultTemplateId` - Default DocuSign template ID to use (required)
+- `defaultTemplateId` - Default Docusign template ID to use (required)
 - `templateConfigs` - Array of template configurations for different product/deal types (optional)
-  - `templateId` - DocuSign template ID
+  - `templateId` - Docusign template ID
   - `productType` - Opportunity type to match (optional)
   - `dealType` - Deal type to match (optional)
   - `expirationDays` - Days until expiration reminder (optional)
@@ -96,9 +96,9 @@ This integration uses the official `ballerinax/docusign.dsesign` connector with 
 - `ccRecipients` - Array of CC recipients (optional)
   - `email` - Recipient email address
   - `name` - Recipient name
-- `fieldMappings` - Array of field mappings from Salesforce to DocuSign (default mappings provided)
+- `fieldMappings` - Array of field mappings from Salesforce to Docusign (default mappings provided)
   - `opportunityField` - Salesforce Opportunity field name (e.g., "Name", "Amount", "CloseDate")
-  - `docusignField` - DocuSign template field label (e.g., "OpportunityName", "ContractValue")
+  - `docusignField` - Docusign template field label (e.g., "OpportunityName", "ContractValue")
 - `contractSentStage` - Opportunity stage to set after sending contract (default: `"Contract Sent"`)
 - `expirationReminderDays` - Default expiration reminder days (default: `3`)
 
@@ -128,7 +128,7 @@ docusignField = "CloseDate"
 
 ### Adding Custom Mappings
 
-You can add additional field mappings to pre-fill more DocuSign fields:
+You can add additional field mappings to pre-fill more Docusign fields:
 
 ```toml
 [[fieldMappings]]
@@ -144,7 +144,7 @@ opportunityField = "AccountId"
 docusignField = "AccountNumber"
 ```
 
-**Important**: Ensure the `docusignField` values match the exact field labels in your DocuSign template.
+**Important**: Ensure the `docusignField` values match the exact field labels in your Docusign template.
 
 </details>
 

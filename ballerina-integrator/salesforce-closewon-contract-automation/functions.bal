@@ -159,7 +159,7 @@ function checkEnvelopeMarker(string opportunityId) returns boolean|error {
     check validateSalesforceId(opportunityId);
     
     // Query for a custom field that stores envelope ID or processing marker
-    // This assumes you have a custom field like DocuSign_Envelope_Id__c on Opportunity
+    // This assumes you have a custom field like Docusign_Envelope_Id__c on Opportunity
     // If the field doesn't exist, this will return false
     
     string soqlQuery = string `SELECT Id, StageName FROM Opportunity 
@@ -182,7 +182,7 @@ function checkEnvelopeMarker(string opportunityId) returns boolean|error {
         return true;
     }
     
-    // Additional check: Query for any existing DocuSign envelope records
+    // Additional check: Query for any existing Docusign envelope records
     // This could be a custom object or integration log
     // For now, we rely on stage as the marker
     
@@ -202,8 +202,8 @@ function updateOpportunityStage(string opportunityId, string stageName, string? 
     // Add envelope ID to description or custom field if provided
     if envelopeId is string {
         // Store envelope ID in Description field as a marker
-        // In production, use a custom field like DocuSign_Envelope_Id__c
-        string envelopeMarker = string `[DocuSign Envelope: ${envelopeId}]`;
+        // In production, use a custom field like Docusign_Envelope_Id__c
+        string envelopeMarker = string `[Docusign Envelope: ${envelopeId}]`;
         updatePayload["Description"] = envelopeMarker;
         log:printInfo(string `Storing envelope ID ${envelopeId} for opportunity ${opportunityId}`);
     }
