@@ -104,20 +104,6 @@ The following configurations are required to connect to Salesforce and DocuSign.
 8. Monitor logs to verify successful contract dispatch.
 9. Once tested, you may promote the integration to production. Make sure to set the relevant environment variables in the production environment as well.
 
-## Running Locally
-
-1. Clone this repository
-2. Create a `Config.toml` file with your credentials (see `Config.toml` for sample configuration)
-3. Run the integration:
-
-```bash
-bal run
-```
-
-4. The integration will start listening to Salesforce change events
-5. Update an opportunity to "Closed Won" stage in Salesforce to trigger contract dispatch
-6. Check logs for processing status and DocuSign envelope ID
-
 ## Troubleshooting
 
 ### Common Issues
