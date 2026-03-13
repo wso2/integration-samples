@@ -1,36 +1,31 @@
 import ballerina/log;
-import ballerina/io;
 import ballerina/lang.runtime;
 import ballerinax/jira;
 import ballerinax/googleapis.gmail;
 
 public function main() returns error? {
-    io:println("✓ Jira Sprint Summary Automation started!");
-    io:println(string `✓ Jira Base URL: ${jiraBaseUrl}`);
-    io:println(string `✓ Jira Email: ${jiraEmail}`);
-    io:println(string `✓ Polling interval: ${pollingIntervalSeconds} seconds`);
-    io:println(string `✓ Monitoring project: ${jiraProjectKey}`);
-    io:println("");
+    log:printInfo("Jira Sprint Summary Automation started!");
+    log:printInfo(string `Jira Base URL: ${jiraBaseUrl}`);
+    log:printInfo(string `Polling interval: ${pollingIntervalHours} hours`);
+    log:printInfo(string `Monitoring project: ${jiraProjectKey}`);
     
     // Test Jira connection
-    io:println("Testing Jira connection...");
+    log:printInfo("Testing Jira connection...");
     do {
         _ = check jiraClient->/api/'3/myself;
-        io:println("✓ Jira connection successful!");
+        log:printInfo("Jira connection successful!");
     } on fail error e {
-        io:println("✗ Failed to connect to Jira!");
-        io:println("Please check your credentials:");
-        io:println("  1. jiraEmail must be your Jira account email");
-        io:println("  2. jiraApiToken must be a valid API token from https://id.atlassian.com/manage-profile/security/api-tokens");
-        io:println("  3. jiraBaseUrl must be your Jira instance URL (e.g., https://yourcompany.atlassian.net)");
+        log:printError("Failed to connect to Jira!");
+        log:printError("Please check your credentials:");
+        log:printError("  1. jiraEmail must be your Jira account email");
+        log:printError("  2. jiraApiToken must be a valid API token from https://id.atlassian.com/manage-profile/security/api-tokens");
+        log:printError("  3. jiraBaseUrl must be your Jira instance URL (e.g., https://yourcompany.atlassian.net)");
         return e;
     }
-    io:println("");
 
-    io:println(string `✓ Checking for completed sprints in project ${jiraProjectKey}...`);
-    io:println("");
+    log:printInfo(string `Checking for completed sprints in project ${jiraProjectKey}...`);
     
-    map<boolean> processedSprints = {};
+    map<boolean> processedSprints = loadProcessedSprints();
     
     while true {
         log:printInfo("Polling Jira for completed sprints...");
@@ -40,7 +35,8 @@ public function main() returns error? {
             log:printError("Error checking sprints", 'error = result);
         }
         
-        runtime:sleep(pollingIntervalSeconds);
+        decimal sleepSeconds = pollingIntervalHours * 3600;
+        runtime:sleep(sleepSeconds);
     }
 }
 
@@ -71,14 +67,20 @@ function checkCompletedSprints(map<boolean> processedSprints) returns error? {
     foreach string sprintKey in closedSprints.keys() {
         Sprint sprint = <Sprint>closedSprints[sprintKey];
 
-        if !processedSprints.hasKey(sprintKey) && isRecentlyCompleted(sprint) {
+        if !processedSprints.hasKey(sprintKey) {
             log:printInfo(string `Processing newly completed sprint: ${sprint.name} (ID: ${sprint.id})`);
 
-            SprintSummary summary = check generateSprintSummary(sprint);
-            check sendSprintSummaryEmail(summary);
+            do {
+                SprintSummary summary = check generateSprintSummary(sprint);
+                check sendSprintSummaryEmail(summary);
 
-            processedSprints[sprintKey] = true;
-            io:println(string `✓ Sent summary for sprint: ${sprint.name}`);
+                processedSprints[sprintKey] = true;
+                saveProcessedSprints(processedSprints);
+                log:printInfo(string `Sent summary for sprint: ${sprint.name}`, sprintId = sprint.id);
+            } on fail error e {
+                log:printError(string `Failed to process sprint ${sprint.name} (ID: ${sprint.id})`, 'error = e, sprintId = sprint.id);
+                // Continue to next sprint instead of aborting entire poll
+            }
         }
     }
 }

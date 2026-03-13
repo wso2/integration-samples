@@ -223,27 +223,7 @@ function toSprint(map<json> sprintData) returns Sprint? {
     return ();
 }
 
-// Sprint validation
-function isRecentlyCompleted(Sprint sprint) returns boolean {
-    string? completeDate = sprint.completeDate;
-    
-    if completeDate is () {
-        return false;
-    }
-    
-    time:Utc|error completedTime = parseJiraDateTime(completeDate);
-    if completedTime is error {
-        log:printWarn(string `Could not parse complete date: ${completeDate}`);
-        return false;
-    }
-    
-    time:Utc currentTime = time:utcNow();
-    time:Seconds timeDiff = time:utcDiffSeconds(currentTime, completedTime);
-    
-    decimal thresholdSeconds = pollingIntervalSeconds * 2;
-    
-    return timeDiff < thresholdSeconds;
-}
+
 
 // Date parsing
 function parseJiraDateTime(string dateText) returns time:Utc|error {
@@ -298,15 +278,10 @@ function detectMidSprintAdditions(jira:IssueBean[] sprintIssues, Sprint sprint) 
             continue;
         }
 
-        jira:IssueBean issueWithChangelog = check jiraClient->/api/'3/issue/[issueDetail.key](
-            expand = "changelog",
-            fields = ["summary", "status", "assignee", "created"]
-        );
-        json detailedIssueJson = check issueWithChangelog.cloneWithType();
-        
+        // Reuse changelog data from initial search (already expanded)
         boolean isMidSprintAddition = false;
 
-        string? sprintAddedDate = getSprintAddedDate(detailedIssueJson, sprint.id, sprint.name);
+        string? sprintAddedDate = getSprintAddedDate(issueJson, sprint.id, sprint.name);
         if sprintAddedDate is string {
             time:Utc|error addedTime = parseJiraDateTime(sprintAddedDate);
             if addedTime is time:Utc {

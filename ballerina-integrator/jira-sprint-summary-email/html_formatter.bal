@@ -2,12 +2,30 @@ import ballerina/time;
 
 // HTML email formatting functions
 
+// Escape HTML special characters to prevent XSS and markup breakage
+function escapeHtml(string text) returns string {
+    string:RegExp ampersand = re `&`;
+    string:RegExp lessThan = re `<`;
+    string:RegExp greaterThan = re `>`;
+    string:RegExp doubleQuote = re `"`;
+    string:RegExp singleQuote = re `'`;
+    
+    string escaped = text;
+    escaped = ampersand.replaceAll(escaped, "&amp;");
+    escaped = lessThan.replaceAll(escaped, "&lt;");
+    escaped = greaterThan.replaceAll(escaped, "&gt;");
+    escaped = doubleQuote.replaceAll(escaped, "&quot;");
+    escaped = singleQuote.replaceAll(escaped, "&#x27;");
+    return escaped;
+}
+
 function formatEmailSubject(SprintSummary summary) returns string {
     string:RegExp sprintNamePattern = re `\{\{sprintName\}\}`;
     string:RegExp sprintIdPattern = re `\{\{sprintId\}\}`;
     
     string subject = emailSubjectTemplate;
-    subject = sprintNamePattern.replaceAll(subject, summary.sprintName);
+    // Note: Email subjects don't need HTML escaping, but we escape for safety
+    subject = sprintNamePattern.replaceAll(subject, escapeHtml(summary.sprintName));
     subject = sprintIdPattern.replaceAll(subject, summary.sprintId.toString());
     return subject;
 }
@@ -42,7 +60,7 @@ function formatEmailBody(SprintSummary summary) returns string {
         <center style="width: 100%; background-color: #f4f5f7;">
 
             <div style="display: none; font-size: 1px; line-height: 1px; max-height: 0px; max-width: 0px; opacity: 0; overflow: hidden; mso-hide: all; font-family: sans-serif;">
-                Sprint Summary for ${summary.sprintName}: ${summary.totalIssues} Total, ${summary.completedIssues} Completed, ${summary.carriedOverIssues} Carried Over
+                Sprint Summary for ${escapeHtml(summary.sprintName)}: ${summary.totalIssues} Total, ${summary.completedIssues} Completed, ${summary.carriedOverIssues} Carried Over
             </div>
 
             <table align="center" role="presentation" cellspacing="0" cellpadding="0" border="0" width="600" style="margin: auto;" class="email-container">
@@ -54,9 +72,9 @@ function formatEmailBody(SprintSummary summary) returns string {
                         <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%">
                             <tr>
                                 <td style="font-family: sans-serif; font-size: 20px; font-weight: 600; color: #ffffff; line-height: 24px;">
-                                    ${summary.sprintName}
+                                    ${escapeHtml(summary.sprintName)}
                                     <div style="font-size: 14px; color: #deebff; font-weight: 400; margin-top: 5px;">Sprint ID: ${summary.sprintId} • ${formattedTime}</div>
-                                    <div style="font-size: 14px; color: #deebff; font-weight: 400; margin-top: 5px;">Completed: ${summary.completedDate}</div>
+                                    <div style="font-size: 14px; color: #deebff; font-weight: 400; margin-top: 5px;">Completed: ${escapeHtml(summary.completedDate)}</div>
                                 </td>
                                 <td width="60" align="right" valign="middle">
                                     <img src="https://wac-cdn.atlassian.com/assets/img/favicons/atlassian/apple-touch-icon-152x152.png" width="48" height="48" alt="Jira" style="display: block; border: 0; border-radius: 6px;">
@@ -100,7 +118,7 @@ function formatEmailBody(SprintSummary summary) returns string {
 
                 <tr>
                     <td style="padding: 30px; text-align: center; font-family: sans-serif; font-size: 12px; color: #5e6c84; line-height: 18px;">
-                        <p style="margin: 0;">You are receiving this sprint summary for <strong>${summary.sprintName}</strong>.</p>
+                        <p style="margin: 0;">You are receiving this sprint summary for <strong>${escapeHtml(summary.sprintName)}</strong>.</p>
                     </td>
                 </tr>
 
@@ -140,9 +158,9 @@ function getHtmlFormattedIssues(IssueDetails[] issues, string section, string ic
                         <span style="color: ${iconColor}; font-size: 20px;">◎</span>
                     </td>
                     <td valign="middle" style="padding: 24px 0; font-family: sans-serif;">
-                        <div style="text-decoration: none; color: #172b4d; font-size: 16px; font-weight: 600; line-height: 20px;">${issue.summary}</div>
+                        <div style="text-decoration: none; color: #172b4d; font-size: 16px; font-weight: 600; line-height: 20px;">${escapeHtml(issue.summary)}</div>
                         <div style="font-size: 12px; color: #5e6c84; margin-top: 4px; line-height: 18px;">
-                            ${issue.key} • ${issue.status} • Assignee: <span style="color: #172b4d;">${assignee}</span>
+                            ${escapeHtml(issue.key)} • ${escapeHtml(issue.status)} • Assignee: <span style="color: #172b4d;">${escapeHtml(assignee)}</span>
                         </div>
                     </td>
                 </tr>
@@ -201,7 +219,7 @@ function getHtmlFormattedAssigneeBreakdown(AssigneeStats[] breakdown) returns st
         formattedBreakdown += string `
                     <tr>
                         <td style="padding: 16px; font-family: sans-serif; font-size: 14px; color: #172b4d; border-bottom: 1px solid #dfe1e6;">
-                            <div style="font-weight: 600; margin-bottom: 4px;">${stats.assigneeName}</div>
+                            <div style="font-weight: 600; margin-bottom: 4px;">${escapeHtml(stats.assigneeName)}</div>
                             <div style="background-color: #f4f5f7; height: 6px; border-radius: 3px; overflow: hidden;">
                                 <div style="background-color: ${progressBarColor}; height: 6px; width: ${completionRateText};"></div>
                             </div>
@@ -262,9 +280,9 @@ function getHtmlFormattedMidSprintAdditions(IssueDetails[] issues) returns strin
                         <span style="color: #ff991f; font-size: 20px;">⚠</span>
                     </td>
                     <td valign="middle" style="padding: 24px 0; font-family: sans-serif;">
-                        <div style="text-decoration: none; color: #172b4d; font-size: 16px; font-weight: 600; line-height: 20px;">${issue.summary}</div>
+                        <div style="text-decoration: none; color: #172b4d; font-size: 16px; font-weight: 600; line-height: 20px;">${escapeHtml(issue.summary)}</div>
                         <div style="font-size: 12px; color: #5e6c84; margin-top: 4px; line-height: 18px;">
-                            ${issue.key} • ${issue.status} • Assignee: <span style="color: #172b4d;">${assignee}</span> • Added: <span style="color: #ff991f;">${createdDate}</span>
+                            ${escapeHtml(issue.key)} • ${escapeHtml(issue.status)} • Assignee: <span style="color: #172b4d;">${escapeHtml(assignee)}</span> • Added: <span style="color: #ff991f;">${createdDate}</span>
                         </div>
                     </td>
                 </tr>
