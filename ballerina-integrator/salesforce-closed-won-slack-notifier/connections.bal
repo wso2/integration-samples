@@ -4,21 +4,21 @@ import ballerinax/slack;
 
 // Salesforce client configuration
 final salesforce:Client salesforceClient = check new ({
-    baseUrl: baseUrl,
+    baseUrl: salesforceConfig.baseUrl,
     auth: {
-        refreshUrl: refreshUrl,
-        refreshToken: refreshToken,
-        clientId: clientId,
-        clientSecret: clientSecret
+        refreshUrl: salesforceConfig.refreshUrl,
+        refreshToken: salesforceConfig.refreshToken,
+        clientId: salesforceConfig.clientId,
+        clientSecret: salesforceConfig.clientSecret
     }
 });
 
 // Slack client configuration
 final slack:Client slackClient = check new ({
     auth: {
-        token: slackToken
+        token: slackConfig.slackToken
     }
 });
 
-// Webhook client configuration
-final http:Client webhookClient = check new (slackWebhookUrl);
+// Webhook client configuration (nullable, created lazily)
+http:Client? webhookClient = ();

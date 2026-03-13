@@ -1,16 +1,18 @@
 // Salesforce Configuration
-configurable string baseUrl = ?;
-configurable string refreshToken = ?;
-configurable string refreshUrl = ?;
-configurable string clientId = ?;
-configurable string clientSecret = ?;
-configurable string username = ?;
-configurable string password = ?;
+configurable record {
+    string refreshToken;
+    string clientId;
+    string clientSecret;
+    string refreshUrl;
+    string baseUrl;
+} salesforceConfig = ?;
 
 // Slack Configuration
-configurable string slackToken = ?;
-configurable string slackChannel = ?;
-configurable string slackWebhookUrl = ?;
+configurable record {
+    string slackToken;
+    string slackChannel;
+    string slackWebhookUrl;
+} slackConfig = ?;
 
 // Business Logic Configuration
 configurable decimal minDealAmount = 3000.0;

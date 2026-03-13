@@ -6,24 +6,11 @@ This integration automatically sends real-time Slack notifications when opportun
 
 ### What It Does
 
-- Listens to Salesforce Opportunity Change Events in real-time
-- Detects when opportunities are marked as "Closed Won"
-- Filters opportunities based on:
-  - Minimum deal amount threshold
-  - Record types (e.g., "New Customer", "Existing Customer - Upgrade")
-  - Opportunity owners (optional)
-- Routes notifications to different Slack channels based on deal size tiers
-- Mentions opportunity owners in Slack using @mentions
-- Includes comprehensive deal information:
-  - Deal name and amount
-  - Close date
-  - Owner (with Slack mention)
-  - Account name
-  - Opportunity type
-  - Lead source
-  - Competitor information
-  - Description
-- Implements retry logic with fallback from Slack API to webhook for reliability
+- Listens to Salesforce Opportunity Change Events in real-time and detects opportunities marked "Closed Won".
+- Filters opportunities by minimum deal amount, allowed record types (e.g., `New Customer`, `Existing Customer - Upgrade`), and opportunity owners.
+- Routes notifications to different Slack channels based on deal size tiers and mentions opportunity owners in Slack using @mentions.
+- Includes comprehensive deal information in notifications: deal name and amount, close date, owner (with Slack mention), account name, opportunity type, lead source, competitor information, and description.
+- Implements retry logic with a fallback from the Slack API to an incoming webhook for reliability.
 
 ## Prerequisites
 

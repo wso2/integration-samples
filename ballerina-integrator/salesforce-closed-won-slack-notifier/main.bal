@@ -3,12 +3,12 @@ import ballerinax/salesforce;
 
 listener salesforce:Listener salesforceListener = new (listenerConfig = {
     auth: {
-        refreshUrl: refreshUrl,
-        refreshToken: refreshToken,
-        clientId: clientId,
-        clientSecret: clientSecret
+        refreshUrl: salesforceConfig.refreshUrl,
+        refreshToken: salesforceConfig.refreshToken,
+        clientId: salesforceConfig.clientId,
+        clientSecret: salesforceConfig.clientSecret
     },
-    baseUrl: baseUrl
+    baseUrl: salesforceConfig.baseUrl
 });
 service "/data/OpportunityChangeEvent" on salesforceListener {
 

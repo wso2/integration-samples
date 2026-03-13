@@ -1,7 +1,6 @@
 // Define a record type for the Slack webhook payload
 type SlackWebhookPayload record {
     string text;
-    string channel?;
 };
 
 // Define a record type for the opportunity details

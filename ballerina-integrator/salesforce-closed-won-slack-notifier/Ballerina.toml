@@ -1,6 +1,9 @@
 [package]
 org = "wso2"
-name = "salesforce_slack_notification"
+name = "salesforce_closed_won_slack_notifier"
 version = "0.1.0"
 distribution = "2201.13.1"
-title = "salesforce-slack-notification"
+title = "salesforce closed won slack notifier"
+
+[build-options]
+sticky = true
