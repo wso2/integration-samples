@@ -18,8 +18,28 @@ function orderNumStr(shopify:OrderEvent event) returns string|error {
 
 // In-memory idempotency barrier: tracks order IDs currently in-flight (false) or successfully created in QB (true).
 // Prevents concurrent duplicate creation when onOrdersFulfilled and onOrdersPaid both fire for the same order.
-// Note: scoped to the current process instance; isDuplicateTransaction provides persistent idempotency across restarts.
+// LIMITATION: scoped to the current process instance — does not protect against duplicates across replicas.
+// For multi-replica deployments use one of:
+//   • Sticky webhook routing keyed by order ID (same replica always handles a given order), or
+//   • A distributed idempotency store (Redis SET NX, shared DB table with UNIQUE constraint on order_id), or
+//   • Rely solely on the persistent isDuplicateTransaction QB query as the idempotency gate.
+// TODO: Replace with a distributed lock/cache if this service runs with more than one replica.
 final map<boolean> processedOrderIds = {};
+
+// Safely extracts the QB-assigned Id from a toJson() response for the given entity type.
+// Returns "unknown" if the entity or Id field is absent.
+function extractQBId(json response, string entityName) returns string {
+    if response is map<json> {
+        json? entity = response[entityName];
+        if entity is map<json> {
+            json? id = entity["Id"];
+            if id !is () {
+                return id.toString();
+            }
+        }
+    }
+    return "unknown";
+}
 
 // ---------------------------------------------------------------------------
 // Shopify Orders webhook service
@@ -135,13 +155,7 @@ function processOrder(shopify:OrderEvent event) returns error? {
         quickbooks:InvoiceResponse qbResult = check quickbooksClient->createOrUpdateInvoice(
             quickbooksConfig.realmId, qbInvoice);
 
-        json qbJson = qbResult.toJson();
-        json|error invoiceObj = qbJson.Invoice;
-        json|error qbId = ();
-        if invoiceObj is json {
-            qbId = invoiceObj.Id;
-        }
-        string idStr = qbId is json ? qbId.toString() : "unknown";
+        string idStr = extractQBId(qbResult.toJson(), "Invoice");
 
         // Validate transactionType config and derive the display label; fail fast on unrecognized values
         string docType;

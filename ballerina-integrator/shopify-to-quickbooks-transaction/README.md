@@ -51,7 +51,7 @@ The following configurations are required to connect to Shopify and QuickBooks.
 - `clientId` - Your QuickBooks OAuth2 client ID
 - `clientSecret` - Your QuickBooks OAuth2 client secret
 - `refreshToken` - Your QuickBooks OAuth2 refresh token
-- `companyId` - Your QuickBooks Company ID (Realm ID)
+- `realmId` - Your QuickBooks Company ID (Realm ID)
 - `serviceUrl` - QuickBooks API base URL (required, no default). Use `https://sandbox-quickbooks.api.intuit.com` for sandbox or `https://quickbooks.api.intuit.com` for production
 
 
@@ -60,7 +60,11 @@ The following configurations are required to connect to Shopify and QuickBooks.
 - `transactionType` - Type of QB transaction to create (`SALES_RECEIPT` or `INVOICE`)
 - `orderStatusTrigger` - Order status to sync on (FULFILLED, PAID, COMPLETED)
 - `createCustomerIfNotFound` - Auto-create QB customers if not found
-- Account configurations (Product Sales Account ID, Shipping Account ID, Discount Account ID)
+- `productMappingJson` - JSON string mapping Shopify SKUs to QuickBooks Item IDs (e.g., `{"SKU-123": "qb-item-id-456"}`)
+- `shippingItemName` - Name of the QuickBooks item to use for shipping charges (default: "Shipping")
+- `discountItemName` - Name of the QuickBooks item to use for discount line items (default: "Discount")
+- `taxConfig` - Tax code configuration including default tax code and tax mapping JSON
+- `validationRules` - Order validation settings (require customer email, require line items, minimum order amount)
 
 ## Deploying on **Devant**
 

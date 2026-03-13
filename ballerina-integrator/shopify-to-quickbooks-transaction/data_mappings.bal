@@ -50,23 +50,23 @@ function buildLineItems(shopify:OrderEvent event) returns anydata[]|error {
     }
 
     // 3. Discount line (optional — negative amount)
-    // DiscountApplication has: title?, description?, value?, value_type? — no 'code' field.
-    // The code is on DiscountCode type, accessible via event.discount_codes[].
     string? totalDiscountsStr = event?.total_discounts;
-    if includeDiscountLineItems && totalDiscountsStr is string {
-        decimal totalDiscounts = check decimal:fromString(totalDiscountsStr);
-        if totalDiscounts > 0.0d {
-            string discountDesc = buildDiscountDescription(event);
-            string discountItemId = check lookupQBItemId(discountItemName);
-            QBSalesLine discountLine = {
-                DetailType: "SalesItemLineDetail",
-                Amount: -totalDiscounts,
-                Description: discountDesc,
-                SalesItemLineDetail: {
-                    ItemRef: {value: discountItemId}
-                }
-            };
-            lines.push(discountLine);
+    if includeDiscountLineItems {
+        if totalDiscountsStr is string {
+            decimal totalDiscounts = check decimal:fromString(totalDiscountsStr);
+            if totalDiscounts > 0.0d {
+                string discountDesc = buildDiscountDescription(event);
+                string discountItemId = check lookupQBItemId(discountItemName);
+                QBSalesLine discountLine = {
+                    DetailType: "SalesItemLineDetail",
+                    Amount: -totalDiscounts,
+                    Description: discountDesc,
+                    SalesItemLineDetail: {
+                        ItemRef: {value: discountItemId}
+                    }
+                };
+                lines.push(discountLine);
+            }
         }
     }
 

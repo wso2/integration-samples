@@ -203,27 +203,6 @@
               ],
               "description": ""
             },
-            "accountConfig": {
-              "type": "object",
-              "properties": {
-                "productSalesAccountId": {
-                  "type": "string"
-                },
-                "shippingAccountId": {
-                  "type": "string"
-                },
-                "discountAccountId": {
-                  "type": "string"
-                }
-              },
-              "additionalProperties": false,
-              "required": [
-                "productSalesAccountId",
-                "shippingAccountId",
-                "discountAccountId"
-              ],
-              "description": ""
-            },
             "mapShippingAsSeparateLine": {
               "type": "boolean",
               "description": ""
@@ -269,8 +248,7 @@
           "additionalProperties": false,
           "required": [
             "shopifyConfig",
-            "quickbooksConfig",
-            "accountConfig"
+            "quickbooksConfig"
           ]
         }
       },

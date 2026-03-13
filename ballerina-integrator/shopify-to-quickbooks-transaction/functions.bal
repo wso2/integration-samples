@@ -53,20 +53,14 @@ function isDuplicateTransaction(string orderNum) returns boolean|error {
     }
     string query = string `SELECT Id FROM Invoice WHERE PrivateNote LIKE '%Shopify Order: ${orderNum}%'`;
     json|error result = quickbooksClient->queryEntity(quickbooksConfig.realmId, query);
-    if result is error {
-        log:printError("Duplicate check query failed for order " + orderNum + ": " + result.message(), 'error = result);
-        return result;
-    }
-    json|error queryResponse = result.QueryResponse;
-    if queryResponse is error || queryResponse is () {
-        return false;
-    }
-    json|error invoices = queryResponse.Invoice;
-    if invoices is error || invoices is () {
-        return false;
-    }
-    if invoices is json[] {
-        return invoices.length() > 0;
+    if result is map<json> {
+        json? queryResponse = result["QueryResponse"];
+        if queryResponse is map<json> {
+            json? invoices = queryResponse["Invoice"];
+            if invoices is json[] {
+                return invoices.length() > 0;
+            }
+        }
     }
     return false;
 }
@@ -82,21 +76,23 @@ function getOrCreateQBCustomer(shopify:Customer? customer, shopify:CustomerAddre
         return "DEFAULT_CUSTOMER";
     }
 
-    // Query QB for existing customer by email (escape single quotes to prevent query injection)
-    string sanitizedEmail = re `'`.replaceAll(email, "''");
+    // Query QB for existing customer by email (QB IDS uses backslash-escape for single quotes, not SQL doubling)
+    string sanitizedEmail = string:'join("\\'", ...re `'`.split(email));
     string query = string `SELECT Id FROM Customer WHERE PrimaryEmailAddr = '${sanitizedEmail}'`;
     json|error queryResult = quickbooksClient->queryEntity(quickbooksConfig.realmId, query);
-    if queryResult is json {
-        json|error qr = queryResult.QueryResponse;
-        if qr is json {
-            json|error customers = qr.Customer;
+    if queryResult is map<json> {
+        json? qr = queryResult["QueryResponse"];
+        if qr is map<json> {
+            json? customers = qr["Customer"];
             if customers is json[] && customers.length() > 0 {
                 json firstCustomer = customers[0];
-                json|error customerId = firstCustomer.Id;
-                if customerId is json {
-                    string id = customerId.toString();
-                    log:printInfo("Found existing QB customer: " + id + " for email: " + email);
-                    return id;
+                if firstCustomer is map<json> {
+                    json? customerId = firstCustomer["Id"];
+                    if customerId !is () {
+                        string id = customerId.toString();
+                        log:printInfo("Found existing QB customer: " + id + " for email: " + email);
+                        return id;
+                    }
                 }
             }
         }
@@ -126,17 +122,19 @@ function getOrCreateQBCustomer(shopify:Customer? customer, shopify:CustomerAddre
         quickbooksConfig.realmId, newCustomer);
 
     json crJson = createResult.toJson();
-    json|error customerObj = crJson.Customer;
-    if customerObj is error || customerObj is () {
-        return error("Created QB customer response has no Customer object");
+    if crJson is map<json> {
+        json? customerObj = crJson["Customer"];
+        if customerObj is map<json> {
+            json? customerId = customerObj["Id"];
+            if customerId !is () {
+                string newId = customerId.toString();
+                log:printInfo("Created new QB customer: " + newId + " for email: " + email);
+                return newId;
+            }
+            return error("Created QB customer has no Id in response");
+        }
     }
-    json|error customerId = customerObj.Id;
-    if customerId is error || customerId is () {
-        return error("Created QB customer has no Id in response");
-    }
-    string newId = customerId.toString();
-    log:printInfo("Created new QB customer: " + newId + " for email: " + email);
-    return newId;
+    return error("Created QB customer response has no Customer object or is malformed");
 
 }
 
@@ -148,19 +146,21 @@ function lookupQBItemId(string? sku) returns string|error {
     if productMap.hasKey(sku) {
         return productMap.get(sku);
     }
-    // Fallback: query QB by Name (Sku field is not queryable for all item types; escape single quotes)
-    string sanitizedSku = re `'`.replaceAll(sku, "''");
+    // Fallback: query QB by Name (Sku field is not queryable for all item types; QB IDS uses backslash-escape)
+    string sanitizedSku = string:'join("\\'", ...re `'`.split(sku));
     string query = string `SELECT Id FROM Item WHERE Name = '${sanitizedSku}'`;
     json|error queryResult = quickbooksClient->queryEntity(quickbooksConfig.realmId, query);
-    if queryResult is json {
-        json|error qr = queryResult.QueryResponse;
-        if qr is json {
-            json|error items = qr.Item;
+    if queryResult is map<json> {
+        json? qr = queryResult["QueryResponse"];
+        if qr is map<json> {
+            json? items = qr["Item"];
             if items is json[] && items.length() > 0 {
                 json firstItem = items[0];
-                json|error itemId = firstItem.Id;
-                if itemId is json {
-                    return itemId.toString();
+                if firstItem is map<json> {
+                    json? itemId = firstItem["Id"];
+                    if itemId !is () {
+                        return itemId.toString();
+                    }
                 }
             }
         }
@@ -178,10 +178,9 @@ function resolveTaxCode(shopify:TaxLine[]? taxLines) returns string {
         return taxConfig.defaultTaxCode;
     }
     json|error parsed = taxConfig.taxMappingJson.fromJsonString();
-    if parsed is json {
-        map<json>|error parsedMap = parsed.ensureType();
-        if parsedMap is map<json> && parsedMap.hasKey(taxName) {
-            json taxCodeValue = parsedMap[taxName];
+    if parsed is map<json> {
+        json? taxCodeValue = parsed[taxName];
+        if taxCodeValue !is () {
             return taxCodeValue.toString();
         }
     }
@@ -191,17 +190,28 @@ function resolveTaxCode(shopify:TaxLine[]? taxLines) returns string {
 // --- Format ISO datetime to YYYY-MM-DD for QB TxnDate ---
 function formatTxnDate(string? isoDate) returns string {
     if isoDate is () || isoDate == "" {
-        time:Civil now = time:utcToCivil(time:utcNow());
-        int mo = now.month;
-        int dy = now.day;
-        return string `${now.year}-${mo < 10 ? "0" : ""}${mo}-${dy < 10 ? "0" : ""}${dy}`;
+        return todayAsYYYYMMDD();
     }
     string[] parts = re `-`.split(isoDate);
     if parts.length() >= 3 {
-        string day = parts[2].length() >= 2 ? parts[2].substring(0, 2) : parts[2];
-        return parts[0] + "-" + parts[1] + "-" + day;
+        string dayPart = parts[2].length() >= 2 ? parts[2].substring(0, 2) : parts[2];
+        int|error yr = int:fromString(parts[0]);
+        int|error mo = int:fromString(parts[1]);
+        int|error dy = int:fromString(dayPart);
+        if yr is int && mo is int && dy is int && mo >= 1 && mo <= 12 && dy >= 1 && dy <= 31 {
+            return string `${yr}-${mo < 10 ? "0" : ""}${mo}-${dy < 10 ? "0" : ""}${dy}`;
+        }
     }
-    return isoDate;
+    // Malformed date — fall back to today so QB always receives a valid YYYY-MM-DD
+    log:printWarn(string `[formatTxnDate] Malformed date '${isoDate}'; using today as fallback`);
+    return todayAsYYYYMMDD();
+}
+
+function todayAsYYYYMMDD() returns string {
+    time:Civil now = time:utcToCivil(time:utcNow());
+    int mo = now.month;
+    int dy = now.day;
+    return string `${now.year}-${mo < 10 ? "0" : ""}${mo}-${dy < 10 ? "0" : ""}${dy}`;
 }
 
 // --- Build PrivateNote memo from order ---
@@ -230,7 +240,7 @@ function buildPhysicalAddress(shopify:CustomerAddress? addr) returns quickbooks:
     };
 }
 
-// --- Quarantine: log an order that cannot be processed ---
+// --- Quarantine: log and persist an order that cannot be processed ---
 function quarantineOrder(shopify:OrderEvent event, string reason, string errorType) {
     int? orderNum = event?.order_number;
     QuarantinedOrder quarantined = {
@@ -242,4 +252,14 @@ function quarantineOrder(shopify:OrderEvent event, string reason, string errorTy
         retryEligible: errorType != "VALIDATION"
     };
     log:printWarn(string `[QUARANTINE] Order ${quarantined.orderNumber} | ${quarantined.errorType}: ${quarantined.quarantineReason}`);
+    persistQuarantinedOrder(quarantined);
+}
+
+// Persists a quarantined order so it is not lost on restart and can be picked up by retry or manual-review workflows.
+// TODO: Replace this placeholder with a durable store (database table, dead-letter queue, or message broker)
+//       that preserves retryEligible and timestamp so downstream processes can act on them.
+function persistQuarantinedOrder(QuarantinedOrder quarantined) {
+    log:printError(string `[QUARANTINE][PERSIST] orderId=${quarantined.orderId} orderNumber=${quarantined.orderNumber} ` +
+        string `errorType=${quarantined.errorType} retryEligible=${quarantined.retryEligible} ` +
+        string `timestamp=${quarantined.timestamp} reason=${quarantined.quarantineReason}`);
 }

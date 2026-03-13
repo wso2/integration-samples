@@ -58,3 +58,13 @@ configurable record {
     requireLineItems: true,
     minimumOrderAmount: 0.0
 };
+
+// Fail fast at module startup if enum-like config values are unrecognized.
+function init() returns error? {
+    if transactionType != "INVOICE" && transactionType != "SALES_RECEIPT" {
+        return error(string `Invalid transactionType: '${transactionType}'. Expected INVOICE or SALES_RECEIPT.`);
+    }
+    if orderStatusTrigger != "FULFILLED" && orderStatusTrigger != "PAID" && orderStatusTrigger != "COMPLETED" {
+        return error(string `Invalid orderStatusTrigger: '${orderStatusTrigger}'. Expected FULFILLED, PAID, or COMPLETED.`);
+    }
+}
