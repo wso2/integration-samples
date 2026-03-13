@@ -4,18 +4,19 @@ A Ballerina automation integration that exports Salesforce Lead records to a Goo
 
 ## Description
 
-This integration extracts all Lead records from Salesforce and creates a spreadsheet in Google Sheets with key lead information. Each execution creates a new spreadsheet with a timestamp, providing a historical snapshot of your leads over time.
+This integration extracts Lead records from Salesforce based on configurable filters (timeframe, SOQL conditions, converted status) and supports incremental sync to fetch only modified records. Depending on the `spreadsheetId` and `syncMode` configuration, the integration can either create a new timestamped spreadsheet for each execution or write data into an existing spreadsheet using append, full replace, or upsert modes. This flexibility allows you to maintain historical snapshots, keep a single up-to-date spreadsheet, or track changes to leads over time.
 
 ## What It Does
 
 - Queries Salesforce Lead records using customizable SOQL filters
 - Maps selected Salesforce Lead fields to Google Sheets columns
-- Creates a new Google Sheets spreadsheet with a timestamped name (e.g., "Salesforce Leads 2025-01-17 14:30")
-- Optionally appends to an existing spreadsheet as a new sheet
+- Creates a new Google Sheets spreadsheet with a timestamped name (e.g., "Salesforce Leads 2025-01-17 14:30") or writes to an existing spreadsheet
+- Supports multiple sync modes (APPEND, FULL_REPLACE, UPSERT_BY_EMAIL)
+- Enables filtering by timeframe, custom SOQL conditions, and converted status
+- Supports incremental sync to fetch only modified leads since last sync
 - Handles timezone conversion for spreadsheet naming
 - Provides detailed logging of export operations
-- Supports multiple sync modes (APPEND, FULL_REPLACE, UPSERT_BY_EMAIL)
-- Enables filtering by timeframe and custom SOQL conditions
+- Optionally splits leads into multiple sheets based on field values
 
 ## Prerequisites
 
@@ -124,11 +125,6 @@ fieldMapping = [
   Split leads into multiple sheets by field value  
   Examples: `"LeadSource"`, `"Status"`, `"Industry"`  
   Leave empty to disable
-
-**Default Field Mapping:**
-```
-["Id", "FirstName", "LastName", "Email", "Phone", "Company", "Title", "Status", "LeadSource", "Industry", "Rating", "CreatedDate", "LastModifiedDate"]
-```
 
 **SOQL Filtering:**
 
@@ -241,9 +237,10 @@ The integration supports three sync modes. Choose based on your use case:
 **Incremental Sync:**
 When `enableIncrementalSync` is enabled, only leads modified since `lastSyncTimestamp` are fetched. This reduces API calls and data transfer.
 - Set `enableIncrementalSync = true`
-- After each sync, check logs for the next timestamp to use
-- Update `lastSyncTimestamp` with the logged value for the next run
-- Example: `lastSyncTimestamp = "2025-01-17T10:30:00Z"`
+- The integration automatically persists the sync timestamp to a state file (`last_sync_state.txt`)
+- On subsequent runs, the integration automatically loads the last sync timestamp from the state file
+- Optional: Set `lastSyncTimestamp` manually for the first run (e.g., `"2025-01-17T10:30:00Z"`)
+- If state file persistence fails, check logs for the timestamp and manually update `lastSyncTimestamp` in your configuration
 
 **Auto-Formatting:**
 When `enableAutoFormat` is enabled, the integration prepares sheets for optimal viewing:
@@ -279,7 +276,7 @@ To use an existing Google Spreadsheet:
 3. The spreadsheet ID is the long string between `/d/` and `/edit`
 
 **Example URL:**
-```
+```text
 https://docs.google.com/spreadsheets/d/1abc123xyz456def789ghi012jkl345mno678pqr/edit#gid=0
                                       ↑_____________________________________↑
                                               This is your spreadsheet ID

@@ -1,4 +1,4 @@
-public function mapLeadToRow(Lead lead) returns SheetRow {
+public function mapLeadToRow(Lead lead) returns SheetRow|error {
     map<int|string|decimal|boolean|float> leadMap = {
         "Id": lead?.Id ?: "",
         "FirstName": lead?.FirstName ?: "",
@@ -17,18 +17,21 @@ public function mapLeadToRow(Lead lead) returns SheetRow {
         "Country": lead?.Country ?: "",
         "City": lead?.City ?: "",
         "State": lead?.State ?: "",
-        "IsConverted": lead?.IsConverted ?: false,
+        "IsConverted": lead?.IsConverted ?: "",
         "ConvertedDate": lead?.ConvertedDate ?: "",
         "CreatedDate": lead?.CreatedDate ?: "",
         "LastModifiedDate": lead?.LastModifiedDate ?: "",
         "LastActivityDate": lead?.LastActivityDate ?: "",
-        "NumberOfEmployees": lead?.NumberOfEmployees ?: 0,
-        "AnnualRevenue": lead?.AnnualRevenue ?: 0.0
+        "NumberOfEmployees": lead?.NumberOfEmployees ?: "",
+        "AnnualRevenue": lead?.AnnualRevenue ?: ""
     };
 
     SheetRow row = [];
     foreach string fieldName in fieldMapping {
-        int|string|decimal|boolean|float fieldValue = leadMap.hasKey(fieldName) ? leadMap.get(fieldName) : "";
+        if !leadMap.hasKey(fieldName) {
+            return error(string `Invalid field name in fieldMapping: "${fieldName}". Supported fields are: ${string:'join(", ", ...leadMap.keys())}`);
+        }
+        int|string|decimal|boolean|float fieldValue = leadMap.get(fieldName);
         row.push(fieldValue);
     }
     return row;

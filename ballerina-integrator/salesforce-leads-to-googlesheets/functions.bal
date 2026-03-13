@@ -78,8 +78,11 @@ public function buildSoqlQuery() returns string|error {
         whereConditions.push(soqlFilter);
     }
     
-    if enableIncrementalSync && lastSyncTimestamp != "" {
-        whereConditions.push(string `LastModifiedDate > ${lastSyncTimestamp}`);
+    if enableIncrementalSync {
+        string effectiveTimestamp = getEffectiveLastSyncTimestamp();
+        if effectiveTimestamp != "" {
+            whereConditions.push(string `LastModifiedDate > ${effectiveTimestamp}`);
+        }
     }
     
     if whereConditions.length() > 0 {
