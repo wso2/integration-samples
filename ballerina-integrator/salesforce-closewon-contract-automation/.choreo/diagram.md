@@ -49,8 +49,3 @@
     T --> W
     U --> W
 
-    classDef startNode fill:#90EE90,stroke:#333,stroke-width:2px,color:#000
-    classDef endNode fill:#FFB6C1,stroke:#333,stroke-width:2px,color:#000
-    classDef processNode fill:#87CEEB,stroke:#333,stroke-width:2px,color:#000
-    classDef decisionNode fill:#FFD700,stroke:#333,stroke-width:2px,color:#000
-```
