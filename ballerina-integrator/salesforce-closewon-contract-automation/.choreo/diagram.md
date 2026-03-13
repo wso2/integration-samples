@@ -1,5 +1,3 @@
-```mermaid
-flowchart TD
     A(["Start"]):::startNode
     B["Listen to Salesforce Opportunity Change Events"]:::processNode
     C{"Is Event <br/> onUpdate?"}:::decisionNode
