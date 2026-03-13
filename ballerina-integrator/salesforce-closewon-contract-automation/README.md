@@ -36,7 +36,7 @@ Before running this integration, you need:
 
 This integration uses both username/password authentication for the listener and refresh token flow for API calls. [Learn how to set up Salesforce OAuth](https://help.salesforce.com/s/articleView?id=xcloud.create_a_local_external_client_app.htm&type=5).
 
-### DocuSign Setup
+### Docusign Setup
 
 1. A DocuSign account (demo or production)
 2. Contract templates created with named fields
