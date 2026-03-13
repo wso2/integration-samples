@@ -5,7 +5,7 @@
     "wso2": {
       "type": "object",
       "properties": {
-        "jira_to_googlesheets": {
+        "jira_issues_to_googlesheets": {
           "type": "object",
           "properties": {
             "jiraConfig": {
