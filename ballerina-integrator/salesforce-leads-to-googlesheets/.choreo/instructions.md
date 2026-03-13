@@ -2,318 +2,111 @@
 
 Follow these instructions to configure and deploy the Salesforce Leads to Google Sheets integration on WSO2 Devant.
 
----
+## What It Does
+
+- Fetches Salesforce Lead records with configurable filters and export field selection
+- Writes results to Google Sheets by creating a new spreadsheet or targeting an existing one
+- Supports `APPEND`, `FULL_REPLACE`, and `UPSERT_BY_EMAIL` sync behaviors
+- Can run incremental syncs using `LastModifiedDate` and `lastSyncTimestamp`
+- Can split output into multiple sheets using a selected lead field such as `LeadSource` or `Status`
 
 <details>
-<summary><strong>Salesforce Setup Guide</strong></summary>
+<summary>Salesforce Setup Guide</summary>
 
-## Step 1: Create a Salesforce Connected App
+1. Create a Salesforce Connected App with OAuth enabled.
+2. Collect these values from Salesforce:
+  - Client ID (`Consumer Key`)
+  - Client Secret (`Consumer Secret`)
+  - Refresh Token
+  - Refresh URL (token endpoint)
+  - Base URL (your Salesforce instance URL)
+3. Ensure the app has OAuth scopes for API access and refresh token usage.
 
-1. Log in to your Salesforce account
-2. Navigate to **Setup** (gear icon in top right)
-3. In the Quick Find box, search for **App Manager**
-4. Click **New Connected App**
-
-## Step 2: Configure the Connected App
-
-Fill in the following details:
-
-**Basic Information:**
-- **Connected App Name**: `Ballerina Salesforce Integration`
-- **API Name**: Auto-populated (e.g., `Ballerina_Salesforce_Integration`)
-- **Contact Email**: Your email address
-
-**API (Enable OAuth Settings):**
-- Check **Enable OAuth Settings**
-- **Callback URL**: `https://login.salesforce.com/services/oauth2/callback`
-- **Selected OAuth Scopes**:
-  - `Access and manage your data (api)`
-  - `Perform requests on your behalf at any time (refresh_token, offline_access)`
-
-Click **Save** and then **Continue**.
-
-## Step 3: Retrieve OAuth Credentials
-
-1. After saving, you'll see the **Consumer Key** (Client ID) and **Consumer Secret** (Client Secret)
-2. Copy these values - you'll need them for configuration
-3. Click **Manage Consumer Details** to view the Consumer Secret
-
-## Step 4: Obtain Refresh Token
-
-You can obtain a refresh token using one of these methods:
-
-**Method A: Using cURL**
-```bash
-# Step 1: Get authorization code (paste this URL in browser)
-https://login.salesforce.com/services/oauth2/authorize?response_type=code&client_id=YOUR_CLIENT_ID&redirect_uri=https://login.salesforce.com/services/oauth2/callback
-
-# Step 2: Exchange code for tokens
-curl -X POST https://login.salesforce.com/services/oauth2/token \
-  -d "grant_type=authorization_code" \
-  -d "client_id=YOUR_CLIENT_ID" \
-  -d "client_secret=YOUR_CLIENT_SECRET" \
-  -d "redirect_uri=https://login.salesforce.com/services/oauth2/callback" \
-  -d "code=AUTHORIZATION_CODE_FROM_STEP_1"
-```
-
-**Method B: Using Postman**
-1. Create a new POST request to `https://login.salesforce.com/services/oauth2/token`
-2. Set body parameters:
-   - `grant_type`: `authorization_code`
-   - `client_id`: Your Consumer Key
-   - `client_secret`: Your Consumer Secret
-   - `redirect_uri`: `https://login.salesforce.com/services/oauth2/callback`
-   - `code`: Authorization code from browser redirect
-3. Send request and copy the `refresh_token` from response
-
-## Step 5: Note Your Salesforce Instance URL
-
-Your base URL is typically in the format:
-- Production: `https://yourcompany.my.salesforce.com`
-- Sandbox: `https://yourcompany--sandbox.my.salesforce.com`
-
-You can find this in your browser's address bar when logged into Salesforce.
+This integration uses refresh-token OAuth flow for Salesforce authentication. [Salesforce OAuth setup reference](https://help.salesforce.com/s/articleView?id=xcloud.create_a_local_external_client_app.htm&type=5).
 
 </details>
 
----
-
 <details>
-<summary><strong>Google Sheets Setup Guide</strong></summary>
+<summary>Google Sheets Setup Guide</summary>
 
-## Step 1: Create a Google Cloud Project
+1. Create a Google Cloud project and enable:
+  - Google Sheets API
+  - Google Drive API
+2. Create OAuth credentials and collect:
+  - Client ID
+  - Client Secret
+  - Refresh Token
+3. Confirm access includes these scopes:
+  - `https://www.googleapis.com/auth/drive`
+  - `https://www.googleapis.com/auth/spreadsheets`
 
-1. Go to [Google Cloud Console](https://console.cloud.google.com/)
-2. Click **Select a project** → **New Project**
-3. Enter a project name (e.g., `Salesforce Sheets Integration`)
-4. Click **Create**
-
-## Step 2: Enable Required APIs
-
-1. In the Google Cloud Console, navigate to **APIs & Services** → **Library**
-2. Search for and enable:
-   - **Google Sheets API**
-   - **Google Drive API**
-
-## Step 3: Create OAuth 2.0 Credentials
-
-1. Navigate to **APIs & Services** → **Credentials**
-2. Click **Create Credentials** → **OAuth client ID**
-3. If prompted, configure the **OAuth consent screen**:
-   - User Type: **External**
-   - App name: `Salesforce Sheets Integration`
-   - User support email: Your email
-   - Developer contact: Your email
-   - Click **Save and Continue**
-   - Scopes: Click **Add or Remove Scopes** and add:
-     - `https://www.googleapis.com/auth/spreadsheets`
-     - `https://www.googleapis.com/auth/drive`
-   - Click **Save and Continue**
-   - Test users: Add your email
-   - Click **Save and Continue**
-
-4. Back in **Credentials**, click **Create Credentials** → **OAuth client ID**
-5. Application type: **Web application**
-6. Name: `Ballerina Integration Client`
-7. Authorized redirect URIs: `https://developers.google.com/oauthplayground`
-8. Click **Create**
-9. Copy the **Client ID** and **Client Secret**
-
-## Step 4: Obtain Refresh Token
-
-1. Go to [OAuth 2.0 Playground](https://developers.google.com/oauthplayground)
-2. Click the gear icon (⚙️) in the top right
-3. Check **Use your own OAuth credentials**
-4. Enter your **OAuth Client ID** and **OAuth Client Secret**
-5. Close the settings
-
-6. In **Step 1 - Select & authorize APIs**:
-   - Scroll to **Google Sheets API v4**
-   - Select `https://www.googleapis.com/auth/spreadsheets`
-   - Scroll to **Drive API v3**
-   - Select `https://www.googleapis.com/auth/drive`
-   - Click **Authorize APIs**
-
-7. Sign in with your Google account and grant permissions
-
-8. In **Step 2 - Exchange authorization code for tokens**:
-   - Click **Exchange authorization code for tokens**
-   - Copy the **Refresh token** from the response
-
-## Step 5: (Optional) Create Target Spreadsheet
-
-If you want to use an existing spreadsheet:
-1. Go to [Google Sheets](https://sheets.google.com)
-2. Create a new spreadsheet or open an existing one
-3. Copy the spreadsheet ID from the URL:
-   - URL format: `https://docs.google.com/spreadsheets/d/SPREADSHEET_ID/edit`
-   - The `SPREADSHEET_ID` is the long string between `/d/` and `/edit`
+This integration uses refresh-token OAuth flow for Google APIs. [Google Workspace development guide](https://developers.google.com/workspace/guides/get-started).
 
 </details>
 
----
-
 <details>
-<summary><strong>Additional Configurations</strong></summary>
+<summary>Additional Configurations</summary>
 
-## Spreadsheet Configuration
+1. `timezone`
+  - IANA timezone used for timestamp formatting (e.g., `Asia/Colombo`, `America/New_York`).
 
-### `spreadsheetId` (optional)
-- **Type**: string
-- **Default**: `""` (creates new spreadsheet when left empty)
-- **Description**: The ID of an existing Google Sheets spreadsheet. If not provided, a new spreadsheet will be created with each execution.
-- **Example**: `"1abc123xyz456def789ghi"`
+2. `timeframe`
+  - Lead creation timeframe filter.
+  - Allowed values: `ALL`, `YESTERDAY`, `LAST_WEEK`, `LAST_MONTH`, `LAST_YEAR`.
 
-### `tabName` (optional)
-- **Type**: string
-- **Default**: `"Leads"`
-- **Description**: The name of the sheet tab where leads will be written. Only used when `splitBy` is empty.
-- **Example**: `"Salesforce Leads"`
+3. `spreadsheetId`
+  - Existing spreadsheet ID to write into.
+  - You can extract it from `https://docs.google.com/spreadsheets/d/<spreadsheetId>/edit`.
+  - If empty, a new spreadsheet is created per run.
 
-## Query Configuration
+4. `tabName`
+  - Base worksheet name for the export.
 
-### `soqlFilter` (optional)
-- **Type**: string
-- **Default**: `""` (no additional filter)
-- **Description**: Additional SOQL WHERE clause fragment to filter leads. Do not include the "WHERE" keyword.
-- **Examples**:
-  - `"Rating = 'Hot'"`
-  - `"Industry = 'Technology' AND AnnualRevenue > 1000000"`
-  - `"CreatedDate = THIS_MONTH"`
+5. `fieldMapping`
+  - Ordered list of Salesforce Lead fields mapped to output columns.
 
-### `fieldMapping` (optional)
-- **Type**: string array
-- **Default**: `["Id", "FirstName", "LastName", "Email", "Phone", "Company", "Title", "Status", "LeadSource", "Industry", "Rating", "CreatedDate", "LastModifiedDate"]`
-- **Description**: Ordered list of Salesforce Lead field API names to export as columns. The order determines the column order in the spreadsheet.
-- **Example**: `["Id", "Email", "Company", "Status", "CreatedDate"]`
-- **Available Fields**: Any standard or custom Lead field API name (e.g., `Custom_Field__c`)
+6. `soqlFilter`
+  - Custom SOQL `WHERE` fragment (without `WHERE`) for advanced filtering.
 
-## Sync Configuration
+7. `syncMode`
+  - Output write strategy: `APPEND`, `FULL_REPLACE`, `UPSERT_BY_EMAIL`.
 
-### `syncMode` (optional)
-- **Type**: string
-- **Default**: `"APPEND"`
-- **Options**:
-  - `"APPEND"`: Creates a new sheet with timestamped name and adds lead data
-  - `"FULL_REPLACE"`: Completely replaces entire spreadsheet with fresh data (destructive)
-  - `"UPSERT_BY_EMAIL"`: Updates existing leads by email, appends new ones (requires spreadsheetId and Email in fieldMapping)
-- **Description**: Determines how data is written to the spreadsheet.
-- **Requirements**:
-  - APPEND: Works with or without spreadsheetId
-  - FULL_REPLACE: Works with or without spreadsheetId (deletes all sheets if existing)
-  - UPSERT_BY_EMAIL: **MUST** provide spreadsheetId and include "Email" in fieldMapping
+8. `includeConverted`
+  - Set `true` to include converted leads in results.
 
-### `includeConverted` (optional)
-- **Type**: boolean
-- **Default**: `false`
-- **Description**: Whether to include leads that have been converted to contacts/accounts/opportunities.
-- **Example**: `true` (includes converted leads)
+9. `enableIncrementalSync` and `lastSyncTimestamp`
+  - Use together to fetch only leads modified after a given timestamp.
 
-### `splitBy` (optional)
-- **Type**: string
-- **Default**: `""` (empty string, disabled)
-- **Description**: Split leads into multiple sheets by field value. Set to a field name from fieldMapping (e.g., "LeadSource", "Status", "Industry") or leave empty to disable.
-- **Examples**:
-  - `"LeadSource"`: Creates sheets like "Leads - Web", "Leads - Phone Inquiry"
-  - `"Status"`: Creates sheets like "Leads - Open", "Leads - Qualified"
-  - `""`: All leads in single sheet (default)
-- **Note**: Works with all sync modes (APPEND, FULL_REPLACE, UPSERT_BY_EMAIL)
+10. `splitBy`
+  - Splits rows into separate sheets by a chosen field (e.g., `Status`, `LeadSource`).
 
-### `enableIncrementalSync` (optional)
-- **Type**: boolean
-- **Default**: `false`
-- **Description**: Enable incremental sync to only fetch leads modified since last sync.
-- **Note**: When enabled, check logs for next timestamp value to use.
-
-### `lastSyncTimestamp` (optional)
-- **Type**: string
-- **Default**: `""` (no incremental sync)
-- **Description**: ISO 8601 timestamp for incremental sync. Only leads modified after this timestamp will be fetched. Used when enableIncrementalSync is true.
-- **Format**: `YYYY-MM-DDTHH:mm:ssZ`
-- **Examples**:
-  - `"2025-01-01T00:00:00Z"`
-  - `"2025-06-15T14:30:00Z"`
-- **Note**: Update this value after each successful sync with the timestamp from logs.
-
-### `timezone` (optional)
-- **Type**: string
-- **Default**: `"UTC"`
-- **Description**: IANA timezone string used for formatting timestamps in spreadsheet names.
-- **Examples**:
-  - `"America/New_York"`
-  - `"Europe/London"`
-  - `"Asia/Tokyo"`
-  - `"America/Los_Angeles"`
-  - `"Asia/Colombo"`
-
-### `enableAutoFormat` (optional)
-- **Type**: boolean
-- **Default**: `true`
-- **Description**: Enable auto-formatting to prepare sheets for optimal viewing. Headers are placed in first row.
-- **Note**: Manual bold formatting and row freezing can be applied in Google Sheets UI.
-
-### `timeframe` (optional)
-- **Type**: string
-- **Default**: `"ALL"`
-- **Options**: `"ALL"`, `"YESTERDAY"`, `"LAST_WEEK"`, `"LAST_MONTH"`, `"LAST_YEAR"`
-- **Description**: Timeframe filter based on CreatedDate to fetch leads from specific time periods.
-- **Examples**:
-  - `"ALL"`: No timeframe filtering (default)
-  - `"YESTERDAY"`: Leads created yesterday
-  - `"LAST_WEEK"`: Leads created last week (Monday to Sunday)
-  - `"LAST_MONTH"`: Leads created last month
-  - `"LAST_YEAR"`: Leads created last year
+11. `enableAutoFormat`
+  - Toggles automatic sheet formatting behaviors used by the integration.
 
 </details>
-
----
 
 ## Deployment Steps
 
-1. **Configure Salesforce Credentials**:
-   - `salesforceRefreshToken`: Refresh token from Step 4 above
-   - `salesforceClientId`: Consumer Key from Salesforce Connected App
-   - `salesforceClientSecret`: Consumer Secret from Salesforce Connected App
-   - `salesforceRefreshUrl`: `https://login.salesforce.com/services/oauth2/token`
-   - `salesforceBaseUrl`: Your Salesforce instance URL
-
-2. **Configure Google Credentials**:
-   - `googleRefreshToken`: Refresh token from OAuth Playground
-   - `googleClientId`: OAuth Client ID from Google Cloud Console
-   - `googleClientSecret`: OAuth Client Secret from Google Cloud Console
-
-3. **Configure Optional Settings**: Adjust any additional configurations as needed
-
-4. **Set Up Cron Schedule**: Configure the execution schedule (e.g., daily, hourly)
-
-5. **Deploy**: Click Deploy to activate the integration
-
-6. **Monitor**: Check execution logs to verify successful data export
-
----
+1. Configure Salesforce and Google OAuth values in the integration runtime configuration.
+2. Set optional parameters (`syncMode`, `spreadsheetId`, filters, and mapping) based on your use case.
+3. Configure the schedule in Devant (for example: hourly, daily, or weekly).
+4. Deploy the integration and verify execution logs.
 
 ## Troubleshooting
 
-### Salesforce Connection Issues
-- Verify your Salesforce credentials are correct
-- Ensure the Connected App has the required OAuth scopes
-- Check that your refresh token hasn't expired
-- Verify your Salesforce instance URL is correct
+### Authentication Failures
+- Re-check client credentials, refresh tokens, and token endpoints.
+- Confirm APIs/scopes are enabled for both providers.
 
-### Google Sheets Connection Issues
-- Verify your Google OAuth credentials are correct
-- Ensure the required APIs (Sheets + Drive) are enabled
-- Check that your refresh token hasn't expired
-- Verify the spreadsheet ID exists and is accessible
+### No Records Exported
+- Verify `soqlFilter`, `timeframe`, `includeConverted`, and `lastSyncTimestamp` values.
+- Check Salesforce-side data availability and permissions.
 
-### No Leads Exported
-- Check your SOQL filter syntax
-- Verify `includeConverted` setting matches your needs
-- Check `lastSyncTimestamp` isn't filtering out all leads
-- Review Salesforce query logs for errors
+### Spreadsheet Write Issues
+- Confirm `spreadsheetId` is valid and accessible by the authenticated Google account.
+- Validate `syncMode` expectations for sheet creation/replacement behavior.
 
-### Performance Issues
-- Reduce the number of fields in `fieldMapping`
-- Use `lastSyncTimestamp` for incremental syncs
-- Add more specific `soqlFilter` to reduce result set
-- Consider splitting large exports into multiple scheduled runs
+### Performance Tuning
+- Reduce `fieldMapping` columns.
+- Use incremental sync and tighter filters.
+- Use `splitBy` carefully when record volume is high.

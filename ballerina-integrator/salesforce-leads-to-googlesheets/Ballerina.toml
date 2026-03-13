@@ -1,7 +1,7 @@
 [package]
 org = "wso2"
-name = "salesforce_leads_to_googlesheet"
+name = "salesforce_leads_to_googlesheets"
 version = "0.1.0"
 distribution = "2201.13.1"
-title = "salesforce-leads-to-googlesheet"
+title = "salesforce-leads-to-googlesheets"
 
