@@ -9,10 +9,12 @@ H{"Order <br/> Exists?"}:::decisionNode
 I["Update Existing Row(s)"]:::processNode
 J["Add New Row(s) to Sheet"]:::processNode
 K(["Complete"]):::endNode
+L(["Rejected"]):::endNode
 
 A --> B
 B --> C
-C --> D
+C -- Accepted --> D
+C -- Rejected --> L
 D -- Yes --> E
 E --> F
 D -- No --> F

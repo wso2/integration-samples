@@ -102,6 +102,10 @@ function ensureSheetExists(string sheetName) returns error? {
     sheets:Sheet|error sheet = sheetsClient->getSheetByName(sheetConfig.sheetId, sheetName);
     
     if sheet is error {
+        if (!sheet.message().equalsIgnoreCaseAscii("Sheet not found")) {
+            log:printError(string `Error checking for sheet '${sheetName}': ${sheet.message()}`);
+            return sheet;
+        }
         sheets:Sheet|error result = sheetsClient->addSheet(sheetConfig.sheetId, sheetName);
         if result is error {
             log:printError(string `Failed to create sheet '${sheetName}': ${result.message()}`);

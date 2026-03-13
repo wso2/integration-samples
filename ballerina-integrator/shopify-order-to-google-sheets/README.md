@@ -39,7 +39,7 @@ This integration uses refresh token flow for auth. [Learn how to Develop on Goog
 The following configurations are required for the integration:
 
 ### Shopify Configuration
-- `shopifyWebhookSecret` (required): The API secret key obtained from the Shopify setup.
+- `shopifyWebHookSecret` (required): The API secret key obtained from the Shopify setup.
 
 ### Google Credentials
 
