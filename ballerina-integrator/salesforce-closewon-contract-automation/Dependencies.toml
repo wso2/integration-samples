@@ -32,14 +32,6 @@ dependencies = [
 
 [[package]]
 org = "ballerina"
-name = "cloud"
-version = "4.0.0"
-modules = [
-	{org = "ballerina", packageName = "cloud", moduleName = "cloud"}
-]
-
-[[package]]
-org = "ballerina"
 name = "constraint"
 version = "1.6.0"
 dependencies = [
@@ -386,7 +378,6 @@ org = "wso2"
 name = "closewon_contract_automation"
 version = "0.1.0"
 dependencies = [
-	{org = "ballerina", name = "cloud"},
 	{org = "ballerina", name = "log"},
 	{org = "ballerinax", name = "client.config"},
 	{org = "ballerinax", name = "docusign.dsesign"},

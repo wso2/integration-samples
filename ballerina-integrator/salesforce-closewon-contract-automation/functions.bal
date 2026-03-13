@@ -118,13 +118,65 @@ function getOpportunityFieldValue(Opportunity opportunity, string fieldName) ret
     return "";
 }
 
-// Update Salesforce opportunity stage
-function updateOpportunityStage(string opportunityId, string stageName) returns error? {
+// Check if envelope marker exists for this opportunity
+function checkEnvelopeMarker(string opportunityId) returns boolean|error {
+    // Query for a custom field that stores envelope ID or processing marker
+    // This assumes you have a custom field like DocuSign_Envelope_Id__c on Opportunity
+    // If the field doesn't exist, this will return false
     
-    // Note: The Salesforce client doesn't have a direct update method
-    // We'll log the update for now - in production, you'd use the REST API directly
-    log:printInfo(string `Would update opportunity ${opportunityId} stage to ${stageName}`);
-    log:printWarn("Opportunity stage update requires additional Salesforce REST API implementation");
+    string soqlQuery = string `SELECT Id, StageName FROM Opportunity 
+                               WHERE Id = '${opportunityId}' 
+                               LIMIT 1`;
+    
+    stream<record {string Id; string StageName;}, error?> oppStream = check salesforceClient->query(soqlQuery);
+    
+    record {string Id; string StageName;}[] opportunities = check from record {string Id; string StageName;} opp in oppStream
+        select opp;
+    
+    if opportunities.length() == 0 {
+        return false;
+    }
+    
+    record {string Id; string StageName;} opp = opportunities[0];
+    
+    // Check if stage indicates envelope was already sent
+    if opp.StageName == contractSentStage {
+        return true;
+    }
+    
+    // Additional check: Query for any existing DocuSign envelope records
+    // This could be a custom object or integration log
+    // For now, we rely on stage as the marker
+    
+    return false;
+}
+
+// Update Salesforce opportunity stage with envelope ID
+function updateOpportunityStage(string opportunityId, string stageName, string? envelopeId = ()) returns error? {
+    
+    // Build update payload
+    map<json> updatePayload = {
+        "StageName": stageName
+    };
+    
+    // Add envelope ID to description or custom field if provided
+    if envelopeId is string {
+        // Store envelope ID in Description field as a marker
+        // In production, use a custom field like DocuSign_Envelope_Id__c
+        string envelopeMarker = string `[DocuSign Envelope: ${envelopeId}]`;
+        updatePayload["Description"] = envelopeMarker;
+        log:printInfo(string `Storing envelope ID ${envelopeId} for opportunity ${opportunityId}`);
+    }
+    
+    // Update opportunity using Salesforce REST API
+    error? updateResult = salesforceClient->update("Opportunity", opportunityId, updatePayload);
+    
+    if updateResult is error {
+        log:printError(string `Failed to update opportunity ${opportunityId}: ${updateResult.message()}`);
+        return updateResult;
+    }
+    
+    log:printInfo(string `Successfully updated opportunity ${opportunityId} stage to ${stageName}`);
 }
 
 // Check if opportunity meets criteria

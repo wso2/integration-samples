@@ -37,6 +37,18 @@ function createAndSendEnvelope(Opportunity opportunity, Contact signer, Template
         status: "sent"
     };
     
+    // Add expiration configuration if specified
+    int? expirationDays = templateConfig.expirationDays;
+    if expirationDays is int {
+        envelopeDefinition.notification = {
+            expirations: {
+                expireEnabled: "true",
+                expireAfter: expirationDays.toString(),
+                expireWarn: "0"
+            }
+        };
+    }
+    
     // Build template roles
     dsesign:TemplateRole[] templateRoles = [];
     
@@ -146,6 +158,13 @@ public function processOpportunityForContract(string opportunityId) returns erro
         return;
     }
     
+    // Idempotency check: Skip if envelope already sent
+    boolean alreadyProcessed = check hasEnvelopeAlreadySent(opportunityId, opportunity);
+    if alreadyProcessed {
+        log:printInfo(string `Opportunity ${opportunityId} already has envelope sent, skipping duplicate processing`);
+        return;
+    }
+    
     // Get signer contact based on configured role
     Contact signer = check getSignerContact(opportunityId);
     
@@ -160,10 +179,30 @@ public function processOpportunityForContract(string opportunityId) returns erro
     
     log:printInfo(string `DocuSign envelope ${envelopeId} sent for opportunity ${opportunityId}`);
     
-    // Update opportunity stage to "Contract Sent"
-    check updateOpportunityStage(opportunityId, contractSentStage);
+    // Update opportunity stage to "Contract Sent" with envelope ID
+    check updateOpportunityStage(opportunityId, contractSentStage, envelopeId);
     
     log:printInfo(string `Successfully processed opportunity ${opportunityId}`);
+}
+
+// Check if envelope has already been sent for this opportunity (idempotency check)
+function hasEnvelopeAlreadySent(string opportunityId, Opportunity opportunity) returns boolean|error {
+    // Check if opportunity stage is already "Contract Sent" or beyond
+    if opportunity.StageName == contractSentStage {
+        log:printInfo(string `Opportunity ${opportunityId} is already in stage ${contractSentStage}`);
+        return true;
+    }
+    
+    // Check if there's a DocuSign envelope ID stored in a custom field
+    // Note: This requires a custom field on Opportunity object (e.g., DocuSign_Envelope_Id__c)
+    // For now, we rely on stage check as the primary idempotency mechanism
+    boolean hasEnvelopeMarker = check checkEnvelopeMarker(opportunityId);
+    if hasEnvelopeMarker {
+        log:printInfo(string `Opportunity ${opportunityId} already has envelope marker`);
+        return true;
+    }
+    
+    return false;
 }
 
 // Get signer contact based on configured role
