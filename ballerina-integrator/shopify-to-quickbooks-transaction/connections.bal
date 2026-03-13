@@ -17,4 +17,3 @@ final quickbooks:Client quickbooksClient = check new ({
         refreshToken: quickbooksConfig.refreshToken
     }
 }, quickbooksConfig.serviceUrl);
-
