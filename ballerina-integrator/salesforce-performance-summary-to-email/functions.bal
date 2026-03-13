@@ -46,6 +46,74 @@ public function getCurrentPeriodDates() returns [string, string]|error {
         time:Utc tempUtc = check time:utcFromCivil(tempDate);
         time:Utc endUtc = time:utcAddSeconds(tempUtc, -86400.0);
         endDate = time:utcToCivil(endUtc);
+    } else if timePeriod == "quarterly" {
+        int currentMonth = currentCivil.month;
+        int currentYear = currentCivil.year;
+
+        int quarterStartMonth;
+        int quarterYear = currentYear;
+
+        if currentMonth >= 1 && currentMonth <= 3 {
+            quarterStartMonth = 10;
+            quarterYear = currentYear - 1;
+        } else if currentMonth >= 4 && currentMonth <= 6 {
+            quarterStartMonth = 1;
+        } else if currentMonth >= 7 && currentMonth <= 9 {
+            quarterStartMonth = 4;
+        } else {
+            quarterStartMonth = 7;
+        }
+
+        startDate = {
+            year: quarterYear,
+            month: quarterStartMonth,
+            day: 1,
+            hour: 0,
+            minute: 0,
+            second: 0,
+            utcOffset: {hours: 0, minutes: 0}
+        };
+
+        int endMonth = quarterStartMonth + 3;
+        int endYear = quarterYear;
+        if endMonth > 12 {
+            endMonth = endMonth - 12;
+            endYear = endYear + 1;
+        }
+        time:Civil tempDate = {
+            year: endYear,
+            month: endMonth,
+            day: 1,
+            hour: 0,
+            minute: 0,
+            second: 0,
+            utcOffset: {hours: 0, minutes: 0}
+        };
+        time:Utc tempUtc = check time:utcFromCivil(tempDate);
+        time:Utc endUtc = time:utcAddSeconds(tempUtc, -86400.0);
+        endDate = time:utcToCivil(endUtc);
+    } else if timePeriod == "yearly" {
+        int lastYear = currentCivil.year - 1;
+
+        startDate = {
+            year: lastYear,
+            month: 1,
+            day: 1,
+            hour: 0,
+            minute: 0,
+            second: 0,
+            utcOffset: {hours: 0, minutes: 0}
+        };
+
+        endDate = {
+            year: lastYear,
+            month: 12,
+            day: 31,
+            hour: 0,
+            minute: 0,
+            second: 0,
+            utcOffset: {hours: 0, minutes: 0}
+        };
     } else {
         time:Utc startUtc = time:utcAddSeconds(currentUtc, -2592000.0);
         startDate = time:utcToCivil(startUtc);
@@ -72,16 +140,119 @@ public function getPreviousPeriodDates() returns [string, string]|error {
     time:Civil startDate;
     time:Civil endDate;
 
-    if comparisonPeriod == "MoM" {
-        int twoMonthsAgo = currentCivil.month - 2;
-        int year = currentCivil.year;
-        if twoMonthsAgo < 1 {
-            twoMonthsAgo = twoMonthsAgo + 12;
-            year = year - 1;
+    if timePeriod == "monthly" {
+        if comparisonPeriod == "MoM" {
+            int twoMonthsAgo = currentCivil.month - 2;
+            int year = currentCivil.year;
+            if twoMonthsAgo < 1 {
+                twoMonthsAgo = twoMonthsAgo + 12;
+                year = year - 1;
+            }
+            startDate = {
+                year: year,
+                month: twoMonthsAgo,
+                day: 1,
+                hour: 0,
+                minute: 0,
+                second: 0,
+                utcOffset: {hours: 0, minutes: 0}
+            };
+
+            int nextMonth = twoMonthsAgo + 1;
+            int endYear = year;
+            if nextMonth > 12 {
+                nextMonth = 1;
+                endYear = endYear + 1;
+            }
+            time:Civil tempDate = {
+                year: endYear,
+                month: nextMonth,
+                day: 1,
+                hour: 0,
+                minute: 0,
+                second: 0,
+                utcOffset: {hours: 0, minutes: 0}
+            };
+            time:Utc tempUtc = check time:utcFromCivil(tempDate);
+            time:Utc endUtc = time:utcAddSeconds(tempUtc, -86400.0);
+            endDate = time:utcToCivil(endUtc);
+        } else if comparisonPeriod == "YoY" {
+            int lastYear = currentCivil.year - 1;
+            int lastMonth = currentCivil.month - 1;
+            if lastMonth < 1 {
+                lastMonth = 12;
+                lastYear = lastYear - 1;
+            }
+            startDate = {
+                year: lastYear,
+                month: lastMonth,
+                day: 1,
+                hour: 0,
+                minute: 0,
+                second: 0,
+                utcOffset: {hours: 0, minutes: 0}
+            };
+
+            int nextMonth = lastMonth + 1;
+            int endYear = lastYear;
+            if nextMonth > 12 {
+                nextMonth = 1;
+                endYear = endYear + 1;
+            }
+            time:Civil tempDate = {
+                year: endYear,
+                month: nextMonth,
+                day: 1,
+                hour: 0,
+                minute: 0,
+                second: 0,
+                utcOffset: {hours: 0, minutes: 0}
+            };
+            time:Utc tempUtc = check time:utcFromCivil(tempDate);
+            time:Utc endUtc = time:utcAddSeconds(tempUtc, -86400.0);
+            endDate = time:utcToCivil(endUtc);
+        } else {
+            time:Utc startUtc = time:utcAddSeconds(currentUtc, -5184000.0);
+            time:Utc endUtc = time:utcAddSeconds(currentUtc, -2592000.0);
+            startDate = time:utcToCivil(startUtc);
+            endDate = time:utcToCivil(endUtc);
         }
+    } else if timePeriod == "quarterly" {
+        int currentMonth = currentCivil.month;
+        int currentYear = currentCivil.year;
+
+        int lastQuarterStartMonth;
+        int lastQuarterYear = currentYear;
+
+        if currentMonth >= 1 && currentMonth <= 3 {
+            lastQuarterStartMonth = 10;
+            lastQuarterYear = currentYear - 1;
+        } else if currentMonth >= 4 && currentMonth <= 6 {
+            lastQuarterStartMonth = 1;
+        } else if currentMonth >= 7 && currentMonth <= 9 {
+            lastQuarterStartMonth = 4;
+        } else {
+            lastQuarterStartMonth = 7;
+        }
+
+        int compareQuarterStartMonth;
+        int compareQuarterYear;
+
+        if comparisonPeriod == "YoY" {
+            compareQuarterStartMonth = lastQuarterStartMonth;
+            compareQuarterYear = lastQuarterYear - 1;
+        } else {
+            compareQuarterStartMonth = lastQuarterStartMonth - 3;
+            compareQuarterYear = lastQuarterYear;
+            if compareQuarterStartMonth < 1 {
+                compareQuarterStartMonth = compareQuarterStartMonth + 12;
+                compareQuarterYear = compareQuarterYear - 1;
+            }
+        }
+
         startDate = {
-            year: year,
-            month: twoMonthsAgo,
+            year: compareQuarterYear,
+            month: compareQuarterStartMonth,
             day: 1,
             hour: 0,
             minute: 0,
@@ -89,15 +260,15 @@ public function getPreviousPeriodDates() returns [string, string]|error {
             utcOffset: {hours: 0, minutes: 0}
         };
 
-        int nextMonth = twoMonthsAgo + 1;
-        int endYear = year;
-        if nextMonth > 12 {
-            nextMonth = 1;
+        int endMonth = compareQuarterStartMonth + 3;
+        int endYear = compareQuarterYear;
+        if endMonth > 12 {
+            endMonth = endMonth - 12;
             endYear = endYear + 1;
         }
         time:Civil tempDate = {
             year: endYear,
-            month: nextMonth,
+            month: endMonth,
             day: 1,
             hour: 0,
             minute: 0,
@@ -107,16 +278,19 @@ public function getPreviousPeriodDates() returns [string, string]|error {
         time:Utc tempUtc = check time:utcFromCivil(tempDate);
         time:Utc endUtc = time:utcAddSeconds(tempUtc, -86400.0);
         endDate = time:utcToCivil(endUtc);
-    } else if comparisonPeriod == "YoY" {
+    } else if timePeriod == "yearly" {
         int lastYear = currentCivil.year - 1;
-        int lastMonth = currentCivil.month - 1;
-        if lastMonth < 1 {
-            lastMonth = 12;
-            lastYear = lastYear - 1;
+        int compareYear;
+
+        if comparisonPeriod == "YoY" {
+            compareYear = lastYear - 1;
+        } else {
+            compareYear = lastYear - 1;
         }
+
         startDate = {
-            year: lastYear,
-            month: lastMonth,
+            year: compareYear,
+            month: 1,
             day: 1,
             hour: 0,
             minute: 0,
@@ -124,24 +298,15 @@ public function getPreviousPeriodDates() returns [string, string]|error {
             utcOffset: {hours: 0, minutes: 0}
         };
 
-        int nextMonth = lastMonth + 1;
-        int endYear = lastYear;
-        if nextMonth > 12 {
-            nextMonth = 1;
-            endYear = endYear + 1;
-        }
-        time:Civil tempDate = {
-            year: endYear,
-            month: nextMonth,
-            day: 1,
+        endDate = {
+            year: compareYear,
+            month: 12,
+            day: 31,
             hour: 0,
             minute: 0,
             second: 0,
             utcOffset: {hours: 0, minutes: 0}
         };
-        time:Utc tempUtc = check time:utcFromCivil(tempDate);
-        time:Utc endUtc = time:utcAddSeconds(tempUtc, -86400.0);
-        endDate = time:utcToCivil(endUtc);
     } else {
         time:Utc startUtc = time:utcAddSeconds(currentUtc, -5184000.0);
         time:Utc endUtc = time:utcAddSeconds(currentUtc, -2592000.0);

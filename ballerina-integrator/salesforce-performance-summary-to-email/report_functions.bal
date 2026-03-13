@@ -99,14 +99,79 @@ function parseFactMap(map<json> factMap) returns FactMapAggregates|error {
     if grandTotalJson !is () {
         json? aggregatesJson = check grandTotalJson.aggregates;
         if aggregatesJson is json[] && aggregatesJson.length() > 0 {
-            json? valueJson = check aggregatesJson[0].value;
-            totalRevenue = valueJson is decimal ? valueJson :
-                    valueJson is int ? <decimal>valueJson : 0.0;
+            if aggregatesJson.length() > 0 {
+                json? valueJson = check aggregatesJson[0].value;
+                totalRevenue = valueJson is decimal ? valueJson :
+                        valueJson is int ? <decimal>valueJson : 0.0;
+            }
 
             if aggregatesJson.length() > 1 {
                 json? valueJson2 = check aggregatesJson[1].value;
                 dealsClosedCount = valueJson2 is int ? valueJson2 :
                         valueJson2 is decimal ? <int>valueJson2 : 0;
+            }
+
+            if aggregatesJson.length() > 2 {
+                json? valueJson3 = check aggregatesJson[2].value;
+                pipelineValue = valueJson3 is decimal ? valueJson3 :
+                        valueJson3 is int ? <decimal>valueJson3 : 0.0;
+            }
+
+            if aggregatesJson.length() > 3 {
+                json? valueJson4 = check aggregatesJson[3].value;
+                openOpportunitiesCount = valueJson4 is int ? valueJson4 :
+                        valueJson4 is decimal ? <int>valueJson4 : 0;
+            }
+        }
+    }
+
+    return {
+        totalRevenue: roundToTwoDecimals(totalRevenue),
+        dealsClosedCount: dealsClosedCount,
+        pipelineValue: roundToTwoDecimals(pipelineValue),
+        openOpportunitiesCount: openOpportunitiesCount
+    };
+}
+
+function parseFactMapWithMetadata(map<json> factMap, map<json> metadata) returns FactMapAggregates|error {
+    decimal totalRevenue = 0.0;
+    int dealsClosedCount = 0;
+    decimal pipelineValue = 0.0;
+    int openOpportunitiesCount = 0;
+
+    MetricInfo[] metrics = check extractMetricLabels(metadata);
+
+    json? grandTotalJson = factMap.get("T!T");
+    if grandTotalJson is () {
+        grandTotalJson = factMap.get("0!T");
+    }
+
+    if grandTotalJson !is () {
+        json? aggregatesJson = check grandTotalJson.aggregates;
+        if aggregatesJson is json[] && aggregatesJson.length() > 0 {
+            foreach int i in 0 ..< aggregatesJson.length() {
+                if i >= metrics.length() {
+                    break;
+                }
+
+                json? valueJson = check aggregatesJson[i].value;
+                decimal value = valueJson is decimal ? valueJson :
+                        valueJson is int ? <decimal>valueJson : 0.0;
+                int intValue = valueJson is int ? valueJson :
+                        valueJson is decimal ? <int>valueJson : 0;
+
+                string label = metrics[i].label.toLowerAscii();
+                string name = metrics[i].name.toLowerAscii();
+
+                if label.includes("revenue") || label.includes("amount") || name.includes("amount") {
+                    totalRevenue = value;
+                } else if label.includes("closed") || label.includes("won") || name.includes("closed") {
+                    dealsClosedCount = intValue;
+                } else if label.includes("pipeline") || name.includes("pipeline") {
+                    pipelineValue = value;
+                } else if label.includes("open") || label.includes("opportunities") || name.includes("open") {
+                    openOpportunitiesCount = intValue;
+                }
             }
         }
     }
@@ -140,12 +205,14 @@ function aggregatesToMetrics(FactMapAggregates aggregates) returns PerformanceMe
 }
 
 public function generateReportBasedSummary(
-        string reportId,
-        string currentStartDate,
-        string currentEndDate,
-        string previousStartDate,
-        string previousEndDate
+        string reportId
 ) returns PerformanceSummary|error {
+    [string, string] currentDates = check getCurrentPeriodDates();
+    string currentStartDate = currentDates[0];
+    string currentEndDate = currentDates[1];
+
+    map<json> metadata = check getReportMetadata(reportId);
+
     ReportExecutionResult currentResult = check executeReportWithFilters(
             reportId
     );
@@ -174,6 +241,7 @@ public function generateReportBasedSummary(
             currentMetrics.pipelineValue,
             previousMetrics.pipelineValue
     );
+    RepPerformance[] repBreakdown = check extractRepBreakdown(currentResult.rawFactMap, metadata);
 
     return {
         currentPeriod: currentMetrics,
@@ -186,7 +254,7 @@ public function generateReportBasedSummary(
             pipelineChange: pipelineChange,
             pipelineChangePercent: pipelineChangePercent
         },
-        repBreakdown: [],
+        repBreakdown: repBreakdown,
         periodStart: currentStartDate,
         periodEnd: currentEndDate,
         comparisonType: comparisonPeriod
@@ -194,12 +262,12 @@ public function generateReportBasedSummary(
 }
 
 public function generateReportSummary(
-        string reportId,
-        string currentStartDate,
-        string currentEndDate,
-        string previousStartDate,
-        string previousEndDate
+        string reportId
 ) returns ReportSummary|error {
+    [string, string] currentDates = check getCurrentPeriodDates();
+    string currentStartDate = currentDates[0];
+    string currentEndDate = currentDates[1];
+
     map<json>|error metadata = getReportMetadata(reportId);
     if metadata is error {
         string errorMsg = metadata.message();
@@ -238,13 +306,14 @@ public function generateReportSummary(
     if currentMetrics.length() == 0 {
         return error("No metrics found in report. The report may be empty or missing aggregated fields.");
     }
+    RepPerformance[] repBreakdown = check extractRepBreakdown(currentResult.rawFactMap, metadata);
 
     return {
         reportId: reportId,
         reportName: reportName,
         currentMetrics: currentMetrics,
         previousMetrics: previousMetrics,
-        repBreakdown: [],
+        repBreakdown: repBreakdown,
         periodStart: currentStartDate,
         periodEnd: currentEndDate
     };
@@ -291,4 +360,66 @@ function populateMetricsFromFactMap(
     }
 
     return populatedMetrics;
+}
+
+function extractRepBreakdown(map<json> factMap, map<json> metadata) returns RepPerformance[]|error {
+    RepPerformance[] breakdown = [];
+
+    if !includePerRepBreakdown {
+        return breakdown;
+    }
+
+    json? reportMetadata = metadata.get("reportMetadata");
+    if reportMetadata is () {
+        return breakdown;
+    }
+
+    json? groupingsJson = check reportMetadata.groupingsDown;
+    if groupingsJson is () || !(groupingsJson is json[]) || (<json[]>groupingsJson).length() == 0 {
+        return breakdown;
+    }
+
+    foreach [string, json] [key, value] in factMap.entries() {
+        if key == "T!T" || key == "0!T" {
+            continue;
+        }
+
+        json? aggregatesJson = check value.aggregates;
+        if aggregatesJson is json[] && aggregatesJson.length() > 0 {
+            json? labelJson = check value.label;
+            string repName = labelJson is string ? labelJson : "Unknown Rep";
+
+            decimal revenue = 0.0;
+            int dealsCount = 0;
+            decimal pipelineValue = 0.0;
+
+            if aggregatesJson.length() > 0 {
+                json? valueJson = check aggregatesJson[0].value;
+                revenue = valueJson is decimal ? valueJson :
+                        valueJson is int ? <decimal>valueJson : 0.0;
+            }
+
+            if aggregatesJson.length() > 1 {
+                json? valueJson2 = check aggregatesJson[1].value;
+                dealsCount = valueJson2 is int ? valueJson2 :
+                        valueJson2 is decimal ? <int>valueJson2 : 0;
+            }
+
+            if aggregatesJson.length() > 2 {
+                json? valueJson3 = check aggregatesJson[2].value;
+                pipelineValue = valueJson3 is decimal ? valueJson3 :
+                        valueJson3 is int ? <decimal>valueJson3 : 0.0;
+            }
+
+            breakdown.push({
+                repName: repName,
+                repId: key,
+                revenue: roundToTwoDecimals(revenue),
+                dealsCount: dealsCount,
+                pipelineValue: roundToTwoDecimals(pipelineValue)
+            });
+        }
+    }
+
+    return breakdown;
 }

@@ -2,6 +2,115 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "type": "object",
   "properties": {
+    "wso2": {
+      "type": "object",
+      "properties": {
+        "salesforce_performance_summary_to_email": {
+          "type": "object",
+          "properties": {
+            "salesforceConfig": {
+              "type": "object",
+              "properties": {
+                "refreshToken": {
+                  "type": "string"
+                },
+                "clientId": {
+                  "type": "string"
+                },
+                "clientSecret": {
+                  "type": "string"
+                },
+                "refreshUrl": {
+                  "type": "string"
+                },
+                "baseUrl": {
+                  "type": "string"
+                }
+              },
+              "additionalProperties": false,
+              "required": [
+                "refreshToken",
+                "clientId",
+                "clientSecret",
+                "refreshUrl",
+                "baseUrl"
+              ],
+              "description": ""
+            },
+            "mailchimpConfig": {
+              "type": "object",
+              "properties": {
+                "mandrillApiKey": {
+                  "type": "string"
+                }
+              },
+              "additionalProperties": false,
+              "required": [
+                "mandrillApiKey"
+              ],
+              "description": ""
+            },
+            "emailConfig": {
+              "type": "object",
+              "properties": {
+                "fromEmail": {
+                  "type": "string"
+                },
+                "fromName": {
+                  "type": "string"
+                },
+                "recipientEmails": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "subjectTemplate": {
+                  "type": "string"
+                }
+              },
+              "additionalProperties": false,
+              "required": [
+                "fromEmail",
+                "recipientEmails"
+              ],
+              "description": ""
+            },
+            "salesforceReportId": {
+              "type": "string",
+              "description": ""
+            },
+            "timePeriod": {
+              "enum": [
+                "yearly",
+                "quarterly",
+                "monthly"
+              ],
+              "description": ""
+            },
+            "comparisonPeriod": {
+              "enum": [
+                "YoY",
+                "MoM"
+              ],
+              "description": ""
+            },
+            "includePerRepBreakdown": {
+              "type": "boolean",
+              "description": ""
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "salesforceConfig",
+            "mailchimpConfig",
+            "emailConfig",
+            "salesforceReportId"
+          ]
+        }
+      },
+      "additionalProperties": false
+    },
     "ballerina": {
       "type": "object",
       "properties": {
@@ -544,115 +653,6 @@
             }
           },
           "additionalProperties": false
-        }
-      },
-      "additionalProperties": false
-    },
-    "wso2": {
-      "type": "object",
-      "properties": {
-        "salesforce_performance_summary_to_email": {
-          "type": "object",
-          "properties": {
-            "salesforceConfig": {
-              "type": "object",
-              "properties": {
-                "refreshToken": {
-                  "type": "string"
-                },
-                "clientId": {
-                  "type": "string"
-                },
-                "clientSecret": {
-                  "type": "string"
-                },
-                "refreshUrl": {
-                  "type": "string"
-                },
-                "baseUrl": {
-                  "type": "string"
-                }
-              },
-              "additionalProperties": false,
-              "required": [
-                "refreshToken",
-                "clientId",
-                "clientSecret",
-                "refreshUrl",
-                "baseUrl"
-              ],
-              "description": ""
-            },
-            "mailchimpConfig": {
-              "type": "object",
-              "properties": {
-                "mandrillApiKey": {
-                  "type": "string"
-                }
-              },
-              "additionalProperties": false,
-              "required": [
-                "mandrillApiKey"
-              ],
-              "description": ""
-            },
-            "emailConfig": {
-              "type": "object",
-              "properties": {
-                "fromEmail": {
-                  "type": "string"
-                },
-                "fromName": {
-                  "type": "string"
-                },
-                "recipientEmails": {
-                  "type": "array",
-                  "items": {
-                    "type": "string"
-                  }
-                },
-                "subjectTemplate": {
-                  "type": "string"
-                }
-              },
-              "additionalProperties": false,
-              "required": [
-                "fromEmail",
-                "recipientEmails"
-              ],
-              "description": ""
-            },
-            "salesforceReportId": {
-              "type": "string",
-              "description": ""
-            },
-            "timePeriod": {
-              "enum": [
-                "yearly",
-                "quarterly",
-                "monthly"
-              ],
-              "description": ""
-            },
-            "comparisonPeriod": {
-              "enum": [
-                "YoY",
-                "MoM"
-              ],
-              "description": ""
-            },
-            "includePerRepBreakdown": {
-              "type": "boolean",
-              "description": ""
-            }
-          },
-          "additionalProperties": false,
-          "required": [
-            "salesforceConfig",
-            "mailchimpConfig",
-            "emailConfig",
-            "salesforceReportId"
-          ]
         }
       },
       "additionalProperties": false
