@@ -207,6 +207,12 @@ function hasEnvelopeAlreadySent(string opportunityId, Opportunity opportunity) r
 
 // Get signer contact based on configured role
 function getSignerContact(string opportunityId) returns Contact|error {
+    // If configured role is PRIMARY_CONTACT, call getPrimaryContact directly
+    if signerRole == PRIMARY_CONTACT {
+        Contact primaryContact = check getPrimaryContact(opportunityId);
+        return primaryContact;
+    }
+    
     // Try to get contact by configured role
     Contact|error contactResult = getContactByRole(opportunityId, signerRole);
     
@@ -214,8 +220,18 @@ function getSignerContact(string opportunityId) returns Contact|error {
         return contactResult;
     }
     
-    // Fallback to primary contact
-    log:printWarn(string `Could not find contact with role ${signerRole}, falling back to primary contact`);
-    Contact primaryContact = check getPrimaryContact(opportunityId);
-    return primaryContact;
+    // Check if error is a "not found" error (can fallback to primary)
+    error contactError = contactResult;
+    string errorMessage = contactError.message();
+    
+    // Only fallback to primary contact if it's a "not found" error
+    if errorMessage.includes("No contact found with role") {
+        log:printWarn(string `Could not find contact with role ${signerRole}, falling back to primary contact`);
+        Contact primaryContact = check getPrimaryContact(opportunityId);
+        return primaryContact;
+    }
+    
+    // For all other errors (auth, query, deserialization), propagate immediately
+    log:printError(string `Error retrieving contact by role ${signerRole}: ${errorMessage}`);
+    return contactError;
 }
