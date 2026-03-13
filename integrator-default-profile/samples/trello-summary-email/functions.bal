@@ -12,6 +12,26 @@ function fetchListCardsAsJson(string listId) returns json[]|error {
     return check cardsJson.ensureType();
 }
 
+// Fetches all members of a board upfront and builds a memberId -> fullName lookup map.
+// Should switch back to trello:Client once issues fixed.
+function fetchBoardMembersMap(string boardId) returns map<string>|error {
+    json membersJson = check trelloHttpClient->/boards/[boardId]/members.get(
+        'key = trelloConfig.key,
+        token = trelloConfig.token,
+        fields = "id,fullName"
+    );
+    json[] membersArray = check membersJson.ensureType();
+    map<string> memberMap = {};
+    foreach json memberJson in membersArray {
+        string? memberId = check memberJson.id;
+        string? fullName = check memberJson.fullName;
+        if memberId is string && fullName is string {
+            memberMap[memberId] = fullName;
+        }
+    }
+    return memberMap;
+}
+
 function fetchTrelloCards() returns CardSummary[]|error {
     CardSummary[] allCards = [];
 
@@ -36,6 +56,8 @@ function fetchTrelloCards() returns CardSummary[]|error {
         );
         string boardName = board.name ?: "Unknown Board";
 
+        map<string> memberMap = check fetchBoardMembersMap(boardId);
+
         json boardJson = board.toJson();
         json listsJson = check boardJson.lists;
         json[] listsArray = check listsJson.ensureType();
@@ -51,7 +73,7 @@ function fetchTrelloCards() returns CardSummary[]|error {
             json[] cardsArray = check fetchListCardsAsJson(listId);
 
             foreach json cardJson in cardsArray {
-                CardSummary? cardSummary = check processCardFromJson(cardJson, listName, boardName);
+                CardSummary? cardSummary = check processCardFromJson(cardJson, listName, boardName, memberMap);
                 if cardSummary is CardSummary {
                     allCards.push(cardSummary);
                 }
@@ -62,7 +84,7 @@ function fetchTrelloCards() returns CardSummary[]|error {
     return allCards;
 }
 
-function processCardFromJson(json cardJson, string listName, string boardName) returns CardSummary?|error {
+function processCardFromJson(json cardJson, string listName, string boardName, map<string> memberMap) returns CardSummary?|error {
     string cardId = check cardJson.id;
     string cardName = check cardJson.name;
     string cardUrl = check cardJson.url;
@@ -128,15 +150,9 @@ function processCardFromJson(json cardJson, string listName, string boardName) r
     json? membersJson = check cardJson.idMembers;
     if membersJson is json[] {
         foreach json memberIdJson in membersJson {
-            string? memberIdStr = memberIdJson.toString();
-            if memberIdStr is string {
-                trello:InlineResponse2001|error memberInfo = trelloClient->/members/[memberIdStr].get();
-                if memberInfo is trello:InlineResponse2001 {
-                    string? fullName = memberInfo?.fullName;
-                    if fullName is string {
-                        memberNames.push(fullName);
-                    }
-                }
+            string memberIdStr = memberIdJson.toString();
+            if memberMap.hasKey(memberIdStr) {
+                memberNames.push(memberMap.get(memberIdStr));
             }
         }
     }
@@ -248,9 +264,39 @@ function getFormattedTimestamp(time:Utc utcTime) returns string {
     return string `${civil.year}-${civil.month.toString().padZero(2)}-${civil.day.toString().padZero(2)} ${civil.hour.toString().padZero(2)}:${civil.minute.toString().padZero(2)} UTC`;
 }
 
+function escapeHtml(string value) returns string {
+    string escaped = "";
+    foreach int i in 0 ..< value.length() {
+        string ch = value.substring(i, i + 1);
+        match ch {
+            "&" => {
+                escaped += "&amp;";
+            }
+            "<" => {
+                escaped += "&lt;";
+            }
+            ">" => {
+                escaped += "&gt;";
+            }
+            "\"" => {
+                escaped += "&quot;";
+            }
+            "'" => {
+                escaped += "&#39;";
+            }
+            _ => {
+                escaped += ch;
+            }
+        }
+    }
+    return escaped;
+}
+
 function getHtmlFormattedGroup(GroupedSummary group) returns string {
     string cardsHtml = "";
     foreach CardSummary card in group.cards {
+        string cardNameEscaped = escapeHtml(card.name);
+        string cardUrlEscaped = escapeHtml(card.url);
         string leftBorder = card.isOverdue
             ? " style=\"border-left: 3px solid #de350b; padding: 16px 30px; border-bottom: 1px solid #e1e4e8;\""
             : (card.isStale
@@ -267,12 +313,12 @@ function getHtmlFormattedGroup(GroupedSummary group) returns string {
 
         string labelsHtml = "";
         foreach string label in card.labels {
-            labelsHtml += string `<span style="display: inline-block; padding: 2px 6px; border-radius: 3px; font-size: 11px; background-color: #61bd4f; color: white; margin-right: 4px;">${label}</span>`;
+            labelsHtml += string `<span style="display: inline-block; padding: 2px 6px; border-radius: 3px; font-size: 11px; background-color: #61bd4f; color: white; margin-right: 4px;">${escapeHtml(label)}</span>`;
         }
 
         string membersHtml = "";
         foreach string member in card.members {
-            membersHtml += member + " ";
+            membersHtml += escapeHtml(member) + " ";
         }
 
         string cardAgeHtml = summaryConfig.showCardAge
@@ -291,7 +337,7 @@ function getHtmlFormattedGroup(GroupedSummary group) returns string {
         if card.description.trim().length() > 0 {
             string truncatedDesc = card.description.length() > 200
                 ? card.description.substring(0, 200) + "..." : card.description;
-            descHtml = string `<div style="font-size: 13px; color: #586069; margin-top: 8px; white-space: pre-wrap;">${truncatedDesc}</div>`;
+            descHtml = string `<div style="font-size: 13px; color: #586069; margin-top: 8px; white-space: pre-wrap;">${escapeHtml(truncatedDesc)}</div>`;
         }
 
         string overdueTag = summaryConfig.highlightOverdueCards && card.isOverdue
@@ -306,7 +352,7 @@ function getHtmlFormattedGroup(GroupedSummary group) returns string {
         cardsHtml += string `
                             <tr>
                                 <td${leftBorder}>
-                                    <a href="${card.url}" target="_blank" style="font-family: sans-serif; font-size: 14px; font-weight: 600; color: #0052cc; text-decoration: none;">${card.name}</a>${overdueTag}
+                                    <a href="${cardUrlEscaped}" target="_blank" style="font-family: sans-serif; font-size: 14px; font-weight: 600; color: #0052cc; text-decoration: none;">${cardNameEscaped}</a>${overdueTag}
                                     <div style="font-size: 12px; color: #586069; margin-top: 6px;">${metaHtml}</div>
                                     ${labelsRow}
                                     ${membersRow}
@@ -318,7 +364,7 @@ function getHtmlFormattedGroup(GroupedSummary group) returns string {
     return string `
                 <tr>
                     <td style="background-color: #f6f8fa; padding: 10px 30px; border-left: 1px solid #e1e4e8; border-right: 1px solid #e1e4e8; border-bottom: 1px solid #e1e4e8;">
-                        <span style="font-family: sans-serif; font-size: 14px; font-weight: 600; color: #24292e;">${group.groupName}</span>
+                        <span style="font-family: sans-serif; font-size: 14px; font-weight: 600; color: #24292e;">${escapeHtml(group.groupName)}</span>
                         <span style="font-family: sans-serif; font-size: 13px; font-weight: 400; color: #586069;"> (${group.cards.length().toString()} cards)</span>
                     </td>
                 </tr>

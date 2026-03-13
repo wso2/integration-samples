@@ -8,7 +8,7 @@ final trello:Client trelloClient = check new ({
 });
 
 final http:Client trelloHttpClient = check new ("https://api.trello.com/1");
-#Had to use a separate client for Trello API calls as the trello:Client does not support all endpoints needed for fetching card details and attachments.
+//Had to use a separate client for Trello API calls as the trello:Client does not support all endpoints needed for fetching card details and attachments.
 
 final mailchimp:Client mailchimpClient = check new (
     config = {
