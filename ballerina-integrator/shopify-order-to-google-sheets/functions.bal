@@ -50,15 +50,17 @@ function applyFilters(shopify:OrderEvent event) returns boolean {
     }
 
     string orderTags = event?.tags ?: "";
+    string:RegExp commaPattern = re `,`;
+    string[] orderTagList = orderTags == "" ? [] : from string tag in commaPattern.split(orderTags) select tag.trim();
     
     if requiredTags.length() > 0 {
-        if orderTags == "" {
+        if orderTagList.length() == 0 {
             log:printWarn(string `Filter failed for order ${orderNumber}: No tags found, but required tags are configured`);
             return true;
         }
         boolean hasRequiredTag = false;
         foreach string requiredTag in requiredTags {
-            if orderTags.includes(requiredTag) {
+            if orderTagList.indexOf(requiredTag) !is () {
                 hasRequiredTag = true;
                 break;
             }
@@ -69,9 +71,9 @@ function applyFilters(shopify:OrderEvent event) returns boolean {
         }
     }
 
-    if excludedTags.length() > 0 && orderTags != "" {
+    if excludedTags.length() > 0 && orderTagList.length() > 0 {
         foreach string excludedTag in excludedTags {
-            if orderTags.includes(excludedTag) {
+            if orderTagList.indexOf(excludedTag) !is () {
                 log:printWarn(string `Filter failed for order ${orderNumber}: Order contains excluded tag '${excludedTag}'`);
                 return true;
             }
@@ -138,7 +140,7 @@ function createRowFromEvent(shopify:OrderEvent event) returns error? {
         if includeLineItems {
             var lineItems = event?.line_items;
 
-            if !(lineItems is ()) {
+            if !(lineItems is ()) && lineItems.length() > 0 {
                 (int|string|decimal)[][] allRows = [];
                 foreach var item in lineItems {
                     (int|string|decimal)[] lineItemValues = rowValues.clone();
