@@ -84,7 +84,7 @@ function selectTemplate(Opportunity opportunity) returns TemplateConfig {
 // Note: buildTemplateFields function moved to automation.bal
 
 // Get opportunity field value by field name
-function getOpportunityFieldValue(Opportunity opportunity, string fieldName) returns string {
+function getOpportunityFieldValue(Opportunity opportunity, string fieldName) returns string|error {
     match fieldName {
         "Name" => {
             return opportunity.Name;
@@ -94,12 +94,14 @@ function getOpportunityFieldValue(Opportunity opportunity, string fieldName) ret
             if amount is decimal {
                 return amount.toString();
             }
+            return "";
         }
         "CloseDate" => {
             string? closeDate = opportunity.CloseDate;
             if closeDate is string {
                 return closeDate;
             }
+            return "";
         }
         "Id" => {
             return opportunity.Id;
@@ -112,10 +114,12 @@ function getOpportunityFieldValue(Opportunity opportunity, string fieldName) ret
             if oppType is string {
                 return oppType;
             }
+            return "";
+        }
+        _ => {
+            return error(string `Unknown opportunity field: ${fieldName}. Valid fields are: Name, Amount, CloseDate, Id, StageName, Type`);
         }
     }
-    
-    return "";
 }
 
 // Check if envelope marker exists for this opportunity

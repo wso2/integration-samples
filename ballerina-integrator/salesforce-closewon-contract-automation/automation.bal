@@ -7,7 +7,7 @@ function createAndSendEnvelope(Opportunity opportunity, Contact signer, Template
     string signerName = buildSignerName(signer);
     
     // Build pre-fill fields
-    record {string name; string value;}[] templateFields = buildTemplateFields(opportunity);
+    record {string name; string value;}[] templateFields = check buildTemplateFields(opportunity);
     
     // Build signer info
     SignerInfo signerInfo = {
@@ -130,7 +130,7 @@ function createAndSendEnvelope(Opportunity opportunity, Contact signer, Template
 }
 
 // Build template fields from opportunity data
-function buildTemplateFields(Opportunity opportunity) returns record {string name; string value;}[] {
+function buildTemplateFields(Opportunity opportunity) returns record {string name; string value;}[]|error {
     record {string name; string value;}[] fields = [];
     
     foreach FieldMapping mapping in fieldMappings {
@@ -138,7 +138,14 @@ function buildTemplateFields(Opportunity opportunity) returns record {string nam
         string docusignField = mapping.docusignField;
         
         // Get field value from opportunity
-        string fieldValue = getOpportunityFieldValue(opportunity, opportunityField);
+        string|error fieldValueResult = getOpportunityFieldValue(opportunity, opportunityField);
+        
+        if fieldValueResult is error {
+            log:printError(string `Invalid field mapping: opportunityField="${opportunityField}" -> docusignField="${docusignField}"`);
+            return error(string `Field mapping error: ${fieldValueResult.message()}`, fieldValueResult);
+        }
+        
+        string fieldValue = fieldValueResult;
         
         if fieldValue != "" {
             fields.push({
