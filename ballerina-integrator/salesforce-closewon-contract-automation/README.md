@@ -99,7 +99,7 @@ The following configurations are required to connect to Salesforce and DocuSign.
 - `contractSentStage` - Opportunity stage to set after sending contract (default: "Contract Sent")
 - `expirationReminderDays` - Default expiration reminder days (default: 3)
 
-## Deploying on **Choreo**
+## Deploying on **WSO2 Integration Platform**
 
 1. Sign in to your Choreo account.
 2. Create a new Integration and follow instructions in [Choreo Documentation](https://wso2.com/choreo/docs/) to import this repository.
