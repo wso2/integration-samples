@@ -33,13 +33,6 @@ configurable record {
     taxMappingJson: "{}"
 };
 
-// QuickBooks income account IDs (required)
-configurable record {
-    string productSalesAccountId;
-    string shippingAccountId;
-    string discountAccountId;
-} accountConfig = ?;
-
 // Whether to create a separate line item for shipping
 configurable boolean mapShippingAsSeparateLine = true;
 

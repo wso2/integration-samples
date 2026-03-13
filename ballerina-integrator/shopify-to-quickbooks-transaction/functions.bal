@@ -44,11 +44,18 @@ function isDuplicateTransaction(string orderNum) returns boolean|error {
     if orderNum.length() == 0 {
         return false;
     }
+    // Validate orderNum: Shopify order_number is always a positive integer; reject anything else
+    foreach int i in 0 ..< orderNum.length() {
+        int cp = orderNum.getCodePoint(i);
+        if cp < 48 || cp > 57 {
+            return error(string `Invalid orderNum '${orderNum}': contains non-digit characters`);
+        }
+    }
     string query = string `SELECT Id FROM Invoice WHERE PrivateNote LIKE '%Shopify Order: ${orderNum}%'`;
     json|error result = quickbooksClient->queryEntity(quickbooksConfig.realmId, query);
     if result is error {
-        log:printWarn("Duplicate check failed, assuming not duplicate: " + result.message());
-        return false;
+        log:printError("Duplicate check query failed for order " + orderNum + ": " + result.message(), 'error = result);
+        return result;
     }
     json|error queryResponse = result.QueryResponse;
     if queryResponse is error || queryResponse is () {
@@ -75,8 +82,9 @@ function getOrCreateQBCustomer(shopify:Customer? customer, shopify:CustomerAddre
         return "DEFAULT_CUSTOMER";
     }
 
-    // Query QB for existing customer by email
-    string query = string `SELECT Id FROM Customer WHERE PrimaryEmailAddr = '${email}'`;
+    // Query QB for existing customer by email (escape single quotes to prevent query injection)
+    string sanitizedEmail = re `'`.replaceAll(email, "''");
+    string query = string `SELECT Id FROM Customer WHERE PrimaryEmailAddr = '${sanitizedEmail}'`;
     json|error queryResult = quickbooksClient->queryEntity(quickbooksConfig.realmId, query);
     if queryResult is json {
         json|error qr = queryResult.QueryResponse;
@@ -140,8 +148,9 @@ function lookupQBItemId(string? sku) returns string|error {
     if productMap.hasKey(sku) {
         return productMap.get(sku);
     }
-    // Fallback: query QB by Name (Sku field is not queryable for all item types)
-    string query = string `SELECT Id FROM Item WHERE Name = '${sku}'`;
+    // Fallback: query QB by Name (Sku field is not queryable for all item types; escape single quotes)
+    string sanitizedSku = re `'`.replaceAll(sku, "''");
+    string query = string `SELECT Id FROM Item WHERE Name = '${sanitizedSku}'`;
     json|error queryResult = quickbooksClient->queryEntity(quickbooksConfig.realmId, query);
     if queryResult is json {
         json|error qr = queryResult.QueryResponse;
