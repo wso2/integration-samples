@@ -1,9 +1,7 @@
 ## What It Does
 
-- Listens to Salesforce Opportunity change events using Change Data Capture
-- Validates opportunities meet business criteria (stage = "Closed Won", minimum deal value)
-- Retrieves the appropriate contact based on configured signer role
-- Selects the correct DocuSign template based on opportunity type
+- Listens to Salesforce Opportunity change events and validates business criteria (Closed Won stage, minimum deal value)
+- Retrieves contact details and selects the appropriate DocuSign template based on opportunity type
 - Creates and sends DocuSign envelope with pre-filled fields from Salesforce
 - Updates Salesforce opportunity stage to "Contract Sent"
 
