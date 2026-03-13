@@ -1,0 +1,91 @@
+# +required The configuration file schema version
+schemaVersion: 1.2
+
+# +optional Display name of the component
+displayName: Salesforce to Stripe Customer Sync
+
+# +optional Description of the component
+description: Listens for Salesforce Account and Contact changes and syncs them to Stripe
+
+# +optional Configuration schema for the component
+configSchema:
+  type: object
+  properties:
+    salesforceBaseUrl:
+      type: string
+      description: Salesforce Instance URL (e.g., https://your-org.my.salesforce.com)
+    salesforceClientId:
+      type: string
+      description: Salesforce OAuth2 Client ID
+    salesforceClientSecret:
+      type: string
+      description: Salesforce OAuth2 Client Secret
+      secret: true
+    salesforceRefreshToken:
+      type: string
+      description: Salesforce OAuth2 Refresh Token
+      secret: true
+    salesforceRefreshUrl:
+      type: string
+      description: Salesforce OAuth2 Token Endpoint
+      default: "https://login.salesforce.com/services/oauth2/token"
+    stripeApiKey:
+      type: string
+      description: Stripe Secret API Key
+      secret: true
+    syncDirection:
+      type: string
+      enum:
+        - SF_TO_STRIPE
+        - STRIPE_TO_SF
+        - BIDIRECTIONAL
+      description: Direction of synchronization
+      default: "SF_TO_STRIPE"
+    sourceObject:
+      type: string
+      enum:
+        - ACCOUNT
+        - CONTACT
+        - BOTH
+      description: Salesforce objects to sync
+      default: "BOTH"
+    matchKey:
+      type: string
+      enum:
+        - EMAIL
+        - EXTERNAL_ID
+      description: Key used to match customers between systems
+      default: "EMAIL"
+    writeBackStripeId:
+      type: boolean
+      description: Write Stripe customer ID back to Salesforce
+      default: true
+    deleteStripeCustomerOnSalesforceDelete:
+      type: boolean
+      description: Delete Stripe customer when Salesforce record is deleted
+      default: true
+    salesforceExternalIdField:
+      type: string
+      description: Salesforce external ID field name (if using EXTERNAL_ID match key)
+      default: "External_Id__c"
+    stripeExternalIdMetadataKey:
+      type: string
+      description: Stripe metadata key for external ID
+      default: "external_id"
+    recordTypeFilter:
+      type: array
+      items:
+        type: string
+      description: Filter by Salesforce record type IDs (optional)
+    accountStatusFilter:
+      type: array
+      items:
+        type: string
+      description: Filter by Account status values (optional)
+  required:
+    - salesforceBaseUrl
+    - salesforceClientId
+    - salesforceClientSecret
+    - salesforceRefreshToken
+    - stripeApiKey
+
