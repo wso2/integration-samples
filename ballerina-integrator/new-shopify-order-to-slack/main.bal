@@ -21,13 +21,16 @@ service shopify:OrdersService on shopifyListener {
         // Build the Slack message using the custom template
         string slackMessage = buildSlackMessage(orderDetails, customMessage);
 
-        // Post the message to Slack
+        // Post the message to Slack with deduplication via client_msg_id
         _ = check slackClient->/chat\.postMessage.post(
             payload = {
                 channel: slackChannelId,
-                text: slackMessage
+                text: slackMessage,
+                "client_msg_id": orderDetails.orderNumber
             }
         );
+
+        log:printInfo(string `Successfully posted order ${orderDetails.orderNumber} to Slack`);
     }
 
     remote function onOrdersCancelled(shopify:OrderEvent event) returns error? {

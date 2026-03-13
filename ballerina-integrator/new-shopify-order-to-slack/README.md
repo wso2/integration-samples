@@ -24,10 +24,13 @@ Before running this integration, you need:
 1. Log in to your Slack workspace and go to the [Slack API Developer Portal](https://api.slack.com/apps).
 2. Click **Create New App** and choose **From scratch**.
 3. Navigate to **OAuth & Permissions** in the left sidebar.
-4. Scroll down to the **User Token Scopes** section, click **Add an OAuth Scope**, and select `chat:write`.
-5. Scroll up, click **Install to Workspace** (authorize it if prompted), and copy the **User OAuth Token** (it starts with `xoxp-`).
-6. Open your Slack application and ensure that your personal user account is a member of your target channel.
-7. Click the channel name at the top to open the details menu, scroll to the bottom of the **About** tab, and copy the **Channel ID** (it usually starts with `C` or `G`).
+4. Scroll down to the **Bot Token Scopes** section, click **Add an OAuth Scope**, and select `chat:write`.
+5. If you plan to post to public channels without adding the bot as a member, also add the `chat:write.public` scope.
+6. Scroll up and click **Install to Workspace** (authorize it if prompted).
+7. Copy the **Bot User OAuth Token** (it starts with `xoxb-`).
+8. Open your Slack application and navigate to the target channel where you want to post notifications.
+9. Click the channel name at the top to open the details menu, go to the **Integrations** tab, and click **Add an App** to add your bot to the channel (required for private channels and recommended for public channels if you didn't add `chat:write.public` scope).
+10. In the channel details, scroll to the bottom of the **About** tab and copy the **Channel ID** (it usually starts with `C` or `G`).
 
 ## Configuration
 
@@ -37,9 +40,12 @@ The following configurations are required for the integration:
 - `shopifyApiSecretKey`: The API secret key obtained from the Shopify webhooks setup.
 
 ### Slack Configuration
-- `slackToken`: The User OAuth Token obtained from the Slack app setup.
+- `slackToken`: The Bot User OAuth Token obtained from the Slack app setup.
 - `slackChannelId`: The unique ID of the Slack channel where the notification will be sent.
-- `customMessage`: The text template for the Slack message. (Use `<br>` to indicate line breaks if required by the editor).
+
+### Optional Configuration
+- `customMessage`: (Optional) The text template for the Slack message with placeholders for order details. A default template is provided in `config.bal`. Use `<br>` to indicate line breaks if customizing the message. Available placeholders: `{orderId}`, `{customerName}`, `{customerEmail}`, `{currency}`, `{totalPrice}`, `{itemCount}`, `{items}`, `{shippingAddress}`, `{financialStatus}`, `{fulfillmentStatus}`, `{createdAt}`, `{subtotal}`, `{taxes}`, `{shipping}`.
+- `minimumOrderPrice`: (Optional) Minimum order price threshold in decimal format. Only orders with a total price greater than or equal to this value will trigger Slack notifications. Default is `0.0` (all orders are notified).
 
 ## Deploying on **Devant**
 

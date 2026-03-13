@@ -12,10 +12,6 @@
               "type": "string",
               "description": ""
             },
-            "shopifyPort": {
-              "type": "integer",
-              "description": ""
-            },
             "slackToken": {
               "type": "string",
               "description": ""
@@ -26,6 +22,10 @@
             },
             "customMessage": {
               "type": "string",
+              "description": ""
+            },
+            "minimumOrderPrice": {
+              "type": "integer",
               "description": ""
             }
           },

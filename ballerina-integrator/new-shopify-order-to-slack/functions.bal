@@ -84,6 +84,15 @@ function buildShippingAddress(shopify:OrderEvent event) returns string {
     }
 }
 
+// Escapes HTML special characters to prevent Slack mrkdwn interpretation
+function escapeHtml(string input) returns string {
+    string escaped = input;
+    escaped = re `&`.replaceAll(escaped, "&amp;");
+    escaped = re `<`.replaceAll(escaped, "&lt;");
+    escaped = re `>`.replaceAll(escaped, "&gt;");
+    return escaped;
+}
+
 // Builds the Slack message by replacing placeholders with actual values
 function buildSlackMessage(OrderDetails details, string template) returns string {
     string slackMessage = template;
@@ -91,21 +100,36 @@ function buildSlackMessage(OrderDetails details, string template) returns string
     // Replace HTML line breaks with newlines
     slackMessage = re `<br>`.replaceAll(slackMessage, "\n");
     
-    // Replace all placeholders
-    slackMessage = re `\{orderId\}`.replaceAll(slackMessage, details.orderNumber);
-    slackMessage = re `\{customerName\}`.replaceAll(slackMessage, details.customerFullName);
-    slackMessage = re `\{customerEmail\}`.replaceAll(slackMessage, details.customerEmail);
-    slackMessage = re `\{currency\}`.replaceAll(slackMessage, details.orderCurrency);
-    slackMessage = re `\{totalPrice\}`.replaceAll(slackMessage, details.orderTotalPrice);
+    // Escape HTML special characters in user-provided fields
+    string escapedCustomerName = escapeHtml(details.customerFullName);
+    string escapedCustomerEmail = escapeHtml(details.customerEmail);
+    string escapedItemsDetails = escapeHtml(details.itemsDetails);
+    string escapedShippingAddress = escapeHtml(details.shippingAddress);
+    string escapedOrderNumber = escapeHtml(details.orderNumber);
+    string escapedCurrency = escapeHtml(details.orderCurrency);
+    string escapedTotalPrice = escapeHtml(details.orderTotalPrice);
+    string escapedSubtotal = escapeHtml(details.orderSubtotal);
+    string escapedTaxes = escapeHtml(details.orderTaxes);
+    string escapedShipping = escapeHtml(details.orderShipping);
+    string escapedFinancialStatus = escapeHtml(details.financialStatus);
+    string escapedFulfillmentStatus = escapeHtml(details.fulfillmentStatus);
+    string escapedCreatedAt = escapeHtml(details.createdAt);
+    
+    // Replace all placeholders with escaped values
+    slackMessage = re `\{orderId\}`.replaceAll(slackMessage, escapedOrderNumber);
+    slackMessage = re `\{customerName\}`.replaceAll(slackMessage, escapedCustomerName);
+    slackMessage = re `\{customerEmail\}`.replaceAll(slackMessage, escapedCustomerEmail);
+    slackMessage = re `\{currency\}`.replaceAll(slackMessage, escapedCurrency);
+    slackMessage = re `\{totalPrice\}`.replaceAll(slackMessage, escapedTotalPrice);
     slackMessage = re `\{itemCount\}`.replaceAll(slackMessage, details.itemCount.toString());
-    slackMessage = re `\{items\}`.replaceAll(slackMessage, details.itemsDetails);
-    slackMessage = re `\{subtotal\}`.replaceAll(slackMessage, details.orderSubtotal);
-    slackMessage = re `\{taxes\}`.replaceAll(slackMessage, details.orderTaxes);
-    slackMessage = re `\{shipping\}`.replaceAll(slackMessage, details.orderShipping);
-    slackMessage = re `\{shippingAddress\}`.replaceAll(slackMessage, details.shippingAddress);
-    slackMessage = re `\{financialStatus\}`.replaceAll(slackMessage, details.financialStatus);
-    slackMessage = re `\{fulfillmentStatus\}`.replaceAll(slackMessage, details.fulfillmentStatus);
-    slackMessage = re `\{createdAt\}`.replaceAll(slackMessage, details.createdAt);
+    slackMessage = re `\{items\}`.replaceAll(slackMessage, escapedItemsDetails);
+    slackMessage = re `\{subtotal\}`.replaceAll(slackMessage, escapedSubtotal);
+    slackMessage = re `\{taxes\}`.replaceAll(slackMessage, escapedTaxes);
+    slackMessage = re `\{shipping\}`.replaceAll(slackMessage, escapedShipping);
+    slackMessage = re `\{shippingAddress\}`.replaceAll(slackMessage, escapedShippingAddress);
+    slackMessage = re `\{financialStatus\}`.replaceAll(slackMessage, escapedFinancialStatus);
+    slackMessage = re `\{fulfillmentStatus\}`.replaceAll(slackMessage, escapedFulfillmentStatus);
+    slackMessage = re `\{createdAt\}`.replaceAll(slackMessage, escapedCreatedAt);
     
     return slackMessage;
 }
