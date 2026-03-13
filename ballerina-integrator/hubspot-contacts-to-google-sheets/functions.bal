@@ -1,6 +1,10 @@
 import ballerina/io;
+import ballerina/lang.runtime;
 import ballerinax/hubspot.crm.obj.contacts as hubspotcontacts;
 import ballerinax/googleapis.sheets;
+
+const int MAX_WRITE_RETRY_ATTEMPTS = 3;
+const decimal INITIAL_WRITE_BACKOFF_SECONDS = 2d;
 
 // Validate external API access with current configuration.
 function validateExternalConnections() returns error? {
@@ -118,15 +122,16 @@ function fetchHubSpotContacts(string lastSyncTime) returns Contact[]|error {
 
             record {|string?...;|} props = hubspotContact.properties;
 
+            // Copy ALL fetched properties into an open ContactProperties record
+            // so that custom fields configured in `fields` are never dropped.
+            ContactProperties copiedProps = {};
+            foreach var [k, v] in props.entries() {
+                copiedProps[k] = v;
+            }
+
             Contact contact = {
                 id: hubspotContact.id,
-                properties: {
-                    email: getPropertyValue(props,"email"),
-                    firstname: getPropertyValue(props,"firstname"),
-                    lastname: getPropertyValue(props,"lastname"),
-                    phone: getPropertyValue(props,"phone"),
-                    lifecyclestage: getPropertyValue(props,"lifecyclestage")
-                },
+                properties: copiedProps,
                 createdAt: hubspotContact.createdAt,
                 updatedAt: hubspotContact.updatedAt,
                 archived: hubspotContact.archived ?: false
@@ -175,29 +180,10 @@ function getPropertyValue(record {|string?...;|} properties, string key) returns
     return <string?>properties.get(key) ?: "";
 }
 
-// Contact property getter
+// Contact property getter — generic lookup so custom fields are supported.
 function getContactPropertyValue(ContactProperties properties, string key) returns string {
-
-    match key {
-        "email" => {
-            return properties.email ?: "";
-        }
-        "firstname" => {
-            return properties.firstname ?: "";
-        }
-        "lastname" => {
-            return properties.lastname ?: "";
-        }
-        "phone" => {
-            return properties.phone ?: "";
-        }
-        "lifecyclestage" => {
-            return properties.lifecyclestage ?: "";
-        }
-        _ => {
-            return "";
-        }
-    }
+    string? value = properties[key];
+    return value ?: "";
 }
 
 // Fetch contacts page
@@ -220,6 +206,18 @@ function getHubSpotRequestProperties() returns string[] {
         requestProperties.push(fieldName);
     }
 
+    // `email` must always be fetched — it is the UPSERT key.
+    boolean hasEmail = false;
+    foreach string fieldName in requestProperties {
+        if fieldName == "email" {
+            hasEmail = true;
+            break;
+        }
+    }
+    if !hasEmail {
+        requestProperties.push("email");
+    }
+
     string filterProperty = contactFilterProperty.trim();
     if filterProperty != "" {
         boolean alreadyIncluded = false;
@@ -235,6 +233,7 @@ function getHubSpotRequestProperties() returns string[] {
         }
     }
 
+    // `lifecyclestage` must always be fetched — it drives sheet routing.
     boolean hasLifecycleStage = false;
     foreach string fieldName in requestProperties {
         if fieldName == "lifecyclestage" {
@@ -250,20 +249,17 @@ function getHubSpotRequestProperties() returns string[] {
     return requestProperties;
 }
 
-// Build email → row map
+// Build email → row map.
+// Propagates read errors so the caller cannot silently treat a failed
+// sheet read as an empty sheet (which would cause duplicate inserts).
 function buildEmailRowMap(string targetSheet) returns map<int>|error {
 
     map<int> emailRowMap = {};
 
-    sheets:Range|error result =
-        sheetsClient->getRange(spreadsheetId, targetSheet, "A:A");
-
-    if result is error {
-        io:println(string `---- No existing rows in '${targetSheet}'`);
-        return emailRowMap;
-    }
-
-    sheets:Range rangeData = result;
+    // Propagate the error — do NOT swallow it and return an empty map.
+    // Returning {} on a read failure would make every upsert look like an
+    // insert, silently creating duplicate rows.
+    sheets:Range rangeData = check sheetsClient->getRange(spreadsheetId, targetSheet, "A:A");
 
     int rowIndex = 1;
 
@@ -301,6 +297,55 @@ function updateSheetRow(string targetSheet, int rowNumber, (string|int|decimal)[
     };
 
     check sheetsClient->setRange(spreadsheetId, targetSheet, updateRange);
+}
+
+function isSheetsRateLimitError(error err) returns boolean {
+    string errorText = err.toString();
+    return errorText.includes("\"code\":429")
+        || errorText.includes("RATE_LIMIT_EXCEEDED")
+        || errorText.includes("RESOURCE_EXHAUSTED");
+}
+
+function appendSheetRowWithRetry(string targetSheet, (string|int|decimal)[] rowData, string contactId) returns error? {
+    int attempt = 0;
+    decimal backoff = INITIAL_WRITE_BACKOFF_SECONDS;
+
+    while true {
+        error? appendResult = sheetsClient->appendRowToSheet(spreadsheetId, targetSheet, rowData);
+        if appendResult is () {
+            return;
+        }
+
+        if !isSheetsRateLimitError(appendResult) || attempt >= MAX_WRITE_RETRY_ATTEMPTS {
+            return appendResult;
+        }
+
+        attempt += 1;
+        io:println(string `---- Rate limit hit while inserting contact ${contactId} in '${targetSheet}'. Retrying in ${backoff}s (attempt ${attempt}/${MAX_WRITE_RETRY_ATTEMPTS})`);
+        runtime:sleep(backoff);
+        backoff *= 2d;
+    }
+}
+
+function updateSheetRowWithRetry(string targetSheet, int rowNumber, (string|int|decimal)[] rowData, string contactId) returns error? {
+    int attempt = 0;
+    decimal backoff = INITIAL_WRITE_BACKOFF_SECONDS;
+
+    while true {
+        error? updateResult = updateSheetRow(targetSheet, rowNumber, rowData);
+        if updateResult is () {
+            return;
+        }
+
+        if !isSheetsRateLimitError(updateResult) || attempt >= MAX_WRITE_RETRY_ATTEMPTS {
+            return updateResult;
+        }
+
+        attempt += 1;
+        io:println(string `---- Rate limit hit while updating contact ${contactId} in '${targetSheet}'. Retrying in ${backoff}s (attempt ${attempt}/${MAX_WRITE_RETRY_ATTEMPTS})`);
+        runtime:sleep(backoff);
+        backoff *= 2d;
+    }
 }
 
 function getTargetSheetName(Contact contact) returns string {
@@ -366,11 +411,17 @@ function exportContactsToSheet(Contact[] contacts, string lastSyncTimestamp, boo
     string mode = syncMode.trim().toLowerAscii();
     io:println(string `---- Preparing sheet export (mode: ${mode})`);
 
-    // For replace mode: clear all target sheets before writing
+    // For replace mode: clear ALL possible target sheets upfront — even if the
+    // current contact batch is empty.  Clearing only sheets found in `contacts`
+    // would leave stale data when the source has no new/updated records.
     if mode == "replace" {
+        string[] allTargetSheets = [
+            subscriberSheetName, leadSheetName, marketingqualifiedleadSheetName,
+            salesqualifiedleadSheetName, opportunitySheetName, customerSheetName,
+            evangelistSheetName, otherSheetName, defaultSheetName
+        ];
         map<boolean> clearedSheets = {};
-        foreach Contact contact in contacts {
-            string targetSheet = getTargetSheetName(contact);
+        foreach string targetSheet in allTargetSheets {
             if !clearedSheets.hasKey(targetSheet) {
                 check ensureHeaderRow(targetSheet);
                 check clearSheetData(targetSheet);
@@ -425,9 +476,9 @@ function exportContactsToSheet(Contact[] contacts, string lastSyncTimestamp, boo
         if mode == "append" || mode == "replace" {
             // append and replace both just insert a new row
             check ensureHeaderRow(targetSheet);
-            error? result = sheetsClient->appendRowToSheet(spreadsheetId, targetSheet, rowData);
+            error? result = appendSheetRowWithRetry(targetSheet, rowData, contact.id);
             if result is error {
-                io:println(string `---- Insert failed for contact ${contact.id} in '${targetSheet}'`);
+                io:println(string `---- Insert failed for contact ${contact.id} in '${targetSheet}': ${result.message()}`);
                 errorCount += 1;
             } else {
                 insertCount += 1;
@@ -447,18 +498,18 @@ function exportContactsToSheet(Contact[] contacts, string lastSyncTimestamp, boo
 
             int? existingRow = emailRowMap[email];
             if existingRow is int {
-                error? result = updateSheetRow(targetSheet, existingRow, rowData);
+                error? result = updateSheetRowWithRetry(targetSheet, existingRow, rowData, contact.id);
                 if result is error {
-                    io:println(string `---- Update failed for contact ${contact.id} in '${targetSheet}'`);
+                    io:println(string `---- Update failed for contact ${contact.id} in '${targetSheet}': ${result.message()}`);
                     errorCount += 1;
                 } else {
                     updateCount += 1;
                     writeSucceeded = true;
                 }
             } else {
-                error? result = sheetsClient->appendRowToSheet(spreadsheetId, targetSheet, rowData);
+                error? result = appendSheetRowWithRetry(targetSheet, rowData, contact.id);
                 if result is error {
-                    io:println(string `---- Insert failed for contact ${contact.id} in '${targetSheet}'`);
+                    io:println(string `---- Insert failed for contact ${contact.id} in '${targetSheet}': ${result.message()}`);
                     errorCount += 1;
                 } else {
                     insertCount += 1;

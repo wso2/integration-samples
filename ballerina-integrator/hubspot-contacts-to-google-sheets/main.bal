@@ -31,16 +31,22 @@ public function main() returns error? {
             Contact[] contacts = check fetchHubSpotContacts(effectiveSyncTime);
             string latestTimestamp = lastSyncTime;
             
-            if contacts.length() == 0 {
+            if contacts.length() == 0 && !isFullSync {
+                // Incremental run with no changed contacts — nothing to export.
                 io:println("---- No new or updated contacts found");
-
-                if isFullSync {
-                    latestTimestamp = getCurrentTimestamp();
-                }
             } else {
-                // Step 2: Export contacts to Google Sheet and get latest timestamp
+                // Step 2: Export contacts to Google Sheet and get latest timestamp.
+                // Always called in replace/full-sync mode so sheet-clearing runs
+                // even when the source returns zero contacts.
                 io:println("---- Exporting contacts to Google Sheets");
                 latestTimestamp = check exportContactsToSheet(contacts, effectiveSyncTime, isFullSync);
+
+                if contacts.length() == 0 {
+                    io:println("---- No contacts found");
+                    if isFullSync {
+                        latestTimestamp = getCurrentTimestamp();
+                    }
+                }
             }
 
             // Step 3: Save the latest timestamp for next run after processing finishes.

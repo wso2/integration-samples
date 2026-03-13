@@ -1,11 +1,10 @@
 // HubSpot Contact Properties
-type ContactProperties record {
-    string email?;
-    string firstname?;
-    string lastname?;
-    string phone?;
-    string lifecyclestage?;
-};
+// Fields requested from HubSpot are configurable (see config.bal `fields`).
+// We store all fetched properties in an open record so that custom / extra
+// fields are never silently discarded.
+type ContactProperties record {|
+    string?...;
+|};
 
 // HubSpot Contact
 type Contact record {

@@ -1,6 +1,5 @@
 ```mermaid
 flowchart TD
-
 A([Start]):::startNode
 B[Load Last Sync Timestamp]:::processNode
 C[Fetch HubSpot Contacts]:::processNode
