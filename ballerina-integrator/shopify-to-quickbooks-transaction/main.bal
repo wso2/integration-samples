@@ -61,13 +61,19 @@ function processOrder(shopify:OrderEvent event) returns error? {
 
         // 2. Minimum amount validation
         string? totalStr = event?.total_price;
-        if totalStr is string {
+        if totalStr is () {
+            if validationRules.minimumOrderAmount > 0d {
+                log:printWarn(string `[Skip] Order #${orderNum}: total_price is null and minimumOrderAmount is ${validationRules.minimumOrderAmount}; rejecting order.`);
+                return;
+            }
+        } else {
             decimal total = check decimal:fromString(totalStr);
             if total < validationRules.minimumOrderAmount {
                 log:printInfo(string `[Skip] Order #${orderNum}: total ${total} below minimum ${validationRules.minimumOrderAmount}`);
                 return;
             }
         }
+
 
         // 3. Required fields validation
         shopify:OrderLineItem[]? lineItems = event?.line_items;

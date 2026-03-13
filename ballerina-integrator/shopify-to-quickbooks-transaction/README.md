@@ -52,10 +52,12 @@ The following configurations are required to connect to Shopify and QuickBooks.
 - `clientSecret` - Your QuickBooks OAuth2 client secret
 - `refreshToken` - Your QuickBooks OAuth2 refresh token
 - `companyId` - Your QuickBooks Company ID (Realm ID)
+- `serviceUrl` - QuickBooks API base URL (required, no default). Use `https://sandbox-quickbooks.api.intuit.com` for sandbox or `https://quickbooks.api.intuit.com` for production
+
 
 ### Additional Settings
 
-- `transactionType` - Type of QB transaction to create (SALES_RECEIPT, INVOICE, PAYMENT)
+- `transactionType` - Type of QB transaction to create (`SALES_RECEIPT` or `INVOICE`)
 - `orderStatusTrigger` - Order status to sync on (FULFILLED, PAID, COMPLETED)
 - `createCustomerIfNotFound` - Auto-create QB customers if not found
 - Account configurations (Product Sales Account ID, Shipping Account ID, Discount Account ID)

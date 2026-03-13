@@ -9,7 +9,7 @@ configurable record {
     string clientSecret;
     string refreshToken;
     string realmId;
-    string serviceUrl = "https://sandbox-quickbooks.api.intuit.com";
+    string serviceUrl;
 } quickbooksConfig = ?;
 
 // Transaction type: SALES_RECEIPT or INVOICE

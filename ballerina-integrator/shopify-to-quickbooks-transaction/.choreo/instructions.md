@@ -11,7 +11,7 @@
 
 1. A Shopify account with administrative access
 2. API Webhook Credentials:
-  - Navgiate to **Settings > Notifications > Webhooks** in Shopify
+  - Navigate to **Settings > Notifications > Webhooks** in Shopify
   - Create a webhook for `orders/fulfilled` or `orders/paid` in JSON format.
   - Locate the signing secret at the bottom of the page ("Your webhooks will be signed with...")
   - Copy this secret.

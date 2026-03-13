@@ -31,8 +31,12 @@ function shouldProcessOrder(shopify:OrderEvent event) returns boolean {
             return (event?.fulfillment_status ?: "") == "fulfilled"
                 && (event?.financial_status ?: "") == "paid";
         }
+        _ => {
+            log:printWarn(string `[Config] Unrecognized orderStatusTrigger value: "${orderStatusTrigger}". ` +
+                "Expected one of: FULFILLED, PAID, COMPLETED. Order will not be processed.");
+            return false;
+        }
     }
-    return false;
 }
 
 // --- Duplicate check: query QB for an existing Invoice with this order number in PrivateNote ---
