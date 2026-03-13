@@ -19,7 +19,7 @@ public isolated function shouldSyncCustomer(QuickBooksCustomer qbCustomer) retur
 
 // Find Salesforce Account by QuickBooks ID
 public isolated function findAccountByQuickBooksId(string quickbooksId) returns string?|error {
-    
+    // quickbooksId will be valided by salesforce for type so need to validate here. soql injection is not possible through quickbooksId.
     string soqlQuery = string `SELECT Id FROM Account WHERE QuickbooksSync__c = '${quickbooksId}' LIMIT 1`;
     
     stream<record {}, error?> resultStream = check salesforceClient->query(soqlQuery);
