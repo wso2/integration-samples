@@ -47,30 +47,30 @@ This integration uses the official `ballerinax/docusign.dsesign` connector with 
 
 ## Configuration
 
-The following configurations are required to connect to Salesforce and Docusign.
+Configurations are organized by vendor-specific records for better structure and maintainability.
 
-### Salesforce Credentials
+### Salesforce Configuration (`salesforceConfig`)
 
-- `salesforceUsername` - Your Salesforce username for listener authentication
-- `salesforcePassword` - Your Salesforce password with security token appended
-- `salesforceClientId` - Your Salesforce OAuth2 client ID
-- `salesforceClientSecret` - Your Salesforce OAuth2 client secret
-- `salesforceRefreshToken` - Your Salesforce OAuth2 refresh token
-- `salesforceRefreshUrl` - Salesforce OAuth2 token endpoint (e.g., `https://login.salesforce.com/services/oauth2/token`)
-- `salesforceBaseUrl` - Your Salesforce instance URL (e.g., `https://login.salesforce.com`)
+- `username` - Your Salesforce username for listener authentication
+- `password` - Your Salesforce password with security token appended
+- `clientId` - Your Salesforce OAuth2 client ID
+- `clientSecret` - Your Salesforce OAuth2 client secret
+- `refreshToken` - Your Salesforce OAuth2 refresh token
+- `refreshUrl` - Salesforce OAuth2 token endpoint (default: `https://login.salesforce.com/services/oauth2/token`)
+- `baseUrl` - Your Salesforce instance URL (default: `https://login.salesforce.com`)
 
 **Note**: The integration listens to the `/data/ChangeEvents` channel which captures all object changes. To listen to only Opportunity changes, modify the service path in `main.bal` to `/data/OpportunityChangeEvent`.
 
-### Docusign Credentials
+### Docusign Configuration (`docusignConfig`)
 
-- `docusignAccountId` - Your Docusign account ID
-- `docusignClientId` - Your Docusign OAuth2 client ID (Integration Key)
-- `docusignClientSecret` - Your Docusign OAuth2 client secret
-- `docusignRefreshToken` - Your Docusign OAuth2 refresh token
-- `docusignRefreshUrl` - Docusign OAuth2 token endpoint (e.g., `https://account-d.docusign.com/oauth/token` for demo, `https://account.docusign.com/oauth/token` for production)
-- `docusignBaseUrl` - Docusign API base URL (e.g., `https://demo.docusign.net/restapi` for demo, `https://na1.docusign.net/restapi` for production)
+- `accountId` - Your Docusign account ID
+- `clientId` - Your Docusign OAuth2 client ID (Integration Key)
+- `clientSecret` - Your Docusign OAuth2 client secret
+- `refreshToken` - Your Docusign OAuth2 refresh token
+- `refreshUrl` - Docusign OAuth2 token endpoint (default: `https://account-d.docusign.com/oauth/token` for demo, `https://account.docusign.com/oauth/token` for production)
+- `baseUrl` - Docusign API base URL (default: `https://demo.docusign.net/restapi` for demo, `https://na1.docusign.net/restapi` for production)
 
-### Template Configuration
+### Template Configuration (`templateSettings`)
 
 - `defaultTemplateId` - Default Docusign template ID to use
 - `templateConfigs` - Array of template configurations for different product/deal types
@@ -79,7 +79,7 @@ The following configurations are required to connect to Salesforce and Docusign.
   - `dealType` - Deal type to match (optional)
   - `expirationDays` - Days until expiration reminder (optional)
 
-### Business Rules
+### Business Rules Configuration (`businessRulesConfig`)
 
 - `minimumDealValue` - Minimum opportunity amount to trigger contract (default: 0.0)
 - `signerRole` - Contact role to use as signer (options: "Primary Contact", "Billing Contact", "Decision Maker", "Executive Sponsor")

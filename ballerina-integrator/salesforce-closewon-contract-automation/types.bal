@@ -82,3 +82,40 @@ public type FieldMapping record {
     string opportunityField;
     string docusignField;
 };
+
+// Salesforce Configuration Record
+public type SalesforceConfig record {
+    string username;
+    string password;
+    string clientId;
+    string clientSecret;
+    string refreshToken;
+    string refreshUrl;
+    string baseUrl;
+};
+
+// Docusign Configuration Record
+public type DocusignConfig record {
+    string accountId;
+    string clientId;
+    string clientSecret;
+    string refreshToken;
+    string refreshUrl;
+    string baseUrl;
+};
+
+// Template Configuration Record
+public type TemplateSettings record {
+    string defaultTemplateId;
+    TemplateConfig[] templateConfigs;
+};
+
+// Business Rules Configuration Record
+public type BusinessRulesConfig record {
+    decimal minimumDealValue;
+    SignerRole signerRole;
+    CcRecipient[] ccRecipients;
+    FieldMapping[] fieldMappings;
+    string contractSentStage;
+    int expirationReminderDays;
+};

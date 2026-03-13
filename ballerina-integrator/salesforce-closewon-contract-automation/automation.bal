@@ -20,7 +20,7 @@ function createAndSendEnvelope(Opportunity opportunity, Contact signer, Template
     // Build CC recipients if configured
     CarbonCopy[] carbonCopies = [];
     int ccRoutingOrder = 2;
-    foreach CcRecipient ccRecipient in ccRecipients {
+    foreach CcRecipient ccRecipient in businessRulesConfig.ccRecipients {
         CarbonCopy ccCopy = {
             email: ccRecipient.email,
             name: ccRecipient.name,
@@ -102,7 +102,7 @@ function createAndSendEnvelope(Opportunity opportunity, Contact signer, Template
     envelopeDefinition.templateRoles = templateRoles;
     
     // Create envelope using Docusign client
-    dsesign:EnvelopeSummary|error envelopeSummaryResult = docusignClient->/accounts/[docusignAccountId]/envelopes.post(envelopeDefinition);
+    dsesign:EnvelopeSummary|error envelopeSummaryResult = docusignClient->/accounts/[docusignConfig.accountId]/envelopes.post(envelopeDefinition);
     
     if envelopeSummaryResult is error {
         log:printError(string `Failed to create Docusign envelope: ${envelopeSummaryResult.message()}`);
@@ -133,7 +133,7 @@ function createAndSendEnvelope(Opportunity opportunity, Contact signer, Template
 function buildTemplateFields(Opportunity opportunity) returns record {string name; string value;}[]|error {
     record {string name; string value;}[] fields = [];
     
-    foreach FieldMapping mapping in fieldMappings {
+    foreach FieldMapping mapping in businessRulesConfig.fieldMappings {
         string opportunityField = mapping.opportunityField;
         string docusignField = mapping.docusignField;
         
@@ -173,7 +173,7 @@ function buildSignerName(Contact contact) returns string {
 // Build Docusign envelope URL for reference
 function buildEnvelopeUrl(string envelopeId) returns string {
     // Extract base URL without /restapi suffix
-    string baseUrl = docusignBaseUrl;
+    string baseUrl = docusignConfig.baseUrl;
     if baseUrl.endsWith("/restapi") {
         baseUrl = baseUrl.substring(0, baseUrl.length() - 8);
     }
@@ -220,7 +220,7 @@ public function processOpportunityForContract(string opportunityId) returns erro
     log:printInfo(string `Docusign envelope ${envelopeId} sent for opportunity ${opportunityId}`);
     
     // Update opportunity stage to "Contract Sent" with envelope ID
-    check updateOpportunityStage(opportunityId, contractSentStage, envelopeId);
+    check updateOpportunityStage(opportunityId, businessRulesConfig.contractSentStage, envelopeId);
     
     log:printInfo(string `Successfully processed opportunity ${opportunityId}`);
 }
@@ -228,8 +228,8 @@ public function processOpportunityForContract(string opportunityId) returns erro
 // Check if envelope has already been sent for this opportunity (idempotency check)
 function hasEnvelopeAlreadySent(string opportunityId, Opportunity opportunity) returns boolean|error {
     // Check if opportunity stage is already "Contract Sent" or beyond
-    if opportunity.StageName == contractSentStage {
-        log:printInfo(string `Opportunity ${opportunityId} is already in stage ${contractSentStage}`);
+    if opportunity.StageName == businessRulesConfig.contractSentStage {
+        log:printInfo(string `Opportunity ${opportunityId} is already in stage ${businessRulesConfig.contractSentStage}`);
         return true;
     }
     
@@ -247,7 +247,7 @@ function hasEnvelopeAlreadySent(string opportunityId, Opportunity opportunity) r
 
 // Get envelope status from Docusign
 function getEnvelopeStatus(string envelopeId) returns string|error {
-    dsesign:Envelope|error envelopeResult = docusignClient->/accounts/[docusignAccountId]/envelopes/[envelopeId].get();
+    dsesign:Envelope|error envelopeResult = docusignClient->/accounts/[docusignConfig.accountId]/envelopes/[envelopeId].get();
     
     if envelopeResult is error {
         log:printError(string `Failed to get envelope status for ${envelopeId}: ${envelopeResult.message()}`);
@@ -267,13 +267,13 @@ function getEnvelopeStatus(string envelopeId) returns string|error {
 // Get signer contact based on configured role
 function getSignerContact(string opportunityId) returns Contact|error {
     // If configured role is PRIMARY_CONTACT, call getPrimaryContact directly
-    if signerRole == PRIMARY_CONTACT {
+    if businessRulesConfig.signerRole == PRIMARY_CONTACT {
         Contact primaryContact = check getPrimaryContact(opportunityId);
         return primaryContact;
     }
     
     // Try to get contact by configured role
-    Contact|error contactResult = getContactByRole(opportunityId, signerRole);
+    Contact|error contactResult = getContactByRole(opportunityId, businessRulesConfig.signerRole);
     
     if contactResult is Contact {
         return contactResult;
@@ -285,12 +285,12 @@ function getSignerContact(string opportunityId) returns Contact|error {
     
     // Only fallback to primary contact if it's a "not found" error
     if errorMessage.includes("No contact found with role") {
-        log:printWarn(string `Could not find contact with role ${signerRole}, falling back to primary contact`);
+        log:printWarn(string `Could not find contact with role ${businessRulesConfig.signerRole}, falling back to primary contact`);
         Contact primaryContact = check getPrimaryContact(opportunityId);
         return primaryContact;
     }
     
     // For all other errors (auth, query, deserialization), propagate immediately
-    log:printError(string `Error retrieving contact by role ${signerRole}: ${errorMessage}`);
+    log:printError(string `Error retrieving contact by role ${businessRulesConfig.signerRole}: ${errorMessage}`);
     return contactError;
 }
