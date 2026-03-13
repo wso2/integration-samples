@@ -2,43 +2,6 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "type": "object",
   "properties": {
-    "wso2": {
-      "type": "object",
-      "properties": {
-        "new_shopify_order_to_slack": {
-          "type": "object",
-          "properties": {
-            "shopifyApiSecretKey": {
-              "type": "string",
-              "description": ""
-            },
-            "slackToken": {
-              "type": "string",
-              "description": ""
-            },
-            "slackChannelId": {
-              "type": "string",
-              "description": ""
-            },
-            "customMessage": {
-              "type": "string",
-              "description": ""
-            },
-            "minimumOrderPrice": {
-              "type": "integer",
-              "description": ""
-            }
-          },
-          "additionalProperties": false,
-          "required": [
-            "shopifyApiSecretKey",
-            "slackToken",
-            "slackChannelId"
-          ]
-        }
-      },
-      "additionalProperties": false
-    },
     "ballerina": {
       "type": "object",
       "properties": {
@@ -155,6 +118,43 @@
             }
           },
           "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    },
+    "wso2": {
+      "type": "object",
+      "properties": {
+        "new_shopify_order_to_slack": {
+          "type": "object",
+          "properties": {
+            "shopifyApiSecretKey": {
+              "type": "string",
+              "description": ""
+            },
+            "slackToken": {
+              "type": "string",
+              "description": ""
+            },
+            "slackChannelId": {
+              "type": "string",
+              "description": ""
+            },
+            "customMessage": {
+              "type": "string",
+              "description": ""
+            },
+            "minimumOrderPrice": {
+              "type": "number",
+              "description": ""
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "shopifyApiSecretKey",
+            "slackToken",
+            "slackChannelId"
+          ]
         }
       },
       "additionalProperties": false
