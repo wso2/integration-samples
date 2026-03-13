@@ -12,7 +12,10 @@ final salesforce:Client salesforceClient = check new ({
 final dsesign:Client docusignClient = check new (
     config = {
         auth: {
-            token: docusignAccessToken
+            clientId: docusignClientId,
+            clientSecret: docusignClientSecret,
+            refreshToken: docusignRefreshToken,
+            refreshUrl: docusignRefreshUrl
         }
     },
     serviceUrl = docusignBaseUrl

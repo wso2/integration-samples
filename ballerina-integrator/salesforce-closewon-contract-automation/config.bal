@@ -6,7 +6,13 @@ configurable string salesforcePassword = ?;
 // DocuSign Configuration
 configurable string docusignAccountId = ?;
 
-configurable string docusignAccessToken = ?;
+configurable string docusignClientId = ?;
+
+configurable string docusignClientSecret = ?;
+
+configurable string docusignRefreshToken = ?;
+
+configurable string docusignRefreshUrl = "https://account-d.docusign.com/oauth/token";
 
 configurable string docusignBaseUrl = "https://demo.docusign.net/restapi";
 

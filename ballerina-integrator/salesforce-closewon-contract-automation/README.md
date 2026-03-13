@@ -42,12 +42,15 @@ This integration uses both username/password authentication for the listener and
 2. Contract templates created with named fields
 3. OAuth2 credentials:
    - Account ID
-   - Access Token
+   - Client ID
+   - Client Secret
+   - Refresh Token
+   - Refresh URL
 4. Scopes Required:
    - `signature`
    - `impersonation`
 
-This integration uses the official `ballerinax/docusign.dsesign` connector with access token authentication. [Learn how to get DocuSign credentials](https://developers.docusign.com/platform/auth/).
+This integration uses the official `ballerinax/docusign.dsesign` connector with OAuth2 refresh token authentication for automatic token renewal. [Learn how to get DocuSign credentials](https://developers.docusign.com/platform/auth/).
 
 ## Configuration
 
@@ -67,8 +70,11 @@ The following configurations are required to connect to Salesforce and DocuSign.
 ### DocuSign Credentials
 
 - `docusignAccountId` - Your DocuSign account ID
-- `docusignAccessToken` - Your DocuSign OAuth2 access token
-- `docusignBaseUrl` - DocuSign API base URL (e.g., `https://demo.docusign.net/restapi` for demo)
+- `docusignClientId` - Your DocuSign OAuth2 client ID (Integration Key)
+- `docusignClientSecret` - Your DocuSign OAuth2 client secret
+- `docusignRefreshToken` - Your DocuSign OAuth2 refresh token
+- `docusignRefreshUrl` - DocuSign OAuth2 token endpoint (e.g., `https://account-d.docusign.com/oauth/token` for demo, `https://account.docusign.com/oauth/token` for production)
+- `docusignBaseUrl` - DocuSign API base URL (e.g., `https://demo.docusign.net/restapi` for demo, `https://na1.docusign.net/restapi` for production)
 
 ### Template Configuration
 
@@ -126,7 +132,8 @@ bal run
    - Verify Salesforce credentials and security token
    - Check OAuth token validity and refresh token
    - Ensure Connected App permissions are correct
-   - Verify DocuSign access token is valid
+   - Verify DocuSign OAuth credentials (client ID, client secret, refresh token)
+   - Ensure DocuSign refresh URL matches your environment (demo vs production)
 
 2. **Event Not Received**:
    - Verify Change Data Capture is enabled for Opportunity object in Salesforce
