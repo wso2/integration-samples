@@ -1,13 +1,35 @@
 import ballerina/log;
+import ballerina/regex;
+
+// Validate Salesforce ID format (15 or 18 characters, alphanumeric)
+function validateSalesforceId(string id) returns error? {
+    // Salesforce IDs are either 15 or 18 characters, case-sensitive alphanumeric
+    if id.length() != 15 && id.length() != 18 {
+        return error(string `Invalid Salesforce ID length: ${id.length()}. Expected 15 or 18 characters.`);
+    }
+    
+    // Check if ID contains only alphanumeric characters
+    boolean isValid = regex:matches(id, "^[a-zA-Z0-9]+$");
+    if !isValid {
+        return error("Invalid Salesforce ID format. ID must contain only alphanumeric characters.");
+    }
+}
 
 // Get opportunity details from Salesforce
 function getOpportunity(string opportunityId) returns Opportunity|error {
+    // Validate opportunity ID before using in query
+    check validateSalesforceId(opportunityId);
+    
     Opportunity opportunity = check salesforceClient->getById("Opportunity", opportunityId, Opportunity);
     return opportunity;
 }
 
 // Get contact by role from opportunity
 function getContactByRole(string opportunityId, SignerRole role) returns Contact|error {
+    // Validate opportunity ID to prevent SOQL injection
+    check validateSalesforceId(opportunityId);
+    
+    // Role is already validated by the SignerRole enum type, so it's safe to use
     // Query for OpportunityContactRole
     string soqlQuery = string `SELECT Id, OpportunityId, ContactId, Role FROM OpportunityContactRole 
                                WHERE OpportunityId = '${opportunityId}' 
@@ -26,6 +48,9 @@ function getContactByRole(string opportunityId, SignerRole role) returns Contact
     OpportunityContactRole contactRole = roles[0];
     string contactId = contactRole.ContactId;
     
+    // Validate contact ID before using
+    check validateSalesforceId(contactId);
+    
     // Get contact details
     Contact contact = check salesforceClient->getById("Contact", contactId, Contact);
     return contact;
@@ -33,6 +58,9 @@ function getContactByRole(string opportunityId, SignerRole role) returns Contact
 
 // Get primary contact from opportunity
 function getPrimaryContact(string opportunityId) returns Contact|error {
+    // Validate opportunity ID to prevent SOQL injection
+    check validateSalesforceId(opportunityId);
+    
     // Query for primary contact role
     string soqlQuery = string `SELECT Id, OpportunityId, ContactId, IsPrimary FROM OpportunityContactRole 
                                WHERE OpportunityId = '${opportunityId}' 
@@ -50,6 +78,9 @@ function getPrimaryContact(string opportunityId) returns Contact|error {
     
     OpportunityContactRole contactRole = roles[0];
     string contactId = contactRole.ContactId;
+    
+    // Validate contact ID before using
+    check validateSalesforceId(contactId);
     
     // Get contact details
     Contact contact = check salesforceClient->getById("Contact", contactId, Contact);
@@ -124,6 +155,9 @@ function getOpportunityFieldValue(Opportunity opportunity, string fieldName) ret
 
 // Check if envelope marker exists for this opportunity
 function checkEnvelopeMarker(string opportunityId) returns boolean|error {
+    // Validate opportunity ID to prevent SOQL injection
+    check validateSalesforceId(opportunityId);
+    
     // Query for a custom field that stores envelope ID or processing marker
     // This assumes you have a custom field like DocuSign_Envelope_Id__c on Opportunity
     // If the field doesn't exist, this will return false
@@ -157,6 +191,8 @@ function checkEnvelopeMarker(string opportunityId) returns boolean|error {
 
 // Update Salesforce opportunity stage with envelope ID
 function updateOpportunityStage(string opportunityId, string stageName, string? envelopeId = ()) returns error? {
+    // Validate opportunity ID to prevent injection
+    check validateSalesforceId(opportunityId);
     
     // Build update payload
     map<json> updatePayload = {
