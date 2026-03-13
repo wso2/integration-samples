@@ -1,6 +1,7 @@
+import ballerina/http;
+import ballerina/lang.regexp;
 import ballerina/log;
 import ballerina/time;
-import ballerina/lang.regexp;
 
 // Check if lead passes the filters
 function shouldProcessLead(Lead lead) returns boolean {
@@ -185,9 +186,30 @@ function getSlackUserIdFromEmail(string? email) returns string?|error {
         return ();
     }
 
-    // Note: This is a simplified approach. In production, you might want to:
-    // 1. Use Slack's users.lookupByEmail API (requires additional scope)
-    // 2. Maintain a mapping between Salesforce users and Slack users
-    // For now, returning null to use name instead
-    return ();
+    // Use raw HTTP client — slack connector incorrectly types the user field as an array
+    http:Response|error httpResponse = slackHttpClient->get("/api/users.lookupByEmail?email=" + email);
+    if httpResponse is error {
+        log:printWarn("Failed to lookup Slack user by email", 'error = httpResponse, email = email);
+        return ();
+    }
+
+    json|error payload = httpResponse.getJsonPayload();
+    if payload is error {
+        log:printWarn("Failed to parse Slack lookupByEmail response", 'error = payload, email = email);
+        return ();
+    }
+
+    boolean|error ok = payload.ok.ensureType();
+    if ok is error || !ok {
+        log:printWarn("Slack lookupByEmail returned not ok", email = email);
+        return ();
+    }
+
+    string|error userId = payload.user.id.ensureType();
+    if userId is error {
+        log:printWarn("Slack user ID not found in response", email = email);
+        return ();
+    }
+
+    return userId;
 }

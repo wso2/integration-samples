@@ -1,3 +1,4 @@
+import ballerina/http;
 import ballerinax/salesforce;
 import ballerinax/slack;
 
@@ -17,4 +18,9 @@ final slack:Client slackClient = check new ({
     auth: {
         token: slackToken
     }
+});
+
+// Raw Slack HTTP client for APIs with broken connector type bindings
+final http:Client slackHttpClient = check new ("https://slack.com", {
+    auth: {token: slackToken}
 });

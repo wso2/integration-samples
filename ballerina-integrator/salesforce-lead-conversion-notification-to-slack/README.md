@@ -47,7 +47,7 @@ This integration uses refresh token flow for auth. [Learn how to set up Salesfor
 2. The bot must be invited to all channels it will post to
 3. Scopes Required:
    - `chat:write`
-   - `channels:read` (optional, for channel resolution)
+   - `users:read.email` (optional, for tagging lead owners by Slack mention)
 
 [Learn how to create a Slack app](https://api.slack.com/start/quickstart).
 
