@@ -2,7 +2,7 @@ import ballerinax/salesforce;
 import ballerina/log;
 
 // Salesforce Listener Service for Opportunity Changes
-service "OpportunityChangeListener" on salesforceListener {
+service "/data/ChangeEvents" on salesforceListener {
     
     // Handle opportunity creation events
     remote function onCreate(salesforce:EventData eventData) returns error? {
