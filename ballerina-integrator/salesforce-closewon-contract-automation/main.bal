@@ -15,16 +15,18 @@ service "/data/ChangeEvents" on salesforceListener {
     remote function onUpdate(salesforce:EventData eventData) returns error? {
         log:printInfo("Received onUpdate event from Salesforce");
         
-        // Extract opportunity ID from event data
-        map<json> payload = eventData.changedData;
-        json entityIdJson = payload["entityId"];
-        
-        if entityIdJson is () {
-            log:printError("No entityId found in event data");
-            return;
+        // Extract opportunity ID from event metadata
+        salesforce:ChangeEventMetadata? metadata = eventData.metadata;
+        if metadata is () {
+            log:printError("No metadata found in Salesforce ChangeEvent");
+            return error("Invalid Salesforce ChangeEvent: missing metadata");
         }
         
-        string opportunityId = entityIdJson.toString();
+        string opportunityId = metadata.recordId ?: "";
+        if opportunityId.length() == 0 {
+            log:printError("No recordId found in Salesforce ChangeEvent metadata");
+            return error("Invalid Salesforce ChangeEvent: missing recordId");
+        }
         
         // Process opportunity for contract dispatch
         error? result = processOpportunityForContract(opportunityId);
