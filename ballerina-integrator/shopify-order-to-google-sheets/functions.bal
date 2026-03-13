@@ -345,4 +345,3 @@ function upsertOrderWithLineItems(shopify:OrderEvent event, (int|string|decimal)
         _ = check sheetsClient->appendValues(sheetConfig.sheetId, allRows, a1Range);
     }
 }
-

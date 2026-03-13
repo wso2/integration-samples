@@ -26,4 +26,3 @@ service shopify:OrdersService on shopifyListener {
     remote function onOrdersUpdated(shopify:OrderEvent event) returns error? {
     }
 }
-
