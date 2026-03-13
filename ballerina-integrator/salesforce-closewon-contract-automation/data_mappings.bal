@@ -31,6 +31,27 @@ function buildContactName(Contact contact) returns string {
     return lastName;
 }
 
+// Mask email address for logging to protect PII
+function maskEmail(string email) returns string {
+    int? atIndex = email.indexOf("@");
+    
+    if atIndex is () || atIndex < 2 {
+        // If no @ found or email is too short, return masked placeholder
+        return "***@***";
+    }
+    
+    // Show first 2 characters and domain, mask the rest
+    string localPart = email.substring(0, atIndex);
+    string domain = email.substring(atIndex);
+    
+    if localPart.length() <= 2 {
+        return string `${localPart}***${domain}`;
+    }
+    
+    string visiblePart = localPart.substring(0, 2);
+    return string `${visiblePart}***${domain}`;
+}
+
 // Validate opportunity data before processing
 public function validateOpportunityData(Opportunity opportunity) returns error? {
     // Validate required fields
@@ -67,5 +88,7 @@ public function validateContactData(Contact contact) returns error? {
         return error("Contact last name is required");
     }
     
-    log:printInfo(string `Validated contact ${contact.Id}: ${contact.Email}`);
+    // Mask email for logging to avoid exposing PII
+    string maskedEmail = maskEmail(contact.Email);
+    log:printInfo(string `Validated contact ${contact.Id}: ${maskedEmail}`);
 }
