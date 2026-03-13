@@ -1,6 +1,7 @@
 import ballerina/http;
 import ballerina/log;
 import ballerina/time;
+import ballerina/crypto;
 
 // QuickBooks to Salesforce Sync Service
 //
@@ -26,6 +27,13 @@ function init() {
     log:printInfo("###################################################################################################");
     log:printInfo("SERVICE READY - Waiting for webhooks...");
     log:printInfo("###################################################################################################");
+}
+
+// Compute HMAC-SHA256 signature for webhook validation
+function computeHmacSignature(byte[] payload, string secretKey) returns byte[]|error {
+    byte[] keyBytes = secretKey.toBytes();
+    byte[] hmacSignature = check crypto:hmacSha256(payload, keyBytes);
+    return hmacSignature;
 }
 
 // Root Service for default path
@@ -71,30 +79,86 @@ service /quickbooks on webhookListener {
     }
     
     // Webhook event receiver (POST)
-    resource function post webhook(http:Request request) returns http:Ok|http:InternalServerError {
+    resource function post webhook(http:Request request) returns http:Ok|http:InternalServerError|http:Unauthorized {
         
         time:Utc currentTime = time:utcNow();
         string timestamp = time:utcToString(currentTime);
         log:printInfo(string `[${timestamp}] Webhook received from QuickBooks`);
         
-        // Get payload with error handling
-        json|error webhookPayload = request.getJsonPayload();
+        // Extract raw request body for signature validation
+        byte[]|http:ClientError rawPayload = request.getBinaryPayload();
+        
+        if rawPayload is http:ClientError {
+            log:printError(string `Failed to read request body: ${rawPayload.message()}`);
+            return http:INTERNAL_SERVER_ERROR;
+        }
+        
+        // Validate HMAC-SHA256 signature
+        string|http:HeaderNotFoundError intuitSignatureHeader = request.getHeader("intuit-signature");
+        
+        if intuitSignatureHeader is http:HeaderNotFoundError {
+            log:printError("Webhook signature validation failed: intuit-signature header missing");
+            return http:UNAUTHORIZED;
+        }
+        
+        string intuitSignature = intuitSignatureHeader;
+        
+        // Compute HMAC-SHA256 using webhook verify token as key
+        byte[]|error computedHmac = computeHmacSignature(rawPayload, webhookVerifyToken);
+        
+        if computedHmac is error {
+            log:printError(string `Failed to compute HMAC signature: ${computedHmac.message()}`);
+            return http:INTERNAL_SERVER_ERROR;
+        }
+        
+        // Base64 encode the computed signature
+        string computedSignature = computedHmac.toBase64();
+        
+        // Compare signatures
+        if intuitSignature != computedSignature {
+            log:printError("Webhook signature validation failed: signatures do not match");
+            log:printError(string `Expected: ${computedSignature}, Received: ${intuitSignature}`);
+            return http:UNAUTHORIZED;
+        }
+        
+        log:printInfo("Webhook signature validated successfully");
+        
+        // Parse JSON payload
+        string|error payloadString = string:fromBytes(rawPayload);
+        
+        if payloadString is error {
+            log:printError(string `Failed to convert payload to string: ${payloadString.message()}`);
+            return http:INTERNAL_SERVER_ERROR;
+        }
+        
+        json|error webhookPayload = payloadString.fromJsonString();
         
         if webhookPayload is error {
             log:printError(string `Failed to parse webhook payload: ${webhookPayload.message()}`);
             return http:INTERNAL_SERVER_ERROR;
         }
         
-        // Process webhook event
-        error? processResult = processQuickBooksWebhook(webhookPayload);
+        // Process webhook asynchronously - return immediately after validation
+        log:printInfo("Webhook validated - processing asynchronously");
         
-        if processResult is error {
-            log:printError(string `Webhook processing failed: ${processResult.message()}`);
-            return http:INTERNAL_SERVER_ERROR;
-        }
+        // Start background processing using detached worker
+        future<()> asyncProcessing = start processWebhookAsync(webhookPayload);
         
-        log:printInfo("Webhook processed successfully. Ready for next request.");
+        // Return immediately without waiting for processing to complete
         return http:OK;
+    }
+}
+
+// Process webhook asynchronously in background
+function processWebhookAsync(json webhookPayload) {
+    log:printInfo("Starting asynchronous webhook processing");
+    
+    error? processResult = processQuickBooksWebhook(webhookPayload);
+    
+    if processResult is error {
+        log:printError(string `Webhook processing failed: ${processResult.message()}`);
+    } else {
+        log:printInfo("Webhook processed successfully. Ready for next request.");
     }
 }
 
@@ -118,6 +182,31 @@ function processQuickBooksWebhook(json webhookPayload) returns error? {
     }
     
     foreach json notification in eventNotifications {
+        // Validate realm ID to ensure webhook is for the correct QuickBooks tenant
+        json|error realmIdResult = notification.realmId;
+        
+        if realmIdResult is error {
+            log:printError(string `Notification missing realmId field: ${realmIdResult.message()}`);
+            continue;
+        }
+        
+        // Extract realm ID as string
+        string notificationRealmId = "";
+        if realmIdResult is string {
+            notificationRealmId = realmIdResult;
+        } else {
+            log:printError(string `Notification realmId is not a string: ${realmIdResult.toString()}`);
+            continue;
+        }
+        
+        // Compare with configured realm ID
+        if notificationRealmId != quickbooksRealmId {
+            log:printError(string `Rejecting notification for incorrect tenant - Expected realm ID: ${quickbooksRealmId}, Received: ${notificationRealmId}`);
+            continue;
+        }
+        
+        log:printInfo(string `Realm ID validated: ${notificationRealmId}`);
+        
         json dataChangeEventJson = check notification.dataChangeEvent;
         json[] dataChangeEvents = [];
         

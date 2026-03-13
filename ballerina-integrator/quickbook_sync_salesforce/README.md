@@ -7,9 +7,13 @@ This integration syncs QuickBooks customers to Salesforce accounts in real-time 
 ### What It Does
 
 - Receives real-time webhook notifications from QuickBooks when customers are created or updated
+- Validates webhook authenticity using HMAC-SHA256 signatures
+- Verifies tenant/realm ID to prevent cross-tenant data contamination
+- Processes webhooks asynchronously for fast response times
 - Automatically creates or updates corresponding Salesforce Account records
 - Maintains parent-child relationships between QuickBooks sub-customers and Salesforce account hierarchy
-- Stores QuickBooks customer ID in Salesforce custom field for proper linking linking
+- Implements idempotent operations to handle duplicate webhook deliveries
+- Stores QuickBooks customer ID in Salesforce custom field for proper linking
 - Handles missing custom field scenarios with intelligent fallback logic
 
 
@@ -264,6 +268,8 @@ All operations are logged with timestamps:
 ## Production Considerations
 
 ✅ **Security**
+- HMAC-SHA256 signature validation on all incoming webhooks
+- Realm ID verification prevents cross-tenant data leaks
 - Use HTTPS for webhooks
 - Rotate OAuth tokens regularly
 - Store credentials securely (environment variables or secrets manager)
@@ -272,16 +278,23 @@ All operations are logged with timestamps:
 - Monitor logs for errors
 - Set up alerts for failed syncs
 - Track webhook delivery failures
+- Monitor async processing completion rates
 
 ✅ **Performance**
-- Webhook processing is synchronous but fast
+- Asynchronous webhook processing - returns 200 OK immediately after validation
+- Prevents webhook timeout issues from long-running sync operations
 - Parent customer syncs may cause cascading API calls
 - Consider rate limits (QuickBooks: 500 req/min, Salesforce: varies by edition)
 
+✅ **Reliability**
+- Idempotent create operations handle duplicate webhook deliveries
+- Parent sync failures abort child sync to maintain data integrity
+- Automatic fallback from Update to Create when records not found
+
 ✅ **Error Handling**
 - Failed QuickBooks updates don't fail the entire sync
-- Comprehensive error logging
-- Graceful degradation
+- Comprehensive error logging with detailed context
+- Graceful degradation with fallback mechanisms
 
 ## Testing the Integration
 
@@ -364,8 +377,10 @@ If you don't see logs, the webhook wasn't sent or didn't reach your service.
 ### Webhook Not Receiving Events
 - **Verify webhook URL is publicly accessible** (use ngrok HTTPS URL, not localhost)
 - **Check QuickBooks webhook subscriptions are active** (should show "Active" status)
-- **Verify `webhookVerifyToken` matches** between Config.toml and QuickBooks
+- **Verify `webhookVerifyToken` matches** between Config.toml and QuickBooks (used for HMAC signature validation)
+- **Verify `quickbooksRealmId` matches** your QuickBooks Company ID (webhooks from other tenants are rejected)
 - **Actually create/update a customer in QuickBooks** (webhooks don't trigger automatically)
+- **Check signature validation** - Look for "Webhook signature validation failed" errors in logs
 
 ### Custom Field Errors
 - **Update operations failing** - Check logs for "Field not there in Salesforce. For updating and having parent customer hierarchy, 'QuickbooksSync__c' custom field should be there in Salesforce"

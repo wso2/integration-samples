@@ -103,6 +103,7 @@ public function syncCustomerToSalesforce(QuickBooksCustomer qbCustomer, string o
                     log:printInfo(string `Found parent account ${parentAccountIdResult} for QuickBooks parent ID ${parentCustomerId}`);
                 } else if parentAccountIdResult is error {
                     // Check if error is due to missing custom field
+                    // In this scenario, bad request possible mostly due to missing custom field so got to falls back, if the fallsback fail error handling will handle it., 
                     string errorMessage = parentAccountIdResult.message();
                     string:RegExp quickbooksSyncPattern = re `QuickbooksSync__c`;
                     string:RegExp noColumnPattern = re `No such column`;
@@ -131,19 +132,37 @@ public function syncCustomerToSalesforce(QuickBooksCustomer qbCustomer, string o
                     
                     if parentCustomerResult is error {
                         log:printError(string `Failed to fetch parent customer ${parentCustomerId}: ${parentCustomerResult.message()}`);
+                        return {
+                            success: false,
+                            message: string `Cannot sync customer with parent - failed to fetch parent customer ${parentCustomerId}`,
+                            errorDetails: parentCustomerResult.message()
+                        };
+                    }
+                    
+                    QuickBooksCustomer parentCustomer = parentCustomerResult;
+                    SyncResult parentSyncResult = syncCustomerToSalesforce(parentCustomer, "Create");
+                    
+                    if !parentSyncResult.success {
+                        log:printError(string `Failed to sync parent customer ${parentCustomerId}`);
+                        string? parentErrorDetails = parentSyncResult?.errorDetails;
+                        return {
+                            success: false,
+                            message: string `Cannot sync customer with parent - failed to sync parent customer ${parentCustomerId}`,
+                            errorDetails: parentErrorDetails ?: "Parent sync failed without error details"
+                        };
+                    }
+                    
+                    string? createdParentId = parentSyncResult?.accountId;
+                    if createdParentId is string {
+                        sfAccount.ParentId = createdParentId;
+                        log:printInfo(string `Created parent account ${createdParentId} for QuickBooks parent ID ${parentCustomerId}`);
                     } else {
-                        QuickBooksCustomer parentCustomer = parentCustomerResult;
-                        SyncResult parentSyncResult = syncCustomerToSalesforce(parentCustomer, "Create");
-                        
-                        if parentSyncResult.success {
-                            string? createdParentId = parentSyncResult?.accountId;
-                            if createdParentId is string {
-                                sfAccount.ParentId = createdParentId;
-                                log:printInfo(string `Created parent account ${createdParentId} for QuickBooks parent ID ${parentCustomerId}`);
-                            }
-                        } else {
-                            log:printError(string `Failed to sync parent customer ${parentCustomerId}`);
-                        }
+                        log:printError(string `Parent sync succeeded but no account ID returned for ${parentCustomerId}`);
+                        return {
+                            success: false,
+                            message: "Cannot sync customer with parent - parent sync succeeded but no account ID returned",
+                            errorDetails: "Parent account ID missing after successful sync"
+                        };
                     }
                 }
             }
@@ -186,19 +205,38 @@ public function syncCustomerToSalesforce(QuickBooksCustomer qbCustomer, string o
                     QuickBooksCustomer|error parentCustomerResult = fetchQuickBooksCustomerDetails(parentCustomerId);
                     
                     if parentCustomerResult is error {
-                        log:printError(string `Failed to fetch parent customer ${parentCustomerId}`);
+                        log:printError(string `Failed to fetch parent customer ${parentCustomerId}: ${parentCustomerResult.message()}`);
+                        return {
+                            success: false,
+                            message: string `Cannot update customer with parent - failed to fetch parent customer ${parentCustomerId}`,
+                            errorDetails: parentCustomerResult.message()
+                        };
+                    }
+                    
+                    QuickBooksCustomer parentCustomer = parentCustomerResult;
+                    SyncResult parentSyncResult = syncCustomerToSalesforce(parentCustomer, "Create");
+                    
+                    if !parentSyncResult.success {
+                        log:printError(string `Failed to sync parent customer ${parentCustomerId}`);
+                        string? parentErrorDetails = parentSyncResult?.errorDetails;
+                        return {
+                            success: false,
+                            message: string `Cannot update customer with parent - failed to sync parent customer ${parentCustomerId}`,
+                            errorDetails: parentErrorDetails ?: "Parent sync failed without error details"
+                        };
+                    }
+                    
+                    string? createdParentId = parentSyncResult?.accountId;
+                    if createdParentId is string {
+                        sfAccount.ParentId = createdParentId;
+                        log:printInfo(string `Created parent account ${createdParentId} for QuickBooks parent ID ${parentCustomerId}`);
                     } else {
-                        QuickBooksCustomer parentCustomer = parentCustomerResult;
-                        SyncResult parentSyncResult = syncCustomerToSalesforce(parentCustomer, "Create");
-                        
-                        if parentSyncResult.success {
-                            string? createdParentId = parentSyncResult?.accountId;
-                            if createdParentId is string {
-                                sfAccount.ParentId = createdParentId;
-                            }
-                        } else {
-                            log:printError(string `Failed to sync parent customer ${parentCustomerId}`);
-                        }
+                        log:printError(string `Parent sync succeeded but no account ID returned for ${parentCustomerId}`);
+                        return {
+                            success: false,
+                            message: "Cannot update customer with parent - parent sync succeeded but no account ID returned",
+                            errorDetails: "Parent account ID missing after successful sync"
+                        };
                     }
                 }
             }
@@ -323,7 +361,51 @@ public function syncCustomerToSalesforce(QuickBooksCustomer qbCustomer, string o
             return syncCustomerToSalesforce(qbCustomer, "Create");
         }
     } else {
-        // Create operation - just create new account without searching
+        // Create operation - check for existing account first (idempotent)
+        log:printInfo(string `Checking for existing account with QuickBooks ID: ${qbCustomer.Id}`);
+        
+        // Check if account already exists
+        string?|error existingAccountCheckResult = findAccountByQuickBooksId(qbCustomer.Id);
+        
+        if existingAccountCheckResult is string {
+            // Account already exists - return existing ID
+            string existingAccountId = existingAccountCheckResult;
+            accountId = existingAccountId;
+            log:printInfo(string `Account already exists with ID ${existingAccountId} for QuickBooks customer ${qbCustomer.Id} - returning existing account (idempotent)`);
+            
+            return {
+                success: true,
+                accountId: accountId,
+                message: "Account already exists - returned existing account ID"
+            };
+        } else if existingAccountCheckResult is error {
+            // Check if error is due to missing custom field or actual query error
+            string errorMessage = existingAccountCheckResult.message();
+            string:RegExp quickbooksSyncPattern = re `QuickbooksSync__c`;
+            string:RegExp noColumnPattern = re `No such column`;
+            string:RegExp badRequestPattern = re `Bad Request`;
+            
+            boolean hasQuickbooksSyncError = quickbooksSyncPattern.find(errorMessage) is regexp:Span;
+            boolean hasNoColumnError = noColumnPattern.find(errorMessage) is regexp:Span;
+            boolean hasBadRequestError = badRequestPattern.find(errorMessage) is regexp:Span;
+            
+            if !(hasQuickbooksSyncError || hasNoColumnError || hasBadRequestError) {
+                // Real error - not just missing field
+                return {
+                    success: false,
+                    message: "Error checking for existing account",
+                    errorDetails: errorMessage
+                };
+            }
+            
+            // Missing custom field - will handle during create attempt
+            log:printInfo("QuickbooksSync__c field not available - proceeding with create");
+        } else {
+            // No existing account found - proceed with create
+            log:printInfo(string `No existing account found for QuickBooks ID ${qbCustomer.Id} - proceeding with create`);
+        }
+        
+        // Proceed with account creation
         salesforce:CreationResponse|error createResult = salesforceClient->create("Account", sfAccount);
         
         if createResult is error {
