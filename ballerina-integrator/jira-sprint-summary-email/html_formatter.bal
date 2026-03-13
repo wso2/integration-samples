@@ -297,5 +297,3 @@ function getHtmlFormattedMidSprintAdditions(IssueDetails[] issues) returns strin
 
     return formattedAdditions;
 }
-
-
