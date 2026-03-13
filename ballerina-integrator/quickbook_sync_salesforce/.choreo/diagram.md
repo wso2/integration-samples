@@ -1,7 +1,4 @@
-# QuickBooks to Salesforce Sync Flowchart
 
-```mermaid
-flowchart TB
     A(["Begin"]) --> B["Receive QuickBooks Webhook"]
     B --> C{"Customer Event Type?"}
     C -- Create --> D["Fetch Customer from QuickBooks"]
@@ -9,7 +6,7 @@ flowchart TB
     E -- No --> X(["Stopped: Create Custom Field in Salesforce"])
     E -- Yes --> F["Find Account by QuickbooksSync__c"]
     F --> G{"Account Found?"}
-    G -- Yes --> H["Convert to Salesforce Data format"]
+    G -- Yes --> H["Convert to Salesforce Data format and do Conflict Resolution"]
     H --> I["Update Salesforce Account"]
     G -- No --> D
     D --> J{"Has Parent Customer?"}
@@ -41,8 +38,3 @@ flowchart TB
      O:::decisionNode
      P:::processNode
      M:::endNode
-    classDef startNode fill:#5E8DEB,stroke:#5E8DEB,color:#FFFFFF,stroke-width:1px
-    classDef endNode fill:#5E8DEB,stroke:#5E8DEB,color:#FFFFFF,stroke-width:1px
-    classDef processNode fill:#FFFFFF,stroke:#D9D9D9,color:#222222,stroke-width:1.5px,rx:8px,ry:8px
-    classDef decisionNode fill:#FFF7E6,stroke:#F5A623,color:#333333,stroke-width:2px
-```

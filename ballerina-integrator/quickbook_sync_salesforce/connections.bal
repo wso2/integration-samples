@@ -17,4 +17,4 @@ final salesforce:Client salesforceClient = check new ({
 //
 // QuickBooks Base URL MUST be set in Config.toml:
 // - Sandbox: https://sandbox-quickbooks.api.intuit.com/v3/company
-// - Production: https://quickbooks.api.intuit.com/v3/company
+

@@ -23,7 +23,6 @@ function init() {
     log:printInfo(string `Health Check: http://localhost:${webhookPort}/quickbooks/health`);
     log:printInfo(string `Conflict Resolution: ${conflictResolution}`);
     log:printInfo(string `Filter Active Only: ${filterActiveOnly}`);
-    log:printInfo(string `Create Contact: ${createContact}`);
     log:printInfo("###################################################################################################");
     log:printInfo("SERVICE READY - Waiting for webhooks...");
     log:printInfo("###################################################################################################");

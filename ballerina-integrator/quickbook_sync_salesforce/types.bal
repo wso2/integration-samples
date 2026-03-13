@@ -126,21 +126,10 @@ public type SalesforceAccount record {
     ()|string LastModifiedDate?;
 };
 
-// Salesforce Contact Record
-public type SalesforceContact record {
-    string? Id?;
-    string LastName;
-    string? FirstName?;
-    string? Email?;
-    string? Phone?;
-    string? AccountId?;
-};
-
 // Sync Result
 public type SyncResult record {
     boolean success;
     string? accountId?;
-    string? contactId?;
     string? message?;
     string? errorDetails?;
 };

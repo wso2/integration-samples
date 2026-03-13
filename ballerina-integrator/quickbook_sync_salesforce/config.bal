@@ -23,4 +23,3 @@ configurable string webhookVerifyToken = ?;
 // Sync Configuration
 configurable ConflictResolution conflictResolution = SOURCE_WINS;
 configurable boolean filterActiveOnly = true;
-configurable boolean createContact = false;

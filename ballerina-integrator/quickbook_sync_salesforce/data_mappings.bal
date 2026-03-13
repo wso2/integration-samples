@@ -126,38 +126,4 @@ public isolated function mapQuickBooksCustomerToSalesforceAccount(QuickBooksCust
     return sfAccount;
 }
 
-// Map QuickBooks Customer to Salesforce Contact
-public isolated function mapQuickBooksCustomerToSalesforceContact(QuickBooksCustomer qbCustomer, string accountId) returns SalesforceContact? {
-    
-    string? givenName = qbCustomer?.GivenName;
-    string? familyName = qbCustomer?.FamilyName;
-    
-    // Extract email
-    string? email = ();
-    EmailAddress? emailAddr = qbCustomer?.PrimaryEmailAddr;
-    if emailAddr is EmailAddress {
-        email = emailAddr?.Address;
-    }
-    
-    // Only create contact if we have at least a last name
-    if familyName is () {
-        return ();
-    }
-    
-    // Extract phone
-    string? phone = ();
-    PrimaryPhone? primaryPhone = qbCustomer?.PrimaryPhone;
-    if primaryPhone is PrimaryPhone {
-        phone = primaryPhone?.FreeFormNumber;
-    }
-    
-    SalesforceContact sfContact = {
-        FirstName: givenName,
-        LastName: familyName,
-        Email: email,
-        Phone: phone,
-        AccountId: accountId
-    };
-    
-    return sfContact;
-}
+

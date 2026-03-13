@@ -409,24 +409,9 @@ public function syncCustomerToSalesforce(QuickBooksCustomer qbCustomer, string o
         }
     }
     
-    // Create contact if configured
-    string? contactId = ();
-    if createContact && accountId is string {
-        SalesforceContact? sfContact = mapQuickBooksCustomerToSalesforceContact(qbCustomer, accountId);
-        
-        if sfContact is SalesforceContact {
-            salesforce:CreationResponse|error contactResult = salesforceClient->create("Contact", sfContact);
-            
-            if contactResult is salesforce:CreationResponse {
-                contactId = contactResult.id;
-            }
-        }
-    }
-    
     return {
         success: true,
         accountId: accountId,
-        contactId: contactId,
         message: "Customer synced successfully"
     };
 }

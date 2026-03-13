@@ -551,7 +551,7 @@
     "wso2": {
       "type": "object",
       "properties": {
-        "quickbook_customers_sync_salesforce_account": {
+        "quickbook_sync_salesforce": {
           "type": "object",
           "properties": {
             "salesforceClientId": {
@@ -617,10 +617,6 @@
             "filterActiveOnly": {
               "type": "boolean",
               "description": ""
-            },
-            "createContact": {
-              "type": "boolean",
-              "description": ""
             }
           },
           "additionalProperties": false,
@@ -644,4 +640,5 @@
   },
   "additionalProperties": false,
   "requiredLevel": 3
+
 }

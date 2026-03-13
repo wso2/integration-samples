@@ -1,6 +1,6 @@
 [package]
 org = "wso2"
-name = "quickbook_customers_sync_salesforce_account"
+name = "quickbook_sync_salesforce"
 version = "0.1.0"
 title = "QuickBook Customers Sync Salesforce Account"
 distribution = "2201.13.1"

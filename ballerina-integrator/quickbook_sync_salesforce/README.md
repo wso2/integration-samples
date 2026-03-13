@@ -13,15 +13,6 @@ This integration syncs QuickBooks customers to Salesforce accounts in real-time 
 - Handles missing custom field scenarios with intelligent fallback logic
 
 
-
-## Features
-
-✅ **Real-time Sync** - Webhook-based synchronization from QuickBooks to Salesforce  
-✅ **Duplicate Prevention** - Stores Salesforce Account ID in QuickBooks custom field  
-✅ **Parent-Child Relationships** - Handles QuickBooks sub-customers → Salesforce account hierarchy  
-✅ **Custom Field Validation** - Ensures custom field exists before syncing  
-✅ **OAuth 2.0** - Secure authentication with automatic token refresh  
-
 ## Prerequisites
 
 Before running this integration, you need:
@@ -88,9 +79,11 @@ The following configurations are required to connect to Salesforce and QuickBook
 
 ### Sync Configuration
 
-- `conflictResolution` - Strategy for handling conflicts (options: `SOURCE_WINS`, `DESTINATION_WINS`, `MOST_RECENT`)
+- `conflictResolution` - Strategy for handling conflicts when updating existing Salesforce accounts:
+  - `SOURCE_WINS` (default) - QuickBooks data always overwrites Salesforce data
+  - `DESTINATION_WINS` - Salesforce data is never overwritten, QuickBooks changes are ignored
+  - `MOST_RECENT` - Only update if QuickBooks data is newer than Salesforce data (compares timestamps)
 - `filterActiveOnly` - Only sync active customers (default: true)
-- `createContact` - Create Salesforce contacts from customer data (default: false)
 
 ### Configuration File Example
 
@@ -116,9 +109,8 @@ webhookPort = 8080
 webhookVerifyToken = "YOUR_WEBHOOK_VERIFY_TOKEN"
 
 # Sync Configuration
-conflictResolution = "SOURCE_WINS"
+conflictResolution = "SOURCE_WINS"  # Options: SOURCE_WINS, DESTINATION_WINS, MOST_RECENT
 filterActiveOnly = true
-createContact = false
 ```
 
 ## Setup
@@ -228,6 +220,39 @@ bal run
 - QuickBooks sub-customers → Salesforce child accounts
 - Parent accounts are synced first (recursive)
 - Parent relationships are maintained using `QuickbooksSync__c` field lookup
+
+### Conflict Resolution
+
+The integration supports three strategies for handling conflicts when updating existing Salesforce accounts:
+
+**SOURCE_WINS (Default)**
+- QuickBooks data **always overwrites** Salesforce data
+- Updates are applied immediately without timestamp comparison
+- Best for: QuickBooks as the single source of truth
+
+**DESTINATION_WINS**
+- Salesforce data is **never overwritten**
+- QuickBooks updates are acknowledged but not applied
+- Existing Salesforce account remains unchanged
+- Best for: Salesforce as the authoritative system
+
+**MOST_RECENT**
+- Compares timestamps between QuickBooks and Salesforce
+- Only updates if QuickBooks data is **newer** than Salesforce data
+- Uses `MetaData.LastUpdatedTime` from QuickBooks and `LastModifiedDate` from Salesforce
+- If timestamps are missing, defaults to updating (SOURCE_WINS behavior)
+- Best for: Bi-directional sync scenarios
+
+**When Conflict Resolution Applies:**
+- Only applies to **Update operations** on existing accounts
+- Does NOT apply to Create operations (new accounts are always created)
+- Does NOT apply to fallback creates (when update finds no existing account)
+
+**Configuration:**
+Set in `Config.toml`:
+```toml
+conflictResolution = "SOURCE_WINS"  # or "DESTINATION_WINS" or "MOST_RECENT"
+```
 
 ## Logging
 
@@ -362,7 +387,3 @@ If you don't see logs, the webhook wasn't sent or didn't reach your service.
 - Refresh tokens may expire - regenerate them
 - Verify client IDs and secrets are correct
 - Check OAuth scopes are sufficient
-
-
-
-
