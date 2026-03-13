@@ -15,8 +15,6 @@ configurable record {
     boolean includeDateInSubject = true;
 } mailchimpConfig = ?;
 
-
-
 configurable record {
     string[] labels = [];
     string[] members = [];
