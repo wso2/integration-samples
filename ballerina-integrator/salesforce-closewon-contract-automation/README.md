@@ -94,15 +94,13 @@ The following configurations are required to connect to Salesforce and Docusign.
 
 ## Deploying on **WSO2 Integration Platform**
 
-1. Sign in to your Choreo account.
-2. Create a new Integration and follow instructions in [Choreo Documentation](https://wso2.com/choreo/docs/) to import this repository.
-3. Select the **Technology** as `Ballerina`.
-4. Choose the **Integration** Type as `Service` and click **Create**.
+1. Sign in to your WSO2 Integration Platform account.
+2. Create a new Integration to import this repository.
+3. Select the **Technology** as `WSO2 Integrator: BI`.
+4. Choose the **Integration** Type as `Event Handler` and click **Create**.
 5. Once the build is successful, click **Configure to Continue** and set up the required environment variables for Salesforce and Docusign credentials.
 6. Click **Deploy** to deploy the integration.
-7. The integration will start listening to Salesforce change events automatically.
-8. Monitor logs to verify successful contract dispatch.
-9. Once tested, you may promote the integration to production. Make sure to set the relevant environment variables in the production environment as well.
+7. Once tested, you may promote the integration to production. Make sure to set the relevant environment variables in the production environment as well.
 
 ## Troubleshooting
 
