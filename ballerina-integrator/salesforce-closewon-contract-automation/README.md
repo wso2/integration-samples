@@ -65,7 +65,8 @@ The following configurations are required to connect to Salesforce and DocuSign.
 - `salesforceRefreshToken` - Your Salesforce OAuth2 refresh token
 - `salesforceRefreshUrl` - Salesforce OAuth2 token endpoint (e.g., `https://login.salesforce.com/services/oauth2/token`)
 - `salesforceBaseUrl` - Your Salesforce instance URL (e.g., `https://login.salesforce.com`)
-- `salesforceChannelName` - Change event channel (default: `/data/ChangeEvents`)
+
+**Note**: The integration listens to the `/data/ChangeEvents` channel which captures all object changes. To listen to only Opportunity changes, modify the service path in `main.bal` to `/data/OpportunityChangeEvent`.
 
 ### DocuSign Credentials
 

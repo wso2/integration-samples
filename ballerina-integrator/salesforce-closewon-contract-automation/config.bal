@@ -40,6 +40,3 @@ configurable decimal minimumDealValue = 0.0;
 configurable int expirationReminderDays = 3;
 
 configurable string contractSentStage = "Contract Sent";
-
-// Salesforce Channel Configuration
-configurable string salesforceChannelName = "/data/ChangeEvents";
