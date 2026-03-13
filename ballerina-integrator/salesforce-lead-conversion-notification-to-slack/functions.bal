@@ -1,3 +1,4 @@
+import ballerina/log;
 import ballerina/time;
 import ballerina/lang.regexp;
 
@@ -124,17 +125,29 @@ function formatSlackMessage(LeadConversionDetails details, string? slackUserId) 
 }
 
 // Determine the target Slack channel based on team mapping
-function determineSlackChannel(string? ownerId) returns string|error {
+function determineSlackChannel(string? ownerId) returns string {
     if ownerId is () {
         return defaultSlackChannel;
     }
 
     // Get owner details to find team
     string ownerQuery = string `SELECT Id, Name, UserRole.Name FROM User WHERE Id = '${ownerId}'`;
-    stream<record {}, error?> ownerStream = check salesforceClient->query(ownerQuery);
-    record {|record {} value;|}? ownerResult = check ownerStream.next();
-    check ownerStream.close();
+    stream<record {}, error?>|error ownerStream = salesforceClient->query(ownerQuery);
+    if ownerStream is error {
+        log:printError("Failed to query Salesforce for owner details", ownerStream);
+        return defaultSlackChannel;
+    }
 
+    record {|record {} value;|}|error? ownerResult = ownerStream.next();
+    error? closeErr = ownerStream.close();
+    if closeErr is error {
+        log:printWarn("Failed to close Salesforce owner stream", closeErr);
+    }
+
+    if ownerResult is error {
+        log:printError("Failed to read owner record from Salesforce stream", ownerResult);
+        return defaultSlackChannel;
+    }
     if ownerResult is () {
         return defaultSlackChannel;
     }
@@ -151,7 +164,10 @@ function determineSlackChannel(string? ownerId) returns string|error {
             if userRoleData is record {} {
                 record {} userRole = userRoleData;
                 if userRole.hasKey("Name") {
-                    string roleName = check userRole.get("Name").ensureType();
+                    string|error roleName = userRole.get("Name").ensureType();
+                    if roleName is error {
+                        continue;
+                    }
                     if roleName.toLowerAscii().includes(teamName.toLowerAscii()) {
                         return mapping.channelId;
                     }
