@@ -44,7 +44,12 @@ function createAndSendEnvelope(Opportunity opportunity, Contact signer, Template
             expirations: {
                 expireEnabled: "true",
                 expireAfter: expirationDays.toString(),
-                expireWarn: "0"
+                expireWarn: "3"
+            },
+            reminders: {
+                reminderEnabled: "true",
+                reminderDelay: "2",
+                reminderFrequency: "2"
             }
         };
     }
@@ -97,14 +102,30 @@ function createAndSendEnvelope(Opportunity opportunity, Contact signer, Template
     envelopeDefinition.templateRoles = templateRoles;
     
     // Create envelope using DocuSign client
-    dsesign:EnvelopeSummary envelopeSummary = check docusignClient->/accounts/[docusignAccountId]/envelopes.post(envelopeDefinition);
+    dsesign:EnvelopeSummary|error envelopeSummaryResult = docusignClient->/accounts/[docusignAccountId]/envelopes.post(envelopeDefinition);
     
-    string? envelopeId = envelopeSummary.envelopeId;
-    if envelopeId is () {
-        return error("Failed to create envelope: No envelope ID returned");
+    if envelopeSummaryResult is error {
+        log:printError(string `Failed to create DocuSign envelope: ${envelopeSummaryResult.message()}`);
+        return error(string `DocuSign API error: ${envelopeSummaryResult.message()}`, envelopeSummaryResult);
     }
     
+    dsesign:EnvelopeSummary envelopeSummary = envelopeSummaryResult;
+    string? envelopeId = envelopeSummary.envelopeId;
+    
+    if envelopeId is () {
+        return error("Failed to create envelope: No envelope ID returned from DocuSign");
+    }
+    
+    string? status = envelopeSummary.status;
+    string? statusDateTime = envelopeSummary.statusDateTime;
+    
     log:printInfo(string `DocuSign envelope created successfully: ${envelopeId}`);
+    log:printInfo(string `Envelope status: ${status ?: "unknown"}, Status time: ${statusDateTime ?: "unknown"}`);
+    
+    // Build envelope URL for reference
+    string envelopeUrl = buildEnvelopeUrl(envelopeId);
+    log:printInfo(string `Envelope URL: ${envelopeUrl}`);
+    
     return envelopeId;
 }
 
@@ -140,6 +161,18 @@ function buildSignerName(Contact contact) returns string {
     }
     
     return lastName;
+}
+
+// Build DocuSign envelope URL for reference
+function buildEnvelopeUrl(string envelopeId) returns string {
+    // Extract base URL without /restapi suffix
+    string baseUrl = docusignBaseUrl;
+    if baseUrl.endsWith("/restapi") {
+        baseUrl = baseUrl.substring(0, baseUrl.length() - 8);
+    }
+    
+    // Build the envelope management URL
+    return string `${baseUrl}/documents/details/${envelopeId}`;
 }
 
 // Process opportunity for contract dispatch
@@ -203,6 +236,25 @@ function hasEnvelopeAlreadySent(string opportunityId, Opportunity opportunity) r
     }
     
     return false;
+}
+
+// Get envelope status from DocuSign
+function getEnvelopeStatus(string envelopeId) returns string|error {
+    dsesign:Envelope|error envelopeResult = docusignClient->/accounts/[docusignAccountId]/envelopes/[envelopeId].get();
+    
+    if envelopeResult is error {
+        log:printError(string `Failed to get envelope status for ${envelopeId}: ${envelopeResult.message()}`);
+        return error(string `Failed to retrieve envelope status: ${envelopeResult.message()}`, envelopeResult);
+    }
+    
+    dsesign:Envelope envelope = envelopeResult;
+    string? status = envelope.status;
+    
+    if status is () {
+        return "unknown";
+    }
+    
+    return status;
 }
 
 // Get signer contact based on configured role
