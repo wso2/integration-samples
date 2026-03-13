@@ -160,14 +160,14 @@ If you want to use an existing spreadsheet:
 
 ### `spreadsheetId` (optional)
 - **Type**: string
-- **Default**: `()` (creates new spreadsheet)
+- **Default**: `""` (creates new spreadsheet when left empty)
 - **Description**: The ID of an existing Google Sheets spreadsheet. If not provided, a new spreadsheet will be created with each execution.
 - **Example**: `"1abc123xyz456def789ghi"`
 
 ### `tabName` (optional)
 - **Type**: string
 - **Default**: `"Leads"`
-- **Description**: The name of the sheet tab where leads will be written. Only used when `splitByField` is `NONE`.
+- **Description**: The name of the sheet tab where leads will be written. Only used when `splitBy` is empty.
 - **Example**: `"Salesforce Leads"`
 
 ## Query Configuration
