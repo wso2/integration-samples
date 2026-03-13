@@ -64,10 +64,9 @@ The following configurations are required to connect to Shopify and QuickBooks.
 
 1. Sign in to your Devant account.
 2. Create a new Integration and follow instructions in [Devant Documentation](https://wso2.com/devant/docs/references/import-a-repository/) to import this repository.
-3. Be sure to set the **Project Path** (or **Build Context**) to `shopify_to_quickbooks_transaction`.
-4. Select the **Technology** as `WSO2 Integrator: BI`.
-5. Choose the **Integration** Type as `Automation` and click **Create**.
-6. Once the build is successful, click **Configure to Continue** and set up the required environment variables for Shopify and QuickBooks credentials.
-7. Copy the **Webhook URL** provided by the Devant platform and enter it in your Shopify webhook configuration.
-8. Click **Deploy** to activate the automation.
-9. Once tested with a dummy order, you may promote the integration to production. Make sure to set the relevant environment variables in the production environment as well.
+3. Select the **Technology** as `WSO2 Integrator: BI`.
+4. Choose the **Integration** Type as `Integration as API` and click **Create**.
+5. Once the build is successful, click **Configure to Continue** and set up the required environment variables for Shopify and QuickBooks credentials.
+6. Copy the **Webhook URL** provided by the Devant platform and enter it in your Shopify webhook configuration.
+7. Click **Deploy** to activate the automation.
+8. Once tested with a dummy order, you may promote the integration to production. Make sure to set the relevant environment variables in the production environment as well.

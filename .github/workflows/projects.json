@@ -9,6 +9,6 @@
     "path": "ballerina-integrator/signup-sfchatsync"
   },
   {
-    "path": "ballerina-integrator/shopify_to_quickbooks_transaction"
+    "path": "ballerina-integrator/shopify-to-quickbooks-transaction"
   }
 ]
