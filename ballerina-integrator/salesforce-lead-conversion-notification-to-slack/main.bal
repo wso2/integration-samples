@@ -56,6 +56,11 @@ function processLeadConversion(salesforce:EventData eventData) returns error? {
         salesforce:ChangeEventMetadata metadata = check (eventData.metadata ?: error("Missing metadata")).ensureType();
         string leadId = metadata.recordId ?: "";
 
+        if leadId == "" {
+            log:printError("Missing recordId in Salesforce change event metadata");
+            return;
+        }
+
         // Query full lead details
         string leadQuery = string `SELECT Id, Name, Company, LeadSource, OwnerId, ConvertedAccountId, ConvertedContactId, ConvertedOpportunityId, IsConverted, CreatedDate, ConvertedDate FROM Lead WHERE Id = '${leadId}'`;
 
@@ -122,7 +127,7 @@ function processLeadConversion(salesforce:EventData eventData) returns error? {
         string? slackUserId = check getSlackUserIdFromEmail(owner.Email);
 
         // Determine target Slack channel
-        string targetChannel = check determineSlackChannel(ownerId);
+        string targetChannel = determineSlackChannel(ownerId);
 
         log:printInfo(targetChannel);
 
