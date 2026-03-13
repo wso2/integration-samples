@@ -30,14 +30,14 @@ function buildLineItems(shopify:OrderEvent event) returns anydata[]|error {
 
     // 2. Shipping line (optional)
     shopify:ShippingLine[]? shippingLines = event?.shipping_lines;
-    if mapShippingAsSeparateLine && shippingLines is shopify:ShippingLine[] && shippingLines.length() > 0 {
+    if quickbooksConfig.mapShippingAsSeparateLine && shippingLines is shopify:ShippingLine[] && shippingLines.length() > 0 {
         decimal totalShipping = 0.0d;
         string[] shippingDescs = [];
         foreach shopify:ShippingLine sl in shippingLines {
             totalShipping += check decimal:fromString(sl?.price ?: "0");
             shippingDescs.push(sl?.title ?: "Shipping");
         }
-        string shippingItemId = check lookupQBItemId(shippingItemName);
+        string shippingItemId = check lookupQBItemId(quickbooksConfig.shippingItemName);
         QBSalesLine shippingLine = {
             DetailType: "SalesItemLineDetail",
             Amount: totalShipping,
@@ -51,12 +51,12 @@ function buildLineItems(shopify:OrderEvent event) returns anydata[]|error {
 
     // 3. Discount line (optional — negative amount)
     string? totalDiscountsStr = event?.total_discounts;
-    if includeDiscountLineItems {
+    if quickbooksConfig.includeDiscountLineItems {
         if totalDiscountsStr is string {
             decimal totalDiscounts = check decimal:fromString(totalDiscountsStr);
             if totalDiscounts > 0.0d {
                 string discountDesc = buildDiscountDescription(event);
-                string discountItemId = check lookupQBItemId(discountItemName);
+                string discountItemId = check lookupQBItemId(quickbooksConfig.discountItemName);
                 QBSalesLine discountLine = {
                     DetailType: "SalesItemLineDetail",
                     Amount: -totalDiscounts,
@@ -124,7 +124,7 @@ function mapToQBTransaction(shopify:OrderEvent event, string customerId) returns
     };
 
     // Only add DueDate for INVOICE mode (for SALES_RECEIPT mode, QB Invoice without DueDate acts like a receipt)
-    if transactionType == "INVOICE" {
+    if quickbooksConfig.transactionType == "INVOICE" {
         invoice.DueDate = addDaysToDate(txnDate, 30);
     }
 

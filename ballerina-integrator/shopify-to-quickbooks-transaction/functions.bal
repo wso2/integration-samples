@@ -7,8 +7,8 @@ import ballerinax/trigger.shopify;
 final map<string> & readonly productMap = check loadProductMap();
 
 function loadProductMap() returns map<string> & readonly|error {
-    log:printInfo("[Config] productMappingJson = " + productMappingJson);
-    json parsed = check (productMappingJson).fromJsonString();
+    log:printInfo("[Config] productMappingJson = " + quickbooksConfig.productMappingJson);
+    json parsed = check (quickbooksConfig.productMappingJson).fromJsonString();
     map<string> m = {};
     map<json> jsonMap = <map<json>>parsed;
     foreach var [k, v] in jsonMap.entries() {
@@ -20,7 +20,7 @@ function loadProductMap() returns map<string> & readonly|error {
 
 // --- Order status filter ---
 function shouldProcessOrder(shopify:OrderEvent event) returns boolean {
-    match orderStatusTrigger {
+    match shopifyConfig.orderStatusTrigger {
         "FULFILLED" => {
             return (event?.fulfillment_status ?: "") == "fulfilled";
         }
@@ -32,8 +32,6 @@ function shouldProcessOrder(shopify:OrderEvent event) returns boolean {
                 && (event?.financial_status ?: "") == "paid";
         }
         _ => {
-            log:printWarn(string `[Config] Unrecognized orderStatusTrigger value: "${orderStatusTrigger}". ` +
-                "Expected one of: FULFILLED, PAID, COMPLETED. Order will not be processed.");
             return false;
         }
     }
@@ -70,7 +68,7 @@ function isDuplicateTransaction(string orderNum) returns boolean|error {
 function getOrCreateQBCustomer(shopify:Customer? customer, shopify:CustomerAddress? billingAddr) returns string|error {
     string? email = customer?.email;
     if email is () || email == "" {
-        if validationRules.requireCustomerEmail {
+        if quickbooksConfig.validationRules.requireCustomerEmail {
             return error("Customer email is required but missing");
         }
         return "DEFAULT_CUSTOMER";
@@ -99,7 +97,7 @@ function getOrCreateQBCustomer(shopify:Customer? customer, shopify:CustomerAddre
     }
 
     // Not found — auto-create if enabled
-    if !createCustomerIfNotFound {
+    if !quickbooksConfig.createCustomerIfNotFound {
         return error(string `QB customer not found for email: ${email}. Auto-creation disabled.`);
     }
 
@@ -171,20 +169,20 @@ function lookupQBItemId(string? sku) returns string|error {
 // --- Tax code resolution ---
 function resolveTaxCode(shopify:TaxLine[]? taxLines) returns string {
     if taxLines is () || taxLines.length() == 0 {
-        return taxConfig.defaultTaxCode;
+        return quickbooksConfig.taxConfig.defaultTaxCode;
     }
     string taxName = taxLines[0]?.title ?: "";
     if taxName == "" {
-        return taxConfig.defaultTaxCode;
+        return quickbooksConfig.taxConfig.defaultTaxCode;
     }
-    json|error parsed = taxConfig.taxMappingJson.fromJsonString();
+    json|error parsed = quickbooksConfig.taxConfig.taxMappingJson.fromJsonString();
     if parsed is map<json> {
         json? taxCodeValue = parsed[taxName];
         if taxCodeValue !is () {
             return taxCodeValue.toString();
         }
     }
-    return taxConfig.defaultTaxCode;
+    return quickbooksConfig.taxConfig.defaultTaxCode;
 }
 
 // --- Format ISO datetime to YYYY-MM-DD for QB TxnDate ---
@@ -216,7 +214,7 @@ function todayAsYYYYMMDD() returns string {
 
 // --- Build PrivateNote memo from order ---
 function buildMemo(shopify:OrderEvent event) returns string {
-    if !addOrderReferenceToMemo {
+    if !quickbooksConfig.addOrderReferenceToMemo {
         return "";
     }
     string orderId = (event?.id ?: 0).toString();

@@ -106,7 +106,7 @@ function processOrder(shopify:OrderEvent event) returns error? {
     do {
         // 1. Status filter (FULFILLED / PAID / COMPLETED)
         if !shouldProcessOrder(event) {
-            log:printInfo(string `[Skip] Order #${orderNum}: status does not match trigger '${orderStatusTrigger}'`);
+            log:printInfo(string `[Skip] Order #${orderNum}: status does not match trigger '${shopifyConfig.orderStatusTrigger}'`);
             lock { _ = processedOrderIds.removeIfHasKey(orderId); }
             return;
         }
@@ -114,15 +114,15 @@ function processOrder(shopify:OrderEvent event) returns error? {
         // 2. Minimum amount validation
         string? totalStr = event?.total_price;
         if totalStr is () {
-            if validationRules.minimumOrderAmount > 0d {
-                log:printWarn(string `[Skip] Order #${orderNum}: total_price is null and minimumOrderAmount is ${validationRules.minimumOrderAmount}; rejecting order.`);
+            if quickbooksConfig.validationRules.minimumOrderAmount > 0d {
+                log:printWarn(string `[Skip] Order #${orderNum}: total_price is null and minimumOrderAmount is ${quickbooksConfig.validationRules.minimumOrderAmount}; rejecting order.`);
                 lock { _ = processedOrderIds.removeIfHasKey(orderId); }
                 return;
             }
         } else {
             decimal total = check decimal:fromString(totalStr);
-            if total < validationRules.minimumOrderAmount {
-                log:printInfo(string `[Skip] Order #${orderNum}: total ${total} below minimum ${validationRules.minimumOrderAmount}`);
+            if total < quickbooksConfig.validationRules.minimumOrderAmount {
+                log:printInfo(string `[Skip] Order #${orderNum}: total ${total} below minimum ${quickbooksConfig.validationRules.minimumOrderAmount}`);
                 lock { _ = processedOrderIds.removeIfHasKey(orderId); }
                 return;
             }
@@ -130,7 +130,7 @@ function processOrder(shopify:OrderEvent event) returns error? {
 
         // 3. Required fields validation
         shopify:OrderLineItem[]? lineItems = event?.line_items;
-        if validationRules.requireLineItems && (lineItems is () || lineItems.length() == 0) {
+        if quickbooksConfig.validationRules.requireLineItems && (lineItems is () || lineItems.length() == 0) {
             quarantineOrder(event, "Order has no line items", "VALIDATION");
             lock { _ = processedOrderIds.removeIfHasKey(orderId); }
             return;
@@ -157,15 +157,7 @@ function processOrder(shopify:OrderEvent event) returns error? {
 
         string idStr = extractQBId(qbResult.toJson(), "Invoice");
 
-        // Validate transactionType config and derive the display label; fail fast on unrecognized values
-        string docType;
-        if transactionType == "INVOICE" {
-            docType = "Invoice";
-        } else if transactionType == "SALES_RECEIPT" {
-            docType = "Sales Receipt (as Invoice)";
-        } else {
-            fail error(string `Invalid transactionType config value: '${transactionType}'. Expected INVOICE or SALES_RECEIPT.`);
-        }
+        string docType = quickbooksConfig.transactionType == "INVOICE" ? "Invoice" : "Sales Receipt (as Invoice)";
 
         lock { processedOrderIds[orderId] = true; }
         log:printInfo(string `[QB] ${docType} created: Id=${idStr} for Order #${orderNum}`);

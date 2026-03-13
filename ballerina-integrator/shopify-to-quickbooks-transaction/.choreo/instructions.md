@@ -34,20 +34,18 @@ This integration uses refresh token flow for auth. [Learn how to set up QuickBoo
 
 </details>
 
-<details> 
+<details>
 
 <summary>Additional Configurations</summary>
 
 1. `transactionType`
     - The type of QuickBooks transaction to generate. Possible values:
-        - `SALES_RECEIPT` (default)
-        - `INVOICE`
+        - `INVOICE` (default)
+        - `SALES_RECEIPT`
 2. `orderStatusTrigger`
     - The status of the Shopify order that triggers the sync. Possible values:
-        - `FULFILLED` (default)
-        - `PAID`
+        - `PAID` (default)
+        - `FULFILLED`
         - `COMPLETED`
-3. Accounts Config (`productSalesAccountId`, `shippingAccountId`, `discountAccountId`)
-    - The Internal ID references for your QuickBooks Income Accounts where transactions should deposit.
 
 </details>

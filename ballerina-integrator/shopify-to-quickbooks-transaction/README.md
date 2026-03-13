@@ -1,4 +1,4 @@
-# Shopify to QuickBooks Transaction Sync
+# Shopify to QuickBooks Transaction
 
 ## Description
 
@@ -6,12 +6,11 @@ This prebuilt integration automatically synchronizes Shopify orders to QuickBook
 
 ### What It Does
 
-- Listens for Shopify order webhooks (`orders/fulfilled` or `orders/paid`)
-- Maps Shopify products to QuickBooks Items using configurable SKUs
-- Looks up or creates QuickBooks customers corresponding to Shopify customers
-- Creates QuickBooks transactions (Sales Receipts or Invoices) automatically
-- Manages multi-currency orders, shipping charges, discounts, and custom tax codes
-- Quarantines orders lacking configuration details or failing validation for manual review
+- Receives real-time order notifications from Shopify when orders are fulfilled or paid
+- Automatically creates Sales Receipts or Invoices in QuickBooks for each qualifying order
+- Looks up existing QuickBooks customers by email or creates new ones automatically
+- Maps Shopify products to QuickBooks items, including shipping charges, discounts, and tax codes
+- Quarantines unprocessable orders for manual review without interrupting other syncs
 
 ## Prerequisites
 

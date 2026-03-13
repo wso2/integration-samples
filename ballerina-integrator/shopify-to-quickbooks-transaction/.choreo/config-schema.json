@@ -2,6 +2,145 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "type": "object",
   "properties": {
+    "wso2": {
+      "type": "object",
+      "properties": {
+        "shopify_to_quickbooks_transaction": {
+          "type": "object",
+          "properties": {
+            "shopifyConfig": {
+              "type": "object",
+              "properties": {
+                "apiSecretKey": {
+                  "type": "string"
+                },
+                "orderStatusTrigger": {
+                  "enum": [
+                    "FULFILLED",
+                    "PAID",
+                    "COMPLETED"
+                  ]
+                }
+              },
+              "additionalProperties": false,
+              "required": [
+                "apiSecretKey",
+                "orderStatusTrigger"
+              ],
+              "description": ""
+            },
+            "quickbooksConfig": {
+              "type": "object",
+              "properties": {
+                "clientId": {
+                  "type": "string"
+                },
+                "clientSecret": {
+                  "type": "string"
+                },
+                "refreshToken": {
+                  "type": "string"
+                },
+                "realmId": {
+                  "type": "string"
+                },
+                "serviceUrl": {
+                  "type": "string"
+                },
+                "transactionType": {
+                  "enum": [
+                    "INVOICE",
+                    "SALES_RECEIPT"
+                  ]
+                },
+                "createCustomerIfNotFound": {
+                  "type": "boolean"
+                },
+                "productMappingJson": {
+                  "type": "string"
+                },
+                "mapShippingAsSeparateLine": {
+                  "type": "boolean"
+                },
+                "shippingItemName": {
+                  "type": "string"
+                },
+                "discountItemName": {
+                  "type": "string"
+                },
+                "includeDiscountLineItems": {
+                  "type": "boolean"
+                },
+                "addOrderReferenceToMemo": {
+                  "type": "boolean"
+                },
+                "taxConfig": {
+                  "type": "object",
+                  "properties": {
+                    "defaultTaxCode": {
+                      "type": "string"
+                    },
+                    "taxMappingJson": {
+                      "type": "string"
+                    }
+                  },
+                  "additionalProperties": false,
+                  "required": [
+                    "defaultTaxCode",
+                    "taxMappingJson"
+                  ]
+                },
+                "validationRules": {
+                  "type": "object",
+                  "properties": {
+                    "requireCustomerEmail": {
+                      "type": "boolean"
+                    },
+                    "requireLineItems": {
+                      "type": "boolean"
+                    },
+                    "minimumOrderAmount": {
+                      "type": "number"
+                    }
+                  },
+                  "additionalProperties": false,
+                  "required": [
+                    "requireCustomerEmail",
+                    "requireLineItems",
+                    "minimumOrderAmount"
+                  ]
+                }
+              },
+              "additionalProperties": false,
+              "required": [
+                "clientId",
+                "clientSecret",
+                "refreshToken",
+                "realmId",
+                "serviceUrl",
+                "transactionType",
+                "createCustomerIfNotFound",
+                "productMappingJson",
+                "mapShippingAsSeparateLine",
+                "shippingItemName",
+                "discountItemName",
+                "includeDiscountLineItems",
+                "addOrderReferenceToMemo",
+                "taxConfig",
+                "validationRules"
+              ],
+              "description": ""
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "shopifyConfig",
+            "quickbooksConfig"
+          ]
+        }
+      },
+      "additionalProperties": false
+    },
     "ballerina": {
       "type": "object",
       "properties": {
@@ -118,138 +257,6 @@
             }
           },
           "additionalProperties": false
-        }
-      },
-      "additionalProperties": false
-    },
-    "wso2": {
-      "type": "object",
-      "properties": {
-        "shopify_to_quickbooks_transaction": {
-          "type": "object",
-          "properties": {
-            "shopifyConfig": {
-              "type": "object",
-              "properties": {
-                "apiSecretKey": {
-                  "type": "string"
-                }
-              },
-              "additionalProperties": false,
-              "required": [
-                "apiSecretKey"
-              ],
-              "description": ""
-            },
-            "quickbooksConfig": {
-              "type": "object",
-              "properties": {
-                "clientId": {
-                  "type": "string"
-                },
-                "clientSecret": {
-                  "type": "string"
-                },
-                "refreshToken": {
-                  "type": "string"
-                },
-                "realmId": {
-                  "type": "string"
-                },
-                "serviceUrl": {
-                  "type": "string"
-                }
-              },
-              "additionalProperties": false,
-              "required": [
-                "clientId",
-                "clientSecret",
-                "refreshToken",
-                "realmId",
-                "serviceUrl"
-              ],
-              "description": ""
-            },
-            "transactionType": {
-              "type": "string",
-              "description": ""
-            },
-            "orderStatusTrigger": {
-              "type": "string",
-              "description": ""
-            },
-            "createCustomerIfNotFound": {
-              "type": "boolean",
-              "description": ""
-            },
-            "productMappingJson": {
-              "type": "string",
-              "description": ""
-            },
-            "taxConfig": {
-              "type": "object",
-              "properties": {
-                "defaultTaxCode": {
-                  "type": "string"
-                },
-                "taxMappingJson": {
-                  "type": "string"
-                }
-              },
-              "additionalProperties": false,
-              "required": [
-                "defaultTaxCode",
-                "taxMappingJson"
-              ],
-              "description": ""
-            },
-            "mapShippingAsSeparateLine": {
-              "type": "boolean",
-              "description": ""
-            },
-            "shippingItemName": {
-              "type": "string",
-              "description": ""
-            },
-            "discountItemName": {
-              "type": "string",
-              "description": ""
-            },
-            "includeDiscountLineItems": {
-              "type": "boolean",
-              "description": ""
-            },
-            "addOrderReferenceToMemo": {
-              "type": "boolean",
-              "description": ""
-            },
-            "validationRules": {
-              "type": "object",
-              "properties": {
-                "requireCustomerEmail": {
-                  "type": "boolean"
-                },
-                "requireLineItems": {
-                  "type": "boolean"
-                },
-                "minimumOrderAmount": {
-                  "type": "number"
-                }
-              },
-              "additionalProperties": false,
-              "required": [
-                "requireCustomerEmail",
-                "requireLineItems",
-                "minimumOrderAmount"
-              ],
-              "description": ""
-            }
-          },
-          "additionalProperties": false,
-          "required": [
-            "shopifyConfig",
-            "quickbooksConfig"
-          ]
         }
       },
       "additionalProperties": false
