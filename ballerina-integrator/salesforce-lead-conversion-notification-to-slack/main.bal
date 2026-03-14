@@ -1,6 +1,9 @@
 import ballerina/log;
 import ballerinax/salesforce;
 
+// Deduplication cache to prevent processing the same lead conversion event twice
+isolated map<boolean> processedLeadIds = {};
+
 // Salesforce listener configuration
 listener salesforce:Listener salesforceListener = new ({
     baseUrl: salesforceBaseUrl,
@@ -59,6 +62,15 @@ function processLeadConversion(salesforce:EventData eventData) returns error? {
         if leadId == "" {
             log:printError("Missing recordId in Salesforce change event metadata");
             return;
+        }
+
+        // Deduplicate: skip if this lead was already processed (guards against duplicate events)
+        lock {
+            if processedLeadIds.hasKey(leadId) {
+                log:printInfo("Duplicate lead conversion event, skipping", leadId = leadId);
+                return;
+            }
+            processedLeadIds[leadId] = true;
         }
 
         // Query full lead details
