@@ -44,8 +44,8 @@ This integration uses refresh token flow for auth. [Learn how to Develop on Goog
 
 <summary>Additional Configurations</summary>
 
-1. `pollingIntervalSeconds`
-   How often to check for completed sprints (in seconds). Default: `300` (5 minutes).
+1. `pollingIntervalHours`
+   How often to check for completed sprints (in hours). Use `0.0833` for approximately 5 minutes.
 
 2. `timeZone`
    Timezone for email timestamps (e.g., `America/Los_Angeles`, `Europe/London`). Default: `America/Los_Angeles`.
@@ -53,14 +53,13 @@ This integration uses refresh token flow for auth. [Learn how to Develop on Goog
 3. `emailSubjectTemplate`
    Email subject template with placeholders. Available placeholders: `{{sprintName}}`, `{{sprintId}}`. Default: `Sprint Summary: {{sprintName}}`.
 
-4. `gmailRecipient`
-   Email address to receive sprint summaries.
+4. `gmailRecipients`
+   Array of email addresses to receive sprint summaries.
 
 5. **Summary Sections Toggle** - Customize which sections appear in the email:
-   1. `includeCompletedIssues`: Show completed issues list (default: `true`)
-   2. `includeIncompleteIssues`: Show incomplete issues list (default: `true`)
-   3. `includeAssigneeBreakdown`: Show team contribution breakdown (default: `true`)
-   4. `includeMidSprintAdditions`: Show issues added mid-sprint (default: `false`, future feature)
-   5. `includeVelocity`: Show velocity statistics (default: `false`, future feature)
+   1. `includeCompletedIssues`: Show completed issues list 
+   2. `includeCarriedOverIssues`: Show carried over issues 
+   3. `includeAssigneeBreakdown`: Show team contribution 
+   4. `includeMidSprintAdditions`: Show issues added mid-sprint
 
 </details>

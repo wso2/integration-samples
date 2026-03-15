@@ -28,8 +28,8 @@ Before running this integration, you need:
 - API credentials:
   - **Email** - Your Jira account email
   - **API Token** - Generate from [Atlassian Account Security](https://id.atlassian.com/manage-profile/security/api-tokens)
-  - **Base URL** - Your Jira instance URL (e.g., `https://yourcompany.atlassian.net` or `https://yourcompany.atlassian.net/rest`)
-  - **Project Key** - The project key used in JQL (e.g., `PROJ`, `DEV`)
+  - **Base URL** - Your Jira instance URL (e.g., `https://yourcompany.atlassian.net`)
+  - **Project Key** - The project key to monitor (e.g., `PROJ`, `DEV`)
 
 This integration uses Basic Authentication with API tokens. Learn how to [create Jira API tokens](https://support.atlassian.com/atlassian-account/docs/manage-api-tokens-for-your-atlassian-account/).
 
@@ -49,19 +49,19 @@ This integration uses refresh token flow for authentication. Learn how to [Devel
 The following configurations are used by the application.
 
 ### Jira Credentials
-- `jiraEmail` - Jira account email address
-- `jiraApiToken` - Jira API token
-- `jiraBaseUrl` - Jira base URL; `/rest` is appended automatically if missing
-- `jiraProjectKey` - Jira project key used in sprint queries
+- `jiraEmail` - Your Jira account email address
+- `jiraApiToken` - Your Jira API token
+- `jiraBaseUrl` - Your Jira instance URL (e.g., `https://yourcompany.atlassian.net`)
+- `jiraProjectKey` - The project key to monitor for completed sprints (e.g., `PROJ`)
 
 ### Gmail Credentials
-- `gmailClientId` - Google OAuth2 client ID
-- `gmailClientSecret` - Google OAuth2 client secret
-- `gmailRefreshToken` - Google OAuth2 refresh token
+- `gmailClientId` - Your Google OAuth2 client ID
+- `gmailClientSecret` - Your Google OAuth2 client secret
+- `gmailRefreshToken` - Your Google OAuth2 refresh token
 - `gmailRecipients` - Array of email addresses to receive sprint summaries (e.g., `["team@example.com", "manager@example.com"]`)
 
 ### Polling Configuration
-- `pollingIntervalHours` - How often to check for completed sprints in hours (e.g., `1.0` for 1 hour, `0.5` for 30 minutes)
+- `pollingIntervalHours` - How often to check for completed sprints in hours (`0.5` for 30 minutes, `1.0` for 1 hour)
 
 ### Email Configuration (Optional)
 - `timeZone` - Timezone for email timestamps (default: `America/Los_Angeles`)
