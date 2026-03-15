@@ -70,10 +70,10 @@ The following configurations are used by the application.
 
 ### Summary Sections Toggle (Optional)
 Customize which sections appear in the email:
-- `includeCompletedIssues` - Show completed issues list (default: `true`)
-- `includeCarriedOverIssues` - Show carried over issues list (default: `true`)
-- `includeAssigneeBreakdown` - Show team contribution breakdown (default: `true`)
-- `includeMidSprintAdditions` - Show issues added mid-sprint (default: `true`)
+- `includeCompletedIssues` - Show completed issues list 
+- `includeCarriedOverIssues` - Show carried-over issues list 
+- `includeAssigneeBreakdown` - Show team contribution breakdown 
+- `includeMidSprintAdditions` - Show issues added mid-sprint 
 
 ## Deploying on Choreo
 1. Sign in to your [Choreo account](https://console.choreo.dev/).

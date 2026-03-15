@@ -11,14 +11,14 @@ configurable string gmailRefreshToken = ?;
 configurable string[] gmailRecipients = ?;
 
 // Polling Configuration
-configurable decimal pollingIntervalHours = ?; 
+configurable decimal pollingIntervalHours = ?;
 
 // Email Configuration
-configurable string timeZone = "America/Los_Angeles"; 
-configurable string emailSubjectTemplate = "Sprint Summary: {{sprintName}}"; 
+configurable string timeZone = "America/Los_Angeles";
+configurable string emailSubjectTemplate = "Sprint Summary: {{sprintName}}";
 
 // Summary Sections Toggle
-configurable boolean includeCompletedIssues = true; 
-configurable boolean includeCarriedOverIssues = true; 
-configurable boolean includeAssigneeBreakdown = true; 
-configurable boolean includeMidSprintAdditions = true; 
+configurable boolean includeCompletedIssues = ?;
+configurable boolean includeCarriedOverIssues = ?;
+configurable boolean includeAssigneeBreakdown = ?;
+configurable boolean includeMidSprintAdditions = ?; 

@@ -58,7 +58,7 @@ This integration uses refresh token flow for auth. [Learn how to Develop on Goog
 
 5. **Summary Sections Toggle** - Customize which sections appear in the email:
    1. `includeCompletedIssues`: Show completed issues list 
-   2. `includeCarriedOverIssues`: Show carried over issues 
+   2. `includeCarriedOverIssues`: Show carried-over issues 
    3. `includeAssigneeBreakdown`: Show team contribution 
    4. `includeMidSprintAdditions`: Show issues added mid-sprint
 
