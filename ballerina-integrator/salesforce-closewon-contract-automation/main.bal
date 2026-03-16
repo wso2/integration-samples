@@ -44,30 +44,16 @@ service "/data/ChangeEvents" on salesforceListener {
         // Log the metadata for debugging
         log:printInfo(string `Event metadata: ${metadataMap.toJsonString()}`);
         
-        // Get recordIds from metadata
-        json recordIdsJson = metadataMap["recordIds"];
+        // Get recordId from metadata (singular field)
+        json recordIdJson = metadataMap["recordId"];
         
-        if recordIdsJson is () {
-            log:printError("No recordIds found in event metadata");
+        if recordIdJson is () {
+            log:printError("No recordId found in event metadata");
             return;
         }
         
-        // Type narrow to json array
-        if recordIdsJson !is json[] {
-            log:printError(string `recordIds is not an array, type: ${(typeof recordIdsJson).toString()}`);
-            return error("Invalid recordIds structure");
-        }
-        
-        json[] recordIds = recordIdsJson;
-        
-        if recordIds.length() == 0 {
-            log:printError("recordIds array is empty");
-            return;
-        }
-        
-        // Get the first record ID (typically only one for single record updates)
-        json firstRecordId = recordIds[0];
-        string opportunityId = firstRecordId.toString();
+        // Convert to string
+        string opportunityId = recordIdJson.toString();
         
         log:printInfo(string `Processing opportunity ID: ${opportunityId}`);
         
