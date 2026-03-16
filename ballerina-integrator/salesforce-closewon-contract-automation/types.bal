@@ -85,8 +85,6 @@ public type FieldMapping record {
 
 // Salesforce Configuration Record
 public type SalesforceConfig record {|
-    string username;
-    string password;
     string clientId;
     string clientSecret;
     string refreshToken;

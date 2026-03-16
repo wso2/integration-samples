@@ -30,11 +30,14 @@ final dsesign:Client docusignClient = check new (
 );
 
 // Salesforce Listener Configuration
-// The listener requires username/password authentication for CometD protocol
-// If SOAP API is disabled, you need to enable it in Salesforce Setup or use an alternative approach
+// The listener now supports OAuth2 authentication for REST-based event streaming
+// Using RestBasedListenerConfig with OAuth2RefreshTokenGrantConfig
 listener salesforce:Listener salesforceListener = new ({
+    baseUrl: salesforceConfig.baseUrl,
     auth: {
-        username: salesforceConfig.username,
-        password: salesforceConfig.password
+        clientId: salesforceConfig.clientId,
+        clientSecret: salesforceConfig.clientSecret,
+        refreshToken: salesforceConfig.refreshToken,
+        refreshUrl: salesforceConfig.refreshUrl
     }
 });
