@@ -26,16 +26,25 @@ service "/data/ChangeEvents" on salesforceListener {
         // Salesforce Change Events have the structure: {ChangeEventHeader: {recordIds: ["id1", "id2"]}, ...fields}
         map<json> payload = eventData.changedData;
         
+        // Log the full payload for debugging
+        log:printInfo(string `Event payload: ${payload.toJsonString()}`);
+        
         // Try to get the entity ID from ChangeEventHeader.recordIds
         json changeEventHeaderJson = payload["ChangeEventHeader"];
         
         if changeEventHeaderJson is () {
             log:printError("No ChangeEventHeader found in event data");
-            log:printDebug(string `Event payload: ${payload.toString()}`);
             return;
         }
         
-        map<json> changeEventHeader = check changeEventHeaderJson.ensureType();
+        // Convert to map
+        map<json>|error changeEventHeaderResult = changeEventHeaderJson.ensureType();
+        if changeEventHeaderResult is error {
+            log:printError(string `Error converting ChangeEventHeader: ${changeEventHeaderResult.message()}`);
+            return changeEventHeaderResult;
+        }
+        
+        map<json> changeEventHeader = changeEventHeaderResult;
         json recordIdsJson = changeEventHeader["recordIds"];
         
         if recordIdsJson is () {
@@ -43,7 +52,14 @@ service "/data/ChangeEvents" on salesforceListener {
             return;
         }
         
-        json[] recordIds = check recordIdsJson.ensureType();
+        // Convert to array
+        json[]|error recordIdsResult = recordIdsJson.ensureType();
+        if recordIdsResult is error {
+            log:printError(string `Error converting recordIds: ${recordIdsResult.message()}`);
+            return recordIdsResult;
+        }
+        
+        json[] recordIds = recordIdsResult;
         
         if recordIds.length() == 0 {
             log:printError("recordIds array is empty");

@@ -2,8 +2,13 @@ import ballerina/log;
 
 // Get opportunity details from Salesforce
 function getOpportunity(string opportunityId) returns Opportunity|error {
-    Opportunity opportunity = check salesforceClient->getById("Opportunity", opportunityId, Opportunity);
-    return opportunity;
+    log:printInfo(string `Fetching opportunity details for ID: ${opportunityId}`);
+    Opportunity|error opportunityResult = salesforceClient->getById("Opportunity", opportunityId, Opportunity);
+    if opportunityResult is error {
+        log:printError(string `Salesforce API error: ${opportunityResult.message()}`);
+        return opportunityResult;
+    }
+    return opportunityResult;
 }
 
 // Get contact by role from opportunity

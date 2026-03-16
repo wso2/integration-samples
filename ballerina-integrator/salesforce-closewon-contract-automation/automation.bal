@@ -135,10 +135,20 @@ public function processOpportunityForContract(string opportunityId) returns erro
     log:printInfo(string `Processing opportunity ${opportunityId} for contract dispatch`);
     
     // Get opportunity details
-    Opportunity opportunity = check getOpportunity(opportunityId);
+    Opportunity|error opportunityResult = getOpportunity(opportunityId);
+    if opportunityResult is error {
+        log:printError(string `Failed to get opportunity ${opportunityId}: ${opportunityResult.message()}`);
+        return opportunityResult;
+    }
+    Opportunity opportunity = opportunityResult;
+    log:printInfo(string `Retrieved opportunity: ${opportunity.Name}, Stage: ${opportunity.StageName}`);
     
     // Validate opportunity data
-    check validateOpportunityData(opportunity);
+    error? validationResult = validateOpportunityData(opportunity);
+    if validationResult is error {
+        log:printError(string `Opportunity validation failed: ${validationResult.message()}`);
+        return validationResult;
+    }
     
     // Check if opportunity meets dispatch criteria
     if !meetsDispatchCriteria(opportunity) {
@@ -147,21 +157,39 @@ public function processOpportunityForContract(string opportunityId) returns erro
     }
     
     // Get signer contact based on configured role
-    Contact signer = check getSignerContact(opportunityId);
+    Contact|error signerResult = getSignerContact(opportunityId);
+    if signerResult is error {
+        log:printError(string `Failed to get signer contact: ${signerResult.message()}`);
+        return signerResult;
+    }
+    Contact signer = signerResult;
     
     // Validate contact data
-    check validateContactData(signer);
+    error? contactValidationResult = validateContactData(signer);
+    if contactValidationResult is error {
+        log:printError(string `Contact validation failed: ${contactValidationResult.message()}`);
+        return contactValidationResult;
+    }
     
     // Select appropriate template
     TemplateConfig templateConfig = selectTemplate(opportunity);
+    log:printInfo(string `Selected template: ${templateConfig.templateId}`);
     
     // Create and send DocuSign envelope
-    string envelopeId = check createAndSendEnvelope(opportunity, signer, templateConfig);
+    string|error envelopeResult = createAndSendEnvelope(opportunity, signer, templateConfig);
+    if envelopeResult is error {
+        log:printError(string `Failed to create DocuSign envelope: ${envelopeResult.message()}`);
+        return envelopeResult;
+    }
+    string envelopeId = envelopeResult;
     
     log:printInfo(string `DocuSign envelope ${envelopeId} sent for opportunity ${opportunityId}`);
     
     // Update opportunity stage to "Contract Sent"
-    check updateOpportunityStage(opportunityId, businessRulesConfig.contractSentStage);
+    error? updateResult = updateOpportunityStage(opportunityId, businessRulesConfig.contractSentStage);
+    if updateResult is error {
+        log:printWarn(string `Failed to update opportunity stage: ${updateResult.message()}`);
+    }
     
     log:printInfo(string `Successfully processed opportunity ${opportunityId}`);
 }
