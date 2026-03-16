@@ -29,13 +29,12 @@ final dsesign:Client docusignClient = check new (
     serviceUrl = docusignConfig.baseUrl
 );
 
-// Salesforce listener configuration
-final salesforce:ListenerConfig salesforceListenerConfig = {
+// Salesforce Listener Configuration
+// The listener requires username/password authentication for CometD protocol
+// If SOAP API is disabled, you need to enable it in Salesforce Setup or use an alternative approach
+listener salesforce:Listener salesforceListener = new ({
     auth: {
         username: salesforceConfig.username,
         password: salesforceConfig.password
     }
-};
-
-// Salesforce Listener Configuration
-listener salesforce:Listener salesforceListener = new (salesforceListenerConfig);
+});
