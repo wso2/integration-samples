@@ -23,15 +23,37 @@ service "/data/ChangeEvents" on salesforceListener {
         log:printInfo("Received onUpdate event from Salesforce");
         
         // Extract opportunity ID from event data
+        // Salesforce Change Events have the structure: {ChangeEventHeader: {recordIds: ["id1", "id2"]}, ...fields}
         map<json> payload = eventData.changedData;
-        json entityIdJson = payload["entityId"];
         
-        if entityIdJson is () {
-            log:printError("No entityId found in event data");
+        // Try to get the entity ID from ChangeEventHeader.recordIds
+        json changeEventHeaderJson = payload["ChangeEventHeader"];
+        
+        if changeEventHeaderJson is () {
+            log:printError("No ChangeEventHeader found in event data");
+            log:printDebug(string `Event payload: ${payload.toString()}`);
             return;
         }
         
-        string opportunityId = entityIdJson.toString();
+        map<json> changeEventHeader = check changeEventHeaderJson.ensureType();
+        json recordIdsJson = changeEventHeader["recordIds"];
+        
+        if recordIdsJson is () {
+            log:printError("No recordIds found in ChangeEventHeader");
+            return;
+        }
+        
+        json[] recordIds = check recordIdsJson.ensureType();
+        
+        if recordIds.length() == 0 {
+            log:printError("recordIds array is empty");
+            return;
+        }
+        
+        // Get the first record ID (typically only one for single record updates)
+        string opportunityId = recordIds[0].toString();
+        
+        log:printInfo(string `Processing opportunity ID: ${opportunityId}`);
         
         // Process opportunity for contract dispatch
         error? result = processOpportunityForContract(opportunityId);
