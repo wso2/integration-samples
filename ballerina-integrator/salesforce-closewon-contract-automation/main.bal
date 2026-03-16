@@ -1,8 +1,15 @@
 import ballerinax/salesforce;
 import ballerina/log;
 
-// Salesforce Listener Service for Opportunity Changes
-service "OpportunityChangeListener" on salesforceListener {
+// Salesforce Listener Service for Change Events
+// The service name MUST be the exact Salesforce channel path you want to listen to
+// Options:
+//   - "/data/ChangeEvents" - All object changes (default)
+//   - "/data/OpportunityChangeEvent" - Opportunity changes only
+//   - "/data/AccountChangeEvent" - Account changes only
+//   - Custom channels as configured in Salesforce Change Data Capture
+// Note: The channel must be enabled in Salesforce Setup > Change Data Capture
+service "/data/ChangeEvents" on salesforceListener {
     
     // Handle opportunity creation events
     remote function onCreate(salesforce:EventData eventData) returns error? {

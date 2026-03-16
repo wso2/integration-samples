@@ -59,9 +59,13 @@ Record type: `SalesforceConfig`
 - `refreshToken` - Your Salesforce OAuth2 refresh token
 - `refreshUrl` - Salesforce OAuth2 token endpoint (default: `https://login.salesforce.com/services/oauth2/token`)
 - `baseUrl` - Your Salesforce instance URL (default: `https://login.salesforce.com`)
-- `channelName` - Salesforce event channel to listen to (default: `/data/ChangeEvents`)
 
-**Note**: The default channel `/data/ChangeEvents` captures all object changes. To listen to only Opportunity changes, set `channelName` to `/data/OpportunityChangeEvent`.
+**Important - Channel Configuration**: 
+- The service in `main.bal` is configured to listen to `/data/ChangeEvents` by default (captures all object changes)
+- To listen to a different channel, update the service declaration in `main.bal`:
+  - For Opportunity-only events: `service "/data/OpportunityChangeEvent" on salesforceListener`
+  - For custom channels: `service "/data/YourCustomChannel" on salesforceListener`
+- The channel must be enabled in your Salesforce org's Change Data Capture settings
 
 ### Docusign Configuration (`docusignConfig`)
 

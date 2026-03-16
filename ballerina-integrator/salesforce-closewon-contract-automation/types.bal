@@ -90,7 +90,6 @@ public type SalesforceConfig record {|
     string refreshToken;
     string refreshUrl = "https://login.salesforce.com/services/oauth2/token";
     string baseUrl = "https://login.salesforce.com";
-    string channelName = "/data/ChangeEvents";
 |};
 
 // DocuSign Configuration Record
