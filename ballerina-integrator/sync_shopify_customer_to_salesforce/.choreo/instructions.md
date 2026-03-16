@@ -38,6 +38,3 @@ The following should be done after deploying the integration, and the endpoint U
     - **URL**: Enter the deployed integration's endpoint URL
 4. Go back to the Integration Overview page, and click on **Configure Security**. Disable **OAuth2** and click on **Apply**.
 </details>
-
-</details>
-
