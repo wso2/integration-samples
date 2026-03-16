@@ -1,13 +1,14 @@
-// Vendor-specific configurations organized by records
-
 // Salesforce Configuration
 configurable SalesforceConfig salesforceConfig = ?;
 
-// Docusign Configuration
+// DocuSign Configuration
 configurable DocusignConfig docusignConfig = ?;
 
 // Template Configuration
-configurable TemplateSettings templateSettings = ?;
+configurable TemplateSettings templateSettings = {
+    defaultTemplateId: "",
+    templateConfigs: []
+};
 
 // Business Rules Configuration
 configurable BusinessRulesConfig businessRulesConfig = {

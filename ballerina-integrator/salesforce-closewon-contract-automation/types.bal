@@ -27,7 +27,7 @@ public type OpportunityContactRole record {
     boolean IsPrimary?;
 };
 
-// Note: Docusign types are now provided by ballerinax/docusign.dsesign connector
+// Note: DocuSign types are now provided by ballerinax/docusign.dsesign connector
 // Custom types for our specific use case
 
 // Simplified envelope creation request
@@ -84,38 +84,39 @@ public type FieldMapping record {
 };
 
 // Salesforce Configuration Record
-public type SalesforceConfig record {
+public type SalesforceConfig record {|
     string username;
     string password;
     string clientId;
     string clientSecret;
     string refreshToken;
-    string refreshUrl;
-    string baseUrl;
-};
+    string refreshUrl = "https://login.salesforce.com/services/oauth2/token";
+    string baseUrl = "https://login.salesforce.com";
+    string channelName = "/data/ChangeEvents";
+|};
 
-// Docusign Configuration Record
-public type DocusignConfig record {
+// DocuSign Configuration Record
+public type DocusignConfig record {|
     string accountId;
     string clientId;
     string clientSecret;
     string refreshToken;
-    string refreshUrl;
-    string baseUrl;
-};
+    string refreshUrl = "https://account-d.docusign.com/oauth/token";
+    string baseUrl = "https://demo.docusign.net/restapi";
+|};
 
-// Template Configuration Record
-public type TemplateSettings record {
+// Template Settings Record
+public type TemplateSettings record {|
     string defaultTemplateId;
     TemplateConfig[] templateConfigs;
-};
+|};
 
 // Business Rules Configuration Record
-public type BusinessRulesConfig record {
+public type BusinessRulesConfig record {|
     decimal minimumDealValue;
     SignerRole signerRole;
     CcRecipient[] ccRecipients;
     FieldMapping[] fieldMappings;
     string contractSentStage;
     int expirationReminderDays;
-};
+|};

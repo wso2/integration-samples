@@ -2,7 +2,7 @@ import ballerinax/salesforce;
 import ballerina/log;
 
 // Salesforce Listener Service for Opportunity Changes
-service "/data/ChangeEvents" on salesforceListener {
+service "OpportunityChangeListener" on salesforceListener {
     
     // Handle opportunity creation events
     remote function onCreate(salesforce:EventData eventData) returns error? {
@@ -15,18 +15,16 @@ service "/data/ChangeEvents" on salesforceListener {
     remote function onUpdate(salesforce:EventData eventData) returns error? {
         log:printInfo("Received onUpdate event from Salesforce");
         
-        // Extract opportunity ID from event metadata
-        salesforce:ChangeEventMetadata? metadata = eventData.metadata;
-        if metadata is () {
-            log:printError("No metadata found in Salesforce ChangeEvent");
-            return error("Invalid Salesforce ChangeEvent: missing metadata");
+        // Extract opportunity ID from event data
+        map<json> payload = eventData.changedData;
+        json entityIdJson = payload["entityId"];
+        
+        if entityIdJson is () {
+            log:printError("No entityId found in event data");
+            return;
         }
         
-        string opportunityId = metadata.recordId ?: "";
-        if opportunityId.length() == 0 {
-            log:printError("No recordId found in Salesforce ChangeEvent metadata");
-            return error("Invalid Salesforce ChangeEvent: missing recordId");
-        }
+        string opportunityId = entityIdJson.toString();
         
         // Process opportunity for contract dispatch
         error? result = processOpportunityForContract(opportunityId);

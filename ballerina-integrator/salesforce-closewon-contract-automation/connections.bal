@@ -2,13 +2,21 @@ import ballerinax/salesforce;
 import ballerinax/'client.config as clientConfig;
 import ballerinax/docusign.dsesign;
 
+// Salesforce OAuth configuration for client
+final clientConfig:OAuth2RefreshTokenGrantConfig salesforceOAuthConfig = {
+    clientId: salesforceConfig.clientId,
+    clientSecret: salesforceConfig.clientSecret,
+    refreshToken: salesforceConfig.refreshToken,
+    refreshUrl: salesforceConfig.refreshUrl
+};
+
 // Salesforce Client Configuration
 final salesforce:Client salesforceClient = check new ({
     baseUrl: salesforceConfig.baseUrl,
     auth: salesforceOAuthConfig
 });
 
-// Docusign Client Configuration
+// DocuSign Client Configuration
 final dsesign:Client docusignClient = check new (
     config = {
         auth: {
@@ -20,14 +28,6 @@ final dsesign:Client docusignClient = check new (
     },
     serviceUrl = docusignConfig.baseUrl
 );
-
-// Salesforce OAuth configuration for client
-final clientConfig:OAuth2RefreshTokenGrantConfig salesforceOAuthConfig = {
-    clientId: salesforceConfig.clientId,
-    clientSecret: salesforceConfig.clientSecret,
-    refreshToken: salesforceConfig.refreshToken,
-    refreshUrl: salesforceConfig.refreshUrl
-};
 
 // Salesforce listener configuration
 final salesforce:ListenerConfig salesforceListenerConfig = {
