@@ -37,14 +37,13 @@ service "/data/ChangeEvents" on salesforceListener {
             return;
         }
         
-        // Convert to map
-        map<json>|error changeEventHeaderResult = changeEventHeaderJson.ensureType();
-        if changeEventHeaderResult is error {
-            log:printError(string `Error converting ChangeEventHeader: ${changeEventHeaderResult.message()}`);
-            return changeEventHeaderResult;
+        // Type narrow to map<json>
+        if changeEventHeaderJson !is map<json> {
+            log:printError(string `ChangeEventHeader is not a map, type: ${(typeof changeEventHeaderJson).toString()}`);
+            return error("Invalid ChangeEventHeader structure");
         }
         
-        map<json> changeEventHeader = changeEventHeaderResult;
+        map<json> changeEventHeader = changeEventHeaderJson;
         json recordIdsJson = changeEventHeader["recordIds"];
         
         if recordIdsJson is () {
@@ -52,14 +51,13 @@ service "/data/ChangeEvents" on salesforceListener {
             return;
         }
         
-        // Convert to array
-        json[]|error recordIdsResult = recordIdsJson.ensureType();
-        if recordIdsResult is error {
-            log:printError(string `Error converting recordIds: ${recordIdsResult.message()}`);
-            return recordIdsResult;
+        // Type narrow to json array
+        if recordIdsJson !is json[] {
+            log:printError(string `recordIds is not an array, type: ${(typeof recordIdsJson).toString()}`);
+            return error("Invalid recordIds structure");
         }
         
-        json[] recordIds = recordIdsResult;
+        json[] recordIds = recordIdsJson;
         
         if recordIds.length() == 0 {
             log:printError("recordIds array is empty");
@@ -67,7 +65,8 @@ service "/data/ChangeEvents" on salesforceListener {
         }
         
         // Get the first record ID (typically only one for single record updates)
-        string opportunityId = recordIds[0].toString();
+        json firstRecordId = recordIds[0];
+        string opportunityId = firstRecordId.toString();
         
         log:printInfo(string `Processing opportunity ID: ${opportunityId}`);
         
