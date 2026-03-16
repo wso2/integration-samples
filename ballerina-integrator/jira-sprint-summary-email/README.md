@@ -68,7 +68,7 @@ The following configurations are used by the application.
 - `emailSubjectTemplate` - Email subject template (default: `Sprint Summary: {{sprintName}}`)
   - Available placeholders: `{{sprintName}}`, `{{sprintId}}`
 
-### Summary Sections Toggle (Optional)
+### Summary Sections Toggle 
 Customize which sections appear in the email:
 - `includeCompletedIssues` - Show completed issues list 
 - `includeCarriedOverIssues` - Show carried-over issues list 
