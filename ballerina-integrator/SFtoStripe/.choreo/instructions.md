@@ -22,6 +22,8 @@ This integration listens for Salesforce Account and Contact creation, update, an
 3. **Create Custom Field** `Stripe_Customer_Id__c` (Text, 255 chars):
    - On Account object
    - On Contact object
+
+Optional: To sync account emails to Stripe, create a custom field `Email__c` (Email, 255 chars) on the Account object.
 4. **Create OAuth2 Connected App**:
    - Navigate to Setup > Apps > App Manager
    - Create new Connected App and note:

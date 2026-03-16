@@ -22,6 +22,7 @@ Salesforce Setup
   - Move Account and Contact to "Selected Entities"
   - Click Save
 - Create a custom field `Stripe_Customer_Id__c` (Text, 255 chars) on Account and Contact objects
+- (Optional) Create a custom field `Email__c` (Email, 255 chars) on Account object if you want to sync account emails to Stripe
 - Create a Connected App for OAuth2 credentials:
   - Navigate to Setup > Apps > App Manager
   - Create new Connected App and note the Client ID, Client Secret, and Refresh Token

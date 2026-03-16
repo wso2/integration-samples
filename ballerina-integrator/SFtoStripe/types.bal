@@ -29,6 +29,11 @@ public type SalesforceAccount record {|
     string? BillingState?;
     string? BillingPostalCode?;
     string? BillingCountry?;
+    string? ShippingStreet?;
+    string? ShippingCity?;
+    string? ShippingState?;
+    string? ShippingPostalCode?;
+    string? ShippingCountry?;
     string? Description?;
     string? Stripe_Customer_Id__c?;
     string? RecordTypeId?;
@@ -48,6 +53,11 @@ public type SalesforceContact record {|
     string? MailingState?;
     string? MailingPostalCode?;
     string? MailingCountry?;
+    string? OtherStreet?;
+    string? OtherCity?;
+    string? OtherState?;
+    string? OtherPostalCode?;
+    string? OtherCountry?;
     string? Description?;
     string? Stripe_Customer_Id__c?;
     string? RecordTypeId?;
@@ -59,7 +69,4 @@ public type StripeCustomerAddress record {|
     string city?;
     string country?;
     string line1?;
-    string line2?;
-    string postal_code?;
-    string state?;
 |};
