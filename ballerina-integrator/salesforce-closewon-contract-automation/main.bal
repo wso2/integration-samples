@@ -22,32 +22,33 @@ service "/data/ChangeEvents" on salesforceListener {
     remote function onUpdate(salesforce:EventData eventData) returns error? {
         log:printInfo("Received onUpdate event from Salesforce");
         
-        // Extract opportunity ID from event data
-        // Salesforce Change Events have the structure: {ChangeEventHeader: {recordIds: ["id1", "id2"]}, ...fields}
-        map<json> payload = eventData.changedData;
+        // Extract opportunity ID from event metadata
+        // The EventData has a metadata field that contains the ChangeEventMetadata
+        salesforce:ChangeEventMetadata? metadataValue = eventData.metadata;
         
-        // Log the full payload for debugging
-        log:printInfo(string `Event payload: ${payload.toJsonString()}`);
-        
-        // Try to get the entity ID from ChangeEventHeader.recordIds
-        json changeEventHeaderJson = payload["ChangeEventHeader"];
-        
-        if changeEventHeaderJson is () {
-            log:printError("No ChangeEventHeader found in event data");
+        if metadataValue is () {
+            log:printError("No metadata found in event data");
             return;
         }
         
-        // Type narrow to map<json>
-        if changeEventHeaderJson !is map<json> {
-            log:printError(string `ChangeEventHeader is not a map, type: ${(typeof changeEventHeaderJson).toString()}`);
-            return error("Invalid ChangeEventHeader structure");
+        // Convert metadata to JSON to access fields
+        json metadataJson = metadataValue.toJson();
+        
+        if metadataJson !is map<json> {
+            log:printError("Metadata is not a JSON map");
+            return error("Invalid metadata structure");
         }
         
-        map<json> changeEventHeader = changeEventHeaderJson;
-        json recordIdsJson = changeEventHeader["recordIds"];
+        map<json> metadataMap = metadataJson;
+        
+        // Log the metadata for debugging
+        log:printInfo(string `Event metadata: ${metadataMap.toJsonString()}`);
+        
+        // Get recordIds from metadata
+        json recordIdsJson = metadataMap["recordIds"];
         
         if recordIdsJson is () {
-            log:printError("No recordIds found in ChangeEventHeader");
+            log:printError("No recordIds found in event metadata");
             return;
         }
         
