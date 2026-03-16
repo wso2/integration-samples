@@ -6,7 +6,7 @@
 - Routes contacts to sheet tabs based on lifecycle stage
 - Upserts rows using email as the unique key
 - Supports incremental sync and optional filtering
-- Runs on a schedule
+- Runs once per execution (scheduling is handled externally)
 
 <details>
 <summary>HubSpot Setup</summary>
@@ -58,7 +58,6 @@ Default sheet mapping:
 <summary>Additional Configuration</summary>
 
 - `fields`: HubSpot properties exported as columns
-- `scheduleIntervalSeconds`: run interval in seconds
 - `syncMode`: `upsert` (default), `append`, or `replace`
 - `maxRows`: max contacts per run (`0` means unlimited)
 - `lastSyncTimestamp`: optional initial checkpoint

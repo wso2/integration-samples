@@ -26,8 +26,6 @@ configurable string defaultSheetName = "Sheet1";
 // Field Mapping Configuration
 configurable string[] fields = ["email", "firstname", "lastname", "phone"];
 
-// Scheduling Configuration
-configurable int scheduleIntervalSeconds = 15;
 
 // Incremental Sync Configuration
 configurable string lastSyncTimestamp = "";

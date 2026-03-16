@@ -2,7 +2,7 @@
 
 ## Description
 
-This integration fetches contacts from HubSpot and synchronizes them to a Google Sheets spreadsheet. The integration runs on a scheduled interval and supports incremental synchronization to ensure that only new or modified contacts are processed.
+This integration fetches contacts from HubSpot and synchronizes them to a Google Sheets spreadsheet. The integration runs once per execution and supports incremental synchronization to ensure that only new or modified contacts are processed.
 
 Contacts are routed to different sheets based on their lifecycle stage, and existing records are updated using email as the unique identifier.
 
@@ -12,7 +12,7 @@ Contacts are routed to different sheets based on their lifecycle stage, and exis
 - Routes contacts to sheet tabs using lifecycle stage
 - Uses email-based upsert to avoid duplicates (`upsert`, `append`, or `replace`)
 - Supports incremental sync with optional HubSpot property filtering
-- Runs automatically on a configurable schedule with configurable field mapping
+- Runs once per execution (scheduling is handled externally) with configurable field mapping
 
 ## Prerequisites
 
@@ -80,7 +80,6 @@ Each HubSpot lifecycle stage routes to its own sheet by default:
   - `append` — always insert a new row, never check for duplicates
   - `replace` — clear the sheet first, then write all contacts fresh
 - `fields` - List of HubSpot contact properties to export (e.g., `["email", "firstname", "lastname", "phone"]`)
-- `scheduleIntervalSeconds` - How frequently the sync runs, in seconds
 - `maxRows` - Maximum number of contacts to process per run (`0` for unlimited)
 - `lastSyncTimestamp` - Timestamp of the last sync; leave empty for a full initial sync
 - `contactFilterProperty` - Optional HubSpot property name to filter contacts by
