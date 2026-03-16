@@ -92,7 +92,7 @@ function meetsMinimumAmount(decimal amount, decimal minimumAmount) returns boole
 // Checks if opportunity passes all configured filters
 function passesFilters(OpportunityDetails details) returns boolean {
     // Filter by record type
-    if allowedRecordTypes.length() > 0 && !allowedRecordTypes.some(t => t == details.opportunityType) {
+    if allowedTypes.length() > 0 && !allowedTypes.some(t => t == details.opportunityType) {
         return false;
     }
 
@@ -131,9 +131,7 @@ function formatOwnerMention(string ownerName) returns string {
     if slackHandle == "" {
         return ownerName;
     }
-    // Mapping contains a Slack user ID (optionally prefixed with @)
-    string userId = slackHandle.startsWith("@") ? slackHandle.substring(1) : slackHandle;
-    return "<@" + userId + ">";
+    return slackHandle.startsWith("@") ? "<" + slackHandle + ">" : "<@" + slackHandle + ">";
 }
 
 // Adds optional field to message if value exists
@@ -156,7 +154,7 @@ function getSlackHandleForOwner(string ownerName) returns string {
 
 // Determines the appropriate Slack channel based on deal size
 function getChannelForDealSize(decimal amount) returns string {
-    string selectedChannel = slackConfig.slackChannel;
+    string selectedChannel = slackChannel;
     decimal highestThreshold = 0.0;
     regexp:RegExp separator = re `:`;
 
@@ -202,6 +200,14 @@ function sendViaSlackClient(string messageText, string channelName) returns erro
     });
 
     if response is error {
+        // Check if this is a data binding error related to bot_id or MessageObjBotId
+        string errorMsg = response.message();
+        if errorMsg.includes("Payload binding failed") && 
+           (errorMsg.includes("bot_id") || errorMsg.includes("MessageObjBotId")) {
+            // Message was sent successfully, just ignore the binding error
+            log:printInfo("Slack message sent successfully (ignoring response binding issue)");
+            return;
+        }
         return response;
     }
     
@@ -211,16 +217,7 @@ function sendViaSlackClient(string messageText, string channelName) returns erro
 // Sends message via webhook
 function sendViaWebhook(string messageText) returns error? {
     SlackWebhookPayload payload = {text: messageText};
-    http:Response|error response;
-
-
-    if slackConfig.slackWebhookUrl != "" {
-        http:Client webhookClient = check new (slackConfig.slackWebhookUrl);
-        response = webhookClient->post("", payload);
-    } else {
-        return error("No webhook URL configured");
-    }
-
+    http:Response|error response = webhookClient->post("", payload);
 
     if response is error {
         return handleWebhookConnectionError(response);
