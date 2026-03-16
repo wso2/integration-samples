@@ -4,15 +4,24 @@ import ballerina/log;
 
 // Map Salesforce opportunity to DocuSign envelope subject
 public function mapEnvelopeSubject(Opportunity opportunity) returns string {
-    return string `Contract for ${opportunity.Name}`;
+    string? opportunityName = opportunity.Name;
+    if opportunityName is string {
+        return string `Contract for ${opportunityName}`;
+    }
+    return "Contract";
 }
 
 // Map Salesforce contact to DocuSign signer
-public function mapContactToSigner(Contact contact, string roleName) returns SignerInfo {
+public function mapContactToSigner(Contact contact, string roleName) returns SignerInfo|error {
     string signerName = buildContactName(contact);
     
+    string? contactEmail = contact.Email;
+    if contactEmail is () {
+        return error("Contact email is required");
+    }
+    
     return {
-        email: contact.Email,
+        email: contactEmail,
         name: signerName,
         roleName: roleName,
         routingOrder: 1
@@ -22,19 +31,28 @@ public function mapContactToSigner(Contact contact, string roleName) returns Sig
 // Build full contact name
 function buildContactName(Contact contact) returns string {
     string? firstName = contact.FirstName;
-    string lastName = contact.LastName;
+    string? lastName = contact.LastName;
     
-    if firstName is string {
+    if firstName is string && lastName is string {
         return string `${firstName} ${lastName}`;
     }
     
-    return lastName;
+    if lastName is string {
+        return lastName;
+    }
+    
+    if firstName is string {
+        return firstName;
+    }
+    
+    return "Contact";
 }
 
 // Validate opportunity data before processing
 public function validateOpportunityData(Opportunity opportunity) returns error? {
     // Validate required fields
-    if opportunity.Name.trim() == "" {
+    string? opportunityName = opportunity.Name;
+    if opportunityName is () || opportunityName.trim() == "" {
         return error("Opportunity name is required");
     }
     
@@ -47,25 +65,28 @@ public function validateOpportunityData(Opportunity opportunity) returns error? 
         return error("Opportunity amount must be positive");
     }
     
-    log:printInfo(string `Validated opportunity ${opportunity.Id}: ${opportunity.Name}`);
+    log:printInfo(string `Validated opportunity ${opportunity.Id}: ${opportunityName}`);
 }
 
 // Validate contact data before processing
 public function validateContactData(Contact contact) returns error? {
     // Validate email
-    if contact.Email.trim() == "" {
+    string? contactEmail = contact.Email;
+    if contactEmail is () || contactEmail.trim() == "" {
         return error("Contact email is required");
     }
     
     // Basic email validation
-    if !contact.Email.includes("@") {
-        return error(string `Invalid email format: ${contact.Email}`);
+    if !contactEmail.includes("@") {
+        return error(string `Invalid email format: ${contactEmail}`);
     }
     
     // Validate name
-    if contact.LastName.trim() == "" {
-        return error("Contact last name is required");
+    string? lastName = contact.LastName;
+    string? firstName = contact.FirstName;
+    if (lastName is () || lastName.trim() == "") && (firstName is () || firstName.trim() == "") {
+        return error("Contact must have at least first name or last name");
     }
     
-    log:printInfo(string `Validated contact ${contact.Id}: ${contact.Email}`);
+    log:printInfo(string `Validated contact ${contact.Id}: ${contactEmail}`);
 }

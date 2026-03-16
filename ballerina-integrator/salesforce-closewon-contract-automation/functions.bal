@@ -92,7 +92,10 @@ function selectTemplate(Opportunity opportunity) returns TemplateConfig {
 function getOpportunityFieldValue(Opportunity opportunity, string fieldName) returns string {
     match fieldName {
         "Name" => {
-            return opportunity.Name;
+            string? opportunityName = opportunity.Name;
+            if opportunityName is string {
+                return opportunityName;
+            }
         }
         "Amount" => {
             decimal? amount = opportunity.Amount;
@@ -110,7 +113,10 @@ function getOpportunityFieldValue(Opportunity opportunity, string fieldName) ret
             return opportunity.Id;
         }
         "StageName" => {
-            return opportunity.StageName;
+            string? stageName = opportunity.StageName;
+            if stageName is string {
+                return stageName;
+            }
         }
         "Type" => {
             string? oppType = opportunity.Type;
@@ -134,7 +140,8 @@ function updateOpportunityStage(string opportunityId, string stageName) returns 
 // Check if opportunity meets criteria
 function meetsDispatchCriteria(Opportunity opportunity) returns boolean {
     // Check if stage is Closed Won
-    if opportunity.StageName != "Closed Won" {
+    string? stageName = opportunity.StageName;
+    if stageName is () || stageName != "Closed Won" {
         return false;
     }
     

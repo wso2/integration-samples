@@ -9,9 +9,15 @@ function createAndSendEnvelope(Opportunity opportunity, Contact signer, Template
     // Build pre-fill fields
     record {string name; string value;}[] templateFields = buildTemplateFields(opportunity);
     
+    // Get signer email
+    string? signerEmail = signer.Email;
+    if signerEmail is () {
+        return error("Contact email is required");
+    }
+    
     // Build signer info
     SignerInfo signerInfo = {
-        email: signer.Email,
+        email: signerEmail,
         name: signerName,
         roleName: "Signer",
         routingOrder: 1
@@ -30,9 +36,13 @@ function createAndSendEnvelope(Opportunity opportunity, Contact signer, Template
         ccRoutingOrder = ccRoutingOrder + 1;
     }
     
+    // Get opportunity name
+    string? opportunityName = opportunity.Name;
+    string emailSubject = opportunityName is string ? string `Contract for ${opportunityName}` : "Contract";
+    
     // Create envelope definition for DocuSign API
     dsesign:EnvelopeDefinition envelopeDefinition = {
-        emailSubject: string `Contract for ${opportunity.Name}`,
+        emailSubject: emailSubject,
         templateId: templateConfig.templateId,
         status: "sent"
     };
@@ -121,13 +131,21 @@ function buildTemplateFields(Opportunity opportunity) returns record {string nam
 // Build signer name from contact
 function buildSignerName(Contact contact) returns string {
     string? firstName = contact.FirstName;
-    string lastName = contact.LastName;
+    string? lastName = contact.LastName;
     
-    if firstName is string {
+    if firstName is string && lastName is string {
         return string `${firstName} ${lastName}`;
     }
     
-    return lastName;
+    if lastName is string {
+        return lastName;
+    }
+    
+    if firstName is string {
+        return firstName;
+    }
+    
+    return "Signer";
 }
 
 // Process opportunity for contract dispatch
@@ -141,7 +159,11 @@ public function processOpportunityForContract(string opportunityId) returns erro
         return opportunityResult;
     }
     Opportunity opportunity = opportunityResult;
-    log:printInfo(string `Retrieved opportunity: ${opportunity.Name}, Stage: ${opportunity.StageName}`);
+    string? opportunityName = opportunity.Name;
+    string? stageName = opportunity.StageName;
+    string nameStr = opportunityName is string ? opportunityName : "Unknown";
+    string stageStr = stageName is string ? stageName : "Unknown";
+    log:printInfo(string `Retrieved opportunity: ${nameStr}, Stage: ${stageStr}`);
     
     // Validate opportunity data
     error? validationResult = validateOpportunityData(opportunity);

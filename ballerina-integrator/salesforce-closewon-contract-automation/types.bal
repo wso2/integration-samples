@@ -1,8 +1,8 @@
 // Salesforce Opportunity record
 public type Opportunity record {
     string Id;
-    string Name;
-    string StageName;
+    string Name?;
+    string StageName?;
     decimal Amount?;
     string AccountId?;
     string Type?;
@@ -13,8 +13,8 @@ public type Opportunity record {
 public type Contact record {
     string Id;
     string FirstName?;
-    string LastName;
-    string Email;
+    string LastName?;
+    string Email?;
     string AccountId?;
 };
 
