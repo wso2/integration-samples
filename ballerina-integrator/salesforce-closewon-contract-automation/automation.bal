@@ -75,6 +75,8 @@ function createAndSendEnvelope(Opportunity opportunity, Contact signer, Template
     }
     
     // Create envelope definition for DocuSign API
+    // Note: When using templates, ensure the template has documents attached in DocuSign
+    // We'll create the envelope in "sent" status to immediately send it
     dsesign:EnvelopeDefinition envelopeDefinition = {
         emailSubject: emailSubject,
         templateId: templateConfig.templateId,
@@ -82,13 +84,26 @@ function createAndSendEnvelope(Opportunity opportunity, Contact signer, Template
         status: "sent"
     };
     
-    // Create envelope using DocuSign client
+    // Create and send envelope using DocuSign client
     log:printInfo("Sending envelope creation request to DocuSign...");
+    log:printInfo(string `Template ID: ${templateConfig.templateId}`);
+    log:printInfo(string `Email Subject: ${emailSubject}`);
+    log:printInfo(string `Number of template roles: ${templateRoles.length()}`);
+    
     dsesign:EnvelopeSummary|error envelopeResult = docusignClient->/accounts/[docusignConfig.accountId]/envelopes.post(envelopeDefinition);
     
     if envelopeResult is error {
         log:printError(string `DocuSign API error: ${envelopeResult.message()}`);
         log:printError(string `Error detail: ${envelopeResult.toString()}`);
+        
+        // Provide helpful error messages
+        string errorMsg = envelopeResult.message();
+        if errorMsg.includes("ENVELOPE_IS_INCOMPLETE") {
+            log:printError("TROUBLESHOOTING: The template must have documents attached in DocuSign.");
+            log:printError("Please verify in DocuSign: Templates > Select your template > Ensure documents are added");
+            log:printError(string `Template ID being used: ${templateConfig.templateId}`);
+        }
+        
         return error(string `Failed to create DocuSign envelope: ${envelopeResult.message()}`);
     }
     
@@ -99,7 +114,7 @@ function createAndSendEnvelope(Opportunity opportunity, Contact signer, Template
         return error("Failed to create envelope: No envelope ID returned");
     }
     
-    log:printInfo(string `DocuSign envelope created successfully: ${envelopeId}`);
+    log:printInfo(string `DocuSign envelope created and sent successfully: ${envelopeId}`);
     return envelopeId;
 }
 
@@ -162,6 +177,9 @@ function validateDocusignConfig() returns error? {
     if docusignConfig.refreshToken.trim() == "" {
         return error("DocuSign refresh token is not configured");
     }
+    
+    // Log reminder about template requirements
+    log:printInfo("REMINDER: Ensure your DocuSign template has documents attached and a 'Signer' role defined");
 }
 
 // Process opportunity for contract dispatch
@@ -226,6 +244,12 @@ public function processOpportunityForContract(string opportunityId) returns erro
         log:printError(templateError.message());
         return templateError;
     }
+    
+    log:printInfo("IMPORTANT: Before sending, verify your DocuSign template:");
+    log:printInfo("  1. Has at least one document attached (PDF/Word/etc.)");
+    log:printInfo("  2. Has a recipient role named 'Signer' (case-sensitive)");
+    log:printInfo("  3. Is in 'Active' status");
+    log:printInfo(string `  Template ID: ${templateConfig.templateId}`);
     
     // Create and send DocuSign envelope
     string|error envelopeResult = createAndSendEnvelope(opportunity, signer, templateConfig);
