@@ -16,7 +16,7 @@ listener salesforce:Listener salesforceListener = new ({
 });
 
 // Service to listen to Salesforce Lead change events
-service salesforce:Service "/data/ChangeEvents" on salesforceListener {
+service "/data/ChangeEvents" on salesforceListener {
 
     remote function onCreate(salesforce:EventData eventData) returns error? {
         log:printInfo("onCreate event received");
