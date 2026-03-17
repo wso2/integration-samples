@@ -10,9 +10,12 @@ configurable string gmailClientSecret = ?;
 configurable string gmailRefreshToken = ?;
 configurable string[] gmailRecipients = ?;
 
-// Polling Configuration
-configurable decimal pollingIntervalHours = ?;
-configurable decimal lookbackBufferHours = 0.0; 
+// Lookback Configuration
+configurable decimal lookbackHours = ?;
+
+// Persistence Configuration (permanent settings)
+const string persistenceMethod = "jira-label";
+const string processedSprintLabel = "sprint-summary-sent";
 
 // Email Configuration
 configurable string timeZone = "America/Los_Angeles";

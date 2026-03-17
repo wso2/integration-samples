@@ -1,5 +1,4 @@
 import ballerina/log;
-import ballerina/lang.runtime;
 import ballerina/time;
 import ballerinax/jira;
 import ballerinax/googleapis.gmail;
@@ -7,12 +6,8 @@ import ballerinax/googleapis.gmail;
 public function main() returns error? {
     log:printInfo("Jira Sprint Summary Automation started!");
     log:printInfo(string `Jira Base URL: ${jiraBaseUrl}`);
-    log:printInfo(string `Polling interval: ${pollingIntervalHours} hours`);
+    log:printInfo(string `Lookback window: ${lookbackHours} hours`);
     log:printInfo(string `Monitoring project: ${jiraProjectKey}`);
-    
-    if pollingIntervalHours < 1.0d {
-        log:printWarn(string `Polling interval is ${pollingIntervalHours} hours. Consider increasing to 2+ hours to avoid duplicate emails on restart.`);
-    }
     
     // Test Jira connection
     log:printInfo("Testing Jira connection...");
@@ -30,26 +25,14 @@ public function main() returns error? {
 
     log:printInfo(string `Checking for completed sprints in project ${jiraProjectKey}...`);
     
-    // In-memory tracking of processed sprints (resets on restart)
-    map<boolean> processedSprints = {};
+    check checkCompletedSprints();
     
-    while true {
-        log:printInfo("Polling Jira for completed sprints...");
-        
-        error? result = checkCompletedSprints(processedSprints);
-        if result is error {
-            log:printError("Error checking sprints", 'error = result);
-        }
-        
-        decimal sleepSeconds = pollingIntervalHours * 3600;
-        runtime:sleep(sleepSeconds);
-    }
+    log:printInfo("Sprint summary automation completed successfully!");
 }
 
-function checkCompletedSprints(map<boolean> processedSprints) returns error? {
-    // Calculate time window: only fetch sprints completed within the last polling interval + buffer
+function checkCompletedSprints() returns error? {
+    // Calculate time window: only fetch sprints completed within the lookback window
     time:Utc currentTime = time:utcNow();
-    decimal lookbackHours = pollingIntervalHours + lookbackBufferHours;
     decimal lookbackSeconds = lookbackHours * 3600;
     time:Utc cutoffTime = time:utcAddSeconds(currentTime, -lookbackSeconds);
     string cutoffDateString = getJiraFormattedDate(cutoffTime);
@@ -85,19 +68,36 @@ function checkCompletedSprints(map<boolean> processedSprints) returns error? {
     foreach string sprintKey in closedSprints.keys() {
         Sprint sprint = <Sprint>closedSprints[sprintKey];
 
-        if !processedSprints.hasKey(sprintKey) {
+        // Check if already processed using Jira label
+        boolean|error jiraCheckResult = isSprintProcessed(sprint.id);
+        
+        boolean alreadyProcessed = false;
+        if jiraCheckResult is error {
+            log:printWarn(string `Failed to check if sprint ${sprint.id} was already processed`, 'error = jiraCheckResult);
+        } else {
+            alreadyProcessed = jiraCheckResult;
+        }
+
+        if !alreadyProcessed {
             log:printInfo(string `Processing newly completed sprint: ${sprint.name} (ID: ${sprint.id})`);
 
             do {
                 SprintSummary summary = check generateSprintSummary(sprint);
                 check sendSprintSummaryEmail(summary);
 
-                processedSprints[sprintKey] = true;
+                // Mark as processed in Jira
+                error? markResult = markSprintAsProcessed(sprint.id);
+                if markResult is error {
+                    log:printWarn(string `Failed to mark sprint ${sprint.id} as processed in Jira`, 'error = markResult);
+                }
+                
                 log:printInfo(string `Sent summary for sprint: ${sprint.name}`, sprintId = sprint.id);
             } on fail error e {
                 log:printError(string `Failed to process sprint ${sprint.name} (ID: ${sprint.id})`, 'error = e, sprintId = sprint.id);
-                // Continue to next sprint instead of aborting entire poll
+                // Continue to next sprint instead of aborting
             }
+        } else {
+            log:printDebug(string `Sprint ${sprint.name} (ID: ${sprint.id}) already processed, skipping`);
         }
     }
 }

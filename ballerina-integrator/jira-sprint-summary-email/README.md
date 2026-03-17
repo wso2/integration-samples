@@ -1,12 +1,12 @@
 # Jira Sprint Summary Email Integration
 
 ## Description
-This integration monitors a Jira project for completed sprints and automatically sends detailed email summaries to your team via Gmail. Each time a sprint is completed, the integration detects it, generates a comprehensive HTML report with metrics and issue breakdowns, and emails it to configured recipients. The integration maintains state to prevent duplicate notifications and continues running to catch all future sprint completions.
+This integration checks a Jira project for recently completed sprints and automatically sends detailed email summaries to your team via Gmail. When executed, it searches for sprints completed within a configurable lookback window, generates comprehensive HTML reports with metrics and issue breakdowns, and emails them to configured recipients. The integration uses Jira labels to track processed sprints and prevent duplicate notifications. Designed to be run on a schedule via cron jobs or task schedulers.
 
 ## What It Does
-- Polls Jira continuously at a configurable interval (in hours) to detect completed sprints
+- Searches for sprints completed within a configurable lookback window (e.g., last 24 hours)
 - Queries closed sprints using time-based JQL: `project = <key> AND sprint in closedSprints() AND updated >= "<cutoff_date>"`
-- Uses in-memory tracking to prevent duplicate emails within the same session
+- Tracks processed sprints using Jira labels to prevent duplicate emails
 - For each newly completed sprint:
   - Fetches all sprint issues with status, assignee, and changelog data
   - Categorizes issues as **Completed** (status category = "done") or **Carried Over** (all others)
@@ -18,7 +18,8 @@ This integration monitors a Jira project for completed sprints and automatically
     - Team contributions table with completion rates and progress bars
     - Mid-sprint additions section highlighting scope changes
 - Sends the email to multiple recipients via Gmail
-- Continues polling for future sprint completions with error isolation per sprint
+- Marks processed sprints with a label to prevent duplicate processing
+- Exits after processing all sprints (suitable for scheduled execution)
 
 ## Prerequisites
 Before running this integration, you need:
@@ -60,15 +61,21 @@ The following configurations are used by the application.
 - `gmailRefreshToken` - Your Google OAuth2 refresh token
 - `gmailRecipients` - Array of email addresses to receive sprint summaries (e.g., `["team@example.com", "manager@example.com"]`)
 
-### Polling Configuration
-- `pollingIntervalHours` - How often to check for completed sprints in hours
-  - **Recommended:** `2.0` to `24.0` hours (sprints complete infrequently)
-  - **Minimum:** `1.0` hour (to reduce duplicate risk on restart)
-  - Examples: `2.0` (every 2 hours), `6.0` (every 6 hours), `24.0` (daily)
-- `lookbackBufferHours` - Extra time buffer added to the lookback window (default: `0.0`)
-  - **Recommended:** `0.0` (no buffer - time window = polling interval)
-  - Use `1.0` only if you experience missed sprints due to timing issues
-  - Time window = `pollingIntervalHours + lookbackBufferHours`
+### Lookback Configuration
+- `lookbackHours` - How far back to search for completed sprints (default: `24.0`)
+  - **Recommended:** Match your execution schedule (e.g., `24.0` for daily runs, `2.0` for every 2 hours)
+  - Examples: `2.0` (last 2 hours), `6.0` (last 6 hours), `24.0` (last 24 hours)
+  - Set this to slightly more than your execution frequency to avoid missing sprints
+  - The integration uses Jira labels to prevent duplicate emails even if sprints appear in multiple runs
+
+### Scheduling
+This integration is designed to run once per execution and exit. Schedule it using:
+- **Cron jobs** (Linux/Mac): `0 */6 * * * /path/to/bal run` (every 6 hours)
+- **Task Scheduler** (Windows): Create a scheduled task
+- **Choreo Scheduled Tasks**: Configure execution frequency in Choreo
+- **Kubernetes CronJob**: Deploy as a CronJob resource
+
+**Important:** Set `lookbackHours` to slightly more than your execution frequency to ensure no sprints are missed.
 
 ### Email Configuration (Optional)
 - `timeZone` - Timezone for email timestamps (default: `America/Los_Angeles`)
@@ -84,14 +91,15 @@ Customize which sections appear in the email:
 
 ## Deploying on Choreo
 1. Sign in to your [Choreo account](https://console.choreo.dev/).
-2. Create a new **Manual Task** component and follow instructions in [Choreo Documentation](https://wso2.com/choreo/docs/) to import this repository.
+2. Create a new **Scheduled Task** component and follow instructions in [Choreo Documentation](https://wso2.com/choreo/docs/) to import this repository.
 3. Select the **Ballerina** as the buildpack.
-4. Choose the component type as **Manual Task** and click **Create**.
+4. Choose the component type as **Scheduled Task** and click **Create**.
 5. Once the build is successful, click **Configure & Deploy** and set up the required environment variables:
    - All Jira credentials (`jiraEmail`, `jiraApiToken`, `jiraBaseUrl`, `jiraProjectKey`)
    - All Gmail credentials (`gmailClientId`, `gmailClientSecret`, `gmailRefreshToken`, `gmailRecipients`)
-   - Polling configuration (`pollingIntervalHours`)
+   - Lookback configuration (`lookbackHours` - e.g., `24.0` for daily execution)
    - Optional: Email configuration and section toggles
-6. Click **Deploy** to deploy the integration.
-7. The integration will start running continuously, monitoring for completed sprints at the configured interval.
-8. Once tested, you may promote the integration to production. Make sure to set the relevant environment variables in the production environment as well.
+6. Configure the execution schedule (e.g., daily at 9 AM, every 6 hours, etc.)
+7. Click **Deploy** to deploy the integration.
+8. The integration will run on your configured schedule, checking for completed sprints and sending summaries.
+9. Once tested, you may promote the integration to production. Make sure to set the relevant environment variables in the production environment as well.
