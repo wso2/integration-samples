@@ -19,17 +19,30 @@ function getContactByRole(string opportunityId, SignerRole role) returns Contact
                                AND Role = '${role}'
                                LIMIT 1`;
     
-    stream<OpportunityContactRole, error?> roleStream = check salesforceClient->query(soqlQuery, OpportunityContactRole);
+    stream<record {}, error?> roleStream = check salesforceClient->query(soqlQuery);
     
-    OpportunityContactRole[] roles = check from OpportunityContactRole roleRecord in roleStream
+    record {}[] roles = check from record {} roleRecord in roleStream
         select roleRecord;
     
     if roles.length() == 0 {
         return error(string `No contact found with role: ${role}`);
     }
     
-    OpportunityContactRole contactRole = roles[0];
-    string contactId = contactRole.ContactId;
+    record {} contactRole = roles[0];
+    json contactRoleJson = contactRole.toJson();
+    
+    if contactRoleJson !is map<json> {
+        return error("Invalid contact role data structure");
+    }
+    
+    map<json> contactRoleMap = contactRoleJson;
+    json contactIdJson = contactRoleMap["ContactId"];
+    
+    if contactIdJson is () {
+        return error("ContactId not found in query result");
+    }
+    
+    string contactId = contactIdJson.toString();
     
     // Get contact details
     Contact contact = check salesforceClient->getById("Contact", contactId, Contact);
@@ -44,17 +57,30 @@ function getPrimaryContact(string opportunityId) returns Contact|error {
                                AND IsPrimary = true
                                LIMIT 1`;
     
-    stream<OpportunityContactRole, error?> roleStream = check salesforceClient->query(soqlQuery, OpportunityContactRole);
+    stream<record {}, error?> roleStream = check salesforceClient->query(soqlQuery);
     
-    OpportunityContactRole[] roles = check from OpportunityContactRole roleRecord in roleStream
+    record {}[] roles = check from record {} roleRecord in roleStream
         select roleRecord;
     
     if roles.length() == 0 {
         return error("No primary contact found for opportunity");
     }
     
-    OpportunityContactRole contactRole = roles[0];
-    string contactId = contactRole.ContactId;
+    record {} contactRole = roles[0];
+    json contactRoleJson = contactRole.toJson();
+    
+    if contactRoleJson !is map<json> {
+        return error("Invalid contact role data structure");
+    }
+    
+    map<json> contactRoleMap = contactRoleJson;
+    json contactIdJson = contactRoleMap["ContactId"];
+    
+    if contactIdJson is () {
+        return error("ContactId not found in query result");
+    }
+    
+    string contactId = contactIdJson.toString();
     
     // Get contact details
     Contact contact = check salesforceClient->getById("Contact", contactId, Contact);
