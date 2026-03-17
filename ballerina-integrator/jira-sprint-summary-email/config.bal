@@ -10,8 +10,8 @@ configurable string gmailClientSecret = ?;
 configurable string gmailRefreshToken = ?;
 configurable string[] gmailRecipients = ?;
 
-// Lookback Configuration
-configurable decimal lookbackHours = ?;
+// Lookback Configuration (permanent settings)
+const decimal lookbackHours = 1460.0; // ~2 months (61 days)
 
 // Persistence Configuration (permanent settings)
 const string persistenceMethod = "jira-label";
