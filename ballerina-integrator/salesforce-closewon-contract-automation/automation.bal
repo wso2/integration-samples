@@ -15,54 +15,32 @@ function createAndSendEnvelope(Opportunity opportunity, Contact signer, Template
         return error("Contact email is required");
     }
     
-    // Build signer info
-    SignerInfo signerInfo = {
-        email: signerEmail,
-        name: signerName,
-        roleName: "Signer",
-        routingOrder: 1
-    };
-    
-    // Build CC recipients if configured
-    CarbonCopy[] carbonCopies = [];
-    int ccRoutingOrder = 2;
-    foreach CcRecipient ccRecipient in businessRulesConfig.ccRecipients {
-        CarbonCopy ccCopy = {
-            email: ccRecipient.email,
-            name: ccRecipient.name,
-            routingOrder: ccRoutingOrder
-        };
-        carbonCopies.push(ccCopy);
-        ccRoutingOrder = ccRoutingOrder + 1;
-    }
-    
     // Get opportunity name
     string? opportunityName = opportunity.Name;
     string emailSubject = opportunityName is string ? string `Contract for ${opportunityName}` : "Contract";
     
-    // Create envelope definition for DocuSign API
-    dsesign:EnvelopeDefinition envelopeDefinition = {
-        emailSubject: emailSubject,
-        templateId: templateConfig.templateId,
-        status: "sent"
-    };
+    log:printInfo(string `Creating envelope with template: ${templateConfig.templateId}`);
+    log:printInfo(string `Signer: ${signerName} (${signerEmail})`);
+    log:printInfo(string `Email subject: ${emailSubject}`);
     
     // Build template roles
     dsesign:TemplateRole[] templateRoles = [];
     
     // Add signer
     dsesign:TemplateRole signerRole = {
-        email: signerInfo.email,
-        name: signerInfo.name,
-        roleName: signerInfo.roleName,
+        email: signerEmail,
+        name: signerName,
+        roleName: "Signer",
         routingOrder: "1"
     };
     
     // Add tabs for pre-filled fields
     if templateFields.length() > 0 {
+        log:printInfo(string `Adding ${templateFields.length()} pre-filled fields`);
         dsesign:Text[] textTabs = [];
         
         foreach record {string name; string value;} templateField in templateFields {
+            log:printInfo(string `Field: ${templateField.name} = ${templateField.value}`);
             dsesign:Text textTab = {
                 tabLabel: templateField.name,
                 value: templateField.value
@@ -79,25 +57,44 @@ function createAndSendEnvelope(Opportunity opportunity, Contact signer, Template
     
     templateRoles.push(signerRole);
     
-    // Add CC recipients
-    int ccOrder = 2;
-    foreach CarbonCopy cc in carbonCopies {
-        dsesign:TemplateRole ccRole = {
-            email: cc.email,
-            name: cc.name,
-            roleName: "CC",
-            routingOrder: ccOrder.toString()
-        };
-        templateRoles.push(ccRole);
-        ccOrder = ccOrder + 1;
+    // Add CC recipients if configured
+    if businessRulesConfig.ccRecipients.length() > 0 {
+        log:printInfo(string `Adding ${businessRulesConfig.ccRecipients.length()} CC recipients`);
+        int ccOrder = 2;
+        foreach CcRecipient ccRecipient in businessRulesConfig.ccRecipients {
+            log:printInfo(string `CC: ${ccRecipient.name} (${ccRecipient.email})`);
+            dsesign:TemplateRole ccRole = {
+                email: ccRecipient.email,
+                name: ccRecipient.name,
+                roleName: "CC",
+                routingOrder: ccOrder.toString()
+            };
+            templateRoles.push(ccRole);
+            ccOrder = ccOrder + 1;
+        }
     }
     
-    envelopeDefinition.templateRoles = templateRoles;
+    // Create envelope definition for DocuSign API
+    dsesign:EnvelopeDefinition envelopeDefinition = {
+        emailSubject: emailSubject,
+        templateId: templateConfig.templateId,
+        templateRoles: templateRoles,
+        status: "sent"
+    };
     
     // Create envelope using DocuSign client
-    dsesign:EnvelopeSummary envelopeSummary = check docusignClient->/accounts/[docusignConfig.accountId]/envelopes.post(envelopeDefinition);
+    log:printInfo("Sending envelope creation request to DocuSign...");
+    dsesign:EnvelopeSummary|error envelopeResult = docusignClient->/accounts/[docusignConfig.accountId]/envelopes.post(envelopeDefinition);
     
+    if envelopeResult is error {
+        log:printError(string `DocuSign API error: ${envelopeResult.message()}`);
+        log:printError(string `Error detail: ${envelopeResult.toString()}`);
+        return error(string `Failed to create DocuSign envelope: ${envelopeResult.message()}`);
+    }
+    
+    dsesign:EnvelopeSummary envelopeSummary = envelopeResult;
     string? envelopeId = envelopeSummary.envelopeId;
+    
     if envelopeId is () {
         return error("Failed to create envelope: No envelope ID returned");
     }
@@ -148,9 +145,35 @@ function buildSignerName(Contact contact) returns string {
     return "Signer";
 }
 
+// Validate DocuSign configuration
+function validateDocusignConfig() returns error? {
+    if docusignConfig.accountId.trim() == "" {
+        return error("DocuSign account ID is not configured");
+    }
+    
+    if docusignConfig.clientId.trim() == "" {
+        return error("DocuSign client ID is not configured");
+    }
+    
+    if docusignConfig.clientSecret.trim() == "" {
+        return error("DocuSign client secret is not configured");
+    }
+    
+    if docusignConfig.refreshToken.trim() == "" {
+        return error("DocuSign refresh token is not configured");
+    }
+}
+
 // Process opportunity for contract dispatch
 public function processOpportunityForContract(string opportunityId) returns error? {
     log:printInfo(string `Processing opportunity ${opportunityId} for contract dispatch`);
+    
+    // Validate DocuSign configuration
+    error? configValidation = validateDocusignConfig();
+    if configValidation is error {
+        log:printError(string `DocuSign configuration error: ${configValidation.message()}`);
+        return configValidation;
+    }
     
     // Get opportunity details
     Opportunity|error opportunityResult = getOpportunity(opportunityId);
@@ -196,6 +219,13 @@ public function processOpportunityForContract(string opportunityId) returns erro
     // Select appropriate template
     TemplateConfig templateConfig = selectTemplate(opportunity);
     log:printInfo(string `Selected template: ${templateConfig.templateId}`);
+    
+    // Validate template ID
+    if templateConfig.templateId.trim() == "" {
+        error templateError = error("Template ID is empty. Please configure 'defaultTemplateId' in templateSettings configuration. You can find your template ID in Docusign: Templates > Select template > Copy ID from URL.");
+        log:printError(templateError.message());
+        return templateError;
+    }
     
     // Create and send DocuSign envelope
     string|error envelopeResult = createAndSendEnvelope(opportunity, signer, templateConfig);

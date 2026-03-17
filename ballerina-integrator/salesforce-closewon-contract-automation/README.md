@@ -82,12 +82,30 @@ Record type: `DocusignConfig`
 
 Record type: `TemplateSettings`
 
-- `defaultTemplateId` - Default Docusign template ID to use
-- `templateConfigs` - Array of template configurations for different product/deal types
-  - `templateId` - Docusign template ID
+- `defaultTemplateId` - **REQUIRED** - Default Docusign template ID to use (e.g., "a1b2c3d4-e5f6-7890-abcd-ef1234567890")
+  - You can find your template ID in Docusign by going to Templates > Select your template > The ID is in the URL
+  - Example URL: `https://demo.docusign.net/templates/details/a1b2c3d4-e5f6-7890-abcd-ef1234567890`
+- `templateConfigs` - Array of template configurations for different product/deal types (optional)
+  - `templateId` - Docusign template ID for this specific configuration
   - `productType` - Opportunity type to match (optional)
   - `dealType` - Deal type to match (optional)
   - `expirationDays` - Days until expiration reminder (optional)
+
+**Example Configuration:**
+```toml
+[templateSettings]
+defaultTemplateId = "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
+
+[[templateSettings.templateConfigs]]
+templateId = "template-for-enterprise"
+productType = "Enterprise"
+expirationDays = 7
+
+[[templateSettings.templateConfigs]]
+templateId = "template-for-standard"
+productType = "Standard"
+expirationDays = 3
+```
 
 ### Business Rules Configuration (`businessRulesConfig`)
 
@@ -110,7 +128,33 @@ Record type: `BusinessRulesConfig`
 2. Create a new Integration to import this repository.
 3. Select the **Technology** as `WSO2 Integrator: BI`.
 4. Choose the **Integration** Type as `Event Handler` and click **Create**.
-5. Once the build is successful, click **Configure to Continue** and set up the required environment variables for Salesforce and Docusign credentials.
+5. Once the build is successful, click **Configure to Continue** and set up the required environment variables:
+
+### Required Environment Variables
+
+**Salesforce Configuration:**
+- `salesforceConfig.clientId` - Your Salesforce OAuth2 client ID
+- `salesforceConfig.clientSecret` - Your Salesforce OAuth2 client secret
+- `salesforceConfig.refreshToken` - Your Salesforce OAuth2 refresh token
+- `salesforceConfig.refreshUrl` - Default: `https://login.salesforce.com/services/oauth2/token`
+- `salesforceConfig.baseUrl` - Your Salesforce instance URL
+
+**Docusign Configuration:**
+- `docusignConfig.accountId` - Your Docusign account ID
+- `docusignConfig.clientId` - Your Docusign OAuth2 client ID (Integration Key)
+- `docusignConfig.clientSecret` - Your Docusign OAuth2 client secret
+- `docusignConfig.refreshToken` - Your Docusign OAuth2 refresh token
+- `docusignConfig.refreshUrl` - Default: `https://account-d.docusign.com/oauth/token` (demo) or `https://account.docusign.com/oauth/token` (production)
+- `docusignConfig.baseUrl` - Default: `https://demo.docusign.net/restapi` (demo) or `https://na1.docusign.net/restapi` (production)
+
+**Template Configuration:**
+- `templateSettings.defaultTemplateId` - **REQUIRED** - Your Docusign template ID (find it in Docusign Templates section)
+
+**Business Rules (Optional):**
+- `businessRulesConfig.minimumDealValue` - Minimum opportunity amount (default: 0.0)
+- `businessRulesConfig.signerRole` - Contact role for signer (default: "Primary Contact")
+- `businessRulesConfig.contractSentStage` - Stage name after sending (default: "Contract Sent")
+
 6. Click **Deploy** to deploy the integration.
 7. Once tested, you may promote the integration to production. Make sure to set the relevant environment variables in the production environment as well.
 
@@ -132,9 +176,15 @@ Record type: `BusinessRulesConfig`
    - Verify OAuth credentials have proper permissions for event streaming
 
 3. **Docusign Errors**:
-   - Verify template ID exists in your Docusign account
+   - **"Template ID is empty"**: Configure `defaultTemplateId` in `templateSettings` configuration
+   - **"Bad Request"**: Common causes:
+     - Template ID doesn't exist in your Docusign account
+     - Template role name mismatch (template must have a role named "Signer")
+     - Field labels in template don't match configured field mappings
+     - Invalid account ID
+   - Verify template ID exists in your Docusign account (Templates > Select template > Check URL)
    - Check field names in template match configured field mappings
-   - Ensure access token has required scopes
+   - Ensure access token has required scopes (signature, impersonation)
    - Verify account ID is correct
 
 4. **Contact Not Found**:
