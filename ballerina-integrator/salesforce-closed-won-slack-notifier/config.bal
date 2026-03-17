@@ -16,7 +16,7 @@ configurable record {
 
 // Business Logic Configuration
 configurable decimal minDealAmount = 3000.0;
-configurable string[] allowedRecordTypes = [];
+configurable string[] allowedTypes = [];
 configurable string[] allowedOwners = [];
 configurable string[] ownerSlackMapping = [];
 configurable string[] dealSizeTierChannels = [];

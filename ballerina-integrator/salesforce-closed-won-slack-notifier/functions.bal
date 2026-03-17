@@ -131,7 +131,9 @@ function formatOwnerMention(string ownerName) returns string {
     if slackHandle == "" {
         return ownerName;
     }
-    return slackHandle.startsWith("@") ? "<" + slackHandle + ">" : "<@" + slackHandle + ">";
+    // Mapping contains a Slack user ID (optionally prefixed with @)
+    string userId = slackHandle.startsWith("@") ? slackHandle.substring(1) : slackHandle;
+    return "<@" + userId + ">";
 }
 
 // Adds optional field to message if value exists
@@ -154,7 +156,7 @@ function getSlackHandleForOwner(string ownerName) returns string {
 
 // Determines the appropriate Slack channel based on deal size
 function getChannelForDealSize(decimal amount) returns string {
-    string selectedChannel = slackChannel;
+    string selectedChannel = slackConfig.slackChannel;
     decimal highestThreshold = 0.0;
     regexp:RegExp separator = re `:`;
 
@@ -181,6 +183,7 @@ function sendSlackMessage(string messageText, string channelName) returns SlackS
         log:printWarn("Slack client failed, falling back to webhook", 'error = clientResult);
         
         // Fall back to webhook
+        //Channel routing is not preserved on the webhook fallback path
         error? webhookResult = sendViaWebhook(messageText);
 
         if webhookResult is error {
@@ -217,7 +220,16 @@ function sendViaSlackClient(string messageText, string channelName) returns erro
 // Sends message via webhook
 function sendViaWebhook(string messageText) returns error? {
     SlackWebhookPayload payload = {text: messageText};
-    http:Response|error response = webhookClient->post("", payload);
+    http:Response|error response;
+
+
+    if slackConfig.slackWebhookUrl != "" {
+        http:Client webhookClient = check new (slackConfig.slackWebhookUrl);
+        response = webhookClient->post("", payload);
+    } else {
+        return error("No webhook URL configured");
+    }
+
 
     if response is error {
         return handleWebhookConnectionError(response);
