@@ -1,5 +1,6 @@
 import ballerina/log;
 import ballerina/lang.runtime;
+import ballerina/time;
 import ballerinax/jira;
 import ballerinax/googleapis.gmail;
 
@@ -8,6 +9,10 @@ public function main() returns error? {
     log:printInfo(string `Jira Base URL: ${jiraBaseUrl}`);
     log:printInfo(string `Polling interval: ${pollingIntervalHours} hours`);
     log:printInfo(string `Monitoring project: ${jiraProjectKey}`);
+    
+    if pollingIntervalHours < 1.0d {
+        log:printWarn(string `Polling interval is ${pollingIntervalHours} hours. Consider increasing to 2+ hours to avoid duplicate emails on restart.`);
+    }
     
     // Test Jira connection
     log:printInfo("Testing Jira connection...");
@@ -25,7 +30,8 @@ public function main() returns error? {
 
     log:printInfo(string `Checking for completed sprints in project ${jiraProjectKey}...`);
     
-    map<boolean> processedSprints = loadProcessedSprints();
+    // In-memory tracking of processed sprints (resets on restart)
+    map<boolean> processedSprints = {};
     
     while true {
         log:printInfo("Polling Jira for completed sprints...");
@@ -41,8 +47,17 @@ public function main() returns error? {
 }
 
 function checkCompletedSprints(map<boolean> processedSprints) returns error? {
+    // Calculate time window: only fetch sprints completed within the last polling interval + buffer
+    time:Utc currentTime = time:utcNow();
+    decimal lookbackHours = pollingIntervalHours + lookbackBufferHours;
+    decimal lookbackSeconds = lookbackHours * 3600;
+    time:Utc cutoffTime = time:utcAddSeconds(currentTime, -lookbackSeconds);
+    string cutoffDateString = getJiraFormattedDate(cutoffTime);
+    
+    log:printInfo(string `Searching for sprints completed after ${cutoffDateString} (window: ${lookbackHours} hours)`);
+    
     jira:SearchAndReconcileResults searchResults = check jiraClient->/api/'3/search/jql(
-        jql = string `project = ${jiraProjectKey} AND sprint in closedSprints() ORDER BY updated DESC`,
+        jql = string `project = ${jiraProjectKey} AND sprint in closedSprints() AND updated >= "${cutoffDateString}" ORDER BY updated DESC`,
         fields = ["*all"],
         maxResults = 100
     );
@@ -55,14 +70,17 @@ function checkCompletedSprints(map<boolean> processedSprints) returns error? {
         json issueJson = check issue.cloneWithType();
         Sprint? sprint = extractSprint(issueJson);
         if sprint is Sprint {
-            string sprintKey = string `${sprint.id}`;
-            closedSprints[sprintKey] = sprint;
+            // Only process sprints that were actually completed within our time window
+            if isSprintCompletedRecently(sprint, cutoffTime) {
+                string sprintKey = string `${sprint.id}`;
+                closedSprints[sprintKey] = sprint;
+            }
         } else {
             log:printDebug("Sprint not found in issue payload");
         }
     }
 
-    log:printInfo(string `Found ${closedSprints.length()} closed sprint(s)`);
+    log:printInfo(string `Found ${closedSprints.length()} recently closed sprint(s)`);
 
     foreach string sprintKey in closedSprints.keys() {
         Sprint sprint = <Sprint>closedSprints[sprintKey];
@@ -75,7 +93,6 @@ function checkCompletedSprints(map<boolean> processedSprints) returns error? {
                 check sendSprintSummaryEmail(summary);
 
                 processedSprints[sprintKey] = true;
-                saveProcessedSprints(processedSprints);
                 log:printInfo(string `Sent summary for sprint: ${sprint.name}`, sprintId = sprint.id);
             } on fail error e {
                 log:printError(string `Failed to process sprint ${sprint.name} (ID: ${sprint.id})`, 'error = e, sprintId = sprint.id);

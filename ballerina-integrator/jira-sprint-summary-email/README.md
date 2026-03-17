@@ -5,7 +5,8 @@ This integration monitors a Jira project for completed sprints and automatically
 
 ## What It Does
 - Polls Jira continuously at a configurable interval (in hours) to detect completed sprints
-- Queries closed sprints using JQL: `project = <key> AND sprint in closedSprints()`
+- Queries closed sprints using time-based JQL: `project = <key> AND sprint in closedSprints() AND updated >= "<cutoff_date>"`
+- Uses in-memory tracking to prevent duplicate emails within the same session
 - For each newly completed sprint:
   - Fetches all sprint issues with status, assignee, and changelog data
   - Categorizes issues as **Completed** (status category = "done") or **Carried Over** (all others)
@@ -17,7 +18,6 @@ This integration monitors a Jira project for completed sprints and automatically
     - Team contributions table with completion rates and progress bars
     - Mid-sprint additions section highlighting scope changes
 - Sends the email to multiple recipients via Gmail
-- Persists processed sprint IDs to `processed_sprints.json` to prevent duplicate emails
 - Continues polling for future sprint completions with error isolation per sprint
 
 ## Prerequisites
@@ -61,7 +61,14 @@ The following configurations are used by the application.
 - `gmailRecipients` - Array of email addresses to receive sprint summaries (e.g., `["team@example.com", "manager@example.com"]`)
 
 ### Polling Configuration
-- `pollingIntervalHours` - How often to check for completed sprints in hours (`0.5` for 30 minutes, `1.0` for 1 hour)
+- `pollingIntervalHours` - How often to check for completed sprints in hours
+  - **Recommended:** `2.0` to `24.0` hours (sprints complete infrequently)
+  - **Minimum:** `1.0` hour (to reduce duplicate risk on restart)
+  - Examples: `2.0` (every 2 hours), `6.0` (every 6 hours), `24.0` (daily)
+- `lookbackBufferHours` - Extra time buffer added to the lookback window (default: `0.0`)
+  - **Recommended:** `0.0` (no buffer - time window = polling interval)
+  - Use `1.0` only if you experience missed sprints due to timing issues
+  - Time window = `pollingIntervalHours + lookbackBufferHours`
 
 ### Email Configuration (Optional)
 - `timeZone` - Timezone for email timestamps (default: `America/Los_Angeles`)

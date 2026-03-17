@@ -451,6 +451,35 @@ function sprintExistsInChangeValues(string idValue, string textValue, int sprint
 
 
 
+// Date formatting for Jira JQL
+function getJiraFormattedDate(time:Utc timeValue) returns string {
+    time:Civil civilTime = time:utcToCivil(timeValue);
+    string year = civilTime.year.toString();
+    string month = civilTime.month < 10 ? string `0${civilTime.month}` : civilTime.month.toString();
+    string day = civilTime.day < 10 ? string `0${civilTime.day}` : civilTime.day.toString();
+    string hour = civilTime.hour < 10 ? string `0${civilTime.hour}` : civilTime.hour.toString();
+    string minute = civilTime.minute < 10 ? string `0${civilTime.minute}` : civilTime.minute.toString();
+    return string `${year}-${month}-${day} ${hour}:${minute}`;
+}
+
+// Check if sprint was completed recently
+function isSprintCompletedRecently(Sprint sprint, time:Utc cutoffTime) returns boolean {
+    string? completeDateValue = sprint.completeDate ?: sprint.endDate;
+    if completeDateValue is () {
+        log:printDebug(string `Sprint ${sprint.id} has no completion date, skipping`);
+        return false;
+    }
+    
+    time:Utc|error completeTime = parseJiraDateTime(completeDateValue);
+    if completeTime is error {
+        log:printWarn(string `Could not parse completion date for sprint ${sprint.id}: ${completeDateValue}`);
+        return false;
+    }
+    
+    time:Seconds timeDiff = time:utcDiffSeconds(completeTime, cutoffTime);
+    return timeDiff >= 0d;
+}
+
 // Assignee breakdown calculation
 function calculateAssigneeBreakdown(IssueDetails[] completedIssues, IssueDetails[] carriedOverIssues) returns AssigneeStats[] {
     map<AssigneeStats> assigneeMap = {};

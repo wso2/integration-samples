@@ -12,6 +12,7 @@ configurable string[] gmailRecipients = ?;
 
 // Polling Configuration
 configurable decimal pollingIntervalHours = ?;
+configurable decimal lookbackBufferHours = 0.0; 
 
 // Email Configuration
 configurable string timeZone = "America/Los_Angeles";
