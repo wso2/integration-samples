@@ -4,9 +4,9 @@ schemaVersion: 1.2
 # +optional Incoming connection details for the component
 endpoints:
   # +required Unique name for the endpoint.
-  - name: github-issue-to-salesforce-case
+  - name: webhook
     # +optional Display name for the endpoint.
-    displayName: GitHub Issue to Salesforce Case
+    displayName: WebHook
     # +required Service section has the user service endpoint details
     service:
       # +optional Base path of the API that gets exposed via the endpoint.
