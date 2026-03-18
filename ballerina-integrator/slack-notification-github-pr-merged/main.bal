@@ -3,20 +3,8 @@ import ballerina/log;
 
 // GitHub webhook service
 service github:PullRequestService on githubListener {
+
     remote function onClosed(github:PullRequestEvent event) returns error? {
-        // Guard: only process repositories in the configured allowlist
-        string repoFullName = event.repository.full_name;
-        boolean repoAllowed = false;
-        foreach string allowedRepo in githubRepos {
-            if allowedRepo == repoFullName {
-                repoAllowed = true;
-                break;
-            }
-        }
-        if !repoAllowed {
-            log:printInfo(string `Repository ${repoFullName} not in allowlist, skipping notification`);
-            return;
-        }
 
         // Check if this is a merged PR event
         boolean? merged = event.pull_request.merged;

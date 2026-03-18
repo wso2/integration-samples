@@ -9,14 +9,7 @@ final slack:Client slackClient = check new ({
 });
 
 // Initialize GitHub webhook listener
-// Omit callbackUrl entirely when not configured to avoid runtime failures
-listener github:Listener githubListener = new (githubCallback == "" ?
-    {
-        "port": webhookPort,
-        "webhookSecret": githubWebhookSecret
-    } :
-    {
-        "port": webhookPort,
-        "callbackUrl": githubCallback,
-        "webhookSecret": githubWebhookSecret
-    });
+listener github:Listener githubListener = new ({
+    "port": webhookPort,
+    "callbackUrl": githubCallback
+});

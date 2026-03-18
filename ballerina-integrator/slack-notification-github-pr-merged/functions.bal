@@ -1,15 +1,6 @@
 import ballerinax/trigger.github;
 import ballerina/regex;
 import ballerina/time;
-import ballerina/log;
-
-// Escape Slack special characters to prevent injection/unwanted mentions
-function escapeSlack(string input) returns string {
-    string escaped = regex:replaceAll(input, "&", "&amp;");
-    escaped = regex:replaceAll(escaped, "<", "&lt;");
-    escaped = regex:replaceAll(escaped, ">", "&gt;");
-    return escaped;
-}
 
 // Check if PR matches the configured filters
 function shouldProcessPullRequest(github:PullRequest pr) returns boolean {
@@ -65,50 +56,38 @@ function calculateCycleTime(github:PullRequest pr) returns decimal? {
     string? mergedAt = pr.merged_at;
 
     if createdAt is string && mergedAt is string {
+        // Parse ISO 8601 timestamps and calculate difference
         time:Utc|error createdTime = time:utcFromString(createdAt);
         time:Utc|error mergedTime = time:utcFromString(mergedAt);
 
-        if createdTime is error {
-            log:printWarn(string `Failed to parse PR created_at timestamp: ${createdAt}`, 'error = createdTime);
-            return ();
+        if createdTime is time:Utc && mergedTime is time:Utc {
+            decimal diffSeconds = time:utcDiffSeconds(mergedTime, createdTime);
+            decimal hours = diffSeconds / 3600.0;
+            return hours;
         }
-        if mergedTime is error {
-            log:printWarn(string `Failed to parse PR merged_at timestamp: ${mergedAt}`, 'error = mergedTime);
-            return ();
-        }
-
-        decimal diffSeconds = time:utcDiffSeconds(mergedTime, createdTime);
-        decimal hours = diffSeconds / 3600.0;
-        return hours;
     }
     return ();
 }
 
 // Get target channel based on repo and branch routing rules
-// Single-pass: prefers repo/branch match, falls back to repo-level match
 function getTargetChannel(github:Repository repo, string branch) returns string {
     string repoFullName = repo.full_name;
-    string repoBranchKey = string `${repoFullName}/${branch}`;
-    string repoLevelChannel = "";
 
+    // Check for repo/branch specific channel
+    string repoBranchKey = string `${repoFullName}/${branch}`;
     foreach string routing in channelRouting {
         string[] parts = regex:split(routing, ":");
-        if parts.length() == 2 {
-            string key = parts[0];
-            string channel = parts[1];
-            // Highest precedence: exact repo/branch match
-            if key == repoBranchKey {
-                return channel;
-            }
-            // Fallback: repo-level match (kept if no repo/branch match found)
-            if key == repoFullName {
-                repoLevelChannel = channel;
-            }
+        if parts.length() == 2 && parts[0] == repoBranchKey {
+            return parts[1];
         }
     }
 
-    if repoLevelChannel != "" {
-        return repoLevelChannel;
+    // Check for repo-level channel
+    foreach string routing in channelRouting {
+        string[] parts = regex:split(routing, ":");
+        if parts.length() == 2 && parts[0] == repoFullName {
+            return parts[1];
+        }
     }
 
     // Return default channel
@@ -117,17 +96,12 @@ function getTargetChannel(github:Repository repo, string branch) returns string 
 
 // Build Slack message from PR data
 function buildSlackMessage(github:PullRequest pr, github:Repository repo) returns string {
-    // Escape untrusted fields before embedding into Slack markup
-    string safeTitle = escapeSlack(pr.title);
-    string safeLogin = escapeSlack(pr.user.login);
-    string safeRepoFullName = escapeSlack(repo.full_name);
-
     string message = "🎉 *Pull Request Merged Successfully!*\n\n";
 
     // Repository and PR info
-    message += "*Repository:* <" + repo.html_url + "|" + safeRepoFullName + ">\n";
-    message += "*Pull Request:* <" + pr.html_url + "|#" + pr.number.toString() + " - " + safeTitle + ">\n";
-    message += "*Author:* <" + pr.user.html_url + "|@" + safeLogin + ">\n";
+    message += "*Repository:* <" + repo.html_url + "|" + repo.full_name + ">\n";
+    message += "*Pull Request:* <" + pr.html_url + "|#" + pr.number.toString() + " - " + pr.title + ">\n";
+    message += "*Author:* <" + pr.user.html_url + "|@" + pr.user.login + ">\n";
     message += "*Target Branch:* `" + pr.base.'ref + "`\n";
 
     message += "\n─────────────────────────\n\n";
@@ -136,7 +110,7 @@ function buildSlackMessage(github:PullRequest pr, github:Repository repo) return
     if includePrDescription {
         string? prBody = pr.body;
         if prBody is string && prBody.trim() != "" {
-            string description = escapeSlack(prBody);
+            string description = prBody;
             if description.length() > 200 {
                 description = description.substring(0, 200) + "...";
             }
@@ -150,8 +124,7 @@ function buildSlackMessage(github:PullRequest pr, github:Repository repo) return
         if reviewers is github:User[] && reviewers.length() > 0 {
             message += "*Reviewers:* ";
             foreach int i in 0 ..< reviewers.length() {
-                string safeReviewerLogin = escapeSlack(reviewers[i].login);
-                message += "<" + reviewers[i].html_url + "|@" + safeReviewerLogin + ">";
+                message += "<" + reviewers[i].html_url + "|@" + reviewers[i].login + ">";
                 if i < reviewers.length() - 1 {
                     message += ", ";
                 }
