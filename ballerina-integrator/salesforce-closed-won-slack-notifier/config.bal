@@ -11,7 +11,6 @@ configurable record {
 configurable record {
     string slackToken;
     string slackChannel;
-    string slackWebhookUrl;
 } slackConfig = ?;
 
 // Business Logic Configuration

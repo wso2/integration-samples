@@ -1,4 +1,3 @@
-import ballerina/http;
 import ballerina/lang.regexp;
 import ballerina/log;
 import ballerinax/salesforce;
@@ -174,25 +173,9 @@ function getChannelForDealSize(decimal amount) returns string {
     return selectedChannel;
 }
 
-// Sends Slack message with fallback to webhook
-function sendSlackMessage(string messageText, string channelName) returns SlackSendResult|error {
-    // Try Slack client first
-    error? clientResult = sendViaSlackClient(messageText, channelName);
-
-    if clientResult is error {
-        log:printWarn("Slack client failed, falling back to webhook", 'error = clientResult);
-        
-        // Fall back to webhook
-        //Channel routing is not preserved on the webhook fallback path
-        error? webhookResult = sendViaWebhook(messageText);
-
-        if webhookResult is error {
-            return error("Both Slack client and webhook failed", webhookResult);
-        }
-        return {method: "webhook"};
-    }
-    
-    return {method: "client"};
+// Sends Slack message using Slack client
+function sendSlackMessage(string messageText, string channelName) returns error? {
+    return sendViaSlackClient(messageText, channelName);
 }
 
 // Sends message using Slack API client
@@ -215,60 +198,4 @@ function sendViaSlackClient(string messageText, string channelName) returns erro
     }
     
     return;
-}
-
-// Sends message via webhook
-function sendViaWebhook(string messageText) returns error? {
-    SlackWebhookPayload payload = {text: messageText};
-    http:Response|error response;
-
-
-    if slackConfig.slackWebhookUrl != "" {
-        http:Client webhookClient = check new (slackConfig.slackWebhookUrl);
-        response = webhookClient->post("", payload);
-    } else {
-        return error("No webhook URL configured");
-    }
-
-
-    if response is error {
-        return handleWebhookConnectionError(response);
-    }
-
-    if response.statusCode == 200 {
-        return;
-    }
-
-    return handleWebhookStatusError(response);
-}
-
-// Handles webhook connection errors
-function handleWebhookConnectionError(error err) returns error {
-    string errorMsg = err.message();
-    if errorMsg.includes("Connection refused") {
-        return error("Webhook connection refused", err);
-    } else if errorMsg.includes("timeout") {
-        return error("Webhook timeout", err);
-    } else if errorMsg.includes("Unknown host") {
-        return error("Webhook host not found", err);
-    }
-    return error("Webhook error: " + errorMsg, err);
-}
-
-// Handles webhook HTTP status errors
-function handleWebhookStatusError(http:Response response) returns error {
-    string|error responseBody = response.getTextPayload();
-    string bodyText = responseBody is string ? responseBody : "Unable to read response";
-    int statusCode = response.statusCode;
-
-    if statusCode == 429 {
-        return error("Webhook rate limited", cause = error(bodyText));
-    } else if statusCode == 404 {
-        return error("Webhook not found", cause = error(bodyText));
-    } else if statusCode == 410 {
-        return error("Webhook deleted", cause = error(bodyText));
-    } else if statusCode >= 500 {
-        return error("Webhook server error", cause = error(bodyText));
-    }
-    return error("Webhook error: " + statusCode.toString(), cause = error(bodyText));
 }

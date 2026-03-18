@@ -43,14 +43,14 @@ service "/data/OpportunityChangeEvent" on salesforceListener {
             string slackMessage = buildSlackMessage(opportunityDetails);
             string targetChannel = getChannelForDealSize(opportunityDetails.amount);
 
-            SlackSendResult|error sendResult = sendSlackMessage(messageText = slackMessage, channelName = targetChannel);
+            error? sendResult = sendSlackMessage(messageText = slackMessage, channelName = targetChannel);
 
             if sendResult is error {
                 log:printError("Failed to send notification", opportunityId = opportunityId, 'error = sendResult);
                 return sendResult;
             }
 
-            log:printInfo("Notification sent successfully", method = sendResult.method, opportunityId = opportunityId);
+            log:printInfo("Notification sent successfully", opportunityId = opportunityId);
 
         } on fail error err {
             log:printError("Error processing opportunity", 'error = err);

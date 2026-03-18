@@ -1,4 +1,3 @@
-import ballerina/http;
 import ballerinax/salesforce;
 import ballerinax/slack;
 
@@ -19,6 +18,3 @@ final slack:Client slackClient = check new ({
         token: slackConfig.slackToken
     }
 });
-
-// Webhook client configuration (nullable, created lazily)
-http:Client? webhookClient = ();

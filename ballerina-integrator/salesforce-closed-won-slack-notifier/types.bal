@@ -1,8 +1,3 @@
-// Define a record type for the Slack webhook payload
-type SlackWebhookPayload record {
-    string text;
-};
-
 // Define a record type for the opportunity details
 type OpportunityDetails record {
     string name;
@@ -16,9 +11,4 @@ type OpportunityDetails record {
     string leadSource;
     string competitorInfo;
     string description;
-};
-
-// Define a record type for Slack send result
-type SlackSendResult record {
-    string method;
 };

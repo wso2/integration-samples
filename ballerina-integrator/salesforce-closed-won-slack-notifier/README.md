@@ -64,7 +64,7 @@ The following configurations are required to connect to Salesforce and Slack.
 ### Business Logic Configuration
 
 - `minDealAmount` - Minimum deal amount to trigger notifications
-- `allowedRecordTypes` - Array of opportunity types to include (e.g., `["New Customer", "Existing Customer - Upgrade"]`)
+- `allowedTypes` - Array of opportunity types to include (e.g., `["New Customer", "Existing Customer - Upgrade"]`)
 - `allowedOwners` - Array of owner names to filter (leave empty to allow all)
 
 ### Owner to Slack Mapping
