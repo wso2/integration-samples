@@ -1,4 +1,4 @@
-# GitHub PR Merged Slack Notification Integration
+# Send a Slack Notification When a Pull Request Is Merged On GitHub
 
 ## Description
 

@@ -1,4 +1,4 @@
-flowchart TD
+
     A(["Begin"]):::startNode
     B["GitHub PR Closed Event Received"]:::processNode
     C{"Is PR <br/> Merged?"}:::decisionNode
