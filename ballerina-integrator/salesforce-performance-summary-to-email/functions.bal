@@ -1,7 +1,7 @@
-import ballerina/io;
 import ballerina/lang.regexp;
 import ballerina/time as time;
 import ballerina/url;
+import ballerina/log;
 import ballerinax/mailchimp.'transactional as mailchimp;
 
 public function getCurrentPeriodDates() returns [string, string]|error {
@@ -631,23 +631,54 @@ public function getSalesforcePerformanceEmail(ReportSummary summary, string peri
 </html>`;
 }
 
-public function generateEmailSubject(string periodStart) returns string {
-    string monthName = getMonthName(periodStart);
+public function generateEmailSubject(string periodStart, string? periodEnd = ()) returns string {
+    string subject = "";
     string year = getYear(periodStart);
+    string monthName = getMonthName(periodStart);
+    string defaultSubject = "";
 
-    string subject = emailConfig.subjectTemplate ?: "Monthly Salesforce Performance Summary - {{month}} {{year}}";
-    regexp:RegExp monthPattern = re `\{\{month\}\}`;
-    subject = monthPattern.replaceAll(subject, monthName);
-    regexp:RegExp yearPattern = re `\{\{year\}\}`;
-    subject = yearPattern.replaceAll(subject, year);
+    if timePeriod == "monthly" {
+        defaultSubject = string `Salesforce Performance Summary - ${monthName} ${year}`;
+    } else if timePeriod == "quarterly" {
+        string[] parts = regexp:split(re `-`, periodStart);
+        int|error monthNum = parts.length() >= 2 ? int:fromString(parts[1]) : 1;
+        int quarter = 1;
+        string startMonth = monthName;
+        string endMonth = periodEnd is string ? getMonthName(periodEnd) : "";
+        if monthNum is int {
+            if monthNum == 1 {
+                quarter = 1;
+            } else if monthNum == 4 {
+                quarter = 2;
+            } else if monthNum == 7 {
+                quarter = 3;
+            } else if monthNum == 10 {
+                quarter = 4;
+            }
+        }
+        defaultSubject = string `Salesforce Performance Summary - Q${quarter} (${startMonth}${endMonth != "" ? string ` - ${endMonth}` : ""} ${year})`;
+    } else if timePeriod == "yearly" {
+        defaultSubject = string `Salesforce Performance Summary - ${year}`;
+    } else {
+        defaultSubject = string `Salesforce Performance Summary - ${monthName} ${year}`;
+    }
 
+    if emailConfig.subjectTemplate is string {
+        subject = <string>emailConfig.subjectTemplate;
+        regexp:RegExp monthPattern = re `\{\{month\}\}`;
+        subject = monthPattern.replaceAll(subject, monthName);
+        regexp:RegExp yearPattern = re `\{\{year\}\}`;
+        subject = yearPattern.replaceAll(subject, year);
+    } else {
+        subject = defaultSubject;
+    }
     return subject;
 }
 
 public function sendPerformanceEmailNew(ReportSummary summary) returns error? {
     string period = string `${summary.periodStart} to ${summary.periodEnd}`;
     string htmlContent = getSalesforcePerformanceEmail(summary, period);
-    string subject = generateEmailSubject(summary.periodStart);
+    string subject = generateEmailSubject(summary.periodStart, summary.periodEnd);
 
     mailchimp:MessagessendMessageTo[] recipients = [];
     foreach string email in emailConfig.recipientEmails {
@@ -681,11 +712,11 @@ public function sendPerformanceEmailNew(ReportSummary summary) returns error? {
         string emailAddr = result?.email ?: "unknown";
         string status = result?.status ?: "unknown";
         if status == "sent" {
-            io:println(string `Email sent successfully to ${emailAddr}`);
+            log:printInfo(string `Email sent successfully to ${emailAddr}`);
         } else {
-            io:println(string `Email to ${emailAddr} has status: ${status}`);
+            log:printInfo(string `Email to ${emailAddr} has status: ${status}`);
             if result?.rejectReason is string {
-                io:println(string `Reason: ${result?.rejectReason ?: ""}`);
+                log:printInfo(string `Reason: ${result?.rejectReason ?: ""}`);
             }
         }
     }

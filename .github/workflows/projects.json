@@ -10,5 +10,8 @@
   },
   {
     "path": "ballerina-integrator/salesforce-closed-won-slack-notifier"
+  },
+  {
+    "path": "ballerina-integrator/salesforce-performance-summary-to-email"
   }
 ]
