@@ -33,11 +33,7 @@ This integration uses OAuth2 refresh token authentication for both API calls and
 ### Docusign Setup
 
 1. A Docusign account (demo or production)
-2. **Contract templates created with the following requirements**:
-   - **MUST have at least one document attached** (PDF, Word, etc.)
-   - **MUST have a recipient role named "Signer"** (case-sensitive)
-   - Can have optional fields/tabs for pre-filling data
-   - Template must be in "Active" status
+2. Contract templates created with named fields
 3. OAuth2 credentials:
    - Account ID
    - Client ID
@@ -47,14 +43,6 @@ This integration uses OAuth2 refresh token authentication for both API calls and
 4. Scopes Required:
    - `signature`
    - `impersonation`
-
-**Important Template Setup**:
-- Go to DocuSign > Templates > Create Template
-- Add at least one document (upload PDF/Word file)
-- Add a recipient role named "Signer" (this name must match exactly)
-- Optionally add fields (text tabs) with labels matching your field mappings
-- Save and activate the template
-- Copy the Template ID from the URL
 
 This integration uses the official `ballerinax/docusign.dsesign` connector with OAuth2 refresh token authentication for automatic token renewal. [Learn how to get Docusign credentials](https://developers.docusign.com/platform/auth/).
 
@@ -189,17 +177,12 @@ Record type: `BusinessRulesConfig`
 
 3. **Docusign Errors**:
    - **"Template ID is empty"**: Configure `defaultTemplateId` in `templateSettings` configuration
-   - **"ENVELOPE_IS_INCOMPLETE"**: This is the most common error. Causes:
-     - **Template has NO documents attached** - Go to DocuSign > Templates > Select template > Add at least one document (PDF/Word)
-     - Template is not in "Active" status - Activate the template in DocuSign
-     - Template has no recipient roles defined
    - **"Bad Request"**: Common causes:
      - Template ID doesn't exist in your Docusign account
-     - Template role name mismatch (template must have a role named "Signer" - case sensitive)
+     - Template role name mismatch (template must have a role named "Signer")
      - Field labels in template don't match configured field mappings
      - Invalid account ID
    - Verify template ID exists in your Docusign account (Templates > Select template > Check URL)
-   - **Verify template has documents**: Templates > Select template > Documents tab > Must have at least 1 document
    - Check field names in template match configured field mappings
    - Ensure access token has required scopes (signature, impersonation)
    - Verify account ID is correct
