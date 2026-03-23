@@ -26,7 +26,6 @@ configurable string defaultSheetName = "Sheet1";
 // Field Mapping Configuration
 configurable string[] fields = ["email", "firstname", "lastname", "phone"];
 
-
 // Incremental Sync Configuration
 configurable string lastSyncTimestamp = "";
 
