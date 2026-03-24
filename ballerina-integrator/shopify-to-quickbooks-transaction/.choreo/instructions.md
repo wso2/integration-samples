@@ -23,12 +23,13 @@
 <summary>QuickBooks Setup Guide</summary>
 
 1. A QuickBooks Online account
-2. A QuickBooks Developer App with Accounting scope (`com.intuit.quickbooks.accounting`) enabled
-3. OAuth2 credentials:
+2. OAuth2 credentials:
   - Client ID
   - Client Secret
   - Refresh Token
   - Company ID (Realm ID)
+3. Scopes required:
+  - `com.intuit.quickbooks.accounting` (Accounting)
 
 This integration uses refresh token flow for auth. [Learn how to set up QuickBooks OAuth](https://developer.intuit.com/app/developer/qbo/docs/develop/authentication-and-authorization/oauth-2.0).
 
