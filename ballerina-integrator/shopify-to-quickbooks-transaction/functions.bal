@@ -259,7 +259,7 @@ function quarantineOrder(shopify:OrderEvent event, string reason, string errorTy
 // TODO: Replace this placeholder with a durable store (database table, dead-letter queue, or message broker)
 //       that preserves retryEligible and timestamp so downstream processes can act on them.
 function persistQuarantinedOrder(QuarantinedOrder quarantined) {
-    log:printError(string `[QUARANTINE][PERSIST] orderId=${quarantined.orderId} orderNumber=${quarantined.orderNumber} ` +
+    log:printWarn(string `[QUARANTINE][PERSIST] orderId=${quarantined.orderId} orderNumber=${quarantined.orderNumber} ` +
         string `errorType=${quarantined.errorType} retryEligible=${quarantined.retryEligible} ` +
         string `timestamp=${quarantined.timestamp} reason=${quarantined.quarantineReason}`);
 }
