@@ -135,21 +135,37 @@ function mapToQBTransaction(shopify:OrderEvent event, string customerId) returns
 // Pure arithmetic — handles month and year rollover without depending on time module.
 function addDaysToDate(string dateStr, int days) returns string {
     string[] parts = re `-`.split(dateStr);
-    int yr = 2024;
-    int mo = 1;
-    int dy = 1;
 
-    if parts.length() >= 3 {
-        int|error parsedY = int:fromString(parts[0]);
-        int|error parsedM = int:fromString(parts[1]);
-        string dayPart = parts[2].length() >= 2 ? parts[2].substring(0, 2) : parts[2];
-        int|error parsedD = int:fromString(dayPart);
-        yr = parsedY is int ? parsedY : 2024;
-        mo = parsedM is int ? parsedM : 1;
-        dy = parsedD is int ? parsedD : 1;
+    // Expect at least "YYYY-MM-DD". If not, return the original string.
+    if parts.length() < 3 {
+        return dateStr;
+    }
+
+    int|error parsedY = int:fromString(parts[0]);
+    int|error parsedM = int:fromString(parts[1]);
+    string dayPart = parts[2].length() >= 2 ? parts[2].substring(0, 2) : parts[2];
+    int|error parsedD = int:fromString(dayPart);
+
+    // Fail fast on any parse error instead of using a hard-coded default date.
+    if !(parsedY is int && parsedM is int && parsedD is int) {
+        return dateStr;
+    }
+
+    int yr = <int>parsedY;
+    int mo = <int>parsedM;
+    int dy = <int>parsedD;
+
+    // Validate month range before indexing daysInMonth[mo - 1].
+    if mo < 1 || mo > 12 {
+        return dateStr;
     }
 
     int[] daysInMonth = [31, isLeapYear(yr) ? 29 : 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+
+    // Validate day range for the given month.
+    if dy < 1 || dy > daysInMonth[mo - 1] {
+        return dateStr;
+    }
     int totalDay = dy + days;
 
     while totalDay > daysInMonth[mo - 1] {
