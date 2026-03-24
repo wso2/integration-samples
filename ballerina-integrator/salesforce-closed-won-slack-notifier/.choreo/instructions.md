@@ -11,73 +11,14 @@
 
 <summary>Salesforce Setup Guide</summary>
 
-### Prerequisites
 1. A Salesforce account with API access and Change Data Capture enabled
 2. OAuth2 credentials:
-   - Client ID
-   - Client Secret
-   - Refresh Token
-   - Refresh URL
-   - Base URL (your Salesforce instance URL)
-
-### Step 1: Create an External Client App
-
-1. Log into Salesforce at https://login.salesforce.com
-2. Go to **Setup** → Search for **App Manager**
-3. Click **New External Client App**
-4. Fill in the details:
-   - **External Client App Name**: `<YOUR_EXTERNAL_CLIENT_APP_NAME>`
-   - **Contact Email**: Your email
-   - Enable OAuth Settings
-   - **Callback URL**: `https://login.salesforce.com/services/oauth2/callback`
-   - **Selected OAuth Scopes**:
-     - Access and manage your data (api)
-     - Perform requests on your behalf at any time (refresh_token, offline_access)
-     - Full access (full)
-5. Click **Save** → **Continue**
-
-### Step 2: Get Client ID and Client Secret
-
-1. On the External Client App page, copy the **Consumer Key** (this is your Client ID)
-2. And Copy the **Consumer Secret** (this is your Client Secret)
-
-### Step 3: Configure Policies
-
-1. Click **Manage** → **Edit Policies**
-2. Set **Permitted Users** to "All users may self-authorize"
-3. Set **IP Relaxation** to "Relax IP restrictions"
-4. Click **Save**
-
-### Step 4: Get Refresh Token
-
-1. Create authorization URL (replace `YOUR_CLIENT_ID`):
-   ```
-   https://login.salesforce.com/services/oauth2/authorize?client_id=YOUR_CLIENT_ID&redirect_uri=https://login.salesforce.com/services/oauth2/callback&response_type=code&prompt=consent
-   ```
-
-2. Open the URL in browser, log in, and click **Allow**
-
-3. Copy the `code` parameter from the redirect URL
-
-4. Exchange code for refresh token using curl (replace placeholders):
-   ```bash
-   curl -X POST https://login.salesforce.com/services/oauth2/token \
-     -d "grant_type=authorization_code" \
-     -d "client_id=YOUR_CLIENT_ID" \
-     -d "client_secret=YOUR_CLIENT_SECRET" \
-     -d "redirect_uri=https://login.salesforce.com/services/oauth2/callback" \
-     -d "code=YOUR_AUTHORIZATION_CODE"
-   ```
-
-5. From the response, copy:
-   - `refresh_token` (your Refresh Token)
-   - `instance_url` (your Base URL)
-
-### Step 5: Enable Change Data Capture
-
-1. In Salesforce Setup, search for **Change Data Capture**
-2. Select **Opportunity** from Available Entities
-3. Click **Save**
+  - Client ID
+  - Client Secret
+  - Refresh Token
+  - Refresh URL
+  - Base URL (your Salesforce instance URL)
+3. Change Data Capture must be enabled for the **Opportunity** object in Salesforce Setup
 
 This integration uses refresh token flow for auth. [Learn how to set up Salesforce OAuth](https://help.salesforce.com/s/articleView?id=xcloud.create_a_local_external_client_app.htm&type=5).
 
