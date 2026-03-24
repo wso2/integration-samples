@@ -23,35 +23,20 @@ This integration uses refresh token flow for auth. [Learn how to set up Salesfor
 </details>
 
 <details>
-
 <summary>Docusign Setup Guide</summary>
 
-### Prerequisites
-
 1. A Docusign account (demo or production)
-2. Contract templates created with named fields
+2. Contract templates created with named fields, note down template IDs and field names for mapping
 3. OAuth2 credentials:
-   - Account ID
-   - Access Token
+   - Client ID
+   - Client Secret
+   - Refresh Token
+   - Refresh URL
 4. Scopes Required:
    - `signature`
    - `impersonation`
 
-### Setup Steps
-
-1. **Create Templates**:
-   - Log in to Docusign
-   - Go to Templates → New Template
-   - Add fields with labels matching your field mappings (e.g., "OpportunityName", "ContractValue", "CloseDate")
-   - Note Template ID from template settings
-
-2. **Generate Access Token**:
-   - Go to Settings → Apps and Keys
-   - Create new application or use existing
-   - Generate access token with required scopes
-   - Note Account ID and Access Token
-
-This integration uses the official `ballerinax/docusign.dsesign` connector with access token authentication. [Learn how to get Docusign credentials](https://developers.docusign.com/platform/auth/).
+This integration uses OAuth2 authentication with refresh token flow. [Learn how to get Docusign credentials](https://developers.docusign.com/platform/auth/).
 
 </details>
 
