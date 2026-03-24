@@ -51,7 +51,7 @@ function isDuplicateTransaction(string orderNum) returns boolean|error {
             return error(string `Invalid orderNum '${orderNum}': contains non-digit characters`);
         }
     }
-    string query = string `SELECT Id FROM Invoice WHERE PrivateNote LIKE '%Shopify Order: ${orderNum}%'`;
+    string query = string `SELECT Id FROM Invoice WHERE PrivateNote LIKE '%Shopify Order: ${orderNum} | ID:%'`;
     json|error result = quickbooksClient->queryEntity(quickbooksConfig.realmId, query);
     if result is map<json> {
         json? queryResponse = result["QueryResponse"];
