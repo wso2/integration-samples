@@ -17,7 +17,7 @@
 
 This integration uses basic authentication with email and API token. [Learn how to create a Jira API token](https://support.atlassian.com/atlassian-account/docs/manage-api-tokens-for-your-atlassian-account/).
 
-The project key is usually shown in the URL when you open your project in Jira (e.g., in `https://your-domain.atlassian.net/jira/software/projects/PROJ/boards/1`, the project key is `PROJ`). You can also find it on the project sidebar or in the project settings.
+The project key is usually shown in the URL when you open your project in Jira (e.g., in `https://your-domain.atlassian.net/jira/software/projects/<project-key>/boards/1`, the project key is `<project-key>`). You can also find it on the project sidebar or in the project settings.
 
 </details>
 
@@ -42,7 +42,7 @@ This integration uses refresh token flow for auth. [Learn how to Develop on Goog
 
 <summary>Additional Configurations</summary>
 
-1. `timeZone`
+1. `timezone`
     - Time zone to be used for timestamping the spreadsheet name (e.g., "America/New_York")
 2. `timeFrame`: 
     - Time frame to filter new issues. Possible values:
