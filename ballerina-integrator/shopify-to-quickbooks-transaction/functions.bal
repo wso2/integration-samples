@@ -10,12 +10,14 @@ function loadProductMap() returns map<string> & readonly|error {
     log:printInfo("[Config] productMappingJson = " + quickbooksConfig.productMappingJson);
     json parsed = check (quickbooksConfig.productMappingJson).fromJsonString();
     map<string> m = {};
-    map<json> jsonMap = <map<json>>parsed;
-    foreach var [k, v] in jsonMap.entries() {
-        m[k] = v.toString();
+    if parsed is map<json> {
+        foreach var [k, v] in parsed.entries() {
+            m[k] = v.toString();
+        }
+        log:printInfo("[Config] productMap loaded with " + m.length().toString() + " entries: " + m.toString());
+        return m.cloneReadOnly();
     }
-    log:printInfo("[Config] productMap loaded with " + m.length().toString() + " entries: " + m.toString());
-    return m.cloneReadOnly();
+    return error("[Config] Invalid productMappingJson: expected a JSON object mapping product SKUs to QuickBooks item IDs");
 }
 
 // --- Order status filter ---
