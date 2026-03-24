@@ -1,3 +1,6 @@
+// Opportunity stage values
+const string STAGE_CLOSED_WON = "Closed Won";
+
 // Salesforce field names used in queries
 const string FIELD_STAGE_NAME = "StageName";
 const string FIELD_RECORD_ID = "recordId";
