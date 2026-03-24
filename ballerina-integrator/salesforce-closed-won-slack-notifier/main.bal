@@ -29,7 +29,13 @@ service "/data/OpportunityChangeEvent" on salesforceListener {
 
             string opportunityId = extractOpportunityId(payload);
 
-            OpportunityDetails opportunityDetails = check fetchOpportunityDetails(opportunityId);
+            // Guard: skip if recordId metadata missing
+            if opportunityId == "" {
+                log:printInfo("Event missing recordId; skipping processing");
+                return;
+            }
+
+            OpportunityDetails opportunityDetails = check queryOpportunity(opportunityId);
 
             if !meetsMinimumAmount(opportunityDetails.amount, minDealAmount) {
                 return;

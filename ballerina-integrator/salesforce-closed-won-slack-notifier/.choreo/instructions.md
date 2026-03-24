@@ -5,7 +5,7 @@
 - Filters opportunities based on configurable criteria (deal size, type, owner)
 - Routes notifications to different Slack channels based on deal size tiers
 - Sends formatted Slack notifications with deal details and owner mentions
-- Includes retry logic and webhook fallback for reliable message delivery
+- Includes retry logic for reliable message delivery
 
 <details>
 
@@ -19,7 +19,10 @@
   - Refresh URL
   - Base URL (your Salesforce instance URL)
 3. Change Data Capture must be enabled for the **Opportunity** object in Salesforce Setup
+<<<<<<< HEAD
 
+=======
+>>>>>>> 2dd3ef9 (addressed all the comments)
 This integration uses refresh token flow for auth. [Learn how to set up Salesforce OAuth](https://help.salesforce.com/s/articleView?id=xcloud.create_a_local_external_client_app.htm&type=5).
 
 </details>
@@ -30,7 +33,7 @@ This integration uses refresh token flow for auth. [Learn how to set up Salesfor
 
 ### Prerequisites
 1. A Slack workspace where you have permission to install apps
-2. Slack Bot Token and Webhook URL
+2. Slack Bot Token
 
 ### Step 1: Create a Slack App
 
@@ -62,14 +65,6 @@ This integration uses refresh token flow for auth. [Learn how to set up Salesfor
 3. The URL will look like: `https://app.slack.com/client/T.../C...`
 4. Copy the channel ID (the part starting with `C`)
 
-### Step 5: Create Incoming Webhook (Optional - for fallback)
-
-1. In your Slack App settings, go to **Incoming Webhooks**
-2. Toggle **Activate Incoming Webhooks** to On
-3. Click **Add New Webhook to Workspace**
-4. Select a channel and click **Allow**
-5. Copy the Webhook URL (starts with `https://hooks.slack.com/services/`)
-
 [Learn more about Slack Apps](https://docs.slack.dev/quickstart).
 
 </details>
@@ -86,7 +81,7 @@ This integration uses refresh token flow for auth. [Learn how to set up Salesfor
 
 ### Filtering Options
 
-2. **`allowedRecordTypes`** (string array)
+2. **`allowedTypes`** (string array)
    - Filter opportunities by Type field
    - Example: `["New Customer", "Existing Customer - Upgrade"]`
    - Leave empty `[]` to allow all types
@@ -126,7 +121,7 @@ This integration uses refresh token flow for auth. [Learn how to set up Salesfor
 - Verify Platform Events are enabled in Salesforce Setup
 - Check logs to see if events are being received
 - Verify `minDealAmount` threshold is not too high
-- Ensure opportunity type matches `allowedRecordTypes`
+- Ensure opportunity type matches `allowedTypes`
 - Confirm owner name matches `allowedOwners` (if configured)
 - Verify Slack channel IDs are correct (not channel names)
 
@@ -143,12 +138,11 @@ This integration uses refresh token flow for auth. [Learn how to set up Salesfor
 
 #### 3. Slack Message Delivery Failures
 
-**Error:** "Both Slack client and webhook failed"
+**Error:** "Slack client failed"
 
 **Solutions:**
 - Verify `slackToken` is valid and starts with `xoxb-`
 - Check that Slack app has required scopes (`chat:write`, `chat:write.public`)
-- Confirm `slackWebhookUrl` is active and not deleted
 - Verify channel IDs exist and bot has access to channels
 - Check Slack app is installed in your workspace
 

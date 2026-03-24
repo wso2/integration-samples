@@ -6,7 +6,6 @@ E{"Passes <br/> Filters?"}:::decisionNode
 F["Determine Target Slack Channel by Deal Size"]:::processNode 
 G["Send to Slack with Retry Logic"]:::processNode 
 H{"Message <br/> Sent?"}:::decisionNode 
-I["Try Webhook Fallback"]:::processNode 
 J(["Complete"]):::endNode
 
 A --> B 
@@ -19,9 +18,7 @@ E -- Yes --> F
 E -- No --> J 
 F --> G 
 G --> H 
-H -- Success --> J 
-H -- Failed --> I 
-I --> J
+H --> J 
 
 classDef startNode fill:#4B7DDA,stroke:#fff,stroke-width:0px,color:#fff;
 classDef endNode fill:#4B7DDA,stroke:#fff,stroke-width:0px,color:#fff;

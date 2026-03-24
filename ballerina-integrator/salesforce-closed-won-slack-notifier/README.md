@@ -10,7 +10,7 @@ This integration automatically sends real-time Slack notifications when opportun
 - Filters opportunities by minimum deal amount, allowed record types (e.g., `New Customer`, `Existing Customer - Upgrade`), and opportunity owners.
 - Routes notifications to different Slack channels based on deal size tiers and mentions opportunity owners in Slack using @mentions.
 - Includes comprehensive deal information in notifications: deal name and amount, close date, owner (with Slack mention), account name, opportunity type, lead source, competitor information, and description.
-- Implements retry logic with a fallback from the Slack API to an incoming webhook for reliability.
+- Implements retry logic for reliability.
 
 ## Prerequisites
 
@@ -37,7 +37,6 @@ This integration uses refresh token flow for auth. [Learn how to set up Salesfor
    - OAuth scopes:
      - `chat:write`
      - `chat:write.public`
-   - Incoming Webhook URL (for fallback)
 3. Slack channel IDs for notification routing
 4. Slack user IDs for owner mentions
 
@@ -58,7 +57,6 @@ The following configurations are required to connect to Salesforce and Slack.
 ### Slack Credentials
 
 - `slackToken` - Your Slack bot token (starts with `xoxb-`)
-- `slackWebhookUrl` - Your Slack incoming webhook URL (for fallback)
 - `slackChannel` - Default Slack channel ID
 
 ### Business Logic Configuration
