@@ -73,7 +73,7 @@ function getOrCreateQBCustomer(shopify:Customer? customer, shopify:CustomerAddre
         if quickbooksConfig.validationRules.requireCustomerEmail {
             return error("Customer email is required but missing");
         }
-        return "DEFAULT_CUSTOMER";
+        return error("Customer email is missing and no default QuickBooks customer is configured");
     }
 
     // Query QB for existing customer by email (QB IDS uses backslash-escape for single quotes, not SQL doubling)
