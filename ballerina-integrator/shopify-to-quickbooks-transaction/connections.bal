@@ -8,8 +8,8 @@ shopify:ListenerConfig listenerConfig = {
 
 listener shopify:Listener shopifyListener = new (listenerConfig, 8090);
 
-// QuickBooks Online REST client — handles OAuth2 token refresh automatically
-// Initialized lazily to avoid authentication during test module initialization
+// QuickBooks Online REST client — handles OAuth2 token refresh automatically on demand.
+// Constructed at module initialization; no manual authentication handling is required in tests.
 final quickbooks:Client quickbooksClient = check new ({
     auth: {
         clientId: quickbooksConfig.clientId,
