@@ -88,7 +88,8 @@ function processOrder(shopify:OrderEvent event) returns error? {
         return;
     }
     string orderNum = orderNumResult;
-    string orderId = (event?.id ?: 0).toString();
+    // Use the validated order number as the idempotency key to avoid collisions on a default ID.
+    string orderId = orderNum;
 
     // Atomic check-and-set: if another event for the same order is already in-flight or done, skip
     boolean alreadyTracked;
