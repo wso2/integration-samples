@@ -9,17 +9,16 @@
 
 <summary>Salesforce Setup Guide</summary>
 
-1. A Salesforce account with API access
-2. **Change Data Capture** enabled for the Opportunity object
-3. OAuth2 credentials:
-   - Client ID
-   - Client Secret
-   - Refresh Token
-   - Refresh URL
-   - Base URL (your Salesforce instance URL)
-4. Username and password (with security token) for event listener
+1. A Salesforce account with API access and Change Data Capture enabled
+2. OAuth2 credentials:
+  - Client ID
+  - Client Secret
+  - Refresh Token
+  - Refresh URL
+  - Base URL (your Salesforce instance URL)
+3. Change Data Capture must be enabled for the **Lead** object in Salesforce Setup
 
-This integration uses both username/password authentication for the listener and refresh token flow for API calls. [Learn how to set up Salesforce OAuth](https://help.salesforce.com/s/articleView?id=xcloud.create_a_local_external_client_app.htm&type=5).
+This integration uses refresh token flow for auth. [Learn how to set up Salesforce OAuth](https://help.salesforce.com/s/articleView?id=xcloud.create_a_local_external_client_app.htm&type=5).
 
 </details>
 
