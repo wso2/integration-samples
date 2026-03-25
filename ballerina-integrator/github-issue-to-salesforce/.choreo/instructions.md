@@ -27,14 +27,14 @@ The following should be done after deploying the integration, and the endpoint U
 <summary>Salesforce Setup Guide</summary>
 
 1. A Salesforce account with API access
-2. A Salesforce Connected App or External Client App with:
-   - Access Token
-   - Base URL (your Salesforce instance URL)
+2. OAuth2 credentials:
+  - Client ID
+  - Client Secret
+  - Refresh Token
+  - Refresh URL
+  - Base URL (your Salesforce instance URL)
 
-> **Note:** Connected Apps creation is restricted as of Salesforce Spring '26.
-> Use External Client Apps instead.
-> [Learn how to create an External Client App](https://help.salesforce.com/s/articleView?id=xcloud.create_a_local_external_client_app.htm&type=5)
->[Learn how to get access token](https://developer.salesforce.com/docs/atlas.en-us.sfdx_dev.meta/sfdx_dev/sfdx_dev_auth_existing_access_token.htm)
+This integration uses refresh token flow for auth. [Learn how to set up Salesforce OAuth](https://help.salesforce.com/s/articleView?id=xcloud.create_a_local_external_client_app.htm&type=5).
 
 3. Create a custom field on the Salesforce Case object:
    - Go to **Setup → Object Manager → Case**
