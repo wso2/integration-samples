@@ -2,24 +2,21 @@
 
 - When a new order is created in Shopify, the integration catches the webhook event and posts a formatted message with the order details to a specified Slack channel.
 
-<details>
-
 <summary>Shopify Setup Guide</summary>
 
 1. Log in to your Shopify account and navigate to **Settings** > **Notifications**.
 2. Click on the **Webhooks** section.
-3. Copy the key that is shown under 'Your webhooks will be signed with ...'. This should be the `shopifyApiSecretKey` configuration.
+3. Copy the key that is shown under 'Your webhooks will be signed with ...'. This should be the `shopifyWebHookSecret` configuration.
 
 The following should be done after deploying the integration, and the endpoint URL is available.
 
 1. Log in to your Shopify account and navigate to **Settings** > **Notifications**.
 2. Click on the **Webhooks** section and click on **Create webhook**.
 3. In the **Create webhook** form, select the following options:
-    - **Event**: Select **Order creation** from the dropdown menu.
+    - **Event**: Select **Customer creation** from the dropdown menu.
     - **Format**: Choose **JSON** as the format for the webhook payload.
     - **URL**: Enter the deployed integration's endpoint URL
 4. Go back to the Integration Overview page, and click on **Configure Security**. Disable **OAuth2** and click on **Apply**.
-
 </details>
 
 <details>
