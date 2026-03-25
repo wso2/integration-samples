@@ -41,7 +41,7 @@ function checkCompletedSprints() returns error? {
     
     jira:SearchAndReconcileResults searchResults = check jiraClient->/api/'3/search/jql(
         jql = string `project = ${jiraProjectKey} AND sprint in closedSprints() AND updated >= "${cutoffDateString}" ORDER BY updated DESC`,
-        fields = ["*all"],
+        fields = ["sprint", "updated"],
         maxResults = 100
     );
 

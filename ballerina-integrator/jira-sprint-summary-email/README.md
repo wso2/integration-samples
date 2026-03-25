@@ -4,22 +4,11 @@
 This integration checks a Jira project for recently completed sprints and automatically sends detailed email summaries to your team via Gmail. When executed, it searches for sprints completed within a configurable lookback window, generates comprehensive HTML reports with metrics and issue breakdowns, and emails them to configured recipients. The integration uses Jira labels to track processed sprints and prevent duplicate notifications. Designed to be run on a schedule via cron jobs or task schedulers.
 
 ## What It Does
-- Searches for sprints completed within a configurable lookback window (e.g., last 24 hours)
-- Queries closed sprints using time-based JQL: `project = <key> AND sprint in closedSprints() AND updated >= "<cutoff_date>"`
-- Tracks processed sprints using Jira labels to prevent duplicate emails
-- For each newly completed sprint:
-  - Fetches all sprint issues with status, assignee, and changelog data
-  - Categorizes issues as **Completed** (status category = "done") or **Carried Over** (all others)
-  - Calculates team contribution statistics by assignee
-  - Detects mid-sprint additions using changelog analysis
-  - Generates a professional HTML email with:
-    - Sprint metrics dashboard (total, completed, carried over counts)
-    - Detailed issue lists with keys, summaries, statuses, and assignees
-    - Team contributions table with completion rates and progress bars
-    - Mid-sprint additions section highlighting scope changes
-- Sends the email to multiple recipients via Gmail
-- Marks processed sprints with a label to prevent duplicate processing
-- Exits after processing all sprints (suitable for scheduled execution)
+- Automatically detects recently completed Jira sprints (configurable lookback window) and generates professional HTML email reports
+- Categorizes sprint issues as **Completed** or **Carried Over**, calculates team contribution metrics, and detects mid-sprint scope changes
+- Generates rich emails with sprint metrics dashboard, detailed issue lists, team contribution tables, and scope change analysis
+- Prevents duplicate emails by tracking processed sprints with Jira labels
+- Designed for scheduled execution (cron, Task Scheduler) with one-time run-and-exit behavior
 
 ## Prerequisites
 Before running this integration, you need:
@@ -62,20 +51,16 @@ The following configurations are used by the application.
 - `gmailRecipients` - Array of email addresses to receive sprint summaries (e.g., `["team@example.com", "manager@example.com"]`)
 
 ### Lookback Configuration
-- `lookbackHours` - How far back to search for completed sprints (default: `24.0`)
-  - **Recommended:** Match your execution schedule (e.g., `24.0` for daily runs, `2.0` for every 2 hours)
-  - Examples: `2.0` (last 2 hours), `6.0` (last 6 hours), `24.0` (last 24 hours)
-  - Set this to slightly more than your execution frequency to avoid missing sprints
-  - The integration uses Jira labels to prevent duplicate emails even if sprints appear in multiple runs
+- `lookbackHours` - How far back to search for completed sprints (fixed: `1460.0` hours / ~61 days)
+  - This fixed lookback window ensures all recently completed sprints are captured
+  - Combined with Jira label tracking, this prevents duplicate emails across multiple executions
 
 ### Scheduling
-This integration is designed to run once per execution and exit. Schedule it using:
-- **Cron jobs** (Linux/Mac): `0 */6 * * * /path/to/bal run` (every 6 hours)
-- **Task Scheduler** (Windows): Create a scheduled task
-- **Choreo Scheduled Tasks**: Configure execution frequency in Choreo
-- **Kubernetes CronJob**: Deploy as a CronJob resource
-
-**Important:** Set `lookbackHours` to slightly more than your execution frequency to ensure no sprints are missed.
+This is a **scheduled-task integration** that runs once per execution and then exits. It does not poll continuously. Schedule it using:
+- **Cron jobs** (Linux/Mac): `0 9 * * * /path/to/bal run` (daily at 9 AM)
+- **Windows Task Scheduler**: Create a scheduled task to run on your desired frequency
+- **Choreo**: Deploy as a Scheduled Task component and configure execution frequency
+- **Kubernetes CronJob**: Deploy as a CronJob resource with your desired schedule
 
 ### Email Configuration (Optional)
 - `timeZone` - Timezone for email timestamps (default: `America/Los_Angeles`)
@@ -89,16 +74,15 @@ Customize which sections appear in the email:
 - `includeAssigneeBreakdown` - Show team contribution breakdown 
 - `includeMidSprintAdditions` - Show issues added mid-sprint 
 
-## Deploying on Choreo
-1. Sign in to your [Choreo account](https://console.choreo.dev/).
-2. Create a new **Scheduled Task** component and follow instructions in [Choreo Documentation](https://wso2.com/choreo/docs/) to import this repository.
+## Deploying on WSO2 Integration Platform
+1. Sign in to your [Devant account](https://console.devant.dev/).
+2. Create a new **Scheduled Task** component.
 3. Select the **Ballerina** as the buildpack.
 4. Choose the component type as **Scheduled Task** and click **Create**.
 5. Once the build is successful, click **Configure & Deploy** and set up the required environment variables:
    - All Jira credentials (`jiraEmail`, `jiraApiToken`, `jiraBaseUrl`, `jiraProjectKey`)
    - All Gmail credentials (`gmailClientId`, `gmailClientSecret`, `gmailRefreshToken`, `gmailRecipients`)
-   - Lookback configuration (`lookbackHours` - e.g., `24.0` for daily execution)
-   - Optional: Email configuration and section toggles
+   - Optional: Email configuration (`timeZone`, `emailSubjectTemplate`) and section toggles
 6. Configure the execution schedule (e.g., daily at 9 AM, every 6 hours, etc.)
 7. Click **Deploy** to deploy the integration.
 8. The integration will run on your configured schedule, checking for completed sprints and sending summaries.
