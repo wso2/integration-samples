@@ -65,24 +65,31 @@ function checkCompletedSprints() returns error? {
     
     log:printInfo(string `Searching for sprints completed after ${cutoffDateString} (window: ${lookbackHours} hours)`);
     
+    // Search for all issues in the project that have sprint information
+    // We'll filter by completion date in code since JQL doesn't support sprint completion date filtering
+    // Note: We need to request ALL fields (*all) to get sprint information from custom fields
     jira:SearchAndReconcileResults searchResults = check jiraClient->/api/'3/search/jql(
-        jql = string `project = ${jira.projectKey} AND sprint in closedSprints() AND updated >= "${cutoffDateString}" ORDER BY updated DESC`,
-        fields = ["sprint", "updated"],
+        jql = string `project = ${jira.projectKey} AND sprint in closedSprints() ORDER BY updated DESC`,
+        fields = ["*all"],
         maxResults = 100
     );
 
     jira:IssueBean[] issues = searchResults.issues ?: [];
-    log:printInfo(string `JQL returned ${issues.length()} issue(s)`);
+    log:printInfo(string `JQL returned ${issues.length()} issue(s) in closed sprints`);
     map<Sprint> closedSprints = {};
 
     foreach jira:IssueBean issue in issues {
         json issueJson = check issue.cloneWithType();
         Sprint? sprint = extractSprint(issueJson);
         if sprint is Sprint {
+            log:printDebug(string `Extracted sprint: ${sprint.name} (ID: ${sprint.id}), completeDate: ${sprint.completeDate ?: "null"}, endDate: ${sprint.endDate ?: "null"}`);
             // Only process sprints that were actually completed within our time window
             if isSprintCompletedRecently(sprint, cutoffTime) {
                 string sprintKey = string `${sprint.id}`;
                 closedSprints[sprintKey] = sprint;
+                log:printDebug(string `Sprint ${sprint.id} added to processing queue`);
+            } else {
+                log:printDebug(string `Sprint ${sprint.id} not completed recently or missing completion date`);
             }
         } else {
             log:printDebug("Sprint not found in issue payload");

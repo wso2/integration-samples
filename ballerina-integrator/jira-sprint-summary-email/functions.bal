@@ -49,6 +49,7 @@ function extractSprint(json issue) returns Sprint? {
             if fieldsValue is map<json> {
                 if fieldsValue.hasKey("sprint") {
                     json sprintValue = fieldsValue["sprint"];
+                    log:printDebug(string `Found 'sprint' field with value type: ${sprintValue is map<json> ? "map" : (sprintValue is json[] ? "array" : "other")}`);
                     if sprintValue is map<json> {
                         return toSprint(sprintValue);
                     }
@@ -68,10 +69,13 @@ function extractSprint(json issue) returns Sprint? {
                         json customFieldValue = fieldsValue[fieldKey];
                         Sprint? sprint = toSprintFromValue(customFieldValue);
                         if sprint is Sprint {
+                            log:printDebug(string `Found sprint in custom field: ${fieldKey}`);
                             return sprint;
                         }
                     }
                 }
+                
+                log:printDebug("No sprint field found in issue, available fields: " + fieldsValue.keys().toString());
             }
         }
     }
