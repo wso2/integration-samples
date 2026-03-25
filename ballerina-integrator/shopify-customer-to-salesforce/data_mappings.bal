@@ -12,10 +12,12 @@ public function mapShopifyCustomerToSalesforceContact(
     string? lastName = customerEvent?.last_name;
     string? email = customerEvent?.email;
     string? phone = customerEvent?.phone;
+
+    string normalizedLastName = lastName is string && lastName.trim() != "" ? lastName : "Unknown";
     
     // Initialize contact with basic fields
     SalesforceContact contact = {
-        LastName: lastName ?: "Unknown",
+        LastName: normalizedLastName,
         FirstName: firstName,
         Email: email,
         Phone: phone,
@@ -282,8 +284,11 @@ function buildCustomerDescription(shopify:CustomerEvent customerEvent, json cust
 // Extract domain from email for account matching
 public function extractDomainFromEmail(string email) returns string? {
     int? atIndex = email.indexOf("@");
-    if atIndex is int && atIndex > 0 {
-        return email.substring(atIndex + 1);
+    if atIndex is int && atIndex > 0 && atIndex < email.length() - 1 {
+        string domain = email.substring(atIndex + 1).trim();
+        if domain != "" {
+            return domain;
+        }
     }
     return ();
 }

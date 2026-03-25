@@ -11,7 +11,6 @@ function escapeSoqlString(string input) returns string {
 
 // Check if contact exists by email (duplicate check)
 public function findContactByEmail(string email) returns ContactQueryResult?|error {
-    string defaultLeadSource = "Shopify";
     string escapedEmail = escapeSoqlString(email);
     string soqlQuery = string `SELECT Id, Email, FirstName, LastName, AccountId FROM Contact WHERE Email = '${escapedEmail}' LIMIT 1`;
     stream<ContactQueryResult, error?> resultStream = check salesforceClient->query(soql = soqlQuery);
@@ -89,6 +88,7 @@ public function findOrCreateAccount(shopify:CustomerEvent customerEvent) returns
 // Create or update Salesforce contact from Shopify customer
 public function createOrUpdateSalesforceContact(shopify:CustomerEvent customerEvent) returns error? {
     string? email = customerEvent?.email;
+    string defaultLeadSource = "Shopify";
     
     // Duplicate check by email (if enabled)
     if email is string && email.trim() != "" {
@@ -146,7 +146,7 @@ public function createOrUpdateSalesforceContact(shopify:CustomerEvent customerEv
         log:printInfo("Successfully created Salesforce contact", 
             contactId = response.id, 
             accountId = accountId ?: "None",
-            leadSource = salesforceConfig.defaultLeadSource,
+            leadSource = defaultLeadSource,
             origin = "Shopify"
         );
     } else {
