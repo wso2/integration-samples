@@ -15,6 +15,6 @@ type SheetConfig record {
 };
 
 enum InsertMode {
-    APPEND = "append",
-    UPSERT = "upsert"
+    APPEND = "APPEND",
+    UPSERT = "UPSERT"
 }

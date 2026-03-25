@@ -5,8 +5,8 @@ configurable SheetConfig googleSheetsConfig = ?;
 
 # Sheet name where orders should be recorded
 configurable string sheetName = "Orders";
-# Mode for inserting data into the sheet
-configurable InsertMode insertMode = APPEND;
+# "Mode for inserting data into the sheet"
+configurable InsertMode insertMode = UPSERT;
 
 # Boolean flag to include individual line items. When true, creates a separate row per line item; when false (default), creates a single row per order.
 configurable boolean includeLineItems = false;

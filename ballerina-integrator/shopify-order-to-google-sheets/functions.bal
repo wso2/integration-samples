@@ -136,7 +136,7 @@ function createRowFromEvent(shopify:OrderEvent event) returns error? {
         endIndex: "AAA"
     };
 
-    if insertMode == "append" {
+    if insertMode == APPEND {
         if includeLineItems {
             var lineItems = event?.line_items;
 
