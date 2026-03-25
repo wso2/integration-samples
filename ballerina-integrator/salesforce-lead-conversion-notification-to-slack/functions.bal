@@ -6,11 +6,11 @@ import ballerina/time;
 // Check if lead passes the filters
 function shouldProcessLead(Lead lead) returns boolean {
     // Filter by lead source if configured
-    if filterLeadSources.length() > 0 {
+    if notificationConfig.filterLeadSources.length() > 0 {
         string? leadSource = lead.LeadSource;
         if leadSource is string {
             boolean sourceMatches = false;
-            foreach string allowedSource in filterLeadSources {
+            foreach string allowedSource in notificationConfig.filterLeadSources {
                 if leadSource == allowedSource {
                     sourceMatches = true;
                     break;
@@ -25,11 +25,11 @@ function shouldProcessLead(Lead lead) returns boolean {
     }
 
     // Filter by owner ID if configured
-    if filterOwnerIds.length() > 0 {
+    if notificationConfig.filterOwnerIds.length() > 0 {
         string? ownerId = lead.OwnerId;
         if ownerId is string {
             boolean ownerMatches = false;
-            foreach string allowedOwnerId in filterOwnerIds {
+            foreach string allowedOwnerId in notificationConfig.filterOwnerIds {
                 if ownerId == allowedOwnerId {
                     ownerMatches = true;
                     break;
@@ -81,7 +81,7 @@ function calculateLifecycleDuration(string createdDate, string convertedDate) re
 
 // Get Salesforce instance URL for building links
 function getSalesforceInstanceUrl() returns string {
-    string baseUrl = salesforceBaseUrl;
+    string baseUrl = salesforceConfig.baseUrl;
     regexp:RegExp pattern = re `^(https://[^/]+)`;
     regexp:Groups? groups = pattern.findGroups(baseUrl);
 
@@ -95,7 +95,7 @@ function getSalesforceInstanceUrl() returns string {
 
 // Format the Slack message
 function formatSlackMessage(LeadConversionDetails details, string? slackUserId) returns string {
-    string message = messageTemplate;
+    string message = notificationConfig.messageTemplate;
 
     // Replace template variables
     regexp:RegExp leadNamePattern = re `\{\{lead\.name\}\}`;
@@ -110,7 +110,7 @@ function formatSlackMessage(LeadConversionDetails details, string? slackUserId) 
     message = ownerPattern.replaceAll(message, ownerMention);
 
     // Add conversion details if enabled
-    if includeConversionDetails {
+    if notificationConfig.includeConversionDetails {
         message = message + "\n\n*Conversion Details:*";
         message = message + "\n• *Account:* " + details.accountName;
         message = message + "\n• *Contact:* " + details.contactName;
@@ -128,7 +128,7 @@ function formatSlackMessage(LeadConversionDetails details, string? slackUserId) 
 // Determine the target Slack channel based on team mapping
 function determineSlackChannel(string? ownerId) returns string {
     if ownerId is () {
-        return defaultSlackChannel;
+        return slackConfig.defaultChannel;
     }
 
     // Get owner details to find team
@@ -136,7 +136,7 @@ function determineSlackChannel(string? ownerId) returns string {
     stream<record {}, error?>|error ownerStream = salesforceClient->query(ownerQuery);
     if ownerStream is error {
         log:printError("Failed to query Salesforce for owner details", ownerStream);
-        return defaultSlackChannel;
+        return slackConfig.defaultChannel;
     }
 
     record {|record {} value;|}|error? ownerResult = ownerStream.next();
@@ -147,16 +147,16 @@ function determineSlackChannel(string? ownerId) returns string {
 
     if ownerResult is error {
         log:printError("Failed to read owner record from Salesforce stream", ownerResult);
-        return defaultSlackChannel;
+        return slackConfig.defaultChannel;
     }
     if ownerResult is () {
-        return defaultSlackChannel;
+        return slackConfig.defaultChannel;
     }
 
     record {} ownerRecord = ownerResult.value;
 
     // Try to match team from role name
-    foreach TeamChannelMapping mapping in teamChannelMappings {
+    foreach TeamChannelMapping mapping in notificationConfig.teamChannelMappings {
         string teamName = mapping.teamName;
 
         // Check if role name contains team name
@@ -177,7 +177,7 @@ function determineSlackChannel(string? ownerId) returns string {
         }
     }
 
-    return defaultSlackChannel;
+    return slackConfig.defaultChannel;
 }
 
 // Get Slack user ID from email

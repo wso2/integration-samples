@@ -6,12 +6,12 @@ isolated map<boolean> processedLeadIds = {};
 
 // Salesforce listener configuration
 listener salesforce:Listener salesforceListener = new ({
-    baseUrl: salesforceBaseUrl,
+    baseUrl: salesforceConfig.baseUrl,
     auth: {
-        clientId: salesforceClientId,
-        clientSecret: salesforceClientSecret,
-        refreshToken: salesforceRefreshToken,
-        refreshUrl: salesforceRefreshUrl
+        clientId: salesforceConfig.clientId,
+        clientSecret: salesforceConfig.clientSecret,
+        refreshToken: salesforceConfig.refreshToken,
+        refreshUrl: salesforceConfig.refreshUrl
     }
 });
 

@@ -1,23 +1,20 @@
-// Salesforce configuration
-configurable string salesforceBaseUrl = ?;
-configurable string salesforceClientId = ?;
-configurable string salesforceClientSecret = ?;
-configurable string salesforceRefreshToken = ?;
-configurable string salesforceRefreshUrl = ?;
+configurable record {
+    string baseUrl;
+    string clientId;
+    string clientSecret;
+    string refreshToken;
+    string refreshUrl;
+} salesforceConfig = ?;
 
-// Slack configuration
-configurable string slackToken = ?;
-configurable string defaultSlackChannel = ?;
+configurable record {
+    string token;
+    string defaultChannel;
+} slackConfig = ?;
 
-// Message template configuration
-configurable string messageTemplate = "🎉 Lead Converted!\n*Lead:* {{lead.name}}\n*Company:* {{lead.company}}\n*Owner:* {{lead.owner}}";
-
-// Filter configuration
-configurable string[] filterLeadSources = [];
-configurable string[] filterOwnerIds = [];
-
-// Team-specific channel routing
-configurable TeamChannelMapping[] teamChannelMappings = [];
-
-// Include conversion details flag
-configurable boolean includeConversionDetails = true;
+configurable record {
+    string messageTemplate = "🎉 Lead Converted!\n*Lead:* {{lead.name}}\n*Company:* {{lead.company}}\n*Owner:* {{lead.owner}}";
+    string[] filterLeadSources = [];
+    string[] filterOwnerIds = [];
+    TeamChannelMapping[] teamChannelMappings = [];
+    boolean includeConversionDetails = true;
+} notificationConfig = ?;

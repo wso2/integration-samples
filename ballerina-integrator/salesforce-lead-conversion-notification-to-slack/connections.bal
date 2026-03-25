@@ -4,23 +4,23 @@ import ballerinax/slack;
 
 // Salesforce client initialization
 final salesforce:Client salesforceClient = check new ({
-    baseUrl: salesforceBaseUrl,
+    baseUrl: salesforceConfig.baseUrl,
     auth: {
-        clientId: salesforceClientId,
-        clientSecret: salesforceClientSecret,
-        refreshToken: salesforceRefreshToken,
-        refreshUrl: salesforceRefreshUrl
+        clientId: salesforceConfig.clientId,
+        clientSecret: salesforceConfig.clientSecret,
+        refreshToken: salesforceConfig.refreshToken,
+        refreshUrl: salesforceConfig.refreshUrl
     }
 });
 
 // Slack client initialization
 final slack:Client slackClient = check new ({
     auth: {
-        token: slackToken
+        token: slackConfig.token
     }
 });
 
 // Raw Slack HTTP client for APIs with broken connector type bindings
 final http:Client slackHttpClient = check new ("https://slack.com", {
-    auth: {token: slackToken}
+    auth: {token: slackConfig.token}
 });
