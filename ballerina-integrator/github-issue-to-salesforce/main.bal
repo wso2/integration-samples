@@ -2,7 +2,7 @@ import ballerina/http;
 import ballerina/log;
 import ballerinax/trigger.github;
 
-listener github:Listener githubListener = new ({webhookSecret: githubWebhookSecret});
+listener github:Listener githubListener = new ({webhookSecret: githubConfig.webhookSecret});
 
 service github:IssuesService on githubListener {
     remote function onOpened(github:IssuesEvent payload) returns error|() {
@@ -50,7 +50,7 @@ service github:IssuesService on githubListener {
             github:Label? label = payload.label;
             if label is github:Label {
                 string labelName = label.name;
-                int? labelIndex = triggerLabels.indexOf(labelName);
+                int? labelIndex = githubConfig.triggerLabels.indexOf(labelName);
                 if labelIndex is int {
                     // Label exists in triggerLabels - create Salesforce case
                     
@@ -64,10 +64,10 @@ service github:IssuesService on githubListener {
                     SalesforceCase salesforceCase = {
                         Subject: issueTitle,
                         Description: issueDescription,
-                        Status: caseStatus,
-                        Priority: casePriority,
-                        OwnerId: caseOwnerId,
-                        Type: caseRecordType,
+                        Status: caseConfig.status,
+                        Priority: caseConfig.priority,
+                        OwnerId: caseConfig.ownerId,
+                        Type: caseConfig.recordType,
                         GitHub_Issue_URL__c: issueHtmlUrl
                     };
 
