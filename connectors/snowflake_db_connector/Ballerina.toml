@@ -1,5 +1,5 @@
 [package]
-org = "vishwajayawickrama"
+org = "wso2"
 name = "snowflake_db_connector"
 version = "0.1.0"
 distribution = "2201.13.1"
