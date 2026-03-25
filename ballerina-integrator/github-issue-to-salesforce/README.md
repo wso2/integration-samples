@@ -68,13 +68,6 @@ The following configurations are required to run this integration.
   (e.g., `"User"`)
 - `caseOwnerId` - Salesforce User ID or Queue ID to assign cases to
 
-## Known Limitations
-- Issue Comment sync is currently 
-  blocked due to an issue in `ballerinax/trigger.github` connector
-  where `IssueCommentEvent` closed record fails to process GitHub 
-  `issue_comment` webhook payload.
-  - Issue: https://github.com/ballerina-platform/ballerina-library/issues/8703
-
 ## Deploying on Devant
 1. Sign in to your Devant account
 2. Create a new Integration and follow instructions in 
