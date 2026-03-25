@@ -7,9 +7,3 @@ E(["Complete"]):::endNode
 A --> B --> C
 C -- Yes --> D --> E
 C -- No --> E
-
-
-
-
-
-  
