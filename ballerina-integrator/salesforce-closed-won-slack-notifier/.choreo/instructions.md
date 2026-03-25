@@ -25,44 +25,16 @@ This integration uses refresh token flow for auth. [Learn how to set up Salesfor
 </details>
 
 <details>
-
+  
 <summary>Slack Setup Guide</summary>
 
-### Prerequisites
-1. A Slack workspace where you have permission to install apps
-2. Slack Bot Token
+1. A Slack app with a Bot Token
+2. The bot must be invited to all channels it will post to
+3. Scopes Required:
+  - `chat:write` - Send messages
+  - `chat:write.public` - Send messages to channels without joining
 
-### Step 1: Create a Slack App
-
-1. Go to https://api.slack.com/apps
-2. Click **Create New App** → **From scratch**
-3. Enter **App Name**: `<YOUR_APP_NAME>`
-4. Select your workspace
-5. Click **Create App**
-
-### Step 2: Configure Bot Token Scopes
-
-1. Go to **OAuth & Permissions** in the left sidebar
-2. Scroll to **Scopes** → **Bot Token Scopes**
-3. Add these scopes:
-   - `chat:write` - Send messages
-   - `chat:write.public` - Send messages to channels without joining
-
-### Step 3: Install App to Workspace
-
-1. Scroll to **OAuth Tokens for Your Workspace**
-2. Click **Install to Workspace**
-3. Click **Allow**
-4. Copy the **Bot User OAuth Token** (starts with `xoxb-`)
-
-### Step 4: Get Channel IDs
-
-1. Open Slack in browser
-2. Navigate to the channel you want to send notifications to
-3. The URL will look like: `https://app.slack.com/client/T.../C...`
-4. Copy the channel ID (the part starting with `C`)
-
-[Learn more about Slack Apps](https://docs.slack.dev/quickstart).
+[Learn how to create a Slack app](https://api.slack.com/start/quickstart).
 
 </details>
 
