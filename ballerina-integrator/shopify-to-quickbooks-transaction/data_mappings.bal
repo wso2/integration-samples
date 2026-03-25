@@ -1,3 +1,4 @@
+import ballerina/time;
 import ballerinax/quickbooks.online as quickbooks;
 import ballerinax/trigger.shopify;
 
@@ -132,11 +133,10 @@ function mapToQBTransaction(shopify:OrderEvent event, string customerId) returns
 }
 
 // --- Add N calendar days to a YYYY-MM-DD string ---
-// Pure arithmetic — handles month and year rollover without depending on time module.
+// Uses time:civilAddDuration to handle month/year rollover and leap years correctly.
+// Falls back to returning the original string if the input cannot be parsed.
 function addDaysToDate(string dateStr, int days) returns string {
     string[] parts = re `-`.split(dateStr);
-
-    // Expect at least "YYYY-MM-DD". If not, return the original string.
     if parts.length() < 3 {
         return dateStr;
     }
@@ -146,41 +146,26 @@ function addDaysToDate(string dateStr, int days) returns string {
     string dayPart = parts[2].length() >= 2 ? parts[2].substring(0, 2) : parts[2];
     int|error parsedD = int:fromString(dayPart);
 
-    // Fail fast on any parse error instead of using a hard-coded default date.
     if !(parsedY is int && parsedM is int && parsedD is int) {
         return dateStr;
     }
 
-    int yr = <int>parsedY;
-    int mo = <int>parsedM;
-    int dy = <int>parsedD;
+    time:Civil civil = {
+        year: parsedY,
+        month: parsedM,
+        day: parsedD,
+        hour: 0,
+        minute: 0,
+        second: 0
+    };
 
-    // Validate month range before indexing daysInMonth[mo - 1].
-    if mo < 1 || mo > 12 {
+    time:Civil|time:Error result = time:civilAddDuration(civil, {days: days});
+    if result is time:Error {
         return dateStr;
     }
 
-    int[] daysInMonth = [31, isLeapYear(yr) ? 29 : 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
-
-    // Validate day range for the given month.
-    if dy < 1 || dy > daysInMonth[mo - 1] {
-        return dateStr;
-    }
-    int totalDay = dy + days;
-
-    while totalDay > daysInMonth[mo - 1] {
-        totalDay -= daysInMonth[mo - 1];
-        mo += 1;
-        if mo > 12 {
-            mo = 1;
-            yr += 1;
-            daysInMonth[1] = isLeapYear(yr) ? 29 : 28;
-        }
-    }
-
-    return string `${yr}-${mo < 10 ? "0" : ""}${mo}-${totalDay < 10 ? "0" : ""}${totalDay}`;
-}
-
-function isLeapYear(int year) returns boolean {
-    return (year % 4 == 0 && year % 100 != 0) || year % 400 == 0;
+    int yr = result.year;
+    int mo = result.month;
+    int dy = result.day;
+    return string `${yr}-${mo < 10 ? "0" : ""}${mo}-${dy < 10 ? "0" : ""}${dy}`;
 }
