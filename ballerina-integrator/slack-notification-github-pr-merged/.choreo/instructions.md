@@ -6,61 +6,36 @@
 - Routes notifications to different Slack channels based on repository or branch
 
 <details>
+
 <summary>Slack Setup Guide</summary>
 
-1. Create a Slack App:
-   - Go to [https://api.slack.com/apps](https://api.slack.com/apps)
-   - Click "Create New App" → "From scratch"
-   - Name your app and select your workspace
+1. A Slack app with a Bot Token
+2. The bot must be invited to all channels it will post to
+3. Scopes Required:
+  - `chat:write`
+  - `channels:read` (optional, for channel resolution)
+  - `users:read.email` (optional, for tagging lead owners by email)
 
-2. Configure Bot Token Scopes:
-   - Navigate to "OAuth & Permissions" in the left sidebar
-   - Under "Scopes" → "Bot Token Scopes", add:
-     - `chat:write` - To post messages to channels
-     - `chat:write.public` - To post to public channels without joining
+[Learn how to create a Slack app](https://api.slack.com/start/quickstart).
 
-3. Install App to Workspace:
-   - Click "Install to Workspace" at the top of the OAuth & Permissions page
-   - Authorize the app
-
-4. Get Your Bot Token:
-   - After installation, copy the "Bot User OAuth Token" (starts with `xoxb-`)
-   - This is your `slackToken`
-
-5. Get Channel ID:
-   - Open Slack, right-click on the channel name
-   - Select "View channel details"
-   - Scroll down to find the Channel ID (e.g., `C0AKY8K8DT3`)
-   - This is your `slackChannelId`
-
-6. Add Bot to Channels:
-   - In each channel you want to post to, type `/invite @YourBotName`
-
-[Learn more about creating Slack apps](https://api.slack.com/start/quickstart)
 </details>
 
 <details>
-<summary>GitHub Webhook Setup Guide</summary>
+<summary>GitHub Setup Guide</summary>
 
-1. Deploy Your Integration:
-   - First deploy this integration on Devant to get your webhook endpoint URL
+1. A GitHub account with access to the repositories you want to monitor
 
-2. Configure GitHub Webhook:
-   - Go to your GitHub repository
-   - Click "Settings" → "Webhooks" → "Add webhook"
-   - Set "Payload URL" to your deployed integration endpoint
-   - Set "Content type" to `application/json`
-   - Under "Which events would you like to trigger this webhook?":
-     - Select "Let me select individual events"
-     - Check only "Pull requests"
-   - Ensure "Active" is checked
-   - Click "Add webhook"
+The following should be done after deploying the integration, and the endpoint URL is available.
 
-3. Test the Webhook:
-   - Merge a Pull Request in your repository
-   - Check the "Recent Deliveries" tab in webhook settings to verify delivery
+1. Set up a webhook on the repository:
+   - Go to your GitHub repository **Settings > Webhooks > Add webhook**
+   - Set **Payload URL** to your deployed integration endpoint
+   - Set **Content type** to `application/json`
+   - Optionally set a secret for security (if you do, make sure to add it to the integration configuration as well)
+   - Under events select **"Let me select individual events"**
+   - Check **Issues**
+   - Click **Add webhook**
 
-**Note:** For local testing, use tools like [ngrok](https://ngrok.com/) to expose your local server.
 </details>
 
 <details>
