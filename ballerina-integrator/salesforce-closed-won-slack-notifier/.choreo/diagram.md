@@ -20,7 +20,3 @@ F --> G
 G --> H 
 H --> J 
 
-classDef startNode fill:#4B7DDA,stroke:#fff,stroke-width:0px,color:#fff;
-classDef endNode fill:#4B7DDA,stroke:#fff,stroke-width:0px,color:#fff;
-classDef processNode fill:#fff,stroke:#AFAFAF,stroke-width:1px,rx:5,ry:5;
-classDef decisionNode fill:#FFF5E6,stroke:#FFB347,stroke-width:1px;
