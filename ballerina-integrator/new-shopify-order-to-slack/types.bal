@@ -5,6 +5,7 @@ type ShopifyOrderEvent shopify:OrderEvent;
 // Record to hold extracted order details
 type OrderDetails record {|
     string orderNumber;
+    boolean hasRealOrderId;
     string customerFullName;
     string customerEmail;
     string orderTotalPrice;

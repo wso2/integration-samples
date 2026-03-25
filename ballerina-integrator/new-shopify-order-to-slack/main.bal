@@ -1,4 +1,5 @@
 import ballerina/log;
+import ballerina/uuid;
 import ballerinax/trigger.shopify;
 
 // Shopify webhook service to handle order events
@@ -21,14 +22,26 @@ service shopify:OrdersService on shopifyListener {
         // Build the Slack message using the custom template
         string slackMessage = buildSlackMessage(orderDetails, customMessage);
 
-        // Post the message to Slack with deduplication via client_msg_id
-        _ = check slackClient->/chat\.postMessage.post(
-            payload = {
-                channel: slackChannelId,
-                text: slackMessage,
-                "client_msg_id": orderDetails.orderNumber
-            }
-        );
+        // Post the message to Slack with deduplication via client_msg_id (only if we have a real order ID)
+        if orderDetails.hasRealOrderId {
+            _ = check slackClient->/chat\.postMessage.post(
+                payload = {
+                    channel: slackChannelId,
+                    text: slackMessage,
+                    "client_msg_id": orderDetails.orderNumber
+                }
+            );
+        } else {
+            // Generate a unique ID for orders without a real ID to prevent deduplication issues
+            string uniqueId = uuid:createType1AsString();
+            _ = check slackClient->/chat\.postMessage.post(
+                payload = {
+                    channel: slackChannelId,
+                    text: slackMessage,
+                    "client_msg_id": uniqueId
+                }
+            );
+        }
 
         log:printInfo(string `Successfully posted order ${orderDetails.orderNumber} to Slack`);
     }

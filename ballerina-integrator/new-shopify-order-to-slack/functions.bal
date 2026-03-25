@@ -4,7 +4,8 @@ import ballerinax/trigger.shopify;
 function extractOrderDetails(shopify:OrderEvent event) returns OrderDetails {
     // Order ID
     int? eventId = event?.id;
-    string orderNumber = eventId is int ? eventId.toString() : "Unknown";
+    boolean hasRealOrderId = eventId is int;
+    string orderNumber = hasRealOrderId ? eventId.toString() : "Unknown";
     
     // Customer information
     string customerFirstName = event?.customer?.first_name ?: "Unknown";
@@ -35,6 +36,7 @@ function extractOrderDetails(shopify:OrderEvent event) returns OrderDetails {
     
     return {
         orderNumber,
+        hasRealOrderId,
         customerFullName,
         customerEmail,
         orderTotalPrice,
