@@ -1,18 +1,22 @@
-// GitHub webhook secret for secure webhook verification
-configurable string githubWebhookSecret = ?;
+// GitHub configuration
+configurable record {
+    string webhookSecret;
+    string[] triggerLabels;
+} githubConfig = ?;
 
-// Configurable list of labels that trigger the workflow
-configurable string[] triggerLabels = ?;
+// Salesforce connection configuration
+configurable record {
+    string baseUrl;
+    string clientId;
+    string clientSecret;
+    string refreshToken;
+    string refreshUrl;
+} salesforceConfig = ?;
 
-// Salesforce connection configurations
-configurable string salesforceBaseUrl = ?;
-configurable string salesforceClientId = ?;
-configurable string salesforceClientSecret = ?;
-configurable string salesforceRefreshToken = ?;
-configurable string salesforceRefreshUrl = ?;
-
-// Salesforce case configurations
-configurable string caseRecordType = "";
-configurable string casePriority = "Medium";
-configurable string caseStatus = "New";
-configurable string caseOwnerId = ?;
+// Salesforce case configuration
+configurable record {
+    string recordType;
+    string priority;
+    string status;
+    string ownerId;
+} caseConfig = ?;
