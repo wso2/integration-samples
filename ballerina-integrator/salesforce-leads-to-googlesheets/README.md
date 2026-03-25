@@ -1,7 +1,5 @@
 # Salesforce Leads to Google Sheets Integration
 
-A Ballerina automation integration that exports Salesforce Lead records to a Google Sheets spreadsheet on a configurable schedule.
-
 ## Description
 
 This integration reads Salesforce Lead records and syncs them to Google Sheets on a schedule. It supports configurable filters, field mapping, sync modes, incremental tracking, and optional sheet splitting for reporting.
@@ -11,7 +9,7 @@ This integration reads Salesforce Lead records and syncs them to Google Sheets o
 - Queries Salesforce Lead records using configurable filters (timeframe, custom SOQL conditions, and converted status)
 - Maps selected Salesforce Lead fields to Google Sheets columns
 - Creates a new timestamped spreadsheet or writes to an existing spreadsheet using the provided `spreadsheetId`
-- Supports multiple sync modes: `APPEND`, `FULL_REPLACE`, and `UPSERT_BY_EMAIL`, including incremental sync with last-modified tracking
+- Supports multiple sync modes: `APPEND`, `FULL_REPLACE`, and `UPSERT_BY_EMAIL`
 - Optionally splits leads into multiple sheets by a selected field value (for example, `LeadSource` or `Status`)
 
 ## Prerequisites
@@ -70,7 +68,6 @@ The following configurations are required to connect to Salesforce and Google Sh
 - `timeframe` - Date window filter (`ALL`, `YESTERDAY`, `LAST_WEEK`, `LAST_MONTH`, `LAST_YEAR`)
 - `includeConverted` - Include converted leads when set to `true`
 - `syncMode` - Sync strategy: `APPEND`, `FULL_REPLACE`, `UPSERT_BY_EMAIL`
-- `enableIncrementalSync` and `lastSyncTimestamp` - Incremental sync controls
 - `splitBy` - Split output across multiple sheets by a selected field
 - `timezone` - Timezone used for timestamp generation
 - `enableAutoFormat` - Enables built-in sheet formatting behavior

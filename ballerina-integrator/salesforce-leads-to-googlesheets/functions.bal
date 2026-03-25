@@ -1,11 +1,5 @@
 import ballerina/time;
 
-public function getCurrentTimestamp() returns string|error {
-    time:Utc currentUtc = time:utcNow();
-    time:Civil currentCivil = time:utcToCivil(currentUtc);
-    return string `${currentCivil.year}-${currentCivil.month.toString().padZero(2)}-${currentCivil.day.toString().padZero(2)}T${currentCivil.hour.toString().padZero(2)}:${currentCivil.minute.toString().padZero(2)}:${currentCivil.second.toString().padZero(2)}Z`;
-}
-
 public function getFormattedCurrentTimeStamp() returns string|error {
     time:Zone? zone = time:getZone(timezone);
     if zone is time:Zone {
@@ -78,20 +72,9 @@ public function buildSoqlQuery() returns string|error {
         whereConditions.push(soqlFilter);
     }
     
-    if enableIncrementalSync {
-        string effectiveTimestamp = getEffectiveLastSyncTimestamp();
-        if effectiveTimestamp != "" {
-            whereConditions.push(string `LastModifiedDate > ${effectiveTimestamp}`);
-        }
-    }
-    
     if whereConditions.length() > 0 {
         string whereClause = string:'join(" AND ", ...whereConditions);
         query = string `${query} WHERE ${whereClause}`;
-    }
-    
-    if enableIncrementalSync {
-        query = string `${query} ORDER BY LastModifiedDate ASC`;
     }
     
     return query;

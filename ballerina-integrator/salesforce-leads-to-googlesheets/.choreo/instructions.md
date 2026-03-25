@@ -1,7 +1,3 @@
-# Setup Instructions
-
-Follow these instructions to configure and deploy the Salesforce Leads to Google Sheets integration on WSO2 Devant.
-
 ## What It Does
 
 - Fetches Salesforce Lead records with configurable filters and export field selection
@@ -13,34 +9,30 @@ Follow these instructions to configure and deploy the Salesforce Leads to Google
 <details>
 <summary>Salesforce Setup Guide</summary>
 
-1. Create a Salesforce Connected App with OAuth enabled.
-2. Collect these values from Salesforce:
-  - Client ID (`Consumer Key`)
-  - Client Secret (`Consumer Secret`)
+1. Salesforce account with API access
+2. OAuth2 credentials:
+  - Client ID 
+  - Client Secret 
   - Refresh Token
-  - Refresh URL (token endpoint)
+  - Refresh URL 
   - Base URL (your Salesforce instance URL)
-3. Ensure the app has OAuth scopes for API access and refresh token usage.
 
-This integration uses refresh-token OAuth flow for Salesforce authentication. [Salesforce OAuth setup reference](https://help.salesforce.com/s/articleView?id=xcloud.create_a_local_external_client_app.htm&type=5).
-
-</details>
+This integration uses refresh token flow for auth. [Learn how to set up Salesforce OAuth](https://help.salesforce.com/s/articleView?id=xcloud.create_a_local_external_client_app.htm&type=5).
 
 <details>
+
 <summary>Google Sheets Setup Guide</summary>
 
-1. Create a Google Cloud project and enable:
-  - Google Sheets API
-  - Google Drive API
-2. Create OAuth credentials and collect:
+1. A Google Cloud project with Google Sheets API enabled
+2. OAuth2 credentials:
   - Client ID
   - Client Secret
   - Refresh Token
-3. Confirm access includes these scopes:
+3. Scopes Required
   - `https://www.googleapis.com/auth/drive`
   - `https://www.googleapis.com/auth/spreadsheets`
 
-This integration uses refresh-token OAuth flow for Google APIs. [Google Workspace development guide](https://developers.google.com/workspace/guides/get-started).
+This integration uses refresh token flow for auth. [Learn how to Develop on Google Workspace](https://developers.google.com/workspace/guides/get-started).
 
 </details>
 
@@ -97,29 +89,3 @@ This integration uses refresh-token OAuth flow for Google APIs. [Google Workspac
   - It does not currently auto-apply header bolding/background, top-row freezing, column auto-fit, number/date formatting, or alternating row styling.
 
 </details>
-
-## Deployment Steps
-
-1. Configure Salesforce and Google OAuth values in the integration runtime configuration.
-2. Set optional parameters (`syncMode`, `spreadsheetId`, filters, and mapping) based on your use case.
-3. Configure the schedule in Devant (for example: hourly, daily, or weekly).
-4. Deploy the integration and verify execution logs.
-
-## Troubleshooting
-
-### Authentication Failures
-- Re-check client credentials, refresh tokens, and token endpoints.
-- Confirm APIs/scopes are enabled for both providers.
-
-### No Records Exported
-- Verify `soqlFilter`, `timeframe`, `includeConverted`, and `lastSyncTimestamp` values.
-- Check Salesforce-side data availability and permissions.
-
-### Spreadsheet Write Issues
-- Confirm `spreadsheetId` is valid and accessible by the authenticated Google account.
-- Validate `syncMode` expectations for sheet creation/replacement behavior.
-
-### Performance Tuning
-- Reduce `fieldMapping` columns.
-- Use incremental sync and tighter filters.
-- Use `splitBy` carefully when record volume is high.

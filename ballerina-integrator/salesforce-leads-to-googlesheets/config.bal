@@ -49,8 +49,7 @@ configurable string[] fieldMapping = [
 configurable string soqlFilter = "";
 configurable string timeframe = "ALL";
 configurable boolean includeConverted = false;
-configurable boolean enableIncrementalSync = false;
-configurable string lastSyncTimestamp = "";
+
 configurable string syncMode = "APPEND";
 configurable boolean enableAutoFormat = true;
 configurable string splitBy = "";
