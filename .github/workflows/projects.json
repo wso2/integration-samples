@@ -9,6 +9,9 @@
     "path": "ballerina-integrator/signup-sfchatsync"
   },
   {
+    "path": "ballerina-integrator/salesforce-closed-won-slack-notifier"
+  },
+  {
     "path": "ballerina-integrator/shopify-to-quickbooks-transaction"
   }
 ]
