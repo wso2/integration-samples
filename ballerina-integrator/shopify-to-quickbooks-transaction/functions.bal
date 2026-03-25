@@ -1,3 +1,4 @@
+import ballerina/constraint;
 import ballerina/log;
 import ballerina/time;
 import ballerinax/quickbooks.online as quickbooks;
@@ -40,17 +41,9 @@ function shouldProcessOrder(shopify:OrderEvent event) returns boolean {
 }
 
 // --- Duplicate check: query QB for an existing Invoice with this order number in PrivateNote ---
+// orderNum is always produced by int.toString() in orderNumStr(), so it is guaranteed to be
+// a non-empty string of decimal digits — no further format validation is needed here.
 function isDuplicateTransaction(string orderNum) returns boolean|error {
-    if orderNum.length() == 0 {
-        return false;
-    }
-    // Validate orderNum: Shopify order_number is always a positive integer; reject anything else
-    foreach int i in 0 ..< orderNum.length() {
-        int cp = orderNum.getCodePoint(i);
-        if cp < 48 || cp > 57 {
-            return error(string `Invalid orderNum '${orderNum}': contains non-digit characters`);
-        }
-    }
     string query = string `SELECT Id FROM Invoice WHERE PrivateNote LIKE '%Shopify Order: ${orderNum} | ID:%'`;
     json|error result = quickbooksClient->queryEntity(quickbooksConfig.realmId, query);
     if result is map<json> {
@@ -65,16 +58,33 @@ function isDuplicateTransaction(string orderNum) returns boolean|error {
     return false;
 }
 
+// Constrained type used to validate that an email is non-empty and matches a standard pattern.
+@constraint:String {
+    pattern: {
+        value: re `^[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}$`,
+        message: "Invalid email address format"
+    }
+}
+type Email string;
+
 // --- Customer lookup / auto-creation ---
 // OrderEvent.customer is shopify:Customer? and OrderEvent.billing_address is shopify:CustomerAddress?
 function getOrCreateQBCustomer(shopify:Customer? customer, shopify:CustomerAddress? billingAddr) returns string|error {
-    string? email = customer?.email;
-    if email is () || email == "" {
+    string? rawEmail = customer?.email;
+    if rawEmail is () || rawEmail == "" {
         if quickbooksConfig.validationRules.requireCustomerEmail {
             return error("Customer email is required but missing");
         }
         return error("Customer email is missing and no default QuickBooks customer is configured");
     }
+
+    // Validate the email format using ballerina/constraint
+    Email emailValue = rawEmail;
+    Email|error validated = constraint:validate(emailValue);
+    if validated is error {
+        return error(string `Customer email '${rawEmail}' is invalid: ${validated.message()}`);
+    }
+    string email = validated;
 
     // Query QB for existing customer by email (QB IDS uses backslash-escape for single quotes, not SQL doubling)
     string sanitizedEmail = string:'join("\\'", ...re `'`.split(email));
