@@ -9,10 +9,14 @@
 <summary>GitHub Setup Guide</summary>
 
 1. A GitHub account with access to the repositories you want to monitor
-3. Set up a webhook on each repository:
-   - Go to your GitHub repository **Settings → Webhooks → Add webhook**
-   - Set **Payload URL** to your Devant service URL
+
+The following should be done after deploying the integration, and the endpoint URL is available.
+
+1. Set up a webhook on the repository:
+   - Go to your GitHub repository **Settings > Webhooks > Add webhook**
+   - Set **Payload URL** to your deployed integration endpoint
    - Set **Content type** to `application/json`
+   - Optionally set a secret for security (if you do, make sure to add it to the integration configuration as well)
    - Under events select **"Let me select individual events"**
    - Check **Issues**
    - Click **Add webhook**
