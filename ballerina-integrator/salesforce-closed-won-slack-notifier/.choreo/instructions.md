@@ -19,7 +19,6 @@
   - Refresh URL
   - Base URL (your Salesforce instance URL)
 3. Change Data Capture must be enabled for the **Opportunity** object in Salesforce Setup
-<<<<<<< HEAD
 
 This integration uses refresh token flow for auth. [Learn how to set up Salesforce OAuth](https://help.salesforce.com/s/articleView?id=xcloud.create_a_local_external_client_app.htm&type=5).
 
