@@ -1,4 +1,3 @@
-flowchart TD
     Start([Start]):::startNode --> Poll[Poll Jira API<br/>closedSprints]:::processNode
     Poll --> Detect[Detect New<br/>Completed Sprints]:::processNode
     Detect --> Generate[Fetch Issues &<br/>Generate Summary]:::processNode
