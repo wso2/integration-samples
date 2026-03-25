@@ -13,19 +13,6 @@ service github:PullRequestService on githubListener {
             return;
         }
 
-        // Check if repository is in the allowed list
-        boolean isAllowedRepo = false;
-        foreach string allowedRepo in githubRepos {
-            if event.repository.full_name == allowedRepo {
-                isAllowedRepo = true;
-                break;
-            }
-        }
-        if !isAllowedRepo {
-            log:printInfo(string `Repository ${event.repository.full_name} not in allowed list, skipping notification`);
-            return;
-        }
-
         // Apply filters
         if !shouldProcessPullRequest(event.pull_request) {
             log:printInfo("PR did not match filters, skipping notification");
