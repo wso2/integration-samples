@@ -154,13 +154,7 @@ public function getPreviousPeriodDates() returns [time:Civil, time:Civil]|error 
         [startDate, endDate] = check getPeriodRangeFromMonthStart(compareQuarterYear, compareQuarterStartMonth, 3);
     } else if timePeriod == "yearly" {
         int lastYear = currentCivil.year - 1;
-        int compareYear;
-
-        if comparisonPeriod == "YoY" {
-            compareYear = lastYear - 1;
-        } else {
-            compareYear = lastYear - 1;
-        }
+        int compareYear = lastYear - 1;
 
         startDate = createUtcCivilDate(compareYear, 1, 1);
         endDate = createUtcCivilDate(compareYear, 12, 31);
@@ -213,11 +207,7 @@ public function getMonthName(time:Civil date) returns string {
     ];
 
     int monthNum = date.month;
-    if monthNum >= 1 && monthNum <= 12 {
-        return months[monthNum - 1];
-    }
-
-    return "Unknown";
+    return months[monthNum - 1];
 }
 
 public function getYear(time:Civil date) returns string {
