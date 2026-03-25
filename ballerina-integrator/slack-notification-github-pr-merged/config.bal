@@ -1,13 +1,18 @@
 // Slack configuration
-configurable string slackToken = ?;
-configurable string slackChannelId = ?;
+configurable record {
+    string token;
+    string channelId;
+    // Channel routing - separate channels per repo or branch
+    // Format: "repo:channel" or "repo/branch:channel"
+    // Example: ["TharaniDJ/devant:C123456", "TharaniDJ/devant/main:C789012"]
+    string[] channelRouting = [];
+} slackConfig = ?;
 
 // GitHub webhook configuration
-configurable int webhookPort = 8090;
-configurable string githubCallback = "";
-
-// GitHub repository (org/repo format)
-configurable string[] githubRepos = ?;
+configurable record {
+    string callbackUrl = "";
+    string[] repos;
+} githubConfig = ?;
 
 // Optional filters
 configurable string[] filterBaseBranches = ["main"];
@@ -19,8 +24,3 @@ configurable boolean includePrDescription = true;
 configurable boolean includeReviewers = true;
 configurable boolean includeDiffStats = true;
 configurable boolean includeCycleTime = true;
-
-// Channel routing - separate channels per repo or branch
-// Format: "repo:channel" or "repo/branch:channel"
-// Example: ["TharaniDJ/devant:C123456", "TharaniDJ/devant/main:C789012"]
-configurable string[] channelRouting = [];

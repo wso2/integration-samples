@@ -4,12 +4,12 @@ import ballerinax/trigger.github;
 // Initialize Slack client
 final slack:Client slackClient = check new ({
     auth: {
-        token: slackToken
+        token: slackConfig.token
     }
 });
 
 // Initialize GitHub webhook listener
 listener github:Listener githubListener = new ({
-    "port": webhookPort,
-    "callbackUrl": githubCallback
+    "port": 8090,
+    "callbackUrl": githubConfig.callbackUrl
 });

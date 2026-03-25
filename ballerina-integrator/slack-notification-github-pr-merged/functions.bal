@@ -75,7 +75,7 @@ function getTargetChannel(github:Repository repo, string branch) returns string 
 
     // Check for repo/branch specific channel
     string repoBranchKey = string `${repoFullName}/${branch}`;
-    foreach string routing in channelRouting {
+    foreach string routing in slackConfig.channelRouting {
         string[] parts = regex:split(routing, ":");
         if parts.length() == 2 && parts[0] == repoBranchKey {
             return parts[1];
@@ -83,7 +83,7 @@ function getTargetChannel(github:Repository repo, string branch) returns string 
     }
 
     // Check for repo-level channel
-    foreach string routing in channelRouting {
+    foreach string routing in slackConfig.channelRouting {
         string[] parts = regex:split(routing, ":");
         if parts.length() == 2 && parts[0] == repoFullName {
             return parts[1];
@@ -91,7 +91,7 @@ function getTargetChannel(github:Repository repo, string branch) returns string 
     }
 
     // Return default channel
-    return slackChannelId;
+    return slackConfig.channelId;
 }
 
 // Build Slack message from PR data
