@@ -20,3 +20,14 @@ type OrderDetails record {|
     string fulfillmentStatus;
     string createdAt;
 |};
+
+// Shopify webhook configuration
+type ShopifyConfig record {|
+    string apiSecretKey;
+|};
+
+// Slack configuration
+type SlackConfig record {|
+    string token;
+    string channelId;
+|};

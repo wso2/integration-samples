@@ -13,9 +13,8 @@ service shopify:OrdersService on shopifyListener {
 
         // Check if order price meets the minimum threshold
         decimal orderPrice = check decimal:fromString(orderDetails.orderTotalPrice);
-        decimal minPrice = <decimal>minimumOrderPrice;
-        if orderPrice < minPrice {
-            log:printInfo(string `Order price ${orderPrice} is below minimum threshold ${minPrice}. Skipping notification.`);
+        if orderPrice < minimumOrderPrice {
+            log:printInfo(string `Order price ${orderPrice} is below minimum threshold ${minimumOrderPrice}. Skipping notification.`);
             return;
         }
 
@@ -26,7 +25,7 @@ service shopify:OrdersService on shopifyListener {
         if orderDetails.hasRealOrderId {
             _ = check slackClient->/chat\.postMessage.post(
                 payload = {
-                    channel: slackChannelId,
+                    channel: slackConfig.channelId,
                     text: slackMessage,
                     "client_msg_id": orderDetails.orderNumber
                 }
@@ -36,7 +35,7 @@ service shopify:OrdersService on shopifyListener {
             string uniqueId = uuid:createType1AsString();
             _ = check slackClient->/chat\.postMessage.post(
                 payload = {
-                    channel: slackChannelId,
+                    channel: slackConfig.channelId,
                     text: slackMessage,
                     "client_msg_id": uniqueId
                 }

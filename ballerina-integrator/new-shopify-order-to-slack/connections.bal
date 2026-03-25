@@ -5,14 +5,14 @@ import ballerinax/trigger.shopify;
 final slack:Client slackClient = check new slack:Client(
     config = {
         auth: {
-            token: slackToken
+            token: slackConfig.token
         }
     }
 );
 
 // Configure Shopify webhook listener
 shopify:ListenerConfig shopifyListenerConfig = {
-    apiSecretKey: shopifyApiSecretKey
+    apiSecretKey: shopifyConfig.apiSecretKey
 };
 
 // Initialize Shopify webhook listener
