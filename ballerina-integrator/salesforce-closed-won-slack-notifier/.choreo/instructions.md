@@ -21,8 +21,6 @@
 3. Change Data Capture must be enabled for the **Opportunity** object in Salesforce Setup
 <<<<<<< HEAD
 
-=======
->>>>>>> 2dd3ef9 (addressed all the comments)
 This integration uses refresh token flow for auth. [Learn how to set up Salesforce OAuth](https://help.salesforce.com/s/articleView?id=xcloud.create_a_local_external_client_app.htm&type=5).
 
 </details>
