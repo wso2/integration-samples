@@ -37,11 +37,11 @@ Before running this integration, you need:
 The following configurations are required for the integration:
 
 ### Shopify Configuration
-- `shopifyApiSecretKey`: The API secret key obtained from the Shopify webhooks setup.
+- `shopifyConfig.apiSecretKey`: The API secret key obtained from the Shopify webhooks setup.
 
 ### Slack Configuration
-- `slackToken`: The Bot User OAuth Token obtained from the Slack app setup.
-- `slackChannelId`: The unique ID of the Slack channel where the notification will be sent.
+- `slackConfig.token`: The Bot User OAuth Token obtained from the Slack app setup.
+- `slackConfig.channelId`: The unique ID of the Slack channel where the notification will be sent.
 
 ### Optional Configuration
 - `customMessage`: (Optional) The text template for the Slack message with placeholders for order details. A default template is provided in `config.bal`. Use `<br>` to indicate line breaks if customizing the message. Available placeholders: `{orderId}`, `{customerName}`, `{customerEmail}`, `{currency}`, `{totalPrice}`, `{itemCount}`, `{items}`, `{shippingAddress}`, `{financialStatus}`, `{fulfillmentStatus}`, `{createdAt}`, `{subtotal}`, `{taxes}`, `{shipping}`.

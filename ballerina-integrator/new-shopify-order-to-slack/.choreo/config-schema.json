@@ -128,16 +128,36 @@
         "new_shopify_order_to_slack": {
           "type": "object",
           "properties": {
-            "shopifyApiSecretKey": {
-              "type": "string",
+            "shopifyConfig": {
+              "type": "object",
+              "properties": {
+                "apiSecretKey": {
+                  "type": "string"
+                }
+              },
+              "additionalProperties": false,
+              "required": [
+                "apiSecretKey"
+              ],
+              "name": "wso2/new_shopify_order_to_slack:0.1.0:ShopifyConfig",
               "description": ""
             },
-            "slackToken": {
-              "type": "string",
-              "description": ""
-            },
-            "slackChannelId": {
-              "type": "string",
+            "slackConfig": {
+              "type": "object",
+              "properties": {
+                "token": {
+                  "type": "string"
+                },
+                "channelId": {
+                  "type": "string"
+                }
+              },
+              "additionalProperties": false,
+              "required": [
+                "token",
+                "channelId"
+              ],
+              "name": "wso2/new_shopify_order_to_slack:0.1.0:SlackConfig",
               "description": ""
             },
             "customMessage": {
@@ -151,9 +171,8 @@
           },
           "additionalProperties": false,
           "required": [
-            "shopifyApiSecretKey",
-            "slackToken",
-            "slackChannelId"
+            "shopifyConfig",
+            "slackConfig"
           ]
         }
       },
