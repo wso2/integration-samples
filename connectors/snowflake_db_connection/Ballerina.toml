@@ -1,5 +1,5 @@
 [package]
-org = "vishwajayawickrama"
+org = "connector-docs"
 name = "snowflake_db_connection"
 version = "0.1.0"
 distribution = "2201.13.1"
