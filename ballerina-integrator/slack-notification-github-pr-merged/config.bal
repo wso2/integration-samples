@@ -10,7 +10,6 @@ configurable record {
 
 // GitHub webhook configuration
 configurable record {
-    string callbackUrl = "";
     string[] repos;
 } githubConfig = ?;
 

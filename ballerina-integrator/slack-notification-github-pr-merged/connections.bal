@@ -10,6 +10,5 @@ final slack:Client slackClient = check new ({
 
 // Initialize GitHub webhook listener
 listener github:Listener githubListener = new ({
-    "port": 8090,
-    "callbackUrl": githubConfig.callbackUrl
+    "port": 8090
 });
