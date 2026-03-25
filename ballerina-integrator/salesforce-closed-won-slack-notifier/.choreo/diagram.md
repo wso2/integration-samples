@@ -1,22 +1,14 @@
 A(["Begin"]):::startNode 
-B["Listen for Salesforce Opportunity Change Event"]:::processNode 
-C{"Is Stage <br/> Closed Won?"}:::decisionNode 
-D{"Meets Minimum <br/> Deal Amount?"}:::decisionNode 
-E{"Passes <br/> Filters?"}:::decisionNode 
-F["Determine Target Slack Channel by Deal Size"]:::processNode 
-G["Send to Slack with Retry Logic"]:::processNode 
-H{"Message <br/> Sent?"}:::decisionNode 
-J(["Complete"]):::endNode
+B["Listen for Salesforce<br/>Opportunity Event"]:::processNode 
+C{"Stage =<br/>Closed Won?"}:::decisionNode 
+D{"Meets Minimum<br/>Amount & Filters?"}:::decisionNode 
+E["Send Notification<br/>to Slack"]:::processNode 
+F(["Complete"]):::endNode
 
 A --> B 
 B --> C 
 C -- Yes --> D 
-C -- No --> J 
+C -- No --> F 
 D -- Yes --> E 
-D -- No --> J 
-E -- Yes --> F 
-E -- No --> J 
-F --> G 
-G --> H 
-H --> J 
-
+D -- No --> F 
+E --> F 
