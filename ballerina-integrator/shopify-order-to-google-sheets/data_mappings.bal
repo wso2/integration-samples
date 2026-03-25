@@ -1,6 +1,42 @@
 import ballerinax/trigger.shopify;
+import ballerina/time;
+
+# Formats a date string according to the configured date format
+# + dateString - The input date string (RFC 3339 format from Shopify)
+# + return - Formatted date string or original if formatting fails/not configured
+function formatDate(string? dateString) returns string {
+    if dateString is () {
+        return "";
+    }
+    if dateFormat == "default" || dateString.trim() == "" {
+        return dateString;
+    }
+
+    time:Civil|time:Error civilResult = time:civilFromString(dateString);
+    if civilResult is time:Error {
+        return dateString;
+    }
+
+    time:Civil civil = civilResult;
+
+    if dateFormat == "iso8601" {
+        string|time:Error formatted = time:civilToString(civil);
+        if formatted is string {
+            return formatted;
+        }
+    } else if dateFormat == "rfc5322" {
+        string|time:Error formatted = time:civilToEmailString(civil, time:PREFER_ZONE_OFFSET);
+        if formatted is string {
+            return formatted;
+        }
+    }
+
+    return dateString;
+}
 
 # Helper function to extract discount codes
+# + codes - Array of discount code objects from Shopify order
+# + return - Comma-separated string of discount codes or empty string if none
 function getDiscountCodes(shopify:DiscountCode[]? codes) returns string {
     if codes is () || codes.length() == 0 {
         return "";
@@ -10,6 +46,8 @@ function getDiscountCodes(shopify:DiscountCode[]? codes) returns string {
 }
 
 # Helper function to extract shipping method
+# + lines - Array of shipping line objects from Shopify order
+# + return - Shipping method title or empty string if not available
 function getShippingMethod(shopify:ShippingLine[]? lines) returns string {
     if lines is () || lines.length() == 0 {
         return "";
@@ -18,6 +56,8 @@ function getShippingMethod(shopify:ShippingLine[]? lines) returns string {
 }
 
 # Helper function to get shipping price
+# + lines - Array of shipping line objects from Shopify order
+# + return - Shipping price as string or "0.00" if not available
 function getShippingPrice(shopify:ShippingLine[]? lines) returns string {
     if lines is () || lines.length() == 0 {
         return "0.00";
@@ -26,6 +66,8 @@ function getShippingPrice(shopify:ShippingLine[]? lines) returns string {
 }
 
 # Helper function to get customer ID
+# + customerId - Customer ID from Shopify order (nullable)
+# + return - Customer ID as string or empty string if not available
 function getCustomerId(int? customerId) returns string {
     if customerId is () {
         return "";

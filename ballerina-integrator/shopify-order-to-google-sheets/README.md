@@ -39,27 +39,26 @@ This integration uses refresh token flow for auth. [Learn how to Develop on Goog
 The following configurations are required for the integration:
 
 ### Shopify Configuration
-- `shopifyWebHookSecret` (required): The API secret key obtained from the Shopify setup.
+- `shopifyConfig.webhookSecret` (required): The API secret key obtained from the Shopify setup.
 
-### Google Credentials
+### Google Sheets Configuration
 
-- `googleClientID` (required): Your Google OAuth2 client ID
-- `googleClientSecret` (required): Your Google OAuth2 client secret
-- `googleRefreshToken` (required): Your Google OAuth2 refresh token
-- `googleRefreshURL` (optional): OAuth2 refresh URL (default: "https://oauth2.googleapis.com/token")
+- `googleSheetsConfig.clientID` (required): Your Google OAuth2 client ID
+- `googleSheetsConfig.clientSecret` (required): Your Google OAuth2 client secret
+- `googleSheetsConfig.refreshToken` (required): Your Google OAuth2 refresh token
+- `googleSheetsConfig.sheetID` (required): The Google spreadsheet ID
 
-### Google Sheet Configuration
+### Sheet Settings
 
-- `sheetConfig.sheetId` (required): The Google spreadsheet ID
-- `sheetConfig.sheetName` (required): The tab name within a Google spreadsheet
-- `sheetConfig.mode` (optional): Mode to insert new orders - "append" (default) or "upsert" (replaces row if same order_number exists)
+- `sheetName` (optional): The tab name within a Google spreadsheet (default: "Orders")
+- `insertMode` (optional): Mode to insert new orders - "append" or "upsert" (replaces row if same order_number exists) (default: "append")
 
 ### Additional Configurations
 
 #### Data Formatting Options
 
 - `includeLineItems` (optional): Include individual line items from orders (default: false)
-- `dateFormat` (optional): Date format for output - "default" (keeps Shopify format), "iso8601", or "email" (RFC 5322 format) (default: "default")
+- `dateFormat` (optional): Date format for output - "default" (keeps Shopify format), "iso8601", or "rfc5322" (RFC 5322 format) (default: "default")
 - `groupByMonth` (optional): Organize orders into monthly sheets (format: YYYY-MM) based on order creation date. When enabled, sheets are automatically created if they don't exist (default: false)
 
 #### Filter Configurations

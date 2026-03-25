@@ -1,7 +1,7 @@
 ## What It Does
 
 - Listens to shopify webhook notifications for order creation events.
-- Appends the order details to a given google sheet.
+- Appends/Upserts the order details to a given google sheet.
 
 <details>
 
@@ -9,14 +9,14 @@
 
 1. Log in to your Shopify account and navigate to **Settings** > **Notifications**.
 2. Click on the **Webhooks** section.
-3. Copy the key that is shown under 'Your webhooks will be signed with ...'. This should be the `shopifyWebHookSecret` configuration.
+3. Copy the key that is shown under 'Your webhooks will be signed with ...'. This should be the `shopifyConfig.webhookSecret` configuration.
 
 The following should be done after deploying the integration, and the endpoint URL is available.
 
 1. Log in to your Shopify account and navigate to **Settings** > **Notifications**.
 2. Click on the **Webhooks** section and click on **Create webhook**.
 3. In the **Create webhook** form, select the following options:
-    - **Event**: Select **Customer creation** from the dropdown menu.
+    - **Event**: Select **Order creation** from the dropdown menu.
     - **Format**: Choose **JSON** as the format for the webhook payload.
     - **URL**: Enter the deployed integration's endpoint URL
 4. Go back to the Integration Overview page, and click on **Configure Security**. Disable **OAuth2** and click on **Apply**.
@@ -38,47 +38,60 @@ This integration uses refresh token flow for auth. [Learn how to Develop on Goog
 
 </details>
 
-<details> 
+<details>
 
 <summary>Additional Configurations</summary>
 
-1. `sheetConfig.sheetId`:
-    - ID of the Google Sheets spreadsheet to write data to
-    - Below is how to find the spreadsheet ID:
-        - `https://docs.google.com/spreadsheets/d/<spreadsheetId>/`
-        - Use this `spreadsheetId` as the value
+1. `shopifyConfig.webhookSecret`:
+    - Secret used to sign webhook requests by Shopify
+    - Obtained from Shopify Setup Guide above
+    - Required: Yes
 
-2. `sheetConfig.sheetName`:
+2. `googleSheetsConfig`:
+    - Configuration for Google Sheets API access and spreadsheet
+    - Contains the following fields:
+        - `clientID` (required): Google OAuth2 client ID
+        - `clientSecret` (required): Google OAuth2 client secret
+        - `refreshToken` (required): Google OAuth2 refresh token
+        - `sheetID` (required): ID of the Google Sheets spreadsheet to write data to
+            - The spreadsheet must be created manually before running the integration
+            - Below is how to find the spreadsheet ID:
+                - `https://docs.google.com/spreadsheets/d/<spreadsheetId>/`
+                - Use this `spreadsheetId` as the value
+
+3. `sheetName`:
     - Name of the specific sheet (tab) within the spreadsheet where order data will be written
-    - If the sheet doesn't exist, it should be created manually before running the integration
+    - If the sheet doesn't exist, the integration will automatically create it
     - Note: This is ignored when `groupByMonth` is enabled
+    - Default: `Orders`
 
-3. `sheetConfig.mode`: 
+4. `insertMode`:
     - Mode for inserting orders into the sheet
     - Possible values:
         - `append` (default) - Always adds new rows to the end of the sheet
         - `upsert` - Updates existing order rows if the order number matches, otherwise appends new rows
     - Default: `append`
 
-4. `includeLineItems`
+5. `includeLineItems`:
     - Boolean flag to include individual line items from orders
     - When `true`, creates a separate row for each line item in an order
     - When `false` (default), creates a single row per order
     - Possible values: `true` or `false`
+    - Default: `false`
 
-5. `dateFormat`: 
+6. `dateFormat`:
     - Format for date fields in the spreadsheet
     - Possible values:
         - `default` - Keeps original date received from shopify event
         - `iso8601` - ISO 8601 format
-        - `email` - RFC 5322 format
+        - `rfc5322` - RFC 5322 format
     - Default: `default`
 
-6. `groupByMonth`:
+7. `groupByMonth`:
     - Boolean flag to organize orders into monthly sheets
     - When `true`, orders are automatically routed to sheets named by their creation month (format: YYYY-MM, e.g., "2026-03")
     - Sheets are automatically created if they don't exist
-    - When `false` (default), all orders go to the configured `sheetConfig.sheetName`
+    - When `false` (default), all orders go to the configured `sheetName`
     - Possible values: `true` or `false`
     - Default: `false`
 

@@ -1,10 +1,10 @@
 import ballerinax/trigger.shopify;
 
 shopify:ListenerConfig listenerConfig = {
-    apiSecretKey: shopifyWebHookSecret
+    apiSecretKey: shopifyConfig.webhookSecret
 };
 
-listener shopify:Listener shopifyListener = new (listenerConfig);
+listener shopify:Listener shopifyListener = new (listenerConfig, 8090);
 
 service shopify:OrdersService on shopifyListener {
     remote function onOrdersCreate(shopify:OrderEvent event) returns error? {

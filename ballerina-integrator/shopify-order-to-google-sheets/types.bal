@@ -1,8 +1,15 @@
+type ShopifyConfig record {
+    # Secret used to sign webhook requests by Shopify
+    string webhookSecret;
+};
 
-type SheetConfig record {|
-    string sheetId;
-    # Name of sheet, defaults to "Default". Ignored if groupByMonth is enabled
-    string sheetName = "Default";
-    # Mode to insert new orders to the sheet. "append" appends to the order and "upsert" replaces row if it has the same order_number
-    "append"|"upsert" mode = "append";
-|};
+type SheetConfig record {
+    # Google OAuth2 client ID for Sheets API access
+    string clientID;
+    # Google OAuth2 client secret for Sheets API access
+    string clientSecret;
+    # Google OAuth2 refresh token for Sheets API access
+    string refreshToken;
+    # Google sheet ID
+    string sheetID;
+};
