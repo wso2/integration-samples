@@ -23,13 +23,14 @@ The following should be done after deploying the integration, and the endpoint U
 
 <summary>Slack Setup Guide</summary>
 
-1. Log in to your Slack workspace and go to the [Slack API Developer Portal](https://api.slack.com/apps).
-2. Click **Create New App** and choose **From scratch**.
-3. Navigate to **OAuth & Permissions** in the left sidebar.
-4. Scroll down to the **Bot Token Scopes** section, click **Add an OAuth Scope**, and select `chat:write`.
-5. Scroll up, click **Install to Workspace** (authorize it if prompted), and copy the **Bot User OAuth Token** (starts with `xoxb-`). This should be the `slackToken` configuration.
-6. Open your Slack application and ensure the Slack app (bot) is a member of your target channel.
-7. Click the channel name at the top to open the details menu, scroll to the bottom of the **About** tab, and copy the **Channel ID** (usually starts with `C` or `G`). This should be the `slackChannelId` configuration.
+1. A Slack app with a Bot Token
+2. The bot must be invited to all channels it will post to
+3. Scopes Required:
+  - `chat:write`
+  - `channels:read` (optional, for channel resolution)
+  - `users:read.email` (optional, for tagging lead owners by email)
+
+[Learn how to create a Slack app](https://api.slack.com/start/quickstart).
 
 </details>
 
