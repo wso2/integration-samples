@@ -8,36 +8,56 @@
         "salesforce_leads_to_googlesheets": {
           "type": "object",
           "properties": {
-            "salesforceRefreshToken": {
-              "type": "string",
+            "salesforceConfig": {
+              "type": "object",
+              "properties": {
+                "refreshToken": {
+                  "type": "string"
+                },
+                "clientId": {
+                  "type": "string"
+                },
+                "clientSecret": {
+                  "type": "string"
+                },
+                "refreshUrl": {
+                  "type": "string"
+                },
+                "baseUrl": {
+                  "type": "string"
+                }
+              },
+              "additionalProperties": false,
+              "required": [
+                "refreshToken",
+                "clientId",
+                "clientSecret",
+                "refreshUrl",
+                "baseUrl"
+              ],
+              "name": "wso2/salesforce_leads_to_googlesheets:0.1.0:SalesforceConfig",
               "description": ""
             },
-            "salesforceClientId": {
-              "type": "string",
-              "description": ""
-            },
-            "salesforceClientSecret": {
-              "type": "string",
-              "description": ""
-            },
-            "salesforceRefreshUrl": {
-              "type": "string",
-              "description": ""
-            },
-            "salesforceBaseUrl": {
-              "type": "string",
-              "description": ""
-            },
-            "googleRefreshToken": {
-              "type": "string",
-              "description": ""
-            },
-            "googleClientId": {
-              "type": "string",
-              "description": ""
-            },
-            "googleClientSecret": {
-              "type": "string",
+            "googleConfig": {
+              "type": "object",
+              "properties": {
+                "refreshToken": {
+                  "type": "string"
+                },
+                "clientId": {
+                  "type": "string"
+                },
+                "clientSecret": {
+                  "type": "string"
+                }
+              },
+              "additionalProperties": false,
+              "required": [
+                "refreshToken",
+                "clientId",
+                "clientSecret"
+              ],
+              "name": "wso2/salesforce_leads_to_googlesheets:0.1.0:GoogleConfig",
               "description": ""
             },
             "timezone": {
@@ -64,23 +84,25 @@
               "description": ""
             },
             "timeframe": {
-              "type": "string",
+              "enum": [
+                "ALL",
+                "LAST_YEAR",
+                "LAST_MONTH",
+                "LAST_WEEK",
+                "YESTERDAY"
+              ],
               "description": ""
             },
             "includeConverted": {
               "type": "boolean",
               "description": ""
             },
-            "enableIncrementalSync": {
-              "type": "boolean",
-              "description": ""
-            },
-            "lastSyncTimestamp": {
-              "type": "string",
-              "description": ""
-            },
             "syncMode": {
-              "type": "string",
+              "enum": [
+                "UPSERT_BY_EMAIL",
+                "FULL_REPLACE",
+                "APPEND"
+              ],
               "description": ""
             },
             "enableAutoFormat": {
@@ -94,14 +116,8 @@
           },
           "additionalProperties": false,
           "required": [
-            "salesforceRefreshToken",
-            "salesforceClientId",
-            "salesforceClientSecret",
-            "salesforceRefreshUrl",
-            "salesforceBaseUrl",
-            "googleRefreshToken",
-            "googleClientId",
-            "googleClientSecret"
+            "salesforceConfig",
+            "googleConfig"
           ]
         }
       },
