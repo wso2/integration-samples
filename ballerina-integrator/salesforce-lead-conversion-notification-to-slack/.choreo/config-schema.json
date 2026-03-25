@@ -2,121 +2,6 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "type": "object",
   "properties": {
-    "wso2": {
-      "type": "object",
-      "properties": {
-        "salesforce_lead_conversion_notification_to_slack": {
-          "type": "object",
-          "properties": {
-            "salesforceConfig": {
-              "type": "object",
-              "properties": {
-                "baseUrl": {
-                  "type": "string"
-                },
-                "clientId": {
-                  "type": "string"
-                },
-                "clientSecret": {
-                  "type": "string"
-                },
-                "refreshToken": {
-                  "type": "string"
-                },
-                "refreshUrl": {
-                  "type": "string"
-                }
-              },
-              "additionalProperties": false,
-              "required": [
-                "baseUrl",
-                "clientId",
-                "clientSecret",
-                "refreshToken",
-                "refreshUrl"
-              ],
-              "description": ""
-            },
-            "slackConfig": {
-              "type": "object",
-              "properties": {
-                "token": {
-                  "type": "string"
-                },
-                "defaultChannel": {
-                  "type": "string"
-                }
-              },
-              "additionalProperties": false,
-              "required": [
-                "token",
-                "defaultChannel"
-              ],
-              "description": ""
-            },
-            "notificationConfig": {
-              "type": "object",
-              "properties": {
-                "messageTemplate": {
-                  "type": "string"
-                },
-                "filterLeadSources": {
-                  "type": "array",
-                  "items": {
-                    "type": "string"
-                  }
-                },
-                "filterOwnerIds": {
-                  "type": "array",
-                  "items": {
-                    "type": "string"
-                  }
-                },
-                "teamChannelMappings": {
-                  "type": "array",
-                  "items": {
-                    "type": "object",
-                    "properties": {
-                      "teamName": {
-                        "type": "string"
-                      },
-                      "channelId": {
-                        "type": "string"
-                      }
-                    },
-                    "additionalProperties": false,
-                    "required": [
-                      "teamName",
-                      "channelId"
-                    ],
-                    "name": "wso2/salesforce_lead_conversion_notification_to_slack:0.1.0:TeamChannelMapping"
-                  }
-                },
-                "includeConversionDetails": {
-                  "type": "boolean"
-                }
-              },
-              "additionalProperties": false,
-              "required": [
-                "messageTemplate",
-                "filterLeadSources",
-                "filterOwnerIds",
-                "teamChannelMappings",
-                "includeConversionDetails"
-              ],
-              "description": ""
-            }
-          },
-          "additionalProperties": false,
-          "required": [
-            "salesforceConfig",
-            "slackConfig",
-            "notificationConfig"
-          ]
-        }
-      },
-      "additionalProperties": false
-    },
     "ballerina": {
       "type": "object",
       "properties": {
@@ -456,6 +341,10 @@
               "name": "ballerina/http:2.16.0:ListenerConfiguration",
               "description": ""
             },
+            "traceLogConsole": {
+              "type": "boolean",
+              "description": ""
+            },
             "traceLogAdvancedConfig": {
               "type": "object",
               "properties": {
@@ -588,10 +477,6 @@
                 "format"
               ],
               "name": "ballerina/http:2.16.0:AccessLogConfiguration",
-              "description": ""
-            },
-            "traceLogConsole": {
-              "type": "boolean",
               "description": ""
             }
           },
@@ -743,6 +628,121 @@
             }
           },
           "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    },
+    "wso2": {
+      "type": "object",
+      "properties": {
+        "salesforce_lead_conversion_notification_to_slack": {
+          "type": "object",
+          "properties": {
+            "salesforceConfig": {
+              "type": "object",
+              "properties": {
+                "baseUrl": {
+                  "type": "string"
+                },
+                "clientId": {
+                  "type": "string"
+                },
+                "clientSecret": {
+                  "type": "string"
+                },
+                "refreshToken": {
+                  "type": "string"
+                },
+                "refreshUrl": {
+                  "type": "string"
+                }
+              },
+              "additionalProperties": false,
+              "required": [
+                "baseUrl",
+                "clientId",
+                "clientSecret",
+                "refreshToken",
+                "refreshUrl"
+              ],
+              "description": ""
+            },
+            "slackConfig": {
+              "type": "object",
+              "properties": {
+                "token": {
+                  "type": "string"
+                },
+                "defaultChannel": {
+                  "type": "string"
+                }
+              },
+              "additionalProperties": false,
+              "required": [
+                "token",
+                "defaultChannel"
+              ],
+              "description": ""
+            },
+            "notificationConfig": {
+              "type": "object",
+              "properties": {
+                "messageTemplate": {
+                  "type": "string"
+                },
+                "filterLeadSources": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "filterOwnerIds": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "teamChannelMappings": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "teamName": {
+                        "type": "string"
+                      },
+                      "channelId": {
+                        "type": "string"
+                      }
+                    },
+                    "additionalProperties": false,
+                    "required": [
+                      "teamName",
+                      "channelId"
+                    ],
+                    "name": "wso2/salesforce_lead_conversion_notification_to_slack:0.1.0:TeamChannelMapping"
+                  }
+                },
+                "includeConversionDetails": {
+                  "type": "boolean"
+                }
+              },
+              "additionalProperties": false,
+              "required": [
+                "messageTemplate",
+                "filterLeadSources",
+                "filterOwnerIds",
+                "teamChannelMappings",
+                "includeConversionDetails"
+              ],
+              "description": ""
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "salesforceConfig",
+            "slackConfig",
+            "notificationConfig"
+          ]
         }
       },
       "additionalProperties": false
