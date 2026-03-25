@@ -23,11 +23,7 @@ public function mapShopifyCustomerToSalesforceContact(
         LeadSource: salesforceConfig.defaultLeadSource
     };
     
-    // Set default record type and owner if configured
-    if salesforceConfig.defaultRecordTypeId is string {
-        contact.RecordTypeId = salesforceConfig.defaultRecordTypeId;
-    }
-    
+    // Set default owner if configured
     if salesforceConfig.ownerIdDefault is string {
         contact.OwnerId = salesforceConfig.ownerIdDefault;
     }

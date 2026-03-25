@@ -43,16 +43,6 @@
                 "defaultLeadSource": {
                   "type": "string"
                 },
-                "defaultRecordTypeId": {
-                  "anyOf": [
-                    {
-                      "type": "string"
-                    },
-                    {
-                      "type": ""
-                    }
-                  ]
-                },
                 "ownerIdDefault": {
                   "anyOf": [
                     {
@@ -82,7 +72,6 @@
                 "salesforceRefreshToken",
                 "salesforceRefreshUrl",
                 "defaultLeadSource",
-                "defaultRecordTypeId",
                 "ownerIdDefault",
                 "accountAssociationRule",
                 "enableDuplicateCheck"

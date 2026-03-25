@@ -76,7 +76,6 @@ public type SalesforceContact record {
     // Lead and ownership
     string LeadSource?;
     string OwnerId?;
-    string RecordTypeId?;
     
     // Additional information
     string Title?;

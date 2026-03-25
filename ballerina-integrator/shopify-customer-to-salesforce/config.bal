@@ -13,7 +13,6 @@ public type SalesforceConfig record {|
 
     // Salesforce default values
     string defaultLeadSource = "Shopify";
-    string? defaultRecordTypeId = ();
     string? ownerIdDefault = ();
     "company"|"domain"|"none" accountAssociationRule = "company";
     boolean enableDuplicateCheck = true;
