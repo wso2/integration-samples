@@ -241,5 +241,6 @@
       "additionalProperties": false
     }
   },
-  "additionalProperties": false
+  "additionalProperties": false,
+  "requiredLevel": 3
 }
