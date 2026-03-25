@@ -1,267 +1,222 @@
 {
-  "$schema": "http://json-schema.org/draft-07/schema#",
-  "type": "object",
-  "properties": {
-    "wso2": {
-      "type": "object",
-      "properties": {
-        "shopify_to_quickbooks_transaction": {
-          "type": "object",
-          "properties": {
-            "shopifyConfig": {
-              "type": "object",
-              "properties": {
-                "apiSecretKey": {
-                  "type": "string"
-                },
-                "orderStatusTrigger": {
-                  "enum": [
-                    "FULFILLED",
-                    "PAID",
-                    "COMPLETED"
-                  ]
-                }
-              },
-              "additionalProperties": false,
-              "required": [
-                "apiSecretKey",
-                "orderStatusTrigger"
-              ],
-              "description": ""
-            },
-            "quickbooksConfig": {
-              "type": "object",
-              "properties": {
-                "clientId": {
-                  "type": "string"
-                },
-                "clientSecret": {
-                  "type": "string"
-                },
-                "refreshToken": {
-                  "type": "string"
-                },
-                "realmId": {
-                  "type": "string"
-                },
-                "serviceUrl": {
-                  "type": "string"
-                },
-                "transactionType": {
-                  "enum": [
-                    "INVOICE",
-                    "SALES_RECEIPT"
-                  ]
-                },
-                "createCustomerIfNotFound": {
-                  "type": "boolean"
-                },
-                "productMappingJson": {
-                  "type": "string"
-                },
-                "mapShippingAsSeparateLine": {
-                  "type": "boolean"
-                },
-                "shippingItemName": {
-                  "type": "string"
-                },
-                "discountItemName": {
-                  "type": "string"
-                },
-                "includeDiscountLineItems": {
-                  "type": "boolean"
-                },
-                "addOrderReferenceToMemo": {
-                  "type": "boolean"
-                },
-                "taxConfig": {
-                  "type": "object",
-                  "properties": {
-                    "defaultTaxCode": {
-                      "type": "string"
-                    },
-                    "taxMappingJson": {
-                      "type": "string"
-                    }
-                  },
-                  "additionalProperties": false,
-                  "required": [
-                    "defaultTaxCode",
-                    "taxMappingJson"
-                  ]
-                },
-                "validationRules": {
-                  "type": "object",
-                  "properties": {
-                    "requireCustomerEmail": {
-                      "type": "boolean"
-                    },
-                    "requireLineItems": {
-                      "type": "boolean"
-                    },
-                    "minimumOrderAmount": {
-                      "type": "number"
-                    }
-                  },
-                  "additionalProperties": false,
-                  "required": [
-                    "requireCustomerEmail",
-                    "requireLineItems",
-                    "minimumOrderAmount"
-                  ]
-                }
-              },
-              "additionalProperties": false,
-              "required": [
-                "clientId",
-                "clientSecret",
-                "refreshToken",
-                "realmId",
-                "serviceUrl",
-                "transactionType",
-                "createCustomerIfNotFound",
-                "productMappingJson",
-                "mapShippingAsSeparateLine",
-                "shippingItemName",
-                "discountItemName",
-                "includeDiscountLineItems",
-                "addOrderReferenceToMemo",
-                "taxConfig",
-                "validationRules"
-              ],
-              "description": ""
-            }
-          },
-          "additionalProperties": false,
-          "required": [
-            "shopifyConfig",
-            "quickbooksConfig"
-          ]
-        }
-      },
-      "additionalProperties": false
-    },
-    "ballerina": {
-      "type": "object",
-      "properties": {
-        "log": {
-          "type": "object",
-          "properties": {
-            "destinations": {
-              "type": "array",
-              "items": {
-                "anyOf": [
-                  {
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "type": "object",
+    "properties": {
+        "wso2": {
+            "type": "object",
+            "properties": {
+                "shopify_to_quickbooks_transaction": {
                     "type": "object",
                     "properties": {
-                      "type": {
-                        "enum": [
-                          "stderr",
-                          "stdout"
-                        ]
-                      }
+                        "shopifyApiSecretKey": {
+                            "type": "string"
+                        },
+                        "shopifyOrderStatusTrigger": {
+                            "type": "string",
+                            "default": "PAID"
+                        },
+                        "qbClientId": {
+                            "type": "string"
+                        },
+                        "qbClientSecret": {
+                            "type": "string"
+                        },
+                        "qbRefreshToken": {
+                            "type": "string"
+                        },
+                        "qbRealmId": {
+                            "type": "string"
+                        },
+                        "qbServiceUrl": {
+                            "type": "string"
+                        },
+                        "qbTransactionType": {
+                            "type": "string",
+                            "default": "INVOICE"
+                        },
+                        "qbCreateCustomerIfNotFound": {
+                            "type": "boolean",
+                            "default": true
+                        },
+                        "qbProductMappingJson": {
+                            "type": "string",
+                            "default": "{}"
+                        },
+                        "qbMapShippingAsSeparateLine": {
+                            "type": "boolean",
+                            "default": true
+                        },
+                        "qbShippingItemName": {
+                            "type": "string",
+                            "default": "Shipping"
+                        },
+                        "qbDiscountItemName": {
+                            "type": "string",
+                            "default": "Discount"
+                        },
+                        "qbIncludeDiscountLineItems": {
+                            "type": "boolean",
+                            "default": true
+                        },
+                        "qbAddOrderReferenceToMemo": {
+                            "type": "boolean",
+                            "default": true
+                        },
+                        "qbDefaultTaxCode": {
+                            "type": "string",
+                            "default": "TAX"
+                        },
+                        "qbTaxMappingJson": {
+                            "type": "string",
+                            "default": "{}"
+                        },
+                        "qbRequireCustomerEmail": {
+                            "type": "boolean",
+                            "default": true
+                        },
+                        "qbRequireLineItems": {
+                            "type": "boolean",
+                            "default": true
+                        },
+                        "qbMinimumOrderAmount": {
+                            "type": "number",
+                            "default": 0.0
+                        }
                     },
                     "additionalProperties": false,
                     "required": [
-                      "type"
-                    ],
-                    "name": "ballerina/log:2.14.0:StandardDestination"
-                  },
-                  {
-                    "type": "object",
-                    "properties": {
-                      "type": {
-                        "enum": [
-                          "file"
-                        ]
-                      },
-                      "path": {
-                        "type": "string"
-                      },
-                      "mode": {
-                        "enum": [
-                          "APPEND",
-                          "TRUNCATE"
-                        ]
-                      }
-                    },
-                    "additionalProperties": false,
-                    "required": [
-                      "type",
-                      "path",
-                      "mode"
-                    ],
-                    "name": "ballerina/log:2.14.0:FileOutputDestination"
-                  }
-                ]
-              },
-              "description": ""
-            },
-            "modules": {
-              "type": "array",
-              "items": {
-                "type": "object",
-                "properties": {
-                  "name": {
-                    "type": "string"
-                  },
-                  "level": {
-                    "enum": [
-                      "WARN",
-                      "INFO",
-                      "ERROR",
-                      "DEBUG"
+                        "shopifyApiSecretKey",
+                        "qbClientId",
+                        "qbClientSecret",
+                        "qbRefreshToken",
+                        "qbRealmId",
+                        "qbServiceUrl"
                     ]
-                  }
-                },
-                "additionalProperties": false,
-                "required": [
-                  "name",
-                  "level"
-                ],
-                "name": "ballerina/log:2.14.0:Module"
-              },
-              "description": ""
+                }
             },
-            "keyValues": {
-              "type": "object",
-              "properties": {
-                "msg": {},
-                "error": {},
-                "stackTrace": {},
-                "module": {}
-              },
-              "additionalProperties": false,
-              "name": "ballerina/log:2.14.0:AnydataKeyValues",
-              "description": ""
+            "additionalProperties": false
+        },
+        "ballerina": {
+            "type": "object",
+            "properties": {
+                "log": {
+                    "type": "object",
+                    "properties": {
+                        "destinations": {
+                            "type": "array",
+                            "items": {
+                                "anyOf": [
+                                    {
+                                        "type": "object",
+                                        "properties": {
+                                            "type": {
+                                                "enum": [
+                                                    "stderr",
+                                                    "stdout"
+                                                ]
+                                            }
+                                        },
+                                        "additionalProperties": false,
+                                        "required": [
+                                            "type"
+                                        ],
+                                        "name": "ballerina/log:2.14.0:StandardDestination"
+                                    },
+                                    {
+                                        "type": "object",
+                                        "properties": {
+                                            "type": {
+                                                "enum": [
+                                                    "file"
+                                                ]
+                                            },
+                                            "path": {
+                                                "type": "string"
+                                            },
+                                            "mode": {
+                                                "enum": [
+                                                    "APPEND",
+                                                    "TRUNCATE"
+                                                ]
+                                            }
+                                        },
+                                        "additionalProperties": false,
+                                        "required": [
+                                            "type",
+                                            "path",
+                                            "mode"
+                                        ],
+                                        "name": "ballerina/log:2.14.0:FileOutputDestination"
+                                    }
+                                ]
+                            },
+                            "description": ""
+                        },
+                        "modules": {
+                            "type": "array",
+                            "items": {
+                                "type": "object",
+                                "properties": {
+                                    "name": {
+                                        "type": "string"
+                                    },
+                                    "level": {
+                                        "enum": [
+                                            "WARN",
+                                            "INFO",
+                                            "ERROR",
+                                            "DEBUG"
+                                        ]
+                                    }
+                                },
+                                "additionalProperties": false,
+                                "required": [
+                                    "name",
+                                    "level"
+                                ],
+                                "name": "ballerina/log:2.14.0:Module"
+                            },
+                            "description": ""
+                        },
+                        "keyValues": {
+                            "type": "object",
+                            "properties": {
+                                "msg": {},
+                                "error": {},
+                                "stackTrace": {},
+                                "module": {}
+                            },
+                            "additionalProperties": false,
+                            "name": "ballerina/log:2.14.0:AnydataKeyValues",
+                            "description": ""
+                        },
+                        "format": {
+                            "enum": [
+                                "logfmt",
+                                "json"
+                            ],
+                            "description": ""
+                        },
+                        "level": {
+                            "enum": [
+                                "WARN",
+                                "INFO",
+                                "ERROR",
+                                "DEBUG"
+                            ],
+                            "description": ""
+                        },
+                        "enableSensitiveDataMasking": {
+                            "type": "boolean",
+                            "description": ""
+                        }
+                    },
+                    "additionalProperties": false
+                }
             },
-            "format": {
-              "enum": [
-                "logfmt",
-                "json"
-              ],
-              "description": ""
-            },
-            "level": {
-              "enum": [
-                "WARN",
-                "INFO",
-                "ERROR",
-                "DEBUG"
-              ],
-              "description": ""
-            },
-            "enableSensitiveDataMasking": {
-              "type": "boolean",
-              "description": ""
-            }
-          },
-          "additionalProperties": false
+            "additionalProperties": false
         }
-      },
-      "additionalProperties": false
-    }
-  },
-  "additionalProperties": false,
-  "requiredLevel": 3
+    },
+    "additionalProperties": false,
+    "requiredLevel": 3
 }

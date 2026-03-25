@@ -1,3 +1,39 @@
+// --- Vendor config types ---
+
+type ShopifyConfig record {
+    string apiSecretKey;
+    "FULFILLED"|"PAID"|"COMPLETED" orderStatusTrigger = "PAID";
+};
+
+type TaxConfig record {
+    string defaultTaxCode = "TAX";
+    string taxMappingJson = "{}";
+};
+
+type ValidationRules record {
+    boolean requireCustomerEmail = true;
+    boolean requireLineItems = true;
+    decimal minimumOrderAmount = 0.0;
+};
+
+type QuickBooksConfig record {
+    string clientId;
+    string clientSecret;
+    string refreshToken;
+    string realmId;
+    string serviceUrl;
+    "INVOICE"|"SALES_RECEIPT" transactionType = "INVOICE";
+    boolean createCustomerIfNotFound = true;
+    string productMappingJson = "{}";
+    boolean mapShippingAsSeparateLine = true;
+    string shippingItemName = "Shipping";
+    string discountItemName = "Discount";
+    boolean includeDiscountLineItems = true;
+    boolean addOrderReferenceToMemo = true;
+    TaxConfig taxConfig = {};
+    ValidationRules validationRules = {};
+};
+
 // Record for logging/quarantining orders that cannot be processed
 type QuarantinedOrder record {
     string orderId;
