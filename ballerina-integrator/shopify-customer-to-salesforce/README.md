@@ -1,11 +1,11 @@
 
-# Sync Shopify Customer to Salesforce
+# Shopify Customer to Salesforce
 
 This integration synchronizes customer data from Shopify to Salesforce, ensuring your customer information stays up-to-date across both platforms.
 
 ## Overview
 
-Automatically sync customer records created or updated in Shopify to your Salesforce organization.
+Automatically create customer records created or updated in Shopify to your Salesforce organization.
 
 ## Features
 

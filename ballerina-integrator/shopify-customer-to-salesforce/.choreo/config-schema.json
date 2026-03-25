@@ -40,28 +40,12 @@
                 "salesforceRefreshUrl": {
                   "type": "string"
                 },
-                "defaultLeadSource": {
-                  "type": "string"
-                },
-                "ownerIdDefault": {
-                  "anyOf": [
-                    {
-                      "type": "string"
-                    },
-                    {
-                      "type": ""
-                    }
-                  ]
-                },
                 "accountAssociationRule": {
                   "enum": [
                     "company",
                     "domain",
                     "none"
                   ]
-                },
-                "enableDuplicateCheck": {
-                  "type": "boolean"
                 }
               },
               "additionalProperties": false,
@@ -71,10 +55,7 @@
                 "salesforceClientSecret",
                 "salesforceRefreshToken",
                 "salesforceRefreshUrl",
-                "defaultLeadSource",
-                "ownerIdDefault",
-                "accountAssociationRule",
-                "enableDuplicateCheck"
+                "accountAssociationRule"
               ],
               "name": "wso2/shopify_customer_to_salesforce:0.1.0:SalesforceConfig",
               "description": ""
