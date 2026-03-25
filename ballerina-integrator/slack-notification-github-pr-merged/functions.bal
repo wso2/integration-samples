@@ -1,4 +1,5 @@
 import ballerinax/trigger.github;
+import ballerina/log;
 import ballerina/regex;
 import ballerina/time;
 
@@ -64,6 +65,13 @@ function calculateCycleTime(github:PullRequest pr) returns decimal? {
             decimal diffSeconds = time:utcDiffSeconds(mergedTime, createdTime);
             decimal hours = diffSeconds / 3600.0;
             return hours;
+        } else {
+            if createdTime is error {
+                log:printWarn(string `Failed to parse PR created_at timestamp: ${createdTime.message()}`);
+            }
+            if mergedTime is error {
+                log:printWarn(string `Failed to parse PR merged_at timestamp: ${mergedTime.message()}`);
+            }
         }
     }
     return ();
