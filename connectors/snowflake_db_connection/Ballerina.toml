@@ -1,0 +1,9 @@
+[package]
+org = "vishwajayawickrama"
+name = "snowflake_db_connection"
+version = "0.1.0"
+distribution = "2201.13.1"
+title = "snowflake-db-connection"
+
+[build-options]
+sticky = true
