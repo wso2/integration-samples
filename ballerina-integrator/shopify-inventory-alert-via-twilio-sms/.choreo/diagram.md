@@ -1,8 +1,12 @@
-    S([Start]):::startNode
-    S --> WEBHOOK[Receive Shopify Order Webhook]:::processNode
-    WEBHOOK --> CHECK{Inventory Below Threshold?}:::decisionNode
-    CHECK -- No --> E([End]):::endNode
-    CHECK -- Yes --> COOLDOWN{Cooldown Expired?}:::decisionNode
-    COOLDOWN -- No --> E
-    COOLDOWN -- Yes --> SEND[Send SMS Alert via Twilio]:::processNode
-    SEND --> E
+A(["Begin"]):::startNode
+B["Receive Shopify Order Webhook"]:::processNode
+C{"Inventory Below <br/> Threshold?"}:::decisionNode
+D{"Cooldown <br/> Expired?"}:::decisionNode
+E["Send SMS Alert via Twilio"]:::processNode
+F(["Complete"]):::endNode
+
+A --> B --> C
+C -- Yes --> D
+C -- No --> F
+D -- Yes --> E --> F
+D -- No --> F

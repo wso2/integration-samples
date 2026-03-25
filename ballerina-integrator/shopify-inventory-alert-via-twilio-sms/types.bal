@@ -5,13 +5,14 @@ type AlertCooldown record {
 };
 
 // Product inventory information passed through the alert chain
-type ProductInventoryInfo record {
+type ProductInventoryInfo record {|
     int productId;
+    int variantId;
     string productName;
     string variantTitle;
     string sku;
     int inventory;
-};
+|};
 
 // Per-recipient SMS delivery result
 type RecipientDeliveryResult record {|

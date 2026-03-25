@@ -10,25 +10,21 @@
 
 <summary>Shopify Setup Guide</summary>
 
-1. **Find your store URL** — log in to Shopify Admin and look at the address bar:
-    - Your store URL follows the pattern `https://<your-store-name>.myshopify.com`
-    - Set this as `storeUrl`
-2. **Create a Shopify App and get an access token**
-    - In Shopify Admin, go to **Settings → Apps and sales channels → Develop apps**
-    - Click **Create an app** and give it a name (e.g., `Inventory Monitor`)
-    - Under the **Configuration** tab, click **Configure Admin API scopes** and enable:
-        - `read_products`
-        - `read_inventory`
-    - Go to the **API credentials** tab and click **Install app**
-    - Copy the **Admin API access token** — this is your `accessToken`
-    - > **Note:** The token is shown only once. Store it securely.
-3. **Get the webhook signing secret and register a webhook**
-    - In Shopify Admin, go to **Settings → Notifications → Webhooks**
-    - Copy the secret shown under _"Your webhooks will be signed with"_ — this is your `apiSecretKey`
-    - Click **Create webhook** and configure:
-        - **Event**: `Order creation`
-        - **Format**: `JSON`
-        - **URL**: the public endpoint URL of this deployed integration
+1. Log in to your Shopify Admin. Your store URL follows the pattern `https://<your-store-name>.myshopify.com`. Set this as `storeUrl`.
+2. Go to **Settings** > **Apps and sales channels** > **Develop apps** and create an app with `read_products` and `read_inventory` API scopes. Install the app and copy the **Admin API access token** — this is your `accessToken`.
+3. Log in to your Shopify account and navigate to **Settings** > **Notifications**.
+4. Click on the **Webhooks** section.
+5. Copy the key shown under _"Your webhooks will be signed with ..."_. This should be the `apiSecretKey` configuration.
+
+The following should be done after deploying the integration, and the endpoint URL is available.
+
+1. Log in to your Shopify account and navigate to **Settings** > **Notifications**.
+2. Click on the **Webhooks** section and click on **Create webhook**.
+3. In the **Create webhook** form, select the following options:
+    - **Event**: Select **Order creation** from the dropdown menu.
+    - **Format**: Choose **JSON** as the format for the webhook payload.
+    - **URL**: Enter the deployed integration's endpoint URL.
+4. Go back to the Integration Overview page, and click on **Configure Security**. Disable **OAuth2** and click on **Apply**.
 
 </details>
 
@@ -36,16 +32,11 @@
 
 <summary>Twilio Setup Guide</summary>
 
-1. **Get your Twilio credentials** — log in at [console.twilio.com](https://console.twilio.com)
-    - Copy the **Account SID** → `accountSid`
-    - Click to reveal and copy the **Auth Token** → `authToken`
-2. **Get your Twilio phone number**
-    - In the Twilio Console, go to **Phone Numbers → Manage → Active Numbers**
-    - Copy the SMS-capable number in E.164 format (e.g., `+12025551234`) → `fromNumber`
-3. **Enable Geographic Permissions** (if sending to international numbers)
-    - Go to **Messaging → Settings → Geo Permissions**
-    - Enable the country of each recipient number
-    - > **Trial accounts:** Recipient numbers must be verified under **Phone Numbers → Verified Caller IDs** before SMS can be sent to them.
+1. Create a Twilio account and obtain a phone number
+2. Obtain the Account SID and Auth Token from the Twilio Console
+3. (Optional) Enable Geographic Permissions if sending to international numbers
+
+Refer to the [Twilio documentation](https://www.twilio.com/docs/messaging/quickstart) for steps for obtaining credentials.
 
 </details>
 

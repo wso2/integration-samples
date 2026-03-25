@@ -14,7 +14,7 @@ configurable record {
 // Inventory threshold configuration
 configurable int inventoryThreshold = 10;
 
-// SMS template with placeholders: {{product.name}}, {{product.inventory}}, {{product.sku}}
+// SMS template with placeholders: {{product.name}}, {{product.id}}, {{product.inventory}}, {{product.sku}}, {{threshold}}
 configurable string smsTemplate = "INVENTORY ALERT: {{product.name}} (ID: {{product.id}}) is low on stock. Current inventory: {{product.inventory}}. SKU: {{product.sku}}. Threshold: {{threshold}}";
 
 // Cooldown period in hours (don't re-alert same SKU within X hours)

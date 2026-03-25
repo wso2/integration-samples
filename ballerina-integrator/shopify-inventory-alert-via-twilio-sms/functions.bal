@@ -30,6 +30,7 @@ function getProductInventory(int productId) returns map<ProductInventoryInfo>|er
             if inventoryQty is int {
                 variantInventory[variantId.toString()] = {
                     productId: productId,
+                    variantId: variantId,
                     productName: productTitle,
                     variantTitle: variant?.title ?: "",
                     sku: variant?.sku ?: "",
@@ -44,6 +45,8 @@ function getProductInventory(int productId) returns map<ProductInventoryInfo>|er
 // Process line items from a new Shopify order: for each ordered product variant,
 // fetch current inventory and send an SMS alert if below the threshold.
 function processOrderedLineItems(shopify:LineItem[] lineItems) returns error? {
+    map<map<ProductInventoryInfo>> inventoryCache = {};
+
     foreach shopify:LineItem lineItem in lineItems {
         int productId = lineItem?.product_id ?: 0;
         int variantId = lineItem?.variant_id ?: 0;
@@ -51,15 +54,19 @@ function processOrderedLineItems(shopify:LineItem[] lineItems) returns error? {
             continue;
         }
 
-        // Fetch current inventory from Shopify Admin API
-        map<ProductInventoryInfo>|error inventoryResult = getProductInventory(productId);
-        if inventoryResult is error {
-            log:printError("Failed to fetch inventory for product",
-                productId = productId, 'error = inventoryResult);
-            continue;
+        // Fetch current inventory from Shopify Admin API, using cache to avoid duplicate calls
+        string productIdKey = productId.toString();
+        if !inventoryCache.hasKey(productIdKey) {
+            map<ProductInventoryInfo>|error inventoryResult = getProductInventory(productId);
+            if inventoryResult is error {
+                log:printError("Failed to fetch inventory for product",
+                    productId = productId, 'error = inventoryResult);
+                continue;
+            }
+            inventoryCache[productIdKey] = inventoryResult;
         }
 
-        ProductInventoryInfo? productInfo = inventoryResult[variantId.toString()];
+        ProductInventoryInfo? productInfo = inventoryCache[productIdKey][variantId.toString()];
         if productInfo is () {
             continue;
         }
@@ -74,11 +81,12 @@ function processOrderedLineItems(shopify:LineItem[] lineItems) returns error? {
         }
 
         string sku = productInfo.sku;
-        string skuKey = "sku:" + sku;
+        string variantKey = "variant:" + productInfo.variantId.toString();
 
-        // Skip if SKU-level cooldown has not expired
-        if !isCooldownExpired(skuKey, cooldownTracker) {
-            log:printInfo("Skipping alert: cooldown period active for SKU",
+        // Skip if variant-level cooldown has not expired
+        if !isCooldownExpired(variantKey) {
+            log:printInfo("Skipping alert: cooldown period active for variant",
+                variantId = productInfo.variantId,
                 sku = sku,
                 cooldownPeriodHours = cooldownPeriodHours);
             continue;
@@ -97,10 +105,12 @@ function processOrderedLineItems(shopify:LineItem[] lineItems) returns error? {
         foreach RecipientDeliveryResult result in deliveryResults {
             if result.success {
                 successCount += 1;
-                cooldownTracker["recipient:" + result.recipient + "|sku:" + sku] = {
-                    lastAlertTime: currentTime,
-                    inventory: productInfo.inventory
-                };
+                lock {
+                    cooldownTracker["recipient:" + result.recipient + "|variant:" + productInfo.variantId.toString()] = {
+                        lastAlertTime: currentTime,
+                        inventory: productInfo.inventory
+                    };
+                }
             } else {
                 string detail = result.errorDetail ?: "unknown error";
                 log:printError("Failed to send alert to recipient",
@@ -116,26 +126,31 @@ function processOrderedLineItems(shopify:LineItem[] lineItems) returns error? {
                 totalRecipients = deliveryResults.length());
         }
 
-        // Set SKU-level cooldown only when all recipients were notified successfully
-        if successCount == deliveryResults.length() && deliveryResults.length() > 0 {
-            cooldownTracker[skuKey] = {
-                lastAlertTime: currentTime,
-                inventory: productInfo.inventory
-            };
+        // Set variant-level cooldown when at least one recipient was successfully notified.
+        // Recipients in individual cooldown were already notified recently.
+        if successCount > 0 {
+            lock {
+                cooldownTracker[variantKey] = {
+                    lastAlertTime: currentTime,
+                    inventory: productInfo.inventory
+                };
+            }
         }
     }
 }
 
 // Function to check if cooldown period has passed
-function isCooldownExpired(string key, map<AlertCooldown> cooldownTracker) returns boolean {
-    AlertCooldown? cooldownInfo = cooldownTracker[key];
-    if cooldownInfo is () {
-        return true;
+function isCooldownExpired(string key) returns boolean {
+    lock {
+        AlertCooldown? cooldownInfo = cooldownTracker[key];
+        if cooldownInfo is () {
+            return true;
+        }
+        decimal currentTime = time:monotonicNow();
+        decimal timeDifference = currentTime - cooldownInfo.lastAlertTime;
+        decimal cooldownSeconds = cooldownPeriodHours * 3600.0;
+        return timeDifference >= cooldownSeconds;
     }
-    decimal currentTime = time:monotonicNow();
-    decimal timeDifference = currentTime - cooldownInfo.lastAlertTime;
-    decimal cooldownSeconds = cooldownPeriodHours * 3600.0;
-    return timeDifference >= cooldownSeconds;
 }
 
 // Function to format SMS message using template
@@ -173,7 +188,7 @@ function sendInventoryAlert(ProductInventoryInfo productInfo) returns RecipientD
 
     foreach string recipientNumber in twilioConfig.recipientNumbers {
         // Skip recipients whose individual cooldown has not expired
-        if !isCooldownExpired("recipient:" + recipientNumber + "|sku:" + productInfo.sku, cooldownTracker) {
+        if !isCooldownExpired("recipient:" + recipientNumber + "|variant:" + productInfo.variantId.toString()) {
             continue;
         }
 

@@ -1,9 +1,9 @@
 import ballerinax/trigger.shopify;
 import ballerina/log;
 
-// Track per-SKU and per-recipient cooldowns to avoid duplicate alerts within the cooldown window.
+// Track per-variant and per-recipient cooldowns to avoid duplicate alerts within the cooldown window.
 // NOTE: This map is process-local (in-memory only). State is lost on restart.
-map<AlertCooldown> cooldownTracker = {};
+isolated map<AlertCooldown> cooldownTracker = {};
 
 function init() {
     log:printInfo("Shopify inventory alert service started. Listening for Shopify order events",
