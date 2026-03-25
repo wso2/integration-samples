@@ -13,3 +13,8 @@ type SheetConfig record {
     # Google sheet ID
     string sheetID;
 };
+
+enum InsertMode {
+    APPEND = "append",
+    UPSERT = "upsert"
+}
