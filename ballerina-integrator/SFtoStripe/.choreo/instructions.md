@@ -13,51 +13,33 @@ This integration listens for Salesforce Account and Contact creation, update, an
 
 <details>
 <summary>Salesforce Setup Guide</summary>
+1. A Salesforce account with API access and Change Data Capture enabled
+2. OAuth2 credentials:
+  - Client ID
+  - Client Secret
+  - Refresh Token
+  - Refresh URL
+  - Base URL (your Salesforce instance URL)
+3. Change Data Capture must be enabled for the **Account** and **Contact** objects
 
-1. A Salesforce account with API access
-2. **Enable Change Data Capture (CDC)**:
-   - Navigate to Setup > Change Data Capture
-   - Move **Account** and **Contact** to "Selected Entities"
-   - Click Save
 3. **Create Custom Field** `Stripe_Customer_Id__c` (Text, 255 chars):
    - On Account object
    - On Contact object
 
 Optional: To sync account emails to Stripe, create a custom field `Email__c` (Email, 255 chars) on the Account object.
-4. **Create OAuth2 Connected App**:
-   - Navigate to Setup > Apps > App Manager
-   - Create new Connected App and note:
-     - Client ID
-     - Client Secret
-     - Refresh Token
 
-**Environment variables (Salesforce)**
-- `SALESFORCE_BASE_URL` — Salesforce instance URL (e.g., `https://your-org.my.salesforce.com`)
-- `SALESFORCE_CLIENT_ID` — OAuth2 Client ID
-- `SALESFORCE_CLIENT_SECRET` — OAuth2 Client Secret
-- `SALESFORCE_REFRESH_TOKEN` — OAuth2 Refresh Token
-- `SALESFORCE_REFRESH_URL` — Token endpoint (default: `https://login.salesforce.com/services/oauth2/token`)
+ (Optional) Create a custom field `AccountStatus__c` on Account object to use the accountStatusFilter configuration
 
 This integration uses refresh token flow for auth. [Learn how to set up Salesforce OAuth](https://help.salesforce.com/s/articleView?id=xcloud.create_a_local_external_client_app.htm&type=5).
-
 </details>
+
 
 <details>
 <summary>Stripe Setup Guide</summary>
-
-1. A Stripe account with API access
-2. **Obtain Secret API Key**:
-   - Log in to your Stripe account
-   - Navigate to Developers section
-   - Click on API keys in the left sidebar
-   - Copy the **Secret key** (not the Publishable key)
-
-**Environment variables (Stripe)**
-- `STRIPE_API_KEY` — Stripe Secret API key (starts with `sk_`)
-
-
+1. Log in to your Stripe account and navigate to the **Developers** section.
+2. Click on **API keys** in the left sidebar.
+3. Copy the value of the **Secret key**. This should be the `secretKey` configuration.
 </details>
-
 
 <details>
 <summary>Configuration Options</summary>
@@ -69,9 +51,9 @@ This integration uses refresh token flow for auth. [Learn how to set up Salesfor
      - `BOTH`: Sync both Accounts and Contacts
 
 2. **matchKey** (Default: EMAIL)
-   - Possible values:
-     - `EMAIL`: Match customers by email address
-     - `EXTERNAL_ID`: Match customers by external ID field
+    - Possible values:
+      - `EMAIL`: Match customers by email address
+      - `SALESFORCE_ID`: Uses the Salesforce record Id
 
 3. **writeBackStripeId** (Default: true)
    - Write the Stripe customer ID back to the Salesforce `Stripe_Customer_Id__c` field

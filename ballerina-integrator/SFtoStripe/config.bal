@@ -19,10 +19,6 @@ configurable boolean writeBackStripeId = true;
 configurable string[] recordTypeFilter = [];
 configurable string[] accountStatusFilter = [];
 
-// External ID Configuration (for EXTERNAL_ID match key)
-configurable string salesforceExternalIdField = "External_Id__c";
-configurable string stripeExternalIdMetadataKey = "external_id";
-
 // Delete Handling Configuration
 configurable boolean deleteStripeCustomerOnSalesforceDelete = true;
 

@@ -11,7 +11,7 @@ public function syncAccountToStripe(SalesforceAccount account, boolean isUpdate 
     }
 
     // Check if record passes filters
-    if !passesFilters(account?.RecordTypeId, account?.AccountStatus__c) {
+    if !passFilters(account?.RecordTypeId, account?.AccountStatus__c) {
         log:printInfo("Account filtered out, skipping sync", accountId = account?.Id);
         return;
     }
@@ -85,7 +85,7 @@ public function syncContactToStripe(SalesforceContact contact, boolean isUpdate 
     }
 
     // Check if record passes filters (only RecordType for contacts)
-    if !passesFilters(contact?.RecordTypeId, ()) {
+    if !passFilters(contact?.RecordTypeId, ()) {
         log:printInfo("Contact filtered out, skipping sync", contactId = contact?.Id);
         return;
     }
@@ -216,10 +216,10 @@ isolated function searchStripeCustomerByMatchKey(string? salesforceId, string? e
         
         log:printInfo("[searchStripeCustomerByMatchKey] No customer found by email", email = email);
         return ();
-    } else if matchKey == EXTERNAL_ID {
-        // Search by external ID in metadata (salesforce_id)
+    } else if matchKey == SALESFORCE_ID {
+        // Search by Salesforce ID in metadata (salesforce_id)
         if salesforceId is () || salesforceId == "" {
-            log:printDebug("[searchStripeCustomerByMatchKey] No Salesforce ID provided, cannot search by EXTERNAL_ID match key");
+            log:printDebug("[searchStripeCustomerByMatchKey] No Salesforce ID provided, cannot search by SALESFORCE_ID match key");
             return ();
         }
         

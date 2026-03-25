@@ -23,6 +23,7 @@ Salesforce Setup
   - Click Save
 - Create a custom field `Stripe_Customer_Id__c` (Text, 255 chars) on Account and Contact objects
 - (Optional) Create a custom field `Email__c` (Email, 255 chars) on Account object if you want to sync account emails to Stripe
+- (Optional) Create a custom field `AccountStatus__c` on Account object if you want to use the accountStatusFilter configuration
 - Create a Connected App for OAuth2 credentials:
   - Navigate to Setup > Apps > App Manager
   - Create new Connected App and note the Client ID, Client Secret, and Refresh Token
@@ -39,15 +40,15 @@ The following configurations are required for the integration:
 
 Salesforce Configuration
 
-- refreshToken: Your Salesforce OAuth2 refresh token
-- clientId: Your Salesforce OAuth2 client ID
-- clientSecret: Your Salesforce OAuth2 client secret
-- refreshUrl: Salesforce OAuth2 token endpoint (https://login.salesforce.com/services/oauth2/token)
-- baseUrl: Your Salesforce instance URL (https://your-org.my.salesforce.com)
+- salesforceRefreshToken: Your Salesforce OAuth2 refresh token
+- salesforceClientId: Your Salesforce OAuth2 client ID
+- salesforceClientSecret: Your Salesforce OAuth2 client secret
+- salesforceRefreshUrl: Salesforce OAuth2 token endpoint (https://login.salesforce.com/services/oauth2/token)
+- salesforceBaseUrl: Your Salesforce instance URL (https://your-org.my.salesforce.com)
+
 
 Stripe Configuration
-
-- secretKey: The Stripe Secret API key obtained from the Stripe setup
+- stripeApiKey: The Stripe Secret API key obtained from the Stripe setup
 
 Deploying on Devant
 

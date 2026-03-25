@@ -4,22 +4,42 @@ import ballerina/log;
 public function bulkSyncAccountsToStripe() returns error? {
     log:printInfo("Starting bulk sync of Accounts from Salesforce to Stripe");
 
-    // Try with Email__c field first, fallback to query without it if field doesn't exist
-    string soqlQueryWithEmail = "SELECT Id, Name, Email__c, Phone, BillingStreet, BillingCity, BillingState, " +
-                                "BillingPostalCode, BillingCountry, ShippingStreet, ShippingCity, ShippingState, " +
-                                "ShippingPostalCode, ShippingCountry, Description, Stripe_Customer_Id__c FROM Account";
-    string soqlQueryWithoutEmail = "SELECT Id, Name, Phone, BillingStreet, BillingCity, BillingState, " +
-                                   "BillingPostalCode, BillingCountry, ShippingStreet, ShippingCity, ShippingState, " +
-                                   "ShippingPostalCode, ShippingCountry, Description, Stripe_Customer_Id__c FROM Account";
+    // Try with all optional fields first, fallback if they don't exist
+    string soqlQueryFull = "SELECT Id, Name, Email__c, Phone, ShippingStreet, ShippingCity, ShippingState, " +
+                           "ShippingPostalCode, ShippingCountry, Description, Stripe_Customer_Id__c, RecordTypeId, AccountStatus__c FROM Account";
+    string soqlQueryNoEmail = "SELECT Id, Name, Phone, ShippingStreet, ShippingCity, ShippingState, " +
+                              "ShippingPostalCode, ShippingCountry, Description, Stripe_Customer_Id__c, RecordTypeId, AccountStatus__c FROM Account";
+    string soqlQueryNoStatus = "SELECT Id, Name, Email__c, Phone, ShippingStreet, ShippingCity, ShippingState, " +
+                               "ShippingPostalCode, ShippingCountry, Description, Stripe_Customer_Id__c, RecordTypeId FROM Account";
+    string soqlQueryMinimal = "SELECT Id, Name, Phone, ShippingStreet, ShippingCity, ShippingState, " +
+                              "ShippingPostalCode, ShippingCountry, Description, Stripe_Customer_Id__c, RecordTypeId FROM Account";
 
-    // Execute query - try with email first, fallback if field doesn't exist
-    stream<SalesforceAccount, error?>|error accountStreamResult = salesforceClient->query(soqlQueryWithEmail);
+    // Execute query with fallback logic
+    stream<SalesforceAccount, error?>|error accountStreamResult = salesforceClient->query(soqlQueryFull);
     stream<SalesforceAccount, error?> accountStream;
     if accountStreamResult is error {
         string errorMsg = accountStreamResult.message();
-        if errorMsg.includes("Email__c") || errorMsg.includes("No such column") {
+        if errorMsg.includes("Email__c") {
             log:printInfo("Email__c field not found, querying without it");
-            accountStream = check salesforceClient->query(soqlQueryWithoutEmail);
+            stream<SalesforceAccount, error?>|error fallbackResult = salesforceClient->query(soqlQueryNoEmail);
+            if fallbackResult is error {
+                return fallbackResult;
+            }
+            accountStream = fallbackResult;
+        } else if errorMsg.includes("AccountStatus__c") {
+            log:printInfo("AccountStatus__c field not found, querying without it");
+            stream<SalesforceAccount, error?>|error fallbackResult = salesforceClient->query(soqlQueryNoStatus);
+            if fallbackResult is error {
+                string fallbackErrorMsg = fallbackResult.message();
+                if fallbackErrorMsg.includes("Email__c") {
+                    log:printInfo("Email__c also not found, using minimal query");
+                    accountStream = check salesforceClient->query(soqlQueryMinimal);
+                } else {
+                    return fallbackResult;
+                }
+            } else {
+                accountStream = fallbackResult;
+            }
         } else {
             return accountStreamResult;
         }
@@ -51,8 +71,7 @@ public function bulkSyncContactsToStripe() returns error? {
 
     // Build SOQL query
     string soqlQuery = "SELECT Id, FirstName, LastName, Email, Phone, MailingStreet, MailingCity, " +
-                       "MailingState, MailingPostalCode, MailingCountry, OtherStreet, OtherCity, " +
-                       "OtherState, OtherPostalCode, OtherCountry, Description, " +
+                       "MailingState, MailingPostalCode, MailingCountry, Description, " +
                        "Stripe_Customer_Id__c, RecordTypeId FROM Contact";
 
     // Execute query
