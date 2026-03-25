@@ -1,10 +1,46 @@
 import ballerina/lang.regexp;
+import ballerina/log;
 import ballerina/time as time;
 import ballerina/url;
-import ballerina/log;
 import ballerinax/mailchimp.'transactional as mailchimp;
 
-public function getCurrentPeriodDates() returns [string, string]|error {
+function createUtcCivilDate(int year, int month, int day) returns time:Civil {
+    return {
+        year: year,
+        month: month,
+        day: day,
+        hour: 0,
+        minute: 0,
+        second: 0,
+        utcOffset: {hours: 0, minutes: 0}
+    };
+}
+
+function getPeriodRangeFromMonthStart(int startYear, int startMonth, int durationMonths = 1) returns [time:Civil, time:Civil]|error {
+    time:Civil startDate = createUtcCivilDate(startYear, startMonth, 1);
+
+    int endMonth = startMonth + durationMonths;
+    int endYear = startYear;
+    while endMonth > 12 {
+        endMonth = endMonth - 12;
+        endYear = endYear + 1;
+    }
+
+    time:Civil tempDate = createUtcCivilDate(endYear, endMonth, 1);
+    time:Utc tempUtc = check time:utcFromCivil(tempDate);
+    time:Utc endUtc = time:utcAddSeconds(tempUtc, -86400.0);
+    time:Civil endDate = time:utcToCivil(endUtc);
+
+    return [startDate, endDate];
+}
+
+function civilDateToYmdString(time:Civil date) returns string {
+    string month = date.month < 10 ? string `0${date.month}` : date.month.toString();
+    string day = date.day < 10 ? string `0${date.day}` : date.day.toString();
+    return string `${date.year.toString()}-${month}-${day}`;
+}
+
+public function getCurrentPeriodDates() returns [time:Civil, time:Civil]|error {
     time:Utc currentUtc = time:utcNow();
     time:Civil currentCivil = time:utcToCivil(currentUtc);
 
@@ -18,34 +54,7 @@ public function getCurrentPeriodDates() returns [string, string]|error {
             lastMonth = 12;
             year = year - 1;
         }
-        startDate = {
-            year: year,
-            month: lastMonth,
-            day: 1,
-            hour: 0,
-            minute: 0,
-            second: 0,
-            utcOffset: {hours: 0, minutes: 0}
-        };
-
-        int nextMonth = lastMonth + 1;
-        int endYear = year;
-        if nextMonth > 12 {
-            nextMonth = 1;
-            endYear = endYear + 1;
-        }
-        time:Civil tempDate = {
-            year: endYear,
-            month: nextMonth,
-            day: 1,
-            hour: 0,
-            minute: 0,
-            second: 0,
-            utcOffset: {hours: 0, minutes: 0}
-        };
-        time:Utc tempUtc = check time:utcFromCivil(tempDate);
-        time:Utc endUtc = time:utcAddSeconds(tempUtc, -86400.0);
-        endDate = time:utcToCivil(endUtc);
+        [startDate, endDate] = check getPeriodRangeFromMonthStart(year, lastMonth);
     } else if timePeriod == "quarterly" {
         int currentMonth = currentCivil.month;
         int currentYear = currentCivil.year;
@@ -64,76 +73,22 @@ public function getCurrentPeriodDates() returns [string, string]|error {
             quarterStartMonth = 7;
         }
 
-        startDate = {
-            year: quarterYear,
-            month: quarterStartMonth,
-            day: 1,
-            hour: 0,
-            minute: 0,
-            second: 0,
-            utcOffset: {hours: 0, minutes: 0}
-        };
-
-        int endMonth = quarterStartMonth + 3;
-        int endYear = quarterYear;
-        if endMonth > 12 {
-            endMonth = endMonth - 12;
-            endYear = endYear + 1;
-        }
-        time:Civil tempDate = {
-            year: endYear,
-            month: endMonth,
-            day: 1,
-            hour: 0,
-            minute: 0,
-            second: 0,
-            utcOffset: {hours: 0, minutes: 0}
-        };
-        time:Utc tempUtc = check time:utcFromCivil(tempDate);
-        time:Utc endUtc = time:utcAddSeconds(tempUtc, -86400.0);
-        endDate = time:utcToCivil(endUtc);
+        [startDate, endDate] = check getPeriodRangeFromMonthStart(quarterYear, quarterStartMonth, 3);
     } else if timePeriod == "yearly" {
         int lastYear = currentCivil.year - 1;
 
-        startDate = {
-            year: lastYear,
-            month: 1,
-            day: 1,
-            hour: 0,
-            minute: 0,
-            second: 0,
-            utcOffset: {hours: 0, minutes: 0}
-        };
-
-        endDate = {
-            year: lastYear,
-            month: 12,
-            day: 31,
-            hour: 0,
-            minute: 0,
-            second: 0,
-            utcOffset: {hours: 0, minutes: 0}
-        };
+        startDate = createUtcCivilDate(lastYear, 1, 1);
+        endDate = createUtcCivilDate(lastYear, 12, 31);
     } else {
         time:Utc startUtc = time:utcAddSeconds(currentUtc, -2592000.0);
         startDate = time:utcToCivil(startUtc);
         endDate = currentCivil;
     }
 
-    string startDateStr = check time:civilToString(startDate);
-    string endDateStr = check time:civilToString(endDate);
-
-    regexp:RegExp datePattern = re `^\d{4}-\d{2}-\d{2}`;
-    regexp:Span? startMatch = datePattern.find(startDateStr);
-    regexp:Span? endMatch = datePattern.find(endDateStr);
-
-    string finalStartDate = startMatch is regexp:Span ? startDateStr.substring(startMatch.startIndex, startMatch.endIndex) : startDateStr;
-    string finalEndDate = endMatch is regexp:Span ? endDateStr.substring(endMatch.startIndex, endMatch.endIndex) : endDateStr;
-
-    return [finalStartDate, finalEndDate];
+    return [startDate, endDate];
 }
 
-public function getPreviousPeriodDates() returns [string, string]|error {
+public function getPreviousPeriodDates() returns [time:Civil, time:Civil]|error {
     time:Utc currentUtc = time:utcNow();
     time:Civil currentCivil = time:utcToCivil(currentUtc);
 
@@ -148,34 +103,7 @@ public function getPreviousPeriodDates() returns [string, string]|error {
                 twoMonthsAgo = twoMonthsAgo + 12;
                 year = year - 1;
             }
-            startDate = {
-                year: year,
-                month: twoMonthsAgo,
-                day: 1,
-                hour: 0,
-                minute: 0,
-                second: 0,
-                utcOffset: {hours: 0, minutes: 0}
-            };
-
-            int nextMonth = twoMonthsAgo + 1;
-            int endYear = year;
-            if nextMonth > 12 {
-                nextMonth = 1;
-                endYear = endYear + 1;
-            }
-            time:Civil tempDate = {
-                year: endYear,
-                month: nextMonth,
-                day: 1,
-                hour: 0,
-                minute: 0,
-                second: 0,
-                utcOffset: {hours: 0, minutes: 0}
-            };
-            time:Utc tempUtc = check time:utcFromCivil(tempDate);
-            time:Utc endUtc = time:utcAddSeconds(tempUtc, -86400.0);
-            endDate = time:utcToCivil(endUtc);
+            [startDate, endDate] = check getPeriodRangeFromMonthStart(year, twoMonthsAgo);
         } else if comparisonPeriod == "YoY" {
             int lastYear = currentCivil.year - 1;
             int lastMonth = currentCivil.month - 1;
@@ -183,34 +111,7 @@ public function getPreviousPeriodDates() returns [string, string]|error {
                 lastMonth = 12;
                 lastYear = lastYear - 1;
             }
-            startDate = {
-                year: lastYear,
-                month: lastMonth,
-                day: 1,
-                hour: 0,
-                minute: 0,
-                second: 0,
-                utcOffset: {hours: 0, minutes: 0}
-            };
-
-            int nextMonth = lastMonth + 1;
-            int endYear = lastYear;
-            if nextMonth > 12 {
-                nextMonth = 1;
-                endYear = endYear + 1;
-            }
-            time:Civil tempDate = {
-                year: endYear,
-                month: nextMonth,
-                day: 1,
-                hour: 0,
-                minute: 0,
-                second: 0,
-                utcOffset: {hours: 0, minutes: 0}
-            };
-            time:Utc tempUtc = check time:utcFromCivil(tempDate);
-            time:Utc endUtc = time:utcAddSeconds(tempUtc, -86400.0);
-            endDate = time:utcToCivil(endUtc);
+            [startDate, endDate] = check getPeriodRangeFromMonthStart(lastYear, lastMonth);
         } else {
             time:Utc startUtc = time:utcAddSeconds(currentUtc, -5184000.0);
             time:Utc endUtc = time:utcAddSeconds(currentUtc, -2592000.0);
@@ -250,34 +151,7 @@ public function getPreviousPeriodDates() returns [string, string]|error {
             }
         }
 
-        startDate = {
-            year: compareQuarterYear,
-            month: compareQuarterStartMonth,
-            day: 1,
-            hour: 0,
-            minute: 0,
-            second: 0,
-            utcOffset: {hours: 0, minutes: 0}
-        };
-
-        int endMonth = compareQuarterStartMonth + 3;
-        int endYear = compareQuarterYear;
-        if endMonth > 12 {
-            endMonth = endMonth - 12;
-            endYear = endYear + 1;
-        }
-        time:Civil tempDate = {
-            year: endYear,
-            month: endMonth,
-            day: 1,
-            hour: 0,
-            minute: 0,
-            second: 0,
-            utcOffset: {hours: 0, minutes: 0}
-        };
-        time:Utc tempUtc = check time:utcFromCivil(tempDate);
-        time:Utc endUtc = time:utcAddSeconds(tempUtc, -86400.0);
-        endDate = time:utcToCivil(endUtc);
+        [startDate, endDate] = check getPeriodRangeFromMonthStart(compareQuarterYear, compareQuarterStartMonth, 3);
     } else if timePeriod == "yearly" {
         int lastYear = currentCivil.year - 1;
         int compareYear;
@@ -288,25 +162,8 @@ public function getPreviousPeriodDates() returns [string, string]|error {
             compareYear = lastYear - 1;
         }
 
-        startDate = {
-            year: compareYear,
-            month: 1,
-            day: 1,
-            hour: 0,
-            minute: 0,
-            second: 0,
-            utcOffset: {hours: 0, minutes: 0}
-        };
-
-        endDate = {
-            year: compareYear,
-            month: 12,
-            day: 31,
-            hour: 0,
-            minute: 0,
-            second: 0,
-            utcOffset: {hours: 0, minutes: 0}
-        };
+        startDate = createUtcCivilDate(compareYear, 1, 1);
+        endDate = createUtcCivilDate(compareYear, 12, 31);
     } else {
         time:Utc startUtc = time:utcAddSeconds(currentUtc, -5184000.0);
         time:Utc endUtc = time:utcAddSeconds(currentUtc, -2592000.0);
@@ -314,17 +171,7 @@ public function getPreviousPeriodDates() returns [string, string]|error {
         endDate = time:utcToCivil(endUtc);
     }
 
-    string startDateStr = check time:civilToString(startDate);
-    string endDateStr = check time:civilToString(endDate);
-
-    regexp:RegExp datePattern = re `^\d{4}-\d{2}-\d{2}`;
-    regexp:Span? startMatch = datePattern.find(startDateStr);
-    regexp:Span? endMatch = datePattern.find(endDateStr);
-
-    string finalStartDate = startMatch is regexp:Span ? startDateStr.substring(startMatch.startIndex, startMatch.endIndex) : startDateStr;
-    string finalEndDate = endMatch is regexp:Span ? endDateStr.substring(endMatch.startIndex, endMatch.endIndex) : endDateStr;
-
-    return [finalStartDate, finalEndDate];
+    return [startDate, endDate];
 }
 
 public function calculatePercentageChange(decimal current, decimal previous) returns decimal {
@@ -335,9 +182,7 @@ public function calculatePercentageChange(decimal current, decimal previous) ret
 }
 
 public function roundToTwoDecimals(decimal value) returns decimal {
-    decimal multiplied = value * 100.0;
-    int rounded = <int>(multiplied + (value >= 0.0d ? 0.5d : -0.5d));
-    return <decimal>rounded / 100.0;
+    return value.round(2);
 }
 
 public function formatCurrency(decimal amount) returns string {
@@ -351,7 +196,7 @@ public function formatPercentage(decimal percentage) returns string {
     return string `${sign}${rounded.toString()}%`;
 }
 
-public function getMonthName(string dateStr) returns string {
+public function getMonthName(time:Civil date) returns string {
     string[] months = [
         "January",
         "February",
@@ -367,22 +212,16 @@ public function getMonthName(string dateStr) returns string {
         "December"
     ];
 
-    string[] parts = regexp:split(re `-`, dateStr);
-    if parts.length() >= 2 {
-        int|error monthNum = int:fromString(parts[1]);
-        if monthNum is int && monthNum >= 1 && monthNum <= 12 {
-            return months[monthNum - 1];
-        }
+    int monthNum = date.month;
+    if monthNum >= 1 && monthNum <= 12 {
+        return months[monthNum - 1];
     }
+
     return "Unknown";
 }
 
-public function getYear(string dateStr) returns string {
-    string[] parts = regexp:split(re `-`, dateStr);
-    if parts.length() >= 1 {
-        return parts[0];
-    }
-    return "Unknown";
+public function getYear(time:Civil date) returns string {
+    return date.year.toString();
 }
 
 function formatMetricValue(MetricInfo metric) returns string {
@@ -422,7 +261,7 @@ function calculateChange(decimal current, decimal previous) returns decimal {
     return roundToTwoDecimals(((current - previous) / previous) * 100.0d);
 }
 
-function generateChartUrl(ReportSummary summary) returns string {
+function generateChartUrl(ReportSummary summary) returns string|error {
     string[] labels = [];
     decimal[] currentData = [];
     decimal[] previousData = [];
@@ -473,8 +312,7 @@ function generateChartUrl(ReportSummary summary) returns string {
         }
     }`;
 
-    string|url:Error encodedResult = url:encode(chartConfig, "UTF-8");
-    string encodedChart = encodedResult is string ? encodedResult : chartConfig;
+    string encodedChart = check url:encode(chartConfig, "UTF-8");
     return string `https://quickchart.io/chart?c=${encodedChart}&width=540&height=300`;
 }
 
@@ -495,7 +333,7 @@ function generateRepRows(RepPerformance[] repBreakdown) returns string {
     return rows;
 }
 
-public function getSalesforcePerformanceEmail(ReportSummary summary, string period) returns string {
+public function getSalesforcePerformanceEmail(ReportSummary summary, string period) returns string|error {
     boolean hasMetrics = summary.currentMetrics.length() > 0;
     string metricsHtml = "";
 
@@ -553,7 +391,7 @@ public function getSalesforcePerformanceEmail(ReportSummary summary, string peri
             <tr>
                 <td style="background-color: #ffffff; padding: 30px; border-left: 1px solid #e1e4e8; border-right: 1px solid #e1e4e8;">
                     <div style="font-size: 16px; font-weight: 600; color: #24292e; margin-bottom: 15px;">Performance Trend</div>
-                    <img src="${generateChartUrl(summary)}" width="540" style="display: block; border-radius: 4px; border: 1px solid #f0f1f2;" alt="Performance Chart">
+                    <img src="${check generateChartUrl(summary)}" width="540" style="display: block; border-radius: 4px; border: 1px solid #f0f1f2;" alt="Performance Chart">
                 </td>
             </tr>`;
     }
@@ -631,7 +469,7 @@ public function getSalesforcePerformanceEmail(ReportSummary summary, string peri
 </html>`;
 }
 
-public function generateEmailSubject(string periodStart, string? periodEnd = ()) returns string {
+public function generateEmailSubject(time:Civil periodStart, time:Civil? periodEnd = ()) returns string {
     string subject = "";
     string year = getYear(periodStart);
     string monthName = getMonthName(periodStart);
@@ -640,21 +478,18 @@ public function generateEmailSubject(string periodStart, string? periodEnd = ())
     if timePeriod == "monthly" {
         defaultSubject = string `Salesforce Performance Summary - ${monthName} ${year}`;
     } else if timePeriod == "quarterly" {
-        string[] parts = regexp:split(re `-`, periodStart);
-        int|error monthNum = parts.length() >= 2 ? int:fromString(parts[1]) : 1;
+        int monthNum = periodStart.month;
         int quarter = 1;
         string startMonth = monthName;
-        string endMonth = periodEnd is string ? getMonthName(periodEnd) : "";
-        if monthNum is int {
-            if monthNum == 1 {
-                quarter = 1;
-            } else if monthNum == 4 {
-                quarter = 2;
-            } else if monthNum == 7 {
-                quarter = 3;
-            } else if monthNum == 10 {
-                quarter = 4;
-            }
+        string endMonth = periodEnd is time:Civil ? getMonthName(periodEnd) : "";
+        if monthNum == 1 {
+            quarter = 1;
+        } else if monthNum == 4 {
+            quarter = 2;
+        } else if monthNum == 7 {
+            quarter = 3;
+        } else if monthNum == 10 {
+            quarter = 4;
         }
         defaultSubject = string `Salesforce Performance Summary - Q${quarter} (${startMonth}${endMonth != "" ? string ` - ${endMonth}` : ""} ${year})`;
     } else if timePeriod == "yearly" {
@@ -676,8 +511,8 @@ public function generateEmailSubject(string periodStart, string? periodEnd = ())
 }
 
 public function sendPerformanceEmailNew(ReportSummary summary) returns error? {
-    string period = string `${summary.periodStart} to ${summary.periodEnd}`;
-    string htmlContent = getSalesforcePerformanceEmail(summary, period);
+    string period = string `${civilDateToYmdString(summary.periodStart)} to ${civilDateToYmdString(summary.periodEnd)}`;
+    string htmlContent = check getSalesforcePerformanceEmail(summary, period);
     string subject = generateEmailSubject(summary.periodStart, summary.periodEnd);
 
     mailchimp:MessagessendMessageTo[] recipients = [];

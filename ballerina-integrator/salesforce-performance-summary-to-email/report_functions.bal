@@ -1,4 +1,5 @@
 import ballerina/http;
+import ballerina/time;
 import ballerinax/salesforce;
 
 public function getReportMetadata(string reportId) returns map<json>|error {
@@ -25,7 +26,7 @@ public function extractMetricLabels(map<json> metadata) returns MetricInfo[]|err
     }
 
     json? aggregatesJson = check reportMetadata.aggregates;
-    if aggregatesJson is () || !(aggregatesJson is json[]) {
+    if aggregatesJson is () || aggregatesJson !is json[] {
         return metrics;
     }
 
@@ -61,9 +62,7 @@ public function extractMetricLabels(map<json> metadata) returns MetricInfo[]|err
     return metrics;
 }
 
-public function executeReportWithFilters(
-        string reportId
-) returns ReportExecutionResult|error {
+public function executeReportWithFilters(string reportId) returns ReportExecutionResult|error {
     salesforce:ReportInstanceResult reportResult = check salesforceClient->runReportSync(reportId);
 
     string reportName = "";
@@ -204,12 +203,10 @@ function aggregatesToMetrics(FactMapAggregates aggregates) returns PerformanceMe
     };
 }
 
-public function generateReportBasedSummary(
-        string reportId
-) returns PerformanceSummary|error {
-    [string, string] currentDates = check getCurrentPeriodDates();
-    string currentStartDate = currentDates[0];
-    string currentEndDate = currentDates[1];
+public function generateReportBasedSummary(string reportId) returns PerformanceSummary|error {
+    [time:Civil, time:Civil] currentDates = check getCurrentPeriodDates();
+    time:Civil currentStartDate = currentDates[0];
+    time:Civil currentEndDate = currentDates[1];
 
     map<json> metadata = check getReportMetadata(reportId);
 
@@ -261,12 +258,10 @@ public function generateReportBasedSummary(
     };
 }
 
-public function generateReportSummary(
-        string reportId
-) returns ReportSummary|error {
-    [string, string] currentDates = check getCurrentPeriodDates();
-    string currentStartDate = currentDates[0];
-    string currentEndDate = currentDates[1];
+public function generateReportSummary(string reportId) returns ReportSummary|error {
+    [time:Civil, time:Civil] currentDates = check getCurrentPeriodDates();
+    time:Civil currentStartDate = currentDates[0];
+    time:Civil currentEndDate = currentDates[1];
 
     map<json>|error metadata = getReportMetadata(reportId);
     if metadata is error {
@@ -319,10 +314,7 @@ public function generateReportSummary(
     };
 }
 
-function populateMetricsFromFactMap(
-        MetricInfo[] metricTemplate,
-        map<json> factMap
-) returns MetricInfo[]|error {
+function populateMetricsFromFactMap(MetricInfo[] metricTemplate, map<json> factMap) returns MetricInfo[]|error {
     MetricInfo[] populatedMetrics = [];
 
     json? grandTotalJson = factMap.get("T!T");

@@ -1,3 +1,4 @@
+import ballerina/time;
 
 public type ReportMetadata record {
     string reportFormat?;
@@ -48,8 +49,8 @@ public type PerformanceSummary record {
     PerformanceMetrics previousPeriod;
     ComparisonMetrics comparison;
     RepPerformance[] repBreakdown;
-    string periodStart;
-    string periodEnd;
+    time:Civil periodStart;
+    time:Civil periodEnd;
     string comparisonType;
 };
 
@@ -71,6 +72,6 @@ public type ReportSummary record {
     MetricInfo[] currentMetrics;
     MetricInfo[] previousMetrics;
     RepPerformance[] repBreakdown;
-    string periodStart;
-    string periodEnd;
+    time:Civil periodStart;
+    time:Civil periodEnd;
 };

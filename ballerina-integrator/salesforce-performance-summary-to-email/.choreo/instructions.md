@@ -30,11 +30,12 @@ This automation uses refresh token flow for auth. [Learn how to set up Salesforc
 
 <summary>Mailchimp Transactional Setup Guide</summary>
 
-1. A Mailchimp Transactional (Mandrill) account
+1. A Mailchimp Transactional account
 2. API Key from Mailchimp Transactional
    - Log in to Mailchimp Transactional
-   - Go to Account and locate "Extras" and click "API keys"
-   - Create and copy a new Mandrill API key
+   - Navigate to **Settings > API Keys**
+   - Click **Create New Key** and give it a description
+   - Copy the generated API key
 
 [Learn how to get Mailchimp Transactional API Keys](https://mailchimp.com/developer/transactional/guides/quick-start/#generate-your-api-key).
 

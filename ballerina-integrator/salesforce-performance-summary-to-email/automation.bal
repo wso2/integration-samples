@@ -7,7 +7,7 @@ public function main() returns error? {
         }
         log:printInfo(string `Report ID: ${salesforceReportId}`);
         ReportSummary reportSummary = check generateReportSummary(salesforceReportId);
-        log:printInfo(string `Period: ${reportSummary.periodStart} to ${reportSummary.periodEnd}`);
+        log:printInfo(string `Period: ${civilDateToYmdString(reportSummary.periodStart)} to ${civilDateToYmdString(reportSummary.periodEnd)}`);
 
         check sendPerformanceEmailNew(reportSummary);
     } on fail error e {
