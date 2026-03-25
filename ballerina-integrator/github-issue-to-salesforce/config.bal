@@ -9,7 +9,10 @@ configurable string[] triggerLabels = ?;
 
 // Salesforce connection configurations
 configurable string salesforceBaseUrl = ?;
-configurable string salesforceAccessToken = ?;
+configurable string salesforceClientId = ?;
+configurable string salesforceClientSecret = ?;
+configurable string salesforceRefreshToken = ?;
+configurable string salesforceRefreshUrl = ?;
 
 // Salesforce case configurations
 configurable string caseRecordType = "";

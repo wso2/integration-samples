@@ -18,3 +18,4 @@ endpoints:
     # +optional Network level visibilities of the endpoint.
     networkVisibilities:
       - Public
+      

@@ -25,7 +25,10 @@ tracking between GitHub and Salesforce.
 ### Salesforce Setup
 1. A Salesforce account with API access
 2. A Salesforce Connected App or External Client App with OAuth2 credentials:
-   - Access Token
+   - Client ID
+   - Client Secret
+   - Refresh Token
+   - Refresh URL (typically `https://login.salesforce.com/services/oauth2/token` for production or `https://test.salesforce.com/services/oauth2/token` for sandbox)
    - Base URL (your Salesforce instance URL)
 3. The following custom fields on the Case object:
    - `GitHub_Issue_URL__c` (URL type) - Stores the GitHub issue URL
@@ -33,7 +36,7 @@ tracking between GitHub and Salesforce.
 > **Note:** Connected Apps creation is restricted as of Salesforce Spring '26.
 > Use External Client Apps instead.
 > [Learn how to create an External Client App](https://help.salesforce.com/s/articleView?id=xcloud.create_a_local_external_client_app.htm&type=5)
->[Learn how to get access token](https://developer.salesforce.com/docs/atlas.en-us.sfdx_dev.meta/sfdx_dev/sfdx_dev_auth_existing_access_token.htm)
+> [Learn how to get OAuth2 credentials](https://help.salesforce.com/s/articleView?id=sf.remoteaccess_oauth_web_server_flow.htm&type=5)
 
 ### Salesforce Custom Field Setup
 1. Go to **Setup → Object Manager → Case**
@@ -53,7 +56,12 @@ The following configurations are required to run this integration.
 ### Salesforce Credentials
 - `salesforceBaseUrl` - Your Salesforce instance URL 
   (e.g., `https://your-instance.my.salesforce.com`)
-- `salesforceAccessToken` - Your Salesforce OAuth access token
+- `salesforceClientId` - Your Salesforce Connected App/External Client App Client ID
+- `salesforceClientSecret` - Your Salesforce Connected App/External Client App Client Secret
+- `salesforceRefreshToken` - Your Salesforce OAuth refresh token
+- `salesforceRefreshUrl` - Your Salesforce OAuth token endpoint 
+  (e.g., `https://login.salesforce.com/services/oauth2/token` for production or 
+  `https://test.salesforce.com/services/oauth2/token` for sandbox)
 
 ### Salesforce Case Defaults
 - `caseStatus` - Default status for created cases (e.g., `"New"`)

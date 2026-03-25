@@ -1,9 +1,12 @@
 import ballerinax/salesforce;
 
 // Initialize Salesforce client
-final salesforce:Client salesforceClient = check new (config = {
+final salesforce:Client salesforceClient = check new ({
     baseUrl: salesforceBaseUrl,
     auth: {
-        token: salesforceAccessToken
+        clientId: salesforceClientId,
+        clientSecret: salesforceClientSecret,
+        refreshToken: salesforceRefreshToken,
+        refreshUrl: salesforceRefreshUrl
     }
 });
