@@ -7,11 +7,8 @@ subject and the issue body to the case description, enabling seamless issue
 tracking between GitHub and Salesforce.
 
 ### What It Does
-- Listens for GitHub issue labeled events via webhook
+- Listens for GitHub issue labeled events via webhook from any repository
 - Filters issues based on configurable trigger labels
-- Supports monitoring multiple GitHub repositories simultaneously
-  (e.g., `githubRepositories = ["https://github.com/org/repo1", 
-  "https://github.com/org/repo2"]`)
 - Creates a Salesforce Case with the following mapped fields:
   - Issue title → Case Subject
   - Issue body → Case Description
