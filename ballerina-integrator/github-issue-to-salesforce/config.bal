@@ -1,6 +1,3 @@
-// GitHub repository configurations
-configurable string[] githubRepositories = ?;
-
 // GitHub webhook secret for secure webhook verification
 configurable string githubWebhookSecret = ?;
 
@@ -19,4 +16,3 @@ configurable string caseRecordType = "";
 configurable string casePriority = "Medium";
 configurable string caseStatus = "New";
 configurable string caseOwnerId = ?;
-

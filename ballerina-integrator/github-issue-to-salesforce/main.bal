@@ -52,16 +52,9 @@ service github:IssuesService on githubListener {
                 string labelName = label.name;
                 int? labelIndex = triggerLabels.indexOf(labelName);
                 if labelIndex is int {
-                    // Check if repository URL is in the configured list
-                    string repositoryHtmlUrl = payload.repository.html_url;
-                    int? repositoryIndex = githubRepositories.indexOf(repositoryHtmlUrl);
-                    if repositoryIndex is () {
-                        // Repository not in the configured list, skip processing
-                        log:printInfo("Repository not in configured list, skipping case creation", repositoryUrl = repositoryHtmlUrl);
-                        return;
-                    }
+                    // Label exists in triggerLabels - create Salesforce case
                     
-                    // Label exists in triggerLabels and repository is configured - create Salesforce case
+
                     github:Issue issue = payload.issue;
                     string issueTitle = issue.title;
                     string? issueBody = issue.body;
