@@ -18,12 +18,6 @@ function orderNumStr(shopify:OrderEvent event) returns string|error {
 
 // In-memory idempotency barrier: tracks order IDs currently in-flight (false) or successfully created in QB (true).
 // Prevents concurrent duplicate creation when onOrdersFulfilled and onOrdersPaid both fire for the same order.
-// LIMITATION: scoped to the current process instance — does not protect against duplicates across replicas.
-// For multi-replica deployments use one of:
-//   • Sticky webhook routing keyed by order ID (same replica always handles a given order), or
-//   • A distributed idempotency store (Redis SET NX, shared DB table with UNIQUE constraint on order_id), or
-//   • Rely solely on the persistent isDuplicateTransaction QB query as the idempotency gate.
-// TODO: Replace with a distributed lock/cache if this service runs with more than one replica.
 final map<boolean> processedOrderIds = {};
 
 // Safely extracts the QB-assigned Id from a toJson() response for the given entity type.
