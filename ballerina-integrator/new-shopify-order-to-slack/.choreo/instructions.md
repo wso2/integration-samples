@@ -29,9 +29,9 @@ The following should be done after deploying the integration, and the endpoint U
 1. Log in to your Slack workspace and go to the [Slack API Developer Portal](https://api.slack.com/apps).
 2. Click **Create New App** and choose **From scratch**.
 3. Navigate to **OAuth & Permissions** in the left sidebar.
-4. Scroll down to the **User Token Scopes** section, click **Add an OAuth Scope**, and select `chat:write`.
-5. Scroll up, click **Install to Workspace** (authorize it if prompted), and copy the **User OAuth Token** (starts with `xoxp-`). This should be the `slackToken` configuration.
-6. Open your Slack application and ensure your personal user account is a member of your target channel.
+4. Scroll down to the **Bot Token Scopes** section, click **Add an OAuth Scope**, and select `chat:write`.
+5. Scroll up, click **Install to Workspace** (authorize it if prompted), and copy the **Bot User OAuth Token** (starts with `xoxb-`). This should be the `slackToken` configuration.
+6. Open your Slack application and ensure the Slack app (bot) is a member of your target channel.
 7. Click the channel name at the top to open the details menu, scroll to the bottom of the **About** tab, and copy the **Channel ID** (usually starts with `C` or `G`). This should be the `slackChannelId` configuration.
 
 </details>
