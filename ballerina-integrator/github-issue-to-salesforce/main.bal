@@ -90,7 +90,7 @@ service github:IssuesService on githubListener {
                 int statusCode = <int>errorDetail["statusCode"];
                 
                 if statusCode == 401 {
-                    log:printError("Salesforce authentication failed - please check your OAuth2 credentials (clientId, clientSecret, refreshToken, refreshUrl) in Config.toml");
+                    log:printError("Salesforce authentication failed - please check your Salesforce configuration");
                 } else if statusCode == 400 {
                     log:printError("Failed to create Salesforce case - please check your caseOwnerId, the owner ID may be invalid", githubIssueUrl = issueHtmlUrl);
                 } else {
