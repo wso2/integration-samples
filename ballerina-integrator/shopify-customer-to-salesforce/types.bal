@@ -1,20 +1,54 @@
+import ballerina/constraint;
+
 // Salesforce Contact record with all standard fields
 public type SalesforceContact record {
     // Required fields
+    @constraint:String {
+        minLength: 5,
+        maxLength: 80
+    }
     string LastName;
     
     // Name fields
+    @constraint:String {
+        minLength: 1,
+        maxLength: 40
+    }
     string FirstName?;
     string Salutation?;
     string MiddleName?;
     string Suffix?;
     
     // Contact information
+    @constraint:String {
+        maxLength: 80,
+        pattern: re `^[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}$`
+    }
     string Email?;
+    @constraint:String {
+        maxLength: 40,
+        pattern: re `^\+?[0-9()\-\s]{7,20}$`
+    }
     string Phone?;
+    @constraint:String {
+        maxLength: 40,
+        pattern: re `^\+?[0-9()\-\s]{7,20}$`
+    }
     string MobilePhone?;
+    @constraint:String {
+        maxLength: 40,
+        pattern: re `^\+?[0-9()\-\s]{7,20}$`
+    }
     string HomePhone?;
+    @constraint:String {
+        maxLength: 40,
+        pattern: re `^\+?[0-9()\-\s]{7,20}$`
+    }
     string OtherPhone?;
+    @constraint:String {
+        maxLength: 40,
+        pattern: re `^\+?[0-9()\-\s]{7,20}$`
+    }
     string Fax?;
     
     // Mailing address
@@ -49,6 +83,10 @@ public type SalesforceContact record {
     string Department?;
     string Description?;
     string AssistantName?;
+    @constraint:String {
+        maxLength: 40,
+        pattern: re `^\+?[0-9()\-\s]{7,20}$`
+    }
     string AssistantPhone?;
     
     // Dates

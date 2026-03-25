@@ -1,5 +1,0 @@
-[package]
-org = "devantdemos"
-name = "sync_shopify_customer_to_salesforce"
-version = "0.1.0"
-distribution = "2201.13.1"

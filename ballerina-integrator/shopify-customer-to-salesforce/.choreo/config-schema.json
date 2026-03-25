@@ -2,86 +2,99 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "type": "object",
   "properties": {
-    "devantdemos": {
+    "wso2": {
       "type": "object",
       "properties": {
-        "sync_shopify_customer_to_salesforce": {
+        "shopify_customer_to_salesforce": {
           "type": "object",
           "properties": {
-            "shopifySecret": {
-              "type": "string",
+            "shopifyConfig": {
+              "type": "object",
+              "properties": {
+                "shopifySecret": {
+                  "type": "string"
+                }
+              },
+              "additionalProperties": false,
+              "required": [
+                "shopifySecret"
+              ],
+              "name": "wso2/shopify_customer_to_salesforce:0.1.0:ShopifyConfig",
               "description": ""
             },
-            "port": {
-              "type": "integer",
-              "description": ""
-            },
-            "salesforceBaseUrl": {
-              "type": "string",
-              "description": ""
-            },
-            "salesforceClientId": {
-              "type": "string",
-              "description": ""
-            },
-            "salesforceClientSecret": {
-              "type": "string",
-              "description": ""
-            },
-            "salesforceRefreshToken": {
-              "type": "string",
-              "description": ""
-            },
-            "salesforceRefreshUrl": {
-              "type": "string",
-              "description": ""
-            },
-            "defaultLeadSource": {
-              "type": "string",
-              "description": ""
-            },
-            "defaultRecordTypeId": {
-              "anyOf": [
-                {
+            "salesforceConfig": {
+              "type": "object",
+              "properties": {
+                "salesforceBaseUrl": {
                   "type": "string"
                 },
-                {
-                  "type": ""
-                }
-              ],
-              "description": ""
-            },
-            "ownerIdDefault": {
-              "anyOf": [
-                {
+                "salesforceClientId": {
                   "type": "string"
                 },
-                {
-                  "type": ""
+                "salesforceClientSecret": {
+                  "type": "string"
+                },
+                "salesforceRefreshToken": {
+                  "type": "string"
+                },
+                "salesforceRefreshUrl": {
+                  "type": "string"
+                },
+                "defaultLeadSource": {
+                  "type": "string"
+                },
+                "defaultRecordTypeId": {
+                  "anyOf": [
+                    {
+                      "type": "string"
+                    },
+                    {
+                      "type": ""
+                    }
+                  ]
+                },
+                "ownerIdDefault": {
+                  "anyOf": [
+                    {
+                      "type": "string"
+                    },
+                    {
+                      "type": ""
+                    }
+                  ]
+                },
+                "accountAssociationRule": {
+                  "enum": [
+                    "company",
+                    "domain",
+                    "none"
+                  ]
+                },
+                "enableDuplicateCheck": {
+                  "type": "boolean"
                 }
+              },
+              "additionalProperties": false,
+              "required": [
+                "salesforceBaseUrl",
+                "salesforceClientId",
+                "salesforceClientSecret",
+                "salesforceRefreshToken",
+                "salesforceRefreshUrl",
+                "defaultLeadSource",
+                "defaultRecordTypeId",
+                "ownerIdDefault",
+                "accountAssociationRule",
+                "enableDuplicateCheck"
               ],
-              "description": ""
-            },
-            "accountAssociationRule": {
-              "enum": [
-                "company",
-                "domain",
-                "none"
-              ],
-              "description": ""
-            },
-            "enableDuplicateCheck": {
-              "type": "boolean",
+              "name": "wso2/shopify_customer_to_salesforce:0.1.0:SalesforceConfig",
               "description": ""
             }
           },
           "additionalProperties": false,
           "required": [
-            "shopifySecret",
-            "salesforceBaseUrl",
-            "salesforceClientId",
-            "salesforceClientSecret",
-            "salesforceRefreshToken"
+            "shopifyConfig",
+            "salesforceConfig"
           ]
         }
       },
@@ -241,6 +254,5 @@
       "additionalProperties": false
     }
   },
-  "additionalProperties": false,
-  "requiredLevel": 3
+  "additionalProperties": false
 }

@@ -20,16 +20,16 @@ public function mapShopifyCustomerToSalesforceContact(
         Email: email,
         Phone: phone,
         AccountId: accountId,
-        LeadSource: defaultLeadSource
+        LeadSource: salesforceConfig.defaultLeadSource
     };
     
     // Set default record type and owner if configured
-    if defaultRecordTypeId is string {
-        contact.RecordTypeId = defaultRecordTypeId;
+    if salesforceConfig.defaultRecordTypeId is string {
+        contact.RecordTypeId = salesforceConfig.defaultRecordTypeId;
     }
     
-    if ownerIdDefault is string {
-        contact.OwnerId = ownerIdDefault;
+    if salesforceConfig.ownerIdDefault is string {
+        contact.OwnerId = salesforceConfig.ownerIdDefault;
     }
     
     // Convert to JSON to access nested fields

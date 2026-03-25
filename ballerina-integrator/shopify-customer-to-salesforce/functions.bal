@@ -27,7 +27,7 @@ public function findContactByEmail(string email) returns ContactQueryResult?|err
 // Find or create account based on company name or email domain
 public function findOrCreateAccount(shopify:CustomerEvent customerEvent) returns string?|error {
     // Check if account association is disabled
-    if accountAssociationRule == "none" {
+    if salesforceConfig.accountAssociationRule == "none" {
         return ();
     }
     
@@ -35,7 +35,7 @@ public function findOrCreateAccount(shopify:CustomerEvent customerEvent) returns
     string? email = customerEvent?.email;
     
     // Try to find account by company name
-    if (accountAssociationRule == "company" || accountAssociationRule == "domain") && companyName is string && companyName.trim() != "" {
+    if (salesforceConfig.accountAssociationRule == "company" || salesforceConfig.accountAssociationRule == "domain") && companyName is string && companyName.trim() != "" {
         string escapedCompanyName = escapeSoqlString(companyName);
         string soqlQuery = string `SELECT Id, Name, Website FROM Account WHERE Name = '${escapedCompanyName}' LIMIT 1`;
         stream<AccountQueryResult, error?> resultStream = check salesforceClient->query(soql = soqlQuery);
@@ -49,7 +49,7 @@ public function findOrCreateAccount(shopify:CustomerEvent customerEvent) returns
         }
         
         // Create new account with company name only if rule is company
-        if accountAssociationRule == "company" {
+        if salesforceConfig.accountAssociationRule == "company" {
             SalesforceAccount newAccount = {
                 Name: companyName,
                 Description: "Created from Shopify customer"
@@ -65,7 +65,7 @@ public function findOrCreateAccount(shopify:CustomerEvent customerEvent) returns
     }
     
     // Try to find account by email domain
-    if accountAssociationRule == "domain" && email is string {
+    if salesforceConfig.accountAssociationRule == "domain" && email is string {
         string? domain = extractDomainFromEmail(email);
         if domain is string {
             string escapedDomain = escapeSoqlString(domain);
@@ -90,7 +90,7 @@ public function createOrUpdateSalesforceContact(shopify:CustomerEvent customerEv
     string? email = customerEvent?.email;
     
     // Duplicate check by email (if enabled)
-    if enableDuplicateCheck && email is string && email.trim() != "" {
+    if salesforceConfig.enableDuplicateCheck && email is string && email.trim() != "" {
         ContactQueryResult? existingContact = check findContactByEmail(email);
         
         if existingContact is ContactQueryResult {
@@ -145,7 +145,7 @@ public function createOrUpdateSalesforceContact(shopify:CustomerEvent customerEv
         log:printInfo("Successfully created Salesforce contact", 
             contactId = response.id, 
             accountId = accountId ?: "None",
-            leadSource = defaultLeadSource,
+            leadSource = salesforceConfig.defaultLeadSource,
             origin = "Shopify"
         );
     } else {

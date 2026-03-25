@@ -3,8 +3,8 @@ import ballerinax/trigger.shopify;
 
 // Shopify webhook listener configuration
 listener shopify:Listener shopifyListener = new ({
-    "port": port,
-    "apiSecretKey": shopifySecret
+    "port": 8090,
+    "apiSecretKey": shopifyConfig.shopifySecret
 });
 
 // Shopify webhook service to handle events
