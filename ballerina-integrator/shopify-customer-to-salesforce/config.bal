@@ -11,11 +11,7 @@ public type SalesforceConfig record {|
     string salesforceRefreshToken;
     string salesforceRefreshUrl = "https://login.salesforce.com/services/oauth2/token";
 
-    // Salesforce default values
-    string defaultLeadSource = "Shopify";
-    string? ownerIdDefault = ();
     "company"|"domain"|"none" accountAssociationRule = "company";
-    boolean enableDuplicateCheck = true;
 |};
 
 configurable ShopifyConfig shopifyConfig = ?;

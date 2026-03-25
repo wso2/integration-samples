@@ -19,14 +19,8 @@ public function mapShopifyCustomerToSalesforceContact(
         FirstName: firstName,
         Email: email,
         Phone: phone,
-        AccountId: accountId,
-        LeadSource: salesforceConfig.defaultLeadSource
+        AccountId: accountId
     };
-    
-    // Set default owner if configured
-    if salesforceConfig.ownerIdDefault is string {
-        contact.OwnerId = salesforceConfig.ownerIdDefault;
-    }
     
     // Convert to JSON to access nested fields
     json customerJson = customerEvent.toJson();
