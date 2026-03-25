@@ -33,8 +33,16 @@ public type Lead record {
 
 type SheetRow (int|string|decimal|boolean|float)[];
 
-enum SyncMode {
-    APPEND,
-    FULL_REPLACE,
-    UPSERT_BY_EMAIL
-}
+public type SalesforceConfig record {|
+    string refreshToken;
+    string clientId;
+    string clientSecret;
+    string refreshUrl;
+    string baseUrl;
+|};
+
+public type GoogleConfig record {|
+    string refreshToken;
+    string clientId;
+    string clientSecret;
+|};

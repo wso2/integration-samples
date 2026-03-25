@@ -1,32 +1,22 @@
-// Copyright (c) 2025, WSO2 LLC. (http://www.wso2.com).
-//
-// WSO2 LLC. licenses this file to you under the Apache License,
-// Version 2.0 (the "License"); you may not use this file except
-// in compliance with the License.
-// You may obtain a copy of the License at
-//
-// http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing,
-// software distributed under the License is distributed on an
-// "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
-// KIND, either express or implied.  See the License for the
-// specific language governing permissions and limitations
-// under the License.
+configurable SalesforceConfig salesforceConfig = ?;
 
-// Salesforce OAuth Configuration
-configurable string salesforceRefreshToken = ?;
-configurable string salesforceClientId = ?;
-configurable string salesforceClientSecret = ?;
-configurable string salesforceRefreshUrl = ?;
-configurable string salesforceBaseUrl = ?;
+configurable GoogleConfig googleConfig = ?;
 
-// Google OAuth Configuration
-configurable string googleRefreshToken = ?;
-configurable string googleClientId = ?;
-configurable string googleClientSecret = ?;
+enum TimeFrame {
+    YESTERDAY = "YESTERDAY",
+    LAST_WEEK = "LAST_WEEK",
+    LAST_MONTH = "LAST_MONTH",
+    LAST_YEAR = "LAST_YEAR",
+    ALL = "ALL"
+}
 
-configurable string timezone = "UTC";
+enum SyncMode {
+    APPEND = "APPEND",
+    FULL_REPLACE = "FULL_REPLACE",
+    UPSERT_BY_EMAIL = "UPSERT_BY_EMAIL"
+}
+
+configurable string timezone = "Asia/Colombo";
 configurable string spreadsheetId = "";
 configurable string tabName = "Leads";
 
@@ -47,9 +37,9 @@ configurable string[] fieldMapping = [
 ];
 
 configurable string soqlFilter = "";
-configurable string timeframe = "ALL";
+configurable TimeFrame timeframe = ALL;
 configurable boolean includeConverted = false;
 
-configurable string syncMode = "APPEND";
+configurable SyncMode syncMode = APPEND;
 configurable boolean enableAutoFormat = true;
 configurable string splitBy = "";
