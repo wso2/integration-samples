@@ -5,9 +5,9 @@ import ballerinax/googleapis.gmail;
 
 public function main() returns error? {
     log:printInfo("Jira Sprint Summary Automation started!");
-    log:printInfo(string `Jira Base URL: ${jiraBaseUrl}`);
+    log:printInfo(string `Jira Base URL: ${jira.baseUrl}`);
     log:printInfo(string `Lookback window: ${lookbackHours} hours`);
-    log:printInfo(string `Monitoring project: ${jiraProjectKey}`);
+    log:printInfo(string `Monitoring project: ${jira.projectKey}`);
     
     // Test Jira connection
     log:printInfo("Testing Jira connection...");
@@ -23,11 +23,37 @@ public function main() returns error? {
         return e;
     }
 
-    log:printInfo(string `Checking for completed sprints in project ${jiraProjectKey}...`);
+    log:printInfo(string `Checking for completed sprints in project ${jira.projectKey}...`);
     
     check checkCompletedSprints();
     
     log:printInfo("Sprint summary automation completed successfully!");
+}
+
+// Fetch all issues for a sprint with pagination
+function fetchAllSprintIssues(int sprintId) returns jira:IssueBean[]|error {
+    // Use a high maxResults value to fetch most sprints in one call
+    // Jira API typically allows up to 100 for Cloud, may vary for Server/Data Center
+    int maxResultsValue = 1000;
+    
+    log:printDebug(string `Fetching sprint issues with maxResults=${maxResultsValue}`);
+    
+    jira:SearchAndReconcileResults searchResults = check jiraClient->/api/'3/search/jql(
+        jql = string `project = ${jira.projectKey} AND sprint = ${sprintId}`,
+        fields = ["summary", "status", "assignee", "created"],
+        expand = "changelog",
+        maxResults = <int:Signed32>maxResultsValue
+    );
+
+    jira:IssueBean[] sprintIssues = searchResults.issues ?: [];
+    int fetchedCount = sprintIssues.length();
+    
+    // Warn if we hit the limit, as there may be more issues
+    if fetchedCount == maxResultsValue {
+        log:printWarn(string `Sprint ${sprintId} has ${fetchedCount}+ issues (hit maxResults limit). Results may be incomplete. Consider implementing proper pagination if your sprints regularly exceed ${maxResultsValue} issues.`);
+    }
+
+    return sprintIssues;
 }
 
 function checkCompletedSprints() returns error? {
@@ -40,7 +66,7 @@ function checkCompletedSprints() returns error? {
     log:printInfo(string `Searching for sprints completed after ${cutoffDateString} (window: ${lookbackHours} hours)`);
     
     jira:SearchAndReconcileResults searchResults = check jiraClient->/api/'3/search/jql(
-        jql = string `project = ${jiraProjectKey} AND sprint in closedSprints() AND updated >= "${cutoffDateString}" ORDER BY updated DESC`,
+        jql = string `project = ${jira.projectKey} AND sprint in closedSprints() AND updated >= "${cutoffDateString}" ORDER BY updated DESC`,
         fields = ["sprint", "updated"],
         maxResults = 100
     );
@@ -105,14 +131,9 @@ function checkCompletedSprints() returns error? {
 function generateSprintSummary(Sprint sprint) returns SprintSummary|error {
     log:printInfo("Generating sprint summary", sprintId = sprint.id);
 
-    jira:SearchAndReconcileResults searchResults = check jiraClient->/api/'3/search/jql(
-        jql = string `project = ${jiraProjectKey} AND sprint = ${sprint.id}`,
-        fields = ["summary", "status", "assignee", "created"],
-        expand = "changelog",
-        maxResults = 100
-    );
-
-    jira:IssueBean[] sprintIssues = searchResults.issues ?: [];
+    // Fetch all sprint issues with pagination
+    jira:IssueBean[] sprintIssues = check fetchAllSprintIssues(sprint.id);
+    log:printInfo(string `Retrieved ${sprintIssues.length()} total issue(s) for sprint ${sprint.id}`);
 
     IssueDetails[] completedIssues = [];
     IssueDetails[] carriedOverIssues = [];
@@ -131,12 +152,12 @@ function generateSprintSummary(Sprint sprint) returns SprintSummary|error {
     string completedDateValue = sprint.completeDate ?: sprint.endDate ?: "N/A";
 
     AssigneeStats[] assigneeBreakdown = [];
-    if includeAssigneeBreakdown {
+    if summary.includeAssigneeBreakdown {
         assigneeBreakdown = calculateAssigneeBreakdown(completedIssues, carriedOverIssues);
     }
 
     IssueDetails[] midSprintAdditions = [];
-    if includeMidSprintAdditions {
+    if summary.includeMidSprintAdditions {
         midSprintAdditions = check detectMidSprintAdditions(sprintIssues, sprint);
     }
 
@@ -150,19 +171,23 @@ function generateSprintSummary(Sprint sprint) returns SprintSummary|error {
         completedIssuesList: completedIssues,
         carriedOverIssuesList: carriedOverIssues,
         assigneeBreakdown: assigneeBreakdown,
-        midSprintAdditions: midSprintAdditions
+        midSprintAdditions: midSprintAdditions,
+        includeCompletedIssues: summary.includeCompletedIssues,
+        includeCarriedOverIssues: summary.includeCarriedOverIssues,
+        includeAssigneeBreakdown: summary.includeAssigneeBreakdown,
+        includeMidSprintAdditions: summary.includeMidSprintAdditions
     };
 }
 
 function sendSprintSummaryEmail(SprintSummary summary) returns error? {
-    string recipientList = string:'join(", ", ...gmailRecipients);
-    log:printInfo(string `Sending sprint summary email to ${gmailRecipients.length()} recipient(s): ${recipientList}`);
+    string recipientList = string:'join(", ", ...gmail.recipients);
+    log:printInfo(string `Sending sprint summary email to ${gmail.recipients.length()} recipient(s): ${recipientList}`);
 
     string emailBody = formatEmailBody(summary);
     string emailSubject = formatEmailSubject(summary);
 
     gmail:MessageRequest messageRequest = {
-        to: gmailRecipients,
+        to: gmail.recipients,
         subject: emailSubject,
         bodyInHtml: emailBody
     };

@@ -35,11 +35,11 @@ function markSprintAsProcessed(int sprintId) returns error? {
 function markSprintAsProcessedByLabel(int sprintId) returns error? {
     log:printInfo(string `Marking sprint ${sprintId} as processed in Jira`);
 
-    // Get all issues in the sprint
+    // Get the first issue in the sprint (no need to paginate for this use case)
     jira:SearchAndReconcileResults searchResults = check jiraClient->/api/'3/search/jql(
-        jql = string `project = ${jiraProjectKey} AND sprint = ${sprintId}`,
+        jql = string `project = ${jira.projectKey} AND sprint = ${sprintId}`,
         fields = ["key", "labels"],
-        maxResults = 100
+        maxResults = 1
     );
     
     jira:IssueBean[] sprintIssues = searchResults.issues ?: [];

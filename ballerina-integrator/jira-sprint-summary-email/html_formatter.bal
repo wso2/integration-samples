@@ -1,14 +1,15 @@
 import ballerina/time;
+import ballerina/lang.regexp;
 
 // HTML email formatting functions
 
 // Escape HTML special characters to prevent XSS and markup breakage
 function escapeHtml(string text) returns string {
-    string:RegExp ampersand = re `&`;
-    string:RegExp lessThan = re `<`;
-    string:RegExp greaterThan = re `>`;
-    string:RegExp doubleQuote = re `"`;
-    string:RegExp singleQuote = re `'`;
+    regexp:RegExp ampersand = re `&`;
+    regexp:RegExp lessThan = re `<`;
+    regexp:RegExp greaterThan = re `>`;
+    regexp:RegExp doubleQuote = re `"`;
+    regexp:RegExp singleQuote = re `'`;
     
     string escaped = text;
     escaped = ampersand.replaceAll(escaped, "&amp;");
@@ -20,10 +21,10 @@ function escapeHtml(string text) returns string {
 }
 
 function formatEmailSubject(SprintSummary summary) returns string {
-    string:RegExp sprintNamePattern = re `\{\{sprintName\}\}`;
-    string:RegExp sprintIdPattern = re `\{\{sprintId\}\}`;
+    regexp:RegExp sprintNamePattern = re `\{\{sprintName\}\}`;
+    regexp:RegExp sprintIdPattern = re `\{\{sprintId\}\}`;
     
-    string subject = emailSubjectTemplate;
+    string subject = email.subjectTemplate;
     // Note: Email subjects don't need HTML escaping, but we escape for safety
     subject = sprintNamePattern.replaceAll(subject, escapeHtml(summary.sprintName));
     subject = sprintIdPattern.replaceAll(subject, summary.sprintId.toString());
@@ -111,10 +112,10 @@ function formatEmailBody(SprintSummary summary) returns string {
                     </td>
                 </tr>
 
-                ${includeCompletedIssues ? getHtmlFormattedIssues(summary.completedIssuesList, "Completed", "#00875a") : ""}
-                ${includeCarriedOverIssues ? getHtmlFormattedIssues(summary.carriedOverIssuesList, "Carried Over", "#de350b") : ""}
-                ${includeAssigneeBreakdown ? getHtmlFormattedAssigneeBreakdown(summary.assigneeBreakdown) : ""}
-                ${includeMidSprintAdditions ? getHtmlFormattedMidSprintAdditions(summary.midSprintAdditions) : ""}
+                ${summary.includeCompletedIssues ? getHtmlFormattedIssues(summary.completedIssuesList, "Completed", "#00875a") : ""}
+                ${summary.includeCarriedOverIssues ? getHtmlFormattedIssues(summary.carriedOverIssuesList, "Carried Over", "#de350b") : ""}
+                ${summary.includeAssigneeBreakdown ? getHtmlFormattedAssigneeBreakdown(summary.assigneeBreakdown) : ""}
+                ${summary.includeMidSprintAdditions ? getHtmlFormattedMidSprintAdditions(summary.midSprintAdditions) : ""}
 
                 <tr>
                     <td style="padding: 30px; text-align: center; font-family: sans-serif; font-size: 12px; color: #5e6c84; line-height: 18px;">

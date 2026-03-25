@@ -4,7 +4,7 @@ import ballerinax/jira;
 
 // Time formatting
 function getFormattedTimeStamp(time:Utc timeValue) returns string {
-    time:Zone? zone = time:getZone(timeZone);
+    time:Zone? zone = time:getZone(email.timeZone);
     if zone is time:Zone {
         time:Civil currentTime = zone.utcToCivil(timeValue);
         string month = currentTime.month < 10 ? string `0${currentTime.month}` : currentTime.month.toString();

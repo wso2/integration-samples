@@ -33,4 +33,8 @@ public type SprintSummary record {|
 	IssueDetails[] carriedOverIssuesList;
 	AssigneeStats[] assigneeBreakdown;
 	IssueDetails[] midSprintAdditions;
+	boolean includeCompletedIssues;
+	boolean includeCarriedOverIssues;
+	boolean includeAssigneeBreakdown;
+	boolean includeMidSprintAdditions;
 |};

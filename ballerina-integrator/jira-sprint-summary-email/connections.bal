@@ -23,22 +23,22 @@ function normalizeJiraBaseUrl(string baseUrl) returns string {
     return normalizedUrl;
 }
 
-jira:ConnectionConfig config = {
+jira:ConnectionConfig jiraConnectionConfig = {
     auth: {
-        username: jiraEmail,
-        password: jiraApiToken
+        username: jira.email,
+        password: jira.apiToken
     }
 };
 
-final string jiraApiBaseUrl = normalizeJiraBaseUrl(jiraBaseUrl);
-final jira:Client jiraClient = check new (config, jiraApiBaseUrl);
+final string jiraApiBaseUrl = normalizeJiraBaseUrl(jira.baseUrl);
+final jira:Client jiraClient = check new (jiraConnectionConfig, jiraApiBaseUrl);
 
-gmail:ConnectionConfig gmailConfig = {
+gmail:ConnectionConfig gmailConnectionConfig = {
     auth: {
-        refreshToken: gmailRefreshToken,
-        clientId: gmailClientId,
-        clientSecret: gmailClientSecret
+        refreshToken: gmail.refreshToken,
+        clientId: gmail.clientId,
+        clientSecret: gmail.clientSecret
     }
 };
 
-final gmail:Client gmailClient = check new (gmailConfig);
+final gmail:Client gmailClient = check new (gmailConnectionConfig);
