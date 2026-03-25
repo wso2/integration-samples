@@ -54,8 +54,8 @@
             },
             "insertMode": {
               "enum": [
-                "upsert",
-                "append"
+                "UPSERT",
+                "APPEND"
               ],
               "description": ""
             },
