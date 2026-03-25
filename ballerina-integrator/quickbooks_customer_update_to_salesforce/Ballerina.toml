@@ -1,0 +1,6 @@
+[package]
+org = "wso2"
+name = "quickbooks_customer_update_to_salesforce"
+version = "0.1.0"
+title = "quickbooks-customer-update-to-salesforce"
+distribution = "2201.13.1"
