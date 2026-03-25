@@ -1,15 +1,8 @@
 import ballerinax/trigger.github;
 
 function getFormattedChatMessage(github:IssuesEvent payload) returns json {
-    string labels = "";
-    foreach github:Label item in payload.issue.labels {
-        labels += item.name + ", ";
-    }
-    if labels.length() > 2 {
-        labels = labels.substring(0, labels.length() - 2);
-    } else {
-        labels = "None";
-    }
+    string[] labelNamesArr = from github:Label item in payload.issue.labels select item.name;
+    string labels = string:'join(", ", ...labelNamesArr);
     return {
         "header": {
             "title": string `Issue #${payload.issue.number}: ${payload.issue.title}`,
