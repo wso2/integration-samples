@@ -5,7 +5,5 @@ version = "0.1.0"
 distribution = "2201.13.1"
 title = "shopify-to-quickbooks-transaction"
 
-[[dependency]]
-org = "ballerina"
-name = "constraint"
-version = "1.5.0"
+[build-options]
+sticky = false
