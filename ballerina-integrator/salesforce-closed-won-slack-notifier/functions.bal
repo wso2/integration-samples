@@ -168,7 +168,7 @@ function getSlackHandleForOwner(string ownerName) returns string {
 
 // Determines the appropriate Slack channel based on deal size
 function getChannelForDealSize(decimal amount) returns string {
-    string selectedChannel = slackConfig.slackChannel;
+    string selectedChannel = slackConfig.channel;
     decimal highestThreshold = 0.0;
     regexp:RegExp separator = re `:`;
 

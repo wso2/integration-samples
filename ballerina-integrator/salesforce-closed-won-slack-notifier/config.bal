@@ -9,8 +9,8 @@ configurable record {
 
 // Slack Configuration
 configurable record {
-    string slackToken;
-    string slackChannel;
+    string token;
+    string channel;
 } slackConfig = ?;
 
 // Business Logic Configuration

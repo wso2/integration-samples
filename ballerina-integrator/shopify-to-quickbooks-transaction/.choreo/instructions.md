@@ -5,11 +5,12 @@
 - Maps Shopify line items to corresponding QuickBooks products
 - Creates QuickBooks Sales Receipts or Invoices with accurate shipping, discounts, and taxes
 
+<details>
 <summary>Shopify Setup Guide</summary>
 
 1. Log in to your Shopify account and navigate to **Settings** > **Notifications**.
 2. Click on the **Webhooks** section.
-3. Copy the key that is shown under 'Your webhooks will be signed with ...'. This should be the `shopifyWebHookSecret` configuration.
+3. Copy the key that is shown under 'Your webhooks will be signed with ...'. This should be the `apiSecretKey` configuration.
 
 The following should be done after deploying the integration, and the endpoint URL is available.
 

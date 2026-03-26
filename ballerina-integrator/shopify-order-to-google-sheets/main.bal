@@ -1,7 +1,7 @@
 import ballerinax/trigger.shopify;
 
 shopify:ListenerConfig listenerConfig = {
-    apiSecretKey: shopifyConfig.webhookSecret
+    apiSecretKey: shopifyConfig.apiSecretKey
 };
 
 listener shopify:Listener shopifyListener = new (listenerConfig, 8090);

@@ -2,74 +2,6 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "type": "object",
   "properties": {
-    "wso2": {
-      "type": "object",
-      "properties": {
-        "shopify_customer_to_salesforce": {
-          "type": "object",
-          "properties": {
-            "shopifyConfig": {
-              "type": "object",
-              "properties": {
-                "shopifySecret": {
-                  "type": "string"
-                }
-              },
-              "additionalProperties": false,
-              "required": [
-                "shopifySecret"
-              ],
-              "name": "wso2/shopify_customer_to_salesforce:0.1.0:ShopifyConfig",
-              "description": ""
-            },
-            "salesforceConfig": {
-              "type": "object",
-              "properties": {
-                "salesforceBaseUrl": {
-                  "type": "string"
-                },
-                "salesforceClientId": {
-                  "type": "string"
-                },
-                "salesforceClientSecret": {
-                  "type": "string"
-                },
-                "salesforceRefreshToken": {
-                  "type": "string"
-                },
-                "salesforceRefreshUrl": {
-                  "type": "string"
-                },
-                "accountAssociationRule": {
-                  "enum": [
-                    "company",
-                    "domain",
-                    "none"
-                  ]
-                }
-              },
-              "additionalProperties": false,
-              "required": [
-                "salesforceBaseUrl",
-                "salesforceClientId",
-                "salesforceClientSecret",
-                "salesforceRefreshToken",
-                "salesforceRefreshUrl",
-                "accountAssociationRule"
-              ],
-              "name": "wso2/shopify_customer_to_salesforce:0.1.0:SalesforceConfig",
-              "description": ""
-            }
-          },
-          "additionalProperties": false,
-          "required": [
-            "shopifyConfig",
-            "salesforceConfig"
-          ]
-        }
-      },
-      "additionalProperties": false
-    },
     "ballerina": {
       "type": "object",
       "properties": {
@@ -219,6 +151,74 @@
             }
           },
           "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    },
+    "wso2": {
+      "type": "object",
+      "properties": {
+        "shopify_customer_to_salesforce": {
+          "type": "object",
+          "properties": {
+            "shopifyConfig": {
+              "type": "object",
+              "properties": {
+                "apiSecretKey": {
+                  "type": "string"
+                }
+              },
+              "additionalProperties": false,
+              "required": [
+                "apiSecretKey"
+              ],
+              "name": "wso2/shopify_customer_to_salesforce:0.1.0:ShopifyConfig",
+              "description": ""
+            },
+            "salesforceConfig": {
+              "type": "object",
+              "properties": {
+                "baseUrl": {
+                  "type": "string"
+                },
+                "clientId": {
+                  "type": "string"
+                },
+                "clientSecret": {
+                  "type": "string"
+                },
+                "refreshToken": {
+                  "type": "string"
+                },
+                "refreshUrl": {
+                  "type": "string"
+                },
+                "accountAssociationRule": {
+                  "enum": [
+                    "company",
+                    "domain",
+                    "none"
+                  ]
+                }
+              },
+              "additionalProperties": false,
+              "required": [
+                "baseUrl",
+                "clientId",
+                "clientSecret",
+                "refreshToken",
+                "refreshUrl",
+                "accountAssociationRule"
+              ],
+              "name": "wso2/shopify_customer_to_salesforce:0.1.0:SalesforceConfig",
+              "description": ""
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "shopifyConfig",
+            "salesforceConfig"
+          ]
         }
       },
       "additionalProperties": false

@@ -41,15 +41,15 @@ This integration uses refresh token flow for auth. [Learn how to set up Salesfor
 The following configurations are required for the integration:
 
 ### Shopify Configuration
-- `shopifySecret`: The API secret key obtained from the Shopify setup.
+- `apiSecretKey`: The API secret key obtained from the Shopify setup.
 
 ### Salesforce Credentials
 
-- `salesforceRefreshToken` - Your Salesforce OAuth2 refresh token
-- `salesforceClientId` - Your Salesforce OAuth2 client ID
-- `salesforceClientSecret` - Your Salesforce OAuth2 client secret
-- `salesforceRefreshUrl` - Salesforce OAuth2 token endpoint (e.g., `https://your-instance.salesforce.com/services/oauth2/token`)
-- `salesforceBaseUrl` - Your Salesforce instance URL (e.g., `https://your-instance.salesforce.com`)
+- `refreshToken` - Your Salesforce OAuth2 refresh token
+- `clientId` - Your Salesforce OAuth2 client ID
+- `clientSecret` - Your Salesforce OAuth2 client secret
+- `refreshUrl` - Salesforce OAuth2 token endpoint (e.g., `https://your-instance.salesforce.com/services/oauth2/token`)
+- `baseUrl` - Your Salesforce instance URL (e.g., `https://your-instance.salesforce.com`)
 
 ## Deploying on **Devant**
 

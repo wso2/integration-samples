@@ -19,6 +19,8 @@
 
 This integration uses refresh token flow for auth. [Learn how to set up Salesforce OAuth](https://help.salesforce.com/s/articleView?id=xcloud.create_a_local_external_client_app.htm&type=5).
 
+</details>
+
 <details>
 
 <summary>Google Sheets Setup Guide</summary>

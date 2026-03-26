@@ -25,7 +25,7 @@ service shopify:OrdersService on shopifyListener {
         if orderDetails.hasRealOrderId {
             _ = check slackClient->/chat\.postMessage.post(
                 payload = {
-                    channel: slackConfig.channelId,
+                    channel: slackConfig.channel,
                     text: slackMessage,
                     "client_msg_id": orderDetails.orderNumber
                 }
@@ -35,7 +35,7 @@ service shopify:OrdersService on shopifyListener {
             string uniqueId = uuid:createType1AsString();
             _ = check slackClient->/chat\.postMessage.post(
                 payload = {
-                    channel: slackConfig.channelId,
+                    channel: slackConfig.channel,
                     text: slackMessage,
                     "client_msg_id": uniqueId
                 }

@@ -45,20 +45,18 @@ This automation uses refresh token flow for auth. [Learn how to set up Salesforc
 
 The following configurations are required to connect to Salesforce and Mailchimp Transactional.
 
-### Salesforce Credentials
+### Salesforce Configurations
 
 - `refreshToken` - Your Salesforce OAuth2 refresh token
 - `clientId` - Your Salesforce OAuth2 client ID
 - `clientSecret` - Your Salesforce OAuth2 client secret
 - `refreshUrl` - Salesforce OAuth2 token endpoint (e.g., `https://login.salesforce.com/services/oauth2/token`)
 - `baseUrl` - Your Salesforce instance URL (e.g., `https://your-instance.salesforce.com`)
+- `reportId` - Required: Salesforce Analytics Report ID
 
-### Mailchimp Credentials
+### Mailchimp Configurations
 
 - `mandrilApiKey` - Your Mailchimp Transactional API key
-
-### Email Configuration
-
 - `fromEmail` - Sender email address
 - `fromName` - Sender display name (default: "Salesforce Performance Report")
 - `recipientEmails` - Array of email addresses to receive the report
@@ -66,7 +64,6 @@ The following configurations are required to connect to Salesforce and Mailchimp
 
 ### Report Configuration
 
-- `salesforceReportId` - Required: Salesforce Analytics Report ID
 - `timePeriod` - Report period: `monthly` (default), `quarterly`, or `yearly`
 - `comparisonPeriod` - Comparison type: `MoM` (default) or `YoY`
 - `includePerRepBreakdown` - Include per-rep performance breakdown (default: false)
@@ -77,7 +74,7 @@ The following configurations are required to connect to Salesforce and Mailchimp
 2. Create a new Integration and follow instructions in the [Documentation](https://wso2.com/devant/docs/references/import-a-repository/) to import this repository.
 3. Select the **Technology** as `WSO2 Integrator: BI`.
 4. Choose the **Integration** Type as `Automation` and click **Create**.
-5. Once the build is successful, click **Configure to Continue** and set up all required configuration values, including Salesforce credentials, Mailchimp credentials, `salesforceReportId`, and the email sender/recipient settings.
+5. Once the build is successful, click **Configure to Continue** and set up all required configuration values, including Salesforce configurations, Mailchimp configurations, and the email sender/recipient settings.
 6. Click **Schedule** to schedule the automation.
 7. Choose a schedule cadence that matches `timePeriod`:
    - `monthly`: run once per month

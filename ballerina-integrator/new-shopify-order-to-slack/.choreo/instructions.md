@@ -2,6 +2,7 @@
 
 - When a new order is created in Shopify, the integration catches the webhook event and posts a formatted message with the order details to a specified Slack channel.
 
+<details>
 <summary>Shopify Setup Guide</summary>
 
 1. Log in to your Shopify account and navigate to **Settings** > **Notifications**.
@@ -29,6 +30,7 @@ The following should be done after deploying the integration, and the endpoint U
   - `chat:write`
   - `channels:read` (optional, for channel resolution)
   - `users:read.email` (optional, for tagging lead owners by email)
+4. The channel ID or name of the target Slack channel
 
 [Learn how to create a Slack app](https://api.slack.com/start/quickstart).
 

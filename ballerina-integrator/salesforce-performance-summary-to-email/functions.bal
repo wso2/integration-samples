@@ -488,8 +488,8 @@ public function generateEmailSubject(time:Civil periodStart, time:Civil? periodE
         defaultSubject = string `Salesforce Performance Summary - ${monthName} ${year}`;
     }
 
-    if emailConfig.subjectTemplate is string {
-        subject = <string>emailConfig.subjectTemplate;
+    if mailchimpConfig.subjectTemplate is string {
+        subject = <string>mailchimpConfig.subjectTemplate;
         regexp:RegExp monthPattern = re `\{\{month\}\}`;
         subject = monthPattern.replaceAll(subject, monthName);
         regexp:RegExp yearPattern = re `\{\{year\}\}`;
@@ -506,7 +506,7 @@ public function sendPerformanceEmailNew(ReportSummary summary) returns error? {
     string subject = generateEmailSubject(summary.periodStart, summary.periodEnd);
 
     mailchimp:MessagessendMessageTo[] recipients = [];
-    foreach string email in emailConfig.recipientEmails {
+    foreach string email in mailchimpConfig.recipientEmails {
         recipients.push({
             email: email,
             'type: "to"
@@ -516,8 +516,8 @@ public function sendPerformanceEmailNew(ReportSummary summary) returns error? {
     mailchimp:MessagessendMessage message = {
         html: htmlContent,
         subject: subject,
-        fromEmail: emailConfig.fromEmail,
-        fromName: emailConfig.fromName ?: "Salesforce Performance Report",
+        fromEmail: mailchimpConfig.fromEmail,
+        fromName: mailchimpConfig.fromName ?: "Salesforce Performance Report",
         to: recipients,
         trackOpens: true,
         trackClicks: true,

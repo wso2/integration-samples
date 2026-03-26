@@ -56,12 +56,12 @@ This automation uses refresh token flow for auth. [Learn how to set up Salesforc
      - `MoM` - Month-over-Month (default)
      - `YoY` - Year-over-Year
 
-3. `emailConfig.subjectTemplate`
+3. `mailchimpConfig.subjectTemplate`
    - Email subject line template
    - Supports placeholders: `{{month}}` and `{{year}}`
    - Default: `"Monthly Salesforce Performance Summary - {{month}} {{year}}"`
 
-4. `emailConfig.fromName`
+4. `mailchimpConfig.fromName`
    - Email sender display name
    - Default: `"Salesforce Performance Report"`
 

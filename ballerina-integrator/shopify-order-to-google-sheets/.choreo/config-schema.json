@@ -2,138 +2,6 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "type": "object",
   "properties": {
-    "wso2": {
-      "type": "object",
-      "properties": {
-        "shopify_order_to_google_sheets": {
-          "type": "object",
-          "properties": {
-            "shopifyConfig": {
-              "type": "object",
-              "properties": {
-                "webhookSecret": {
-                  "type": "string"
-                }
-              },
-              "additionalProperties": false,
-              "required": [
-                "webhookSecret"
-              ],
-              "name": "wso2/shopify_order_to_google_sheets:0.1.0:ShopifyConfig",
-              "description": ""
-            },
-            "googleSheetsConfig": {
-              "type": "object",
-              "properties": {
-                "clientID": {
-                  "type": "string"
-                },
-                "clientSecret": {
-                  "type": "string"
-                },
-                "refreshToken": {
-                  "type": "string"
-                },
-                "sheetID": {
-                  "type": "string"
-                }
-              },
-              "additionalProperties": false,
-              "required": [
-                "clientID",
-                "clientSecret",
-                "refreshToken",
-                "sheetID"
-              ],
-              "name": "wso2/shopify_order_to_google_sheets:0.1.0:SheetConfig",
-              "description": ""
-            },
-            "sheetName": {
-              "type": "string",
-              "description": ""
-            },
-            "insertMode": {
-              "enum": [
-                "UPSERT",
-                "APPEND"
-              ],
-              "description": ""
-            },
-            "includeLineItems": {
-              "type": "boolean",
-              "description": ""
-            },
-            "dateFormat": {
-              "enum": [
-                "default",
-                "rfc5322",
-                "iso8601"
-              ],
-              "description": ""
-            },
-            "groupByMonth": {
-              "type": "boolean",
-              "description": ""
-            },
-            "allowedCountryCodes": {
-              "type": "array",
-              "items": {
-                "type": "string"
-              },
-              "description": ""
-            },
-            "allowedCurrencies": {
-              "type": "array",
-              "items": {
-                "type": "string"
-              },
-              "description": ""
-            },
-            "allowedSources": {
-              "type": "array",
-              "items": {
-                "type": "string"
-              },
-              "description": ""
-            },
-            "allowedPaymentStatuses": {
-              "type": "array",
-              "items": {
-                "type": "string"
-              },
-              "description": ""
-            },
-            "allowedFulfillmentStatuses": {
-              "type": "array",
-              "items": {
-                "type": "string"
-              },
-              "description": ""
-            },
-            "requiredTags": {
-              "type": "array",
-              "items": {
-                "type": "string"
-              },
-              "description": ""
-            },
-            "excludedTags": {
-              "type": "array",
-              "items": {
-                "type": "string"
-              },
-              "description": ""
-            }
-          },
-          "additionalProperties": false,
-          "required": [
-            "shopifyConfig",
-            "googleSheetsConfig"
-          ]
-        }
-      },
-      "additionalProperties": false
-    },
     "ballerina": {
       "type": "object",
       "properties": {
@@ -250,6 +118,138 @@
             }
           },
           "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    },
+    "wso2": {
+      "type": "object",
+      "properties": {
+        "shopify_order_to_google_sheets": {
+          "type": "object",
+          "properties": {
+            "shopifyConfig": {
+              "type": "object",
+              "properties": {
+                "apiSecretKey": {
+                  "type": "string"
+                }
+              },
+              "additionalProperties": false,
+              "required": [
+                "apiSecretKey"
+              ],
+              "name": "wso2/shopify_order_to_google_sheets:0.1.0:ShopifyConfig",
+              "description": ""
+            },
+            "googleSheetsConfig": {
+              "type": "object",
+              "properties": {
+                "clientId": {
+                  "type": "string"
+                },
+                "clientSecret": {
+                  "type": "string"
+                },
+                "refreshToken": {
+                  "type": "string"
+                },
+                "spreadsheetId": {
+                  "type": "string"
+                }
+              },
+              "additionalProperties": false,
+              "required": [
+                "clientId",
+                "clientSecret",
+                "refreshToken",
+                "spreadsheetId"
+              ],
+              "name": "wso2/shopify_order_to_google_sheets:0.1.0:SheetConfig",
+              "description": ""
+            },
+            "sheetName": {
+              "type": "string",
+              "description": ""
+            },
+            "insertMode": {
+              "enum": [
+                "UPSERT",
+                "APPEND"
+              ],
+              "description": ""
+            },
+            "includeLineItems": {
+              "type": "boolean",
+              "description": ""
+            },
+            "dateFormat": {
+              "enum": [
+                "default",
+                "rfc5322",
+                "iso8601"
+              ],
+              "description": ""
+            },
+            "groupByMonth": {
+              "type": "boolean",
+              "description": ""
+            },
+            "allowedCountryCodes": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "description": ""
+            },
+            "allowedCurrencies": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "description": ""
+            },
+            "allowedSources": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "description": ""
+            },
+            "allowedPaymentStatuses": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "description": ""
+            },
+            "allowedFulfillmentStatuses": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "description": ""
+            },
+            "requiredTags": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "description": ""
+            },
+            "excludedTags": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "description": ""
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "shopifyConfig",
+            "googleSheetsConfig"
+          ]
         }
       },
       "additionalProperties": false

@@ -33,6 +33,7 @@ This integration uses refresh token flow for auth. [Learn how to set up Salesfor
 3. Scopes Required:
   - `chat:write` - Send messages
   - `chat:write.public` - Send messages to channels without joining
+4. The channel ID or name of the target Slack channel
 
 [Learn how to create a Slack app](https://api.slack.com/start/quickstart).
 

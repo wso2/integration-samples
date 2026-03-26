@@ -15,6 +15,6 @@ final salesforce:Client salesforceClient = check new ({
 // Slack client configuration
 final slack:Client slackClient = check new ({
     auth: {
-        token: slackConfig.slackToken
+        token: slackConfig.token
     }
 });
