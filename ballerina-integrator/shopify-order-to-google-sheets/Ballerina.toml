@@ -1,0 +1,9 @@
+[package]
+org = "wso2"
+name = "shopify_order_to_google_sheets"
+version = "0.1.0"
+title = "shopify-order-to-google-sheets"
+distribution= "2201.13.1"
+
+[build-options]
+sticky = true
