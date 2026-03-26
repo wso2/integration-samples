@@ -29,5 +29,5 @@ type ShopifyConfig record {|
 // Slack configuration
 type SlackConfig record {|
     string token;
-    string channelId;
+    string channel;
 |};

@@ -1,14 +1,6 @@
 import ballerina/log;
 import ballerinax/trigger.shopify;
 
-// Shopify webhook listener configuration
-listener shopify:Listener shopifyListener = new ({
-    "port": 8090,
-    "apiSecretKey": shopifyConfig.shopifySecret
-});
-
-// Shopify webhook service to handle events
-
 service shopify:CustomersService on shopifyListener {
 
     remote function onCustomersCreate(shopify:CustomerEvent event) returns error? {

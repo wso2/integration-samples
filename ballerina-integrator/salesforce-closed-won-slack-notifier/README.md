@@ -56,8 +56,8 @@ The following configurations are required to connect to Salesforce and Slack.
 
 ### Slack Credentials
 
-- `slackToken` - Your Slack bot token (starts with `xoxb-`)
-- `slackChannel` - Default Slack channel ID
+- `token` - Your Slack bot token (starts with `xoxb-`)
+- `channel` - Default Slack channel ID
 
 ### Business Logic Configuration
 

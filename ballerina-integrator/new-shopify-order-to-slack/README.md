@@ -41,7 +41,7 @@ The following configurations are required for the integration:
 
 ### Slack Configuration
 - `slackConfig.token`: The Bot User OAuth Token obtained from the Slack app setup.
-- `slackConfig.channelId`: The unique ID of the Slack channel where the notification will be sent.
+- `slackConfig.channel`: The unique ID or name of the Slack channel where the notification will be sent.
 
 ### Optional Configuration
 - `customMessage`: (Optional) The text template for the Slack message with placeholders for order details. A default template is provided in `config.bal`. Use `<br>` to indicate line breaks if customizing the message. Available placeholders: `{orderId}`, `{customerName}`, `{customerEmail}`, `{currency}`, `{totalPrice}`, `{itemCount}`, `{items}`, `{shippingAddress}`, `{financialStatus}`, `{fulfillmentStatus}`, `{createdAt}`, `{subtotal}`, `{taxes}`, `{shipping}`.

@@ -101,14 +101,14 @@ function resolveSheetName(shopify:OrderEvent event) returns string|error {
 }
 
 function ensureSheetExists(string sheetName) returns error? {
-    sheets:Sheet|error sheet = sheetsClient->getSheetByName(googleSheetsConfig.sheetID, sheetName);
+    sheets:Sheet|error sheet = sheetsClient->getSheetByName(googleSheetsConfig.spreadsheetId, sheetName);
     
     if sheet is error {
         if (!sheet.message().equalsIgnoreCaseAscii("Sheet not found")) {
             log:printError(string `Error checking for sheet '${sheetName}': ${sheet.message()}`);
             return sheet;
         }
-        sheets:Sheet|error result = sheetsClient->addSheet(googleSheetsConfig.sheetID, sheetName);
+        sheets:Sheet|error result = sheetsClient->addSheet(googleSheetsConfig.spreadsheetId, sheetName);
         if result is error {
             log:printError(string `Failed to create sheet '${sheetName}': ${result.message()}`);
             return result;
@@ -154,11 +154,11 @@ function createRowFromEvent(shopify:OrderEvent event) returns error? {
                     allRows.push(lineItemValues);
                 }
                 
-                _ = check sheetsClient->appendValues(googleSheetsConfig.sheetID, allRows, a1Range);
+                _ = check sheetsClient->appendValues(googleSheetsConfig.spreadsheetId, allRows, a1Range);
                 return;
             } 
         }
-        _ = check sheetsClient->appendValue(googleSheetsConfig.sheetID, rowValues, a1Range);
+        _ = check sheetsClient->appendValue(googleSheetsConfig.spreadsheetId, rowValues, a1Range);
     } else {
         if includeLineItems {
             check upsertOrderWithLineItems(event, rowValues, a1Range, sheetName);
@@ -174,7 +174,7 @@ function createRowFromEvent(shopify:OrderEvent event) returns error? {
 # + sheetName - Target sheet name
 # + return - Error if operation fails
 function addHeader(string sheetName) returns error? {
-    sheets:Row firstRow = check sheetsClient->getRow(googleSheetsConfig.sheetID, sheetName, 1);
+    sheets:Row firstRow = check sheetsClient->getRow(googleSheetsConfig.spreadsheetId, sheetName, 1);
     (int|string|decimal)[] firstRowValues = firstRow.values;
 
     if firstRowValues.length() == 0 {
@@ -250,7 +250,7 @@ function addHeader(string sheetName) returns error? {
             headerRow.push("Line Item Product ID");
             headerRow.push("Line Item Variant ID");
         }
-        check sheetsClient->createOrUpdateRow(googleSheetsConfig.sheetID, sheetName, 1, headerRow);
+        check sheetsClient->createOrUpdateRow(googleSheetsConfig.spreadsheetId, sheetName, 1, headerRow);
     }
 }
 
@@ -261,7 +261,7 @@ function addHeader(string sheetName) returns error? {
 # + sheetName - Target sheet name
 # + return - Error if operation fails
 function upsertOrderWithoutLineItems(shopify:OrderEvent event, (int|string|decimal)[] rowValues, sheets:A1Range a1Range, string sheetName) returns error? {
-    sheets:Column orderNumberRowData = check sheetsClient->getColumn(googleSheetsConfig.sheetID, sheetName, "B");
+    sheets:Column orderNumberRowData = check sheetsClient->getColumn(googleSheetsConfig.spreadsheetId, sheetName, "B");
     (int|string|decimal)[] orderNums = orderNumberRowData.values;
 
     foreach int|string|decimal num in orderNums {
@@ -270,12 +270,12 @@ function upsertOrderWithoutLineItems(shopify:OrderEvent event, (int|string|decim
             if (index is ()) {
                 continue;
             }
-            check sheetsClient->createOrUpdateRow(googleSheetsConfig.sheetID, sheetName, index + 1, rowValues);
+            check sheetsClient->createOrUpdateRow(googleSheetsConfig.spreadsheetId, sheetName, index + 1, rowValues);
             return;
         }
     }
     
-    _ = check sheetsClient->appendValue(googleSheetsConfig.sheetID, rowValues, a1Range);
+    _ = check sheetsClient->appendValue(googleSheetsConfig.spreadsheetId, rowValues, a1Range);
 }
 
 # Upsert order with line items (multiple rows per order)
@@ -285,7 +285,7 @@ function upsertOrderWithoutLineItems(shopify:OrderEvent event, (int|string|decim
 # + sheetName - Target sheet name
 # + return - Error if operation fails
 function upsertOrderWithLineItems(shopify:OrderEvent event, (int|string|decimal)[] rowValues, sheets:A1Range a1Range, string sheetName) returns error? {
-    sheets:Column orderNumberRowData = check sheetsClient->getColumn(googleSheetsConfig.sheetID, sheetName, "B");
+    sheets:Column orderNumberRowData = check sheetsClient->getColumn(googleSheetsConfig.spreadsheetId, sheetName, "B");
     (int|string|decimal)[] orderNums = orderNumberRowData.values;
 
     int[] matchingRowIndices = [];
@@ -327,12 +327,12 @@ function upsertOrderWithLineItems(shopify:OrderEvent event, (int|string|decimal)
             while i + count < sortedIndices.length() && sortedIndices[i + count] == startRow - count {
                 count += 1;
             }
-            check sheetsClient->deleteRowsBySheetName(googleSheetsConfig.sheetID, sheetName, startRow - count + 1, count);
+            check sheetsClient->deleteRowsBySheetName(googleSheetsConfig.spreadsheetId, sheetName, startRow - count + 1, count);
             i += count;
         }
         
         int numberOfNewRows = allRows.length();
-        check sheetsClient->addRowsBeforeBySheetName(googleSheetsConfig.sheetID, sheetName, firstRowPosition, numberOfNewRows);
+        check sheetsClient->addRowsBeforeBySheetName(googleSheetsConfig.spreadsheetId, sheetName, firstRowPosition, numberOfNewRows);
         
         int lastRowPosition = firstRowPosition + numberOfNewRows - 1;
         string rangeNotation = string `A${firstRowPosition}:AAA${lastRowPosition}`;
@@ -340,8 +340,8 @@ function upsertOrderWithLineItems(shopify:OrderEvent event, (int|string|decimal)
             a1Notation: rangeNotation,
             values: allRows
         };
-        check sheetsClient->setRange(googleSheetsConfig.sheetID, sheetName, rangeToSet);
+        check sheetsClient->setRange(googleSheetsConfig.spreadsheetId, sheetName, rangeToSet);
     } else {
-        _ = check sheetsClient->appendValues(googleSheetsConfig.sheetID, allRows, a1Range);
+        _ = check sheetsClient->appendValues(googleSheetsConfig.spreadsheetId, allRows, a1Range);
     }
 }

@@ -9,7 +9,7 @@
 
 1. Log in to your Shopify account and navigate to **Settings** > **Notifications**.
 2. Click on the **Webhooks** section.
-3. Copy the key that is shown under 'Your webhooks will be signed with ...'. This should be the `shopifyConfig.webhookSecret` configuration.
+3. Copy the key that is shown under 'Your webhooks will be signed with ...'. This should be the `shopifyConfig.apiSecretKey` configuration.
 
 The following should be done after deploying the integration, and the endpoint URL is available.
 
@@ -42,44 +42,27 @@ This integration uses refresh token flow for auth. [Learn how to Develop on Goog
 
 <summary>Additional Configurations</summary>
 
-1. `shopifyConfig.webhookSecret`:
-    - Secret used to sign webhook requests by Shopify
-    - Obtained from Shopify Setup Guide above
-    - Required: Yes
-
-2. `googleSheetsConfig`:
-    - Configuration for Google Sheets API access and spreadsheet
-    - Contains the following fields:
-        - `clientID` (required): Google OAuth2 client ID
-        - `clientSecret` (required): Google OAuth2 client secret
-        - `refreshToken` (required): Google OAuth2 refresh token
-        - `sheetID` (required): ID of the Google Sheets spreadsheet to write data to
-            - The spreadsheet must be created manually before running the integration
-            - Below is how to find the spreadsheet ID:
-                - `https://docs.google.com/spreadsheets/d/<spreadsheetId>/`
-                - Use this `spreadsheetId` as the value
-
-3. `sheetName`:
+1. `sheetName`:
     - Name of the specific sheet (tab) within the spreadsheet where order data will be written
     - If the sheet doesn't exist, the integration will automatically create it
     - Note: This is ignored when `groupByMonth` is enabled
     - Default: `Orders`
 
-4. `insertMode`:
+2. `insertMode`:
     - Mode for inserting orders into the sheet
     - Possible values:
         - `append` (default) - Always adds new rows to the end of the sheet
         - `upsert` - Updates existing order rows if the order number matches, otherwise appends new rows
     - Default: `append`
 
-5. `includeLineItems`:
+3. `includeLineItems`:
     - Boolean flag to include individual line items from orders
     - When `true`, creates a separate row for each line item in an order
     - When `false` (default), creates a single row per order
     - Possible values: `true` or `false`
     - Default: `false`
 
-6. `dateFormat`:
+4. `dateFormat`:
     - Format for date fields in the spreadsheet
     - Possible values:
         - `default` - Keeps original date received from shopify event
@@ -87,7 +70,7 @@ This integration uses refresh token flow for auth. [Learn how to Develop on Goog
         - `rfc5322` - RFC 5322 format
     - Default: `default`
 
-7. `groupByMonth`:
+5. `groupByMonth`:
     - Boolean flag to organize orders into monthly sheets
     - When `true`, orders are automatically routed to sheets named by their creation month (format: YYYY-MM, e.g., "2026-03")
     - Sheets are automatically created if they don't exist

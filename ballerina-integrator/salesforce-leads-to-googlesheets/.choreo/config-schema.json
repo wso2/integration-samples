@@ -2,127 +2,6 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "type": "object",
   "properties": {
-    "wso2": {
-      "type": "object",
-      "properties": {
-        "salesforce_leads_to_googlesheets": {
-          "type": "object",
-          "properties": {
-            "salesforceConfig": {
-              "type": "object",
-              "properties": {
-                "refreshToken": {
-                  "type": "string"
-                },
-                "clientId": {
-                  "type": "string"
-                },
-                "clientSecret": {
-                  "type": "string"
-                },
-                "refreshUrl": {
-                  "type": "string"
-                },
-                "baseUrl": {
-                  "type": "string"
-                }
-              },
-              "additionalProperties": false,
-              "required": [
-                "refreshToken",
-                "clientId",
-                "clientSecret",
-                "refreshUrl",
-                "baseUrl"
-              ],
-              "name": "wso2/salesforce_leads_to_googlesheets:0.1.0:SalesforceConfig",
-              "description": ""
-            },
-            "googleConfig": {
-              "type": "object",
-              "properties": {
-                "refreshToken": {
-                  "type": "string"
-                },
-                "clientId": {
-                  "type": "string"
-                },
-                "clientSecret": {
-                  "type": "string"
-                }
-              },
-              "additionalProperties": false,
-              "required": [
-                "refreshToken",
-                "clientId",
-                "clientSecret"
-              ],
-              "name": "wso2/salesforce_leads_to_googlesheets:0.1.0:GoogleConfig",
-              "description": ""
-            },
-            "timezone": {
-              "type": "string",
-              "description": ""
-            },
-            "spreadsheetId": {
-              "type": "string",
-              "description": ""
-            },
-            "tabName": {
-              "type": "string",
-              "description": ""
-            },
-            "fieldMapping": {
-              "type": "array",
-              "items": {
-                "type": "string"
-              },
-              "description": ""
-            },
-            "soqlFilter": {
-              "type": "string",
-              "description": ""
-            },
-            "timeframe": {
-              "enum": [
-                "ALL",
-                "LAST_YEAR",
-                "LAST_MONTH",
-                "LAST_WEEK",
-                "YESTERDAY"
-              ],
-              "description": ""
-            },
-            "includeConverted": {
-              "type": "boolean",
-              "description": ""
-            },
-            "syncMode": {
-              "enum": [
-                "UPSERT_BY_EMAIL",
-                "FULL_REPLACE",
-                "APPEND"
-              ],
-              "description": ""
-            },
-            "enableAutoFormat": {
-              "type": "boolean",
-              "description": ""
-            },
-            "splitBy": {
-              "type": "string",
-              "description": ""
-            }
-          },
-          "additionalProperties": false,
-          "required": [
-            "salesforceConfig",
-            "googleConfig"
-          ]
-        }
-      },
-      "additionalProperties": false
-    },
     "ballerina": {
       "type": "object",
       "properties": {
@@ -272,6 +151,127 @@
             }
           },
           "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    },
+    "wso2": {
+      "type": "object",
+      "properties": {
+        "salesforce_leads_to_googlesheets": {
+          "type": "object",
+          "properties": {
+            "salesforceConfig": {
+              "type": "object",
+              "properties": {
+                "refreshToken": {
+                  "type": "string"
+                },
+                "clientId": {
+                  "type": "string"
+                },
+                "clientSecret": {
+                  "type": "string"
+                },
+                "refreshUrl": {
+                  "type": "string"
+                },
+                "baseUrl": {
+                  "type": "string"
+                }
+              },
+              "additionalProperties": false,
+              "required": [
+                "refreshToken",
+                "clientId",
+                "clientSecret",
+                "refreshUrl",
+                "baseUrl"
+              ],
+              "name": "wso2/salesforce_leads_to_googlesheets:0.1.0:SalesforceConfig",
+              "description": ""
+            },
+            "googleConfig": {
+              "type": "object",
+              "properties": {
+                "refreshToken": {
+                  "type": "string"
+                },
+                "clientId": {
+                  "type": "string"
+                },
+                "clientSecret": {
+                  "type": "string"
+                }
+              },
+              "additionalProperties": false,
+              "required": [
+                "refreshToken",
+                "clientId",
+                "clientSecret"
+              ],
+              "name": "wso2/salesforce_leads_to_googlesheets:0.1.0:GoogleConfig",
+              "description": ""
+            },
+            "timezone": {
+              "type": "string",
+              "description": ""
+            },
+            "spreadsheetId": {
+              "type": "string",
+              "description": ""
+            },
+            "tabName": {
+              "type": "string",
+              "description": ""
+            },
+            "fieldMapping": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "description": ""
+            },
+            "soqlFilter": {
+              "type": "string",
+              "description": ""
+            },
+            "timeframe": {
+              "enum": [
+                "ALL",
+                "LAST_YEAR",
+                "LAST_MONTH",
+                "LAST_WEEK",
+                "YESTERDAY"
+              ],
+              "description": ""
+            },
+            "includeConverted": {
+              "type": "boolean",
+              "description": ""
+            },
+            "syncMode": {
+              "enum": [
+                "UPSERT_BY_EMAIL",
+                "FULL_REPLACE",
+                "APPEND"
+              ],
+              "description": ""
+            },
+            "enableAutoFormat": {
+              "type": "boolean",
+              "description": ""
+            },
+            "splitBy": {
+              "type": "string",
+              "description": ""
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "salesforceConfig",
+            "googleConfig"
+          ]
         }
       },
       "additionalProperties": false

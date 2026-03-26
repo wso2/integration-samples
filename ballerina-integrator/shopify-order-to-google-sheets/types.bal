@@ -1,17 +1,12 @@
 type ShopifyConfig record {
-    # Secret used to sign webhook requests by Shopify
-    string webhookSecret;
+    string apiSecretKey;
 };
 
 type SheetConfig record {
-    # Google OAuth2 client ID for Sheets API access
-    string clientID;
-    # Google OAuth2 client secret for Sheets API access
+    string clientId;
     string clientSecret;
-    # Google OAuth2 refresh token for Sheets API access
     string refreshToken;
-    # Google sheet ID
-    string sheetID;
+    string spreadsheetId;
 };
 
 enum InsertMode {

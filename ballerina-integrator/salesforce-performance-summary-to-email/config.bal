@@ -4,21 +4,16 @@ configurable record {
     string clientSecret;
     string refreshUrl;
     string baseUrl;
+    string reportId;
 } salesforceConfig = ?;
 
 configurable record {
     string mandrillApiKey;
-
-} mailchimpConfig = ?;
-
-configurable record {
     string fromEmail;
     string fromName?;
     string[] recipientEmails;
     string subjectTemplate?;
-} emailConfig = ?;
-
-configurable string salesforceReportId = ?;
+} mailchimpConfig = ?;
 
 enum TimePeriod {
     MONTHLY = "monthly",

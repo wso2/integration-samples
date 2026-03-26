@@ -39,14 +39,14 @@ This integration uses refresh token flow for auth. [Learn how to Develop on Goog
 The following configurations are required for the integration:
 
 ### Shopify Configuration
-- `shopifyConfig.webhookSecret` (required): The API secret key obtained from the Shopify setup.
+- `shopifyConfig.apiSecretKey` (required): The API secret key obtained from the Shopify setup.
 
 ### Google Sheets Configuration
 
-- `googleSheetsConfig.clientID` (required): Your Google OAuth2 client ID
+- `googleSheetsConfig.clientId` (required): Your Google OAuth2 client ID
 - `googleSheetsConfig.clientSecret` (required): Your Google OAuth2 client secret
 - `googleSheetsConfig.refreshToken` (required): Your Google OAuth2 refresh token
-- `googleSheetsConfig.sheetID` (required): The Google spreadsheet ID
+- `googleSheetsConfig.spreadsheetId` (required): The Google spreadsheet ID
 
 ### Sheet Settings
 
