@@ -4,11 +4,23 @@
   },
   {
     "path": "ballerina-integrator/new-shopify-customer-to-stripe"
-  }, 
+  },
   {
     "path": "ballerina-integrator/signup-sfchatsync"
   },
   {
     "path": "ballerina-integrator/shopify-order-to-google-sheets"
+  },
+  {
+    "path": "ballerina-integrator/new-shopify-order-to-slack"
+  },
+  {
+    "path": "ballerina-integrator/jira-summary-mailchimp"
+  },
+  {
+    "path": "ballerina-integrator/salesforce-closed-won-slack-notifier"
+  },
+  {
+    "path": "ballerina-integrator/salesforce-performance-summary-to-email"
   }
 ]
