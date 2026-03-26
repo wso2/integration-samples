@@ -9,6 +9,9 @@
     "path": "ballerina-integrator/signup-sfchatsync"
   },
   {
+    "path": "ballerina-integrator/new-shopify-order-to-slack"
+  },
+  {
     "path": "ballerina-integrator/jira-summary-mailchimp"
   },
   {
