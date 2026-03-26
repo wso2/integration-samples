@@ -31,5 +31,8 @@
   },
   {
     "path": "ballerina-integrator/shopify-to-quickbooks-transaction"
+  },
+  {
+    "path": "ballerina-integrator/github-issue-to-google-chat"
   }
 ]
