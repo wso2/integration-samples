@@ -8,11 +8,6 @@ configurable record {
     string[] channelRouting = [];
 } slackConfig = ?;
 
-// GitHub webhook configuration
-configurable record {
-    string[] repos;
-} githubConfig = ?;
-
 // Optional filters
 configurable string[] filterBaseBranches = ["main"];
 configurable string[] filterLabels = [];

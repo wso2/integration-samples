@@ -52,12 +52,6 @@ The following configurations are required in your `Config.toml` file:
 - `slackToken` - Your Slack Bot User OAuth Token (e.g., `xoxb-...`)
 - `slackChannelId` - Default Slack channel ID to post notifications (e.g., `C0AKY8K8DT3`)
 
-### GitHub Webhook Configuration
-
-- `webhookPort` - Port number for the webhook listener (default: `8090`)
-- `githubCallback` - Public URL for GitHub webhooks (leave empty for local testing)
-- `githubRepos` - Array of repositories to monitor in `org/repo` format (e.g., `["TharaniDJ/devant"]`)
-
 ### Optional Filters
 
 Customize which PRs trigger notifications:
@@ -100,7 +94,6 @@ channelRouting = [
 5. Once the build is successful, click **Configure to Continue** and set up the required environment variables:
    - `slackToken` - Your Slack Bot OAuth Token
    - `slackChannelId` - Default Slack channel ID
-   - `githubRepos` - Array of repositories to monitor
    - Configure optional filters and message customization as needed
 6. Click **Deploy** to deploy the integration.
 7. Configure GitHub webhook:

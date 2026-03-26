@@ -177,13 +177,6 @@
               "type": "string",
               "description": ""
             },
-            "githubRepos": {
-              "type": "array",
-              "items": {
-                "type": "string"
-              },
-              "description": ""
-            },
             "filterBaseBranches": {
               "type": "array",
               "items": {
@@ -229,8 +222,7 @@
           "additionalProperties": false,
           "required": [
             "slackToken",
-            "slackChannelId",
-            "githubRepos"
+            "slackChannelId"
           ]
         }
       },
