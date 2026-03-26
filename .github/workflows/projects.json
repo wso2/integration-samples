@@ -28,5 +28,8 @@
   },
   {
     "path": "ballerina-integrator/salesforce-performance-summary-to-email"
+  },
+  {
+    "path": "ballerina-integrator/shopify-to-quickbooks-transaction"
   }
 ]
