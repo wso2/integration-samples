@@ -9,6 +9,9 @@
     "path": "ballerina-integrator/signup-sfchatsync"
   },
   {
+    "path": "ballerina-integrator/shopify-customer-to-salesforce"
+  },
+  {
     "path": "ballerina-integrator/shopify-order-to-google-sheets"
   },
   {
