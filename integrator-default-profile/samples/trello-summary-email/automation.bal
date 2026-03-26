@@ -13,11 +13,12 @@ function sendTrelloSummary() returns error? {
     }
 
     int overdueCount = countOverdueCards(cards);
+    int staleCount = countStaleCards(cards);
 
     GroupedSummary[] groupedSummaries = groupCards(cards);
     log:printInfo(string `Grouped cards into ${groupedSummaries.length().toString()} groups`);
 
-    string emailContent = generateEmailContent(groupedSummaries, cards.length(), overdueCount);
+    string emailContent = generateEmailContent(groupedSummaries, cards.length(), overdueCount, staleCount);
 
     check sendEmailSummary(emailContent);
     log:printInfo("Email sent successfully");

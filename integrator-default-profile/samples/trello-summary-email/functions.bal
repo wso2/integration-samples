@@ -150,9 +150,9 @@ function processCardFromJson(json cardJson, string listName, string boardName, m
     json? membersJson = check cardJson.idMembers;
     if membersJson is json[] {
         foreach json memberIdJson in membersJson {
-            string memberIdStr = memberIdJson.toString();
-            if memberMap.hasKey(memberIdStr) {
-                memberNames.push(memberMap.get(memberIdStr));
+            string? memberId = check memberIdJson;
+            if memberId is string && memberMap.hasKey(memberId) {
+                memberNames.push(memberMap.get(memberId));
             }
         }
     }
@@ -265,31 +265,31 @@ function getFormattedTimestamp(time:Utc utcTime) returns string {
 }
 
 function escapeHtml(string value) returns string {
-    string escaped = "";
+    string[] parts = [];
     foreach int i in 0 ..< value.length() {
         string ch = value.substring(i, i + 1);
         match ch {
             "&" => {
-                escaped += "&amp;";
+                parts.push("&amp;");
             }
             "<" => {
-                escaped += "&lt;";
+                parts.push("&lt;");
             }
             ">" => {
-                escaped += "&gt;";
+                parts.push("&gt;");
             }
             "\"" => {
-                escaped += "&quot;";
+                parts.push("&quot;");
             }
             "'" => {
-                escaped += "&#39;";
+                parts.push("&#39;");
             }
             _ => {
-                escaped += ch;
+                parts.push(ch);
             }
         }
     }
-    return escaped;
+    return string:'join("", ...parts);
 }
 
 function getHtmlFormattedGroup(GroupedSummary group) returns string {
@@ -385,16 +385,7 @@ function formatPercentageTwoDecimals(decimal value) returns string {
     return string `${wholePart.toString()}.${decimalPart.toString().padZero(2)}`;
 }
 
-function generateEmailContent(GroupedSummary[] groupedSummaries, int totalCards, int overdueCount) returns string {
-    int staleCount = 0;
-    foreach GroupedSummary group in groupedSummaries {
-        foreach CardSummary card in group.cards {
-            if card.isStale {
-                staleCount += 1;
-            }
-        }
-    }
-
+function generateEmailContent(GroupedSummary[] groupedSummaries, int totalCards, int overdueCount, int staleCount) returns string {
     string groupedByStr = summaryConfig.grouping.toString();
     string generatedAt = getFormattedTimestamp(time:utcNow());
 
@@ -528,6 +519,16 @@ function countOverdueCards(CardSummary[] cards) returns int {
     int count = 0;
     foreach CardSummary card in cards {
         if card.isOverdue {
+            count += 1;
+        }
+    }
+    return count;
+}
+
+function countStaleCards(CardSummary[] cards) returns int {
+    int count = 0;
+    foreach CardSummary card in cards {
+        if card.isStale {
             count += 1;
         }
     }

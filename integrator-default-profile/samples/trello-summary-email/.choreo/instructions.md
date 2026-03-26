@@ -39,18 +39,18 @@
 
 1. `filterConfig.labels`
   - Filter cards by label name. Leave empty to include all labels.
-3. `filterConfig.members`
+2. `filterConfig.members`
   - Filter cards by member full name. Leave empty to include all members.
-4. `filterConfig.includeDueDateFilter`
+3. `filterConfig.includeDueDateFilter`
   - Set to `true` to only include cards due within the next `dueDateDaysAhead` days.
-5. `mailchimpConfig.includeDateInSubject`
+4. `mailchimpConfig.includeDateInSubject`
   - If `true` (default), today's date is included in the email subject (e.g., `Trello Cards Summary - 2026-03-12`).
-6. `summaryConfig.grouping`
+5. `summaryConfig.grouping`
   - How to group cards in the email. Possible values:
     - `LIST` (default)
     - `MEMBER`
     - `LABEL`
-7. `summaryConfig.staleCardDays`
+6. `summaryConfig.staleCardDays`
   - Cards with no activity for this many days are considered stale (default: `30`).
 
 </details>
