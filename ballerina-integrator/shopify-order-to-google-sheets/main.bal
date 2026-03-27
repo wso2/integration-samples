@@ -4,8 +4,6 @@ shopify:ListenerConfig listenerConfig = {
     apiSecretKey: shopifyConfig.apiSecretKey
 };
 
-listener shopify:Listener shopifyListener = new (listenerConfig, 8090);
-
 service shopify:OrdersService on shopifyListener {
     remote function onOrdersCreate(shopify:OrderEvent event) returns error? {
         check createRowFromEvent(event);

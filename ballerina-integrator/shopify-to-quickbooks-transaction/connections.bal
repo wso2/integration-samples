@@ -6,7 +6,7 @@ shopify:ListenerConfig listenerConfig = {
     apiSecretKey: shopifyConfig.apiSecretKey
 };
 
-listener shopify:Listener shopifyListener = new (listenerConfig, 8090);
+listener shopify:Listener shopifyListener = new (listenerConfig, 9090);
 
 // QuickBooks Online REST client
 final quickbooks:Client quickbooksClient = check new ({
