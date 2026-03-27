@@ -1,7 +1,7 @@
 [package]
 org = "wso2"
 name = "new_shopify_order_to_slack"
-version = "0.1.0"
+version = "0.2.0"
 title = "new-shopify-order-to-slack"
 distribution= "2201.13.1"
 
