@@ -21,11 +21,11 @@ Before running this integration, you need:
 ### HubSpot Setup
 
 1. A HubSpot account with CRM access
-2. A Private App with the following scope:
+2. A Legacy App with the following scope:
    - `crm.objects.contacts.read`
-3. Access Token generated from the private app
+3. Access Token generated from the Legacy app
 
-This integration uses a HubSpot Private App token for authentication. [Learn how to create a HubSpot Private App](https://developers.hubspot.com/docs/api/private-apps).
+This integration uses a HubSpot Legacy App token for authentication. [Learn how to create a HubSpot Legacy App](https://developers.hubspot.com/docs/api/private-apps).
 
 ### Google Sheets Setup
 
@@ -45,7 +45,7 @@ The following configurations are required to connect to HubSpot and Google Sheet
 
 ### HubSpot Credentials
 
-- `hubspotAccessToken` - Your HubSpot Private App access token
+- `hubspotAccessToken` - Your HubSpot Legacy App access token
 
 ### Google Credentials
 

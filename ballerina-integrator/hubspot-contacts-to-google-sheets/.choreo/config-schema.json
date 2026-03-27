@@ -10,7 +10,7 @@
           "properties": {
             "hubspotAccessToken": {
               "type": "string",
-              "description": "Private app access token used to authenticate with the HubSpot CRM API."
+              "description": "Legacy app access token used to authenticate with the HubSpot CRM API."
             },
             "googleClientId": {
               "type": "string",
