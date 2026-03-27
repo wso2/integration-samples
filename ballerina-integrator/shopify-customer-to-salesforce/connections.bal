@@ -13,7 +13,7 @@ final salesforce:Client salesforceClient = check new ({
 });
 
 // Shopify webhook listener configuration
-listener shopify:Listener shopifyListener = new ({
-    "port": 8090,
-    "apiSecretKey": shopifyConfig.apiSecretKey
-});
+shopify:ListenerConfig shopifyListenerConfig = {
+    apiSecretKey: shopifyConfig.apiSecretKey
+};
+listener shopify:Listener shopifyListener = new (shopifyListenerConfig, 9090);

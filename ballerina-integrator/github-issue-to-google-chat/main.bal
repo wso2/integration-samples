@@ -1,7 +1,5 @@
 import ballerinax/trigger.github;
 
-listener github:Listener githubListener = new (listenerConfig = { webhookSecret: githubConfig.webhookSecret });
-
 service github:IssuesService on githubListener {
     remote function onOpened(github:IssuesEvent payload) returns error|() {
         do {

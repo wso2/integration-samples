@@ -16,4 +16,4 @@ shopify:ListenerConfig shopifyListenerConfig = {
 };
 
 // Initialize Shopify webhook listener
-listener shopify:Listener shopifyListener = new (shopifyListenerConfig, 8090);
+listener shopify:Listener shopifyListener = new (shopifyListenerConfig, 9090);
