@@ -12,12 +12,12 @@ function getQuickBooksClient() returns http:Client|error {
         }
         
         // Initialize client on first use
-        http:Client newClient = check new (quickbooksBaseUrl,
+        http:Client newClient = check new (quickbooksConfig.baseUrl,
             auth = {
-                refreshUrl: quickbooksTokenUrl,
-                refreshToken: quickbooksRefreshToken,
-                clientId: quickbooksClientId,
-                clientSecret: quickbooksClientSecret,
+                refreshUrl: quickbooksConfig.tokenUrl,
+                refreshToken: quickbooksConfig.refreshToken,
+                clientId: quickbooksConfig.clientId,
+                clientSecret: quickbooksConfig.clientSecret,
                 credentialBearer: "POST_BODY_BEARER"
             },
             timeout = 30
@@ -31,7 +31,7 @@ function getQuickBooksClient() returns http:Client|error {
 // Fetch QuickBooks Customer Details by ID
 public function fetchQuickBooksCustomerDetails(string customerId) returns QuickBooksCustomer|error {
 
-    string endpoint = string `/${quickbooksRealmId}/customer/${customerId}`;
+    string endpoint = string `/${quickbooksConfig.realmId}/customer/${customerId}`;
 
     map<string> headers = {
         "Accept": "application/json"

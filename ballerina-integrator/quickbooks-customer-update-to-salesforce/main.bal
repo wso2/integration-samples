@@ -12,18 +12,18 @@ import ballerina/crypto;
 // - Parent-child relationships are maintained automatically
 
 // HTTP Listener for QuickBooks Webhooks
-listener http:Listener webhookListener = check new (webhookPort);
+listener http:Listener webhookListener = check new (webhookConfig.port);
 
 // Startup logging
 function init() {
     log:printInfo("###################################################################################################");
     log:printInfo("QUICKBOOKS TO SALESFORCE SYNC SERVICE STARTING");
     log:printInfo("###################################################################################################");
-    log:printInfo(string `Webhook Port: ${webhookPort}`);
-    log:printInfo(string `Webhook Endpoint: http://localhost:${webhookPort}/quickbooks/webhook`);
-    log:printInfo(string `Health Check: http://localhost:${webhookPort}/quickbooks/health`);
-    log:printInfo(string `Conflict Resolution: ${conflictResolution}`);
-    log:printInfo(string `Filter Active Only: ${filterActiveOnly}`);
+    log:printInfo(string `Webhook Port: ${webhookConfig.port}`);
+    log:printInfo(string `Webhook Endpoint: http://localhost:${webhookConfig.port}/quickbooks/webhook`);
+    log:printInfo(string `Health Check: http://localhost:${webhookConfig.port}/quickbooks/health`);
+    log:printInfo(string `Conflict Resolution: ${syncConfig.conflictResolution}`);
+    log:printInfo(string `Filter Active Only: ${syncConfig.filterActiveOnly}`);
     log:printInfo("###################################################################################################");
     log:printInfo("SERVICE READY - Waiting for webhooks...");
     log:printInfo("###################################################################################################");
@@ -69,7 +69,7 @@ service /quickbooks on webhookListener {
     
     // Webhook verification endpoint (GET)
     resource function get webhook(@http:Query string verifyToken) returns string|http:Unauthorized {
-        if verifyToken == webhookVerifyToken {
+        if verifyToken == webhookConfig.verifyToken {
             log:printInfo("Webhook verification successful");
             return "Webhook verified successfully";
         }
@@ -104,7 +104,7 @@ service /quickbooks on webhookListener {
         string intuitSignature = intuitSignatureHeader;
         
         // Compute HMAC-SHA256 using webhook verify token as key
-        byte[]|error computedHmac = computeHmacSignature(rawPayload, webhookVerifyToken);
+        byte[]|error computedHmac = computeHmacSignature(rawPayload, webhookConfig.verifyToken);
         
         if computedHmac is error {
             log:printError(string `Failed to compute HMAC signature: ${computedHmac.message()}`);
@@ -200,8 +200,8 @@ function processQuickBooksWebhook(json webhookPayload) returns error? {
         }
         
         // Compare with configured realm ID
-        if notificationRealmId != quickbooksRealmId {
-            log:printError(string `Rejecting notification for incorrect tenant - Expected realm ID: ${quickbooksRealmId}, Received: ${notificationRealmId}`);
+        if notificationRealmId != quickbooksConfig.realmId {
+            log:printError(string `Rejecting notification for incorrect tenant - Expected realm ID: ${quickbooksConfig.realmId}, Received: ${notificationRealmId}`);
             continue;
         }
         

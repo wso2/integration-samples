@@ -1,4 +1,4 @@
-# QuickBooks to Salesforce Sync
+# Update QuickBooks Customers in Salesforce
 
 ## Description
 
@@ -49,39 +49,36 @@ This integration uses refresh token flow for auth. [Learn how to set up Salesfor
 
 This integration uses refresh token flow for auth. [Learn how to set up QuickBooks OAuth](https://developer.intuit.com/app/developer/qbo/docs/develop/authentication-and-authorization/oauth-2.0).
 
-### Additional Requirements
-
-- Ballerina Swan Lake (2201.x or later)
-- Public HTTPS endpoint for webhooks (use ngrok for local testing)
 
 ## Configuration
 
 The following configurations are required to connect to Salesforce and QuickBooks.
 
-### Salesforce Credentials
+### Salesforce Configuration (`salesforceConfig`)
 
-- `salesforceClientId` - Your Salesforce OAuth2 client ID
-- `salesforceClientSecret` - Your Salesforce OAuth2 client secret
-- `salesforceRefreshToken` - Your Salesforce OAuth2 refresh token
-- `salesforceRefreshUrl` - Salesforce OAuth2 token endpoint (e.g., `https://login.salesforce.com/services/oauth2/token`)
-- `salesforceBaseUrl` - Your Salesforce instance URL (e.g., `https://yourinstance.salesforce.com`)
+- `clientId` - Your Salesforce OAuth2 client ID
+- `clientSecret` - Your Salesforce OAuth2 client secret
+- `refreshToken` - Your Salesforce OAuth2 refresh token
+- `refreshUrl` - Salesforce OAuth2 token endpoint (e.g., `https://login.salesforce.com/services/oauth2/token`)
+- `baseUrl` - Your Salesforce instance URL (e.g., `https://yourinstance.salesforce.com`)
 
-### QuickBooks Credentials
+### QuickBooks Configuration (`quickbooksConfig`)
 
-- `quickbooksClientId` - Your QuickBooks OAuth2 client ID
-- `quickbooksClientSecret` - Your QuickBooks OAuth2 client secret
-- `quickbooksRefreshToken` - Your QuickBooks OAuth2 refresh token
-- `quickbooksRealmId` - Your QuickBooks Company ID
-- `quickbooksBaseUrl` - QuickBooks API base URL
+- `clientId` - Your QuickBooks OAuth2 client ID
+- `clientSecret` - Your QuickBooks OAuth2 client secret
+- `refreshToken` - Your QuickBooks OAuth2 refresh token
+- `realmId` - Your QuickBooks Company ID
+- `baseUrl` - QuickBooks API base URL
   - Sandbox: `https://sandbox-quickbooks.api.intuit.com/v3/company`
   - Production: `https://quickbooks.api.intuit.com/v3/company`
+- `tokenUrl` - QuickBooks OAuth2 token endpoint (default: `https://oauth.platform.intuit.com/oauth2/v1/tokens/bearer`)
 
-### Webhook Configuration
+### Webhook Configuration (`webhookConfig`)
 
-- `webhookPort` - Port for webhook listener (default: 8080)
-- `webhookVerifyToken` - Token for webhook verification
+- `port` - Port for webhook listener (default: 8080)
+- `verifyToken` - Token for webhook verification
 
-### Sync Configuration
+### Sync Configuration (`syncConfig`)
 
 - `conflictResolution` - Strategy for handling conflicts when updating existing Salesforce accounts:
   - `SOURCE_WINS` (default) - QuickBooks data always overwrites Salesforce data
@@ -95,24 +92,29 @@ Create a `Config.toml` file:
 
 ```toml
 # Salesforce Configuration
-salesforceClientId = "YOUR_SALESFORCE_CLIENT_ID"
-salesforceClientSecret = "YOUR_SALESFORCE_CLIENT_SECRET"
-salesforceRefreshToken = "YOUR_SALESFORCE_REFRESH_TOKEN"
-salesforceRefreshUrl = "https://login.salesforce.com/services/oauth2/token"
-salesforceBaseUrl = "https://yourinstance.salesforce.com"
+[salesforceConfig]
+clientId = "YOUR_SALESFORCE_CLIENT_ID"
+clientSecret = "YOUR_SALESFORCE_CLIENT_SECRET"
+refreshToken = "YOUR_SALESFORCE_REFRESH_TOKEN"
+refreshUrl = "https://login.salesforce.com/services/oauth2/token"
+baseUrl = "https://yourinstance.salesforce.com"
 
 # QuickBooks Configuration
-quickbooksClientId = "YOUR_QUICKBOOKS_CLIENT_ID"
-quickbooksClientSecret = "YOUR_QUICKBOOKS_CLIENT_SECRET"
-quickbooksRefreshToken = "YOUR_QUICKBOOKS_REFRESH_TOKEN"
-quickbooksRealmId = "YOUR_COMPANY_ID"
-quickbooksBaseUrl = "https://sandbox-quickbooks.api.intuit.com/v3/company"
+[quickbooksConfig]
+clientId = "YOUR_QUICKBOOKS_CLIENT_ID"
+clientSecret = "YOUR_QUICKBOOKS_CLIENT_SECRET"
+refreshToken = "YOUR_QUICKBOOKS_REFRESH_TOKEN"
+realmId = "YOUR_COMPANY_ID"
+baseUrl = "https://sandbox-quickbooks.api.intuit.com/v3/company"
+tokenUrl = "https://oauth.platform.intuit.com/oauth2/v1/tokens/bearer"
 
 # Webhook Configuration
-webhookPort = 8080
-webhookVerifyToken = "YOUR_WEBHOOK_VERIFY_TOKEN"
+[webhookConfig]
+port = 8080
+verifyToken = "YOUR_WEBHOOK_VERIFY_TOKEN"
 
 # Sync Configuration
+[syncConfig]
 conflictResolution = "SOURCE_WINS"  # Options: SOURCE_WINS, DESTINATION_WINS, MOST_RECENT
 filterActiveOnly = true
 ```

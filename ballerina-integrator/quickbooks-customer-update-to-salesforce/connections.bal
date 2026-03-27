@@ -3,18 +3,16 @@ import ballerinax/salesforce;
 // Initialize Salesforce Client with OAuth 2.0
 // Automatically refreshes access tokens when they expire
 final salesforce:Client salesforceClient = check new ({
-    baseUrl: salesforceBaseUrl,
+    baseUrl: salesforceConfig.baseUrl,
     auth: {
-        clientId: salesforceClientId,
-        clientSecret: salesforceClientSecret,
-        refreshToken: salesforceRefreshToken,
-        refreshUrl: salesforceRefreshUrl
+        clientId: salesforceConfig.clientId,
+        clientSecret: salesforceConfig.clientSecret,
+        refreshToken: salesforceConfig.refreshToken,
+        refreshUrl: salesforceConfig.refreshUrl
     }
 });
 
-// Note: QuickBooks HTTP Client is initialized in quickbooks_api.bal
-// Both clients use OAuth 2.0 with automatic token refresh
-//
+
 // QuickBooks Base URL MUST be set in Config.toml:
 // - Sandbox: https://sandbox-quickbooks.api.intuit.com/v3/company
 

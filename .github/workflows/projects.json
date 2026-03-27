@@ -9,6 +9,6 @@
     "path": "ballerina-integrator/signup-sfchatsync"
   },
   {
-    "path": "ballerina-integrator/quickbooks_customer_update_to_salesforce"
+    "path": "ballerina-integrator/quickbooks-customer-update-to-salesforce"
   }
 ]

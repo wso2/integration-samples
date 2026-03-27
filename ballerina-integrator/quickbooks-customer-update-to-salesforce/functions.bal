@@ -7,7 +7,7 @@ import ballerina/lang.regexp;
 public isolated function shouldSyncCustomer(QuickBooksCustomer qbCustomer) returns boolean {
     
     // Filter by active status if configured
-    if filterActiveOnly {
+    if syncConfig.filterActiveOnly {
         boolean? active = qbCustomer?.Active;
         if active is boolean && !active {
             return false;
@@ -43,11 +43,11 @@ public isolated function findAccountByQuickBooksId(string quickbooksId) returns 
 // Resolve conflict based on strategy
 public isolated function shouldUpdateAccount(SalesforceAccount existingAccount, QuickBooksCustomer qbCustomer) returns boolean|error {
     
-    if conflictResolution == SOURCE_WINS {
+    if syncConfig.conflictResolution == SOURCE_WINS {
         return true;
-    } else if conflictResolution == DESTINATION_WINS {
+    } else if syncConfig.conflictResolution == DESTINATION_WINS {
         return false;
-    } else if conflictResolution == MOST_RECENT {
+    } else if syncConfig.conflictResolution == MOST_RECENT {
         // Compare last modified dates
         string? sfLastModified = existingAccount?.LastModifiedDate;
         MetaData? qbMetadata = qbCustomer?.MetaData;
