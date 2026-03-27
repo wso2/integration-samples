@@ -13,14 +13,14 @@
 
 1. A Salesforce account with API access
 2. An existing Salesforce Analytics Report ID (e.g., `00O5g000007QtXXEA0`)
-   - Find this by navigating to Reports in Salesforce and viewing the report URL
-   - The report ID is the alphanumeric string after `/lightning/r/Report/`
+    - Find this by navigating to Reports in Salesforce and viewing the report URL
+    - The report ID is the alphanumeric string after `/lightning/r/Report/`
 3. OAuth2 credentials:
-   - Client ID
-   - Client Secret
-   - Refresh Token
-   - Refresh URL
-   - Base URL (your Salesforce instance URL)
+    - Client ID
+    - Client Secret
+    - Refresh Token
+    - Refresh URL
+    - Base URL (your Salesforce instance URL)
 
 This automation uses refresh token flow for auth. [Learn how to set up Salesforce OAuth](https://help.salesforce.com/s/articleView?id=xcloud.create_a_local_external_client_app.htm&type=5).
 
@@ -32,10 +32,10 @@ This automation uses refresh token flow for auth. [Learn how to set up Salesforc
 
 1. A Mailchimp Transactional account
 2. API Key from Mailchimp Transactional
-   - Log in to Mailchimp Transactional
-   - Navigate to **Settings > API Keys**
-   - Click **Create New Key** and give it a description
-   - Copy the generated API key
+    - Log in to Mailchimp Transactional
+    - Navigate to **Settings > API Keys**
+    - Click **Create New Key** and give it a description
+    - Copy the generated API key
 
 [Learn how to get Mailchimp Transactional API Keys](https://mailchimp.com/developer/transactional/guides/quick-start/#generate-your-api-key).
 

@@ -13,11 +13,11 @@
 
 1. A Salesforce account with API access and Change Data Capture enabled
 2. OAuth2 credentials:
-  - Client ID
-  - Client Secret
-  - Refresh Token
-  - Refresh URL
-  - Base URL (your Salesforce instance URL)
+    - Client ID
+    - Client Secret
+    - Refresh Token
+    - Refresh URL
+    - Base URL (your Salesforce instance URL)
 3. Change Data Capture must be enabled for the **Opportunity** object in Salesforce Setup
 
 This integration uses refresh token flow for auth. [Learn how to set up Salesforce OAuth](https://help.salesforce.com/s/articleView?id=xcloud.create_a_local_external_client_app.htm&type=5).
@@ -25,14 +25,14 @@ This integration uses refresh token flow for auth. [Learn how to set up Salesfor
 </details>
 
 <details>
-  
+
 <summary>Slack Setup Guide</summary>
 
 1. A Slack app with a Bot Token
 2. The bot must be invited to all channels it will post to
 3. Scopes Required:
-  - `chat:write` - Send messages
-  - `chat:write.public` - Send messages to channels without joining
+   - `chat:write` - Send messages
+   - `chat:write.public` - Send messages to channels without joining
 4. The channel ID or name of the target Slack channel
 
 [Learn how to create a Slack app](https://api.slack.com/start/quickstart).

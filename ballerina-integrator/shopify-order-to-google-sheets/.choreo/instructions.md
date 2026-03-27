@@ -9,7 +9,7 @@
 
 1. Log in to your Shopify account and navigate to **Settings** > **Notifications**.
 2. Click on the **Webhooks** section.
-3. Copy the key that is shown under 'Your webhooks will be signed with ...'. This should be the `shopifyConfig.apiSecretKey` configuration.
+3. Copy the key that is shown under 'Your webhooks will be signed with ...'. This should be the `apiSecretKey` configuration.
 
 The following should be done after deploying the integration, and the endpoint URL is available.
 
@@ -28,11 +28,11 @@ The following should be done after deploying the integration, and the endpoint U
 
 1. A Google Cloud project with Google Sheets API enabled
 2. OAuth2 credentials:
-  - Client ID
-  - Client Secret
-  - Refresh Token
+    - Client ID
+    - Client Secret
+    - Refresh Token
 3. Scopes Required
-  - `https://www.googleapis.com/auth/spreadsheets`
+    - `https://www.googleapis.com/auth/spreadsheets`
 
 This integration uses refresh token flow for auth. [Learn how to Develop on Google Workspace](https://developers.google.com/workspace/guides/get-started).
 
@@ -65,7 +65,7 @@ This integration uses refresh token flow for auth. [Learn how to Develop on Goog
 4. `dateFormat`:
     - Format for date fields in the spreadsheet
     - Possible values:
-        - `default` - Keeps original date received from shopify event
+        - `default` - Keeps original date received from Shopify event
         - `iso8601` - ISO 8601 format
         - `rfc5322` - RFC 5322 format
     - Default: `default`

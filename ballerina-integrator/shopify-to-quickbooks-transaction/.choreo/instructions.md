@@ -29,12 +29,12 @@ The following should be done after deploying the integration, and the endpoint U
 
 1. A QuickBooks Online account
 2. OAuth2 credentials:
-  - Client ID
-  - Client Secret
-  - Refresh Token
-  - Company ID (Realm ID)
+    - Client ID
+    - Client Secret
+    - Refresh Token
+    - Company ID (Realm ID)
 3. Scopes required:
-  - `com.intuit.quickbooks.accounting` (Accounting)
+    - `com.intuit.quickbooks.accounting` (Accounting)
 
 This integration uses refresh token flow for auth. [Learn how to set up QuickBooks OAuth](https://developer.intuit.com/app/developer/qbo/docs/develop/authentication-and-authorization/oauth-2.0).
 

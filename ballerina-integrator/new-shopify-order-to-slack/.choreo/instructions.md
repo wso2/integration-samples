@@ -7,14 +7,14 @@
 
 1. Log in to your Shopify account and navigate to **Settings** > **Notifications**.
 2. Click on the **Webhooks** section.
-3. Copy the key that is shown under 'Your webhooks will be signed with ...'. This should be the `shopifyWebHookSecret` configuration.
+3. Copy the key that is shown under 'Your webhooks will be signed with ...'. This should be the `apiSecretKey` configuration.
 
 The following should be done after deploying the integration, and the endpoint URL is available.
 
 1. Log in to your Shopify account and navigate to **Settings** > **Notifications**.
 2. Click on the **Webhooks** section and click on **Create webhook**.
 3. In the **Create webhook** form, select the following options:
-    - **Event**: Select **Customer creation** from the dropdown menu.
+    - **Event**: Select **Order creation** from the dropdown menu.
     - **Format**: Choose **JSON** as the format for the webhook payload.
     - **URL**: Enter the deployed integration's endpoint URL
 4. Go back to the Integration Overview page, and click on **Configure Security**. Disable **OAuth2** and click on **Apply**.
@@ -27,9 +27,9 @@ The following should be done after deploying the integration, and the endpoint U
 1. A Slack app with a Bot Token
 2. The bot must be invited to all channels it will post to
 3. Scopes Required:
-  - `chat:write`
-  - `channels:read` (optional, for channel resolution)
-  - `users:read.email` (optional, for tagging lead owners by email)
+    - `chat:write`
+    - `channels:read` (optional, for channel resolution)
+    - `users:read.email` (optional, for tagging lead owners by email)
 4. The channel ID or name of the target Slack channel
 
 [Learn how to create a Slack app](https://api.slack.com/start/quickstart).
