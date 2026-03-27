@@ -10,11 +10,11 @@
 
 1. A Salesforce account with API access
 2. OAuth2 credentials:
-  - Client ID
-  - Client Secret
-  - Refresh Token
-  - Refresh URL
-  - Base URL (your Salesforce instance URL)
+    - Client ID
+    - Client Secret
+    - Refresh Token
+    - Refresh URL
+    - Base URL (your Salesforce instance URL)
 
 This integration uses refresh token flow for auth. [Learn how to set up Salesforce OAuth](https://help.salesforce.com/s/articleView?id=xcloud.create_a_local_external_client_app.htm&type=5).
 
