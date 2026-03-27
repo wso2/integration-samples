@@ -125,40 +125,71 @@
     "wso2": {
       "type": "object",
       "properties": {
-        "new_shopify_customer_to_stripe": {
+        "jira_summary_mailchimp": {
           "type": "object",
           "properties": {
-            "shopifyConfig": {
+            "jiraConfig": {
               "type": "object",
               "properties": {
-                "apiSecretKey": {
+                "username": {
+                  "type": "string"
+                },
+                "password": {
+                  "type": "string"
+                },
+                "domain": {
+                  "type": "string"
+                },
+                "jqlQuery": {
                   "type": "string"
                 }
               },
               "additionalProperties": false,
               "required": [
-                "apiSecretKey"
+                "username",
+                "password",
+                "domain",
+                "jqlQuery"
               ],
               "description": ""
             },
-            "stripeConfig": {
+            "mailchimpConfig": {
               "type": "object",
               "properties": {
-                "secretKey": {
+                "mandrillApiKey": {
                   "type": "string"
+                },
+                "fromEmail": {
+                  "type": "string"
+                },
+                "fromName": {
+                  "type": "string"
+                },
+                "recipients": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
                 }
               },
               "additionalProperties": false,
               "required": [
-                "secretKey"
+                "mandrillApiKey",
+                "fromEmail",
+                "fromName",
+                "recipients"
               ],
               "description": ""
+            },
+            "maxIssuesToDisplay": {
+              "type": "integer",
+              "description": "Maximum number of Jira issues to include in the email summary."
             }
           },
           "additionalProperties": false,
           "required": [
-            "shopifyConfig",
-            "stripeConfig"
+            "jiraConfig",
+            "mailchimpConfig"
           ]
         }
       },

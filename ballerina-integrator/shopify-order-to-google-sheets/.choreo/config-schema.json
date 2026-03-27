@@ -125,7 +125,7 @@
     "wso2": {
       "type": "object",
       "properties": {
-        "new_shopify_customer_to_stripe": {
+        "shopify_order_to_google_sheets": {
           "type": "object",
           "properties": {
             "shopifyConfig": {
@@ -139,26 +139,116 @@
               "required": [
                 "apiSecretKey"
               ],
+              "name": "wso2/shopify_order_to_google_sheets:0.1.0:ShopifyConfig",
               "description": ""
             },
-            "stripeConfig": {
+            "googleSheetsConfig": {
               "type": "object",
               "properties": {
-                "secretKey": {
+                "clientId": {
+                  "type": "string"
+                },
+                "clientSecret": {
+                  "type": "string"
+                },
+                "refreshToken": {
+                  "type": "string"
+                },
+                "spreadsheetId": {
                   "type": "string"
                 }
               },
               "additionalProperties": false,
               "required": [
-                "secretKey"
+                "clientId",
+                "clientSecret",
+                "refreshToken",
+                "spreadsheetId"
               ],
+              "name": "wso2/shopify_order_to_google_sheets:0.1.0:SheetConfig",
+              "description": ""
+            },
+            "sheetName": {
+              "type": "string",
+              "description": ""
+            },
+            "insertMode": {
+              "enum": [
+                "UPSERT",
+                "APPEND"
+              ],
+              "description": ""
+            },
+            "includeLineItems": {
+              "type": "boolean",
+              "description": ""
+            },
+            "dateFormat": {
+              "enum": [
+                "default",
+                "rfc5322",
+                "iso8601"
+              ],
+              "description": ""
+            },
+            "groupByMonth": {
+              "type": "boolean",
+              "description": ""
+            },
+            "allowedCountryCodes": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "description": ""
+            },
+            "allowedCurrencies": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "description": ""
+            },
+            "allowedSources": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "description": ""
+            },
+            "allowedPaymentStatuses": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "description": ""
+            },
+            "allowedFulfillmentStatuses": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "description": ""
+            },
+            "requiredTags": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "description": ""
+            },
+            "excludedTags": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
               "description": ""
             }
           },
           "additionalProperties": false,
           "required": [
             "shopifyConfig",
-            "stripeConfig"
+            "googleSheetsConfig"
           ]
         }
       },

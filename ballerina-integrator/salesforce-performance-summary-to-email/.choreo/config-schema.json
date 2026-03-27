@@ -26,7 +26,7 @@
                     "required": [
                       "type"
                     ],
-                    "name": "ballerina/log:2.14.0:StandardDestination"
+                    "name": "ballerina/log:2.17.0:StandardDestination"
                   },
                   {
                     "type": "object",
@@ -44,6 +44,35 @@
                           "APPEND",
                           "TRUNCATE"
                         ]
+                      },
+                      "rotation": {
+                        "type": "object",
+                        "properties": {
+                          "policy": {
+                            "enum": [
+                              "BOTH",
+                              "TIME_BASED",
+                              "SIZE_BASED"
+                            ]
+                          },
+                          "maxFileSize": {
+                            "type": "integer"
+                          },
+                          "maxAge": {
+                            "type": "integer"
+                          },
+                          "maxBackupFiles": {
+                            "type": "integer"
+                          }
+                        },
+                        "additionalProperties": false,
+                        "required": [
+                          "policy",
+                          "maxFileSize",
+                          "maxAge",
+                          "maxBackupFiles"
+                        ],
+                        "name": "ballerina/log:2.17.0:RotationConfig"
                       }
                     },
                     "additionalProperties": false,
@@ -52,7 +81,7 @@
                       "path",
                       "mode"
                     ],
-                    "name": "ballerina/log:2.14.0:FileOutputDestination"
+                    "name": "ballerina/log:2.17.0:FileOutputDestination"
                   }
                 ]
               },
@@ -80,7 +109,7 @@
                   "name",
                   "level"
                 ],
-                "name": "ballerina/log:2.14.0:Module"
+                "name": "ballerina/log:2.17.0:Module"
               },
               "description": ""
             },
@@ -88,12 +117,16 @@
               "type": "object",
               "properties": {
                 "msg": {},
+                "message": {},
+                "time": {},
+                "level": {},
                 "error": {},
                 "stackTrace": {},
-                "module": {}
+                "module": {},
+                "icp\\.runtimeId": {}
               },
               "additionalProperties": false,
-              "name": "ballerina/log:2.14.0:AnydataKeyValues",
+              "name": "ballerina/log:2.17.0:AnydataKeyValues",
               "description": ""
             },
             "format": {
@@ -183,7 +216,7 @@
                     "keepAlive",
                     "maxPipelinedRequests"
                   ],
-                  "name": "ballerina/http:2.15.0:ListenerHttp1Settings"
+                  "name": "ballerina/http:2.16.0:ListenerHttp1Settings"
                 },
                 "secureSocket": {
                   "anyOf": [
@@ -207,7 +240,7 @@
                                 "path",
                                 "password"
                               ],
-                              "name": "ballerina/crypto:2.9.2:KeyStore"
+                              "name": "ballerina/crypto:2.10.1:KeyStore"
                             },
                             {
                               "type": "object",
@@ -227,7 +260,7 @@
                                 "certFile",
                                 "keyFile"
                               ],
-                              "name": "ballerina/http:2.15.0:CertKey"
+                              "name": "ballerina/http:2.16.0:CertKey"
                             }
                           ]
                         },
@@ -257,7 +290,7 @@
                                     "path",
                                     "password"
                                   ],
-                                  "name": "ballerina/crypto:2.9.2:TrustStore"
+                                  "name": "ballerina/crypto:2.10.1:TrustStore"
                                 },
                                 {
                                   "type": "string"
@@ -339,7 +372,7 @@
                         "ciphers",
                         "shareSession"
                       ],
-                      "name": "ballerina/http:2.15.0:ListenerSecureSocket"
+                      "name": "ballerina/http:2.16.0:ListenerSecureSocket"
                     },
                     {
                       "type": ""
@@ -385,7 +418,7 @@
                     "maxHeaderSize",
                     "maxEntityBodySize"
                   ],
-                  "name": "ballerina/http:2.15.0:RequestLimitConfigs"
+                  "name": "ballerina/http:2.16.0:RequestLimitConfigs"
                 },
                 "gracefulStopTimeout": {
                   "type": "number"
@@ -425,7 +458,7 @@
                     "socketReuse",
                     "keepAlive"
                   ],
-                  "name": "ballerina/http:2.15.0:ServerSocketConfig"
+                  "name": "ballerina/http:2.16.0:ServerSocketConfig"
                 },
                 "http2InitialWindowSize": {
                   "type": "integer"
@@ -452,11 +485,7 @@
                 "minIdleTimeInStaleState",
                 "timeBetweenStaleEviction"
               ],
-              "name": "ballerina/http:2.15.0:ListenerConfiguration",
-              "description": ""
-            },
-            "traceLogConsole": {
-              "type": "boolean",
+              "name": "ballerina/http:2.16.0:ListenerConfiguration",
               "description": ""
             },
             "traceLogAdvancedConfig": {
@@ -473,13 +502,55 @@
                 },
                 "port": {
                   "type": "integer"
+                },
+                "file": {
+                  "type": "object",
+                  "properties": {
+                    "path": {
+                      "type": "string"
+                    },
+                    "rotation": {
+                      "type": "object",
+                      "properties": {
+                        "policy": {
+                          "enum": [
+                            "BOTH",
+                            "TIME_BASED",
+                            "SIZE_BASED"
+                          ]
+                        },
+                        "maxFileSize": {
+                          "type": "integer"
+                        },
+                        "maxAge": {
+                          "type": "integer"
+                        },
+                        "maxBackupFiles": {
+                          "type": "integer"
+                        }
+                      },
+                      "additionalProperties": false,
+                      "required": [
+                        "policy",
+                        "maxFileSize",
+                        "maxAge",
+                        "maxBackupFiles"
+                      ],
+                      "name": "ballerina/log:2.17.0:RotationConfig"
+                    }
+                  },
+                  "additionalProperties": false,
+                  "required": [
+                    "path"
+                  ],
+                  "name": "ballerina/http:2.16.0:LogFileConfig"
                 }
               },
               "additionalProperties": false,
               "required": [
                 "console"
               ],
-              "name": "ballerina/http:2.15.0:TraceLogAdvancedConfiguration",
+              "name": "ballerina/http:2.16.0:TraceLogAdvancedConfiguration",
               "description": ""
             },
             "accessLogConfig": {
@@ -499,6 +570,48 @@
                 },
                 "path": {
                   "type": "string"
+                },
+                "file": {
+                  "type": "object",
+                  "properties": {
+                    "path": {
+                      "type": "string"
+                    },
+                    "rotation": {
+                      "type": "object",
+                      "properties": {
+                        "policy": {
+                          "enum": [
+                            "BOTH",
+                            "TIME_BASED",
+                            "SIZE_BASED"
+                          ]
+                        },
+                        "maxFileSize": {
+                          "type": "integer"
+                        },
+                        "maxAge": {
+                          "type": "integer"
+                        },
+                        "maxBackupFiles": {
+                          "type": "integer"
+                        }
+                      },
+                      "additionalProperties": false,
+                      "required": [
+                        "policy",
+                        "maxFileSize",
+                        "maxAge",
+                        "maxBackupFiles"
+                      ],
+                      "name": "ballerina/log:2.17.0:RotationConfig"
+                    }
+                  },
+                  "additionalProperties": false,
+                  "required": [
+                    "path"
+                  ],
+                  "name": "ballerina/http:2.16.0:LogFileConfig"
                 }
               },
               "additionalProperties": false,
@@ -506,7 +619,11 @@
                 "console",
                 "format"
               ],
-              "name": "ballerina/http:2.15.0:AccessLogConfiguration",
+              "name": "ballerina/http:2.16.0:AccessLogConfiguration",
+              "description": ""
+            },
+            "traceLogConsole": {
+              "type": "boolean",
               "description": ""
             }
           },
@@ -518,30 +635,9 @@
     "wso2": {
       "type": "object",
       "properties": {
-        "signup_sfchatsync": {
+        "salesforce_performance_summary_to_email": {
           "type": "object",
           "properties": {
-            "googleChatConfig": {
-              "type": "object",
-              "properties": {
-                "spaceId": {
-                  "type": "string"
-                },
-                "token": {
-                  "type": "string"
-                },
-                "key": {
-                  "type": "string"
-                }
-              },
-              "additionalProperties": false,
-              "required": [
-                "spaceId",
-                "token",
-                "key"
-              ],
-              "description": ""
-            },
             "salesforceConfig": {
               "type": "object",
               "properties": {
@@ -559,6 +655,9 @@
                 },
                 "baseUrl": {
                   "type": "string"
+                },
+                "reportId": {
+                  "type": "string"
                 }
               },
               "additionalProperties": false,
@@ -567,15 +666,65 @@
                 "clientId",
                 "clientSecret",
                 "refreshUrl",
-                "baseUrl"
+                "baseUrl",
+                "reportId"
               ],
+              "description": ""
+            },
+            "mailchimpConfig": {
+              "type": "object",
+              "properties": {
+                "mandrillApiKey": {
+                  "type": "string"
+                },
+                "fromEmail": {
+                  "type": "string"
+                },
+                "fromName": {
+                  "type": "string"
+                },
+                "recipientEmails": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "subjectTemplate": {
+                  "type": "string"
+                }
+              },
+              "additionalProperties": false,
+              "required": [
+                "mandrillApiKey",
+                "fromEmail",
+                "recipientEmails"
+              ],
+              "description": ""
+            },
+            "timePeriod": {
+              "enum": [
+                "yearly",
+                "quarterly",
+                "monthly"
+              ],
+              "description": ""
+            },
+            "comparisonPeriod": {
+              "enum": [
+                "YoY",
+                "MoM"
+              ],
+              "description": ""
+            },
+            "includePerRepBreakdown": {
+              "type": "boolean",
               "description": ""
             }
           },
           "additionalProperties": false,
           "required": [
-            "googleChatConfig",
-            "salesforceConfig"
+            "salesforceConfig",
+            "mailchimpConfig"
           ]
         }
       },

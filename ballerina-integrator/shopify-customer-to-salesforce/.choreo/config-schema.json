@@ -26,7 +26,7 @@
                     "required": [
                       "type"
                     ],
-                    "name": "ballerina/log:2.14.0:StandardDestination"
+                    "name": "ballerina/log:2.17.0:StandardDestination"
                   },
                   {
                     "type": "object",
@@ -44,6 +44,35 @@
                           "APPEND",
                           "TRUNCATE"
                         ]
+                      },
+                      "rotation": {
+                        "type": "object",
+                        "properties": {
+                          "policy": {
+                            "enum": [
+                              "BOTH",
+                              "TIME_BASED",
+                              "SIZE_BASED"
+                            ]
+                          },
+                          "maxFileSize": {
+                            "type": "integer"
+                          },
+                          "maxAge": {
+                            "type": "integer"
+                          },
+                          "maxBackupFiles": {
+                            "type": "integer"
+                          }
+                        },
+                        "additionalProperties": false,
+                        "required": [
+                          "policy",
+                          "maxFileSize",
+                          "maxAge",
+                          "maxBackupFiles"
+                        ],
+                        "name": "ballerina/log:2.17.0:RotationConfig"
                       }
                     },
                     "additionalProperties": false,
@@ -52,7 +81,7 @@
                       "path",
                       "mode"
                     ],
-                    "name": "ballerina/log:2.14.0:FileOutputDestination"
+                    "name": "ballerina/log:2.17.0:FileOutputDestination"
                   }
                 ]
               },
@@ -80,7 +109,7 @@
                   "name",
                   "level"
                 ],
-                "name": "ballerina/log:2.14.0:Module"
+                "name": "ballerina/log:2.17.0:Module"
               },
               "description": ""
             },
@@ -88,12 +117,16 @@
               "type": "object",
               "properties": {
                 "msg": {},
+                "message": {},
+                "time": {},
+                "level": {},
                 "error": {},
                 "stackTrace": {},
-                "module": {}
+                "module": {},
+                "icp\\.runtimeId": {}
               },
               "additionalProperties": false,
-              "name": "ballerina/log:2.14.0:AnydataKeyValues",
+              "name": "ballerina/log:2.17.0:AnydataKeyValues",
               "description": ""
             },
             "format": {
@@ -125,7 +158,7 @@
     "wso2": {
       "type": "object",
       "properties": {
-        "new_shopify_customer_to_stripe": {
+        "shopify_customer_to_salesforce": {
           "type": "object",
           "properties": {
             "shopifyConfig": {
@@ -139,26 +172,52 @@
               "required": [
                 "apiSecretKey"
               ],
+              "name": "wso2/shopify_customer_to_salesforce:0.1.0:ShopifyConfig",
               "description": ""
             },
-            "stripeConfig": {
+            "salesforceConfig": {
               "type": "object",
               "properties": {
-                "secretKey": {
+                "baseUrl": {
                   "type": "string"
+                },
+                "clientId": {
+                  "type": "string"
+                },
+                "clientSecret": {
+                  "type": "string"
+                },
+                "refreshToken": {
+                  "type": "string"
+                },
+                "refreshUrl": {
+                  "type": "string"
+                },
+                "accountAssociationRule": {
+                  "enum": [
+                    "company",
+                    "domain",
+                    "none"
+                  ]
                 }
               },
               "additionalProperties": false,
               "required": [
-                "secretKey"
+                "baseUrl",
+                "clientId",
+                "clientSecret",
+                "refreshToken",
+                "refreshUrl",
+                "accountAssociationRule"
               ],
+              "name": "wso2/shopify_customer_to_salesforce:0.1.0:SalesforceConfig",
               "description": ""
             }
           },
           "additionalProperties": false,
           "required": [
             "shopifyConfig",
-            "stripeConfig"
+            "salesforceConfig"
           ]
         }
       },

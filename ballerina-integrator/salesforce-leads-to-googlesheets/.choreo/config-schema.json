@@ -26,7 +26,7 @@
                     "required": [
                       "type"
                     ],
-                    "name": "ballerina/log:2.14.0:StandardDestination"
+                    "name": "ballerina/log:2.17.0:StandardDestination"
                   },
                   {
                     "type": "object",
@@ -44,6 +44,35 @@
                           "APPEND",
                           "TRUNCATE"
                         ]
+                      },
+                      "rotation": {
+                        "type": "object",
+                        "properties": {
+                          "policy": {
+                            "enum": [
+                              "BOTH",
+                              "TIME_BASED",
+                              "SIZE_BASED"
+                            ]
+                          },
+                          "maxFileSize": {
+                            "type": "integer"
+                          },
+                          "maxAge": {
+                            "type": "integer"
+                          },
+                          "maxBackupFiles": {
+                            "type": "integer"
+                          }
+                        },
+                        "additionalProperties": false,
+                        "required": [
+                          "policy",
+                          "maxFileSize",
+                          "maxAge",
+                          "maxBackupFiles"
+                        ],
+                        "name": "ballerina/log:2.17.0:RotationConfig"
                       }
                     },
                     "additionalProperties": false,
@@ -52,7 +81,7 @@
                       "path",
                       "mode"
                     ],
-                    "name": "ballerina/log:2.14.0:FileOutputDestination"
+                    "name": "ballerina/log:2.17.0:FileOutputDestination"
                   }
                 ]
               },
@@ -80,7 +109,7 @@
                   "name",
                   "level"
                 ],
-                "name": "ballerina/log:2.14.0:Module"
+                "name": "ballerina/log:2.17.0:Module"
               },
               "description": ""
             },
@@ -88,12 +117,16 @@
               "type": "object",
               "properties": {
                 "msg": {},
+                "message": {},
+                "time": {},
+                "level": {},
                 "error": {},
                 "stackTrace": {},
-                "module": {}
+                "module": {},
+                "icp\\.runtimeId": {}
               },
               "additionalProperties": false,
-              "name": "ballerina/log:2.14.0:AnydataKeyValues",
+              "name": "ballerina/log:2.17.0:AnydataKeyValues",
               "description": ""
             },
             "format": {
@@ -125,40 +158,119 @@
     "wso2": {
       "type": "object",
       "properties": {
-        "new_shopify_customer_to_stripe": {
+        "salesforce_leads_to_googlesheets": {
           "type": "object",
           "properties": {
-            "shopifyConfig": {
+            "salesforceConfig": {
               "type": "object",
               "properties": {
-                "apiSecretKey": {
+                "refreshToken": {
+                  "type": "string"
+                },
+                "clientId": {
+                  "type": "string"
+                },
+                "clientSecret": {
+                  "type": "string"
+                },
+                "refreshUrl": {
+                  "type": "string"
+                },
+                "baseUrl": {
                   "type": "string"
                 }
               },
               "additionalProperties": false,
               "required": [
-                "apiSecretKey"
+                "refreshToken",
+                "clientId",
+                "clientSecret",
+                "refreshUrl",
+                "baseUrl"
+              ],
+              "name": "wso2/salesforce_leads_to_googlesheets:0.1.0:SalesforceConfig",
+              "description": ""
+            },
+            "googleConfig": {
+              "type": "object",
+              "properties": {
+                "refreshToken": {
+                  "type": "string"
+                },
+                "clientId": {
+                  "type": "string"
+                },
+                "clientSecret": {
+                  "type": "string"
+                }
+              },
+              "additionalProperties": false,
+              "required": [
+                "refreshToken",
+                "clientId",
+                "clientSecret"
+              ],
+              "name": "wso2/salesforce_leads_to_googlesheets:0.1.0:GoogleConfig",
+              "description": ""
+            },
+            "timezone": {
+              "type": "string",
+              "description": ""
+            },
+            "spreadsheetId": {
+              "type": "string",
+              "description": ""
+            },
+            "tabName": {
+              "type": "string",
+              "description": ""
+            },
+            "fieldMapping": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "description": ""
+            },
+            "soqlFilter": {
+              "type": "string",
+              "description": ""
+            },
+            "timeframe": {
+              "enum": [
+                "ALL",
+                "LAST_YEAR",
+                "LAST_MONTH",
+                "LAST_WEEK",
+                "YESTERDAY"
               ],
               "description": ""
             },
-            "stripeConfig": {
-              "type": "object",
-              "properties": {
-                "secretKey": {
-                  "type": "string"
-                }
-              },
-              "additionalProperties": false,
-              "required": [
-                "secretKey"
+            "includeConverted": {
+              "type": "boolean",
+              "description": ""
+            },
+            "syncMode": {
+              "enum": [
+                "UPSERT_BY_EMAIL",
+                "FULL_REPLACE",
+                "APPEND"
               ],
+              "description": ""
+            },
+            "enableAutoFormat": {
+              "type": "boolean",
+              "description": ""
+            },
+            "splitBy": {
+              "type": "string",
               "description": ""
             }
           },
           "additionalProperties": false,
           "required": [
-            "shopifyConfig",
-            "stripeConfig"
+            "salesforceConfig",
+            "googleConfig"
           ]
         }
       },
