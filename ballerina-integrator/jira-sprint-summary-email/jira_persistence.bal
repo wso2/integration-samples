@@ -64,18 +64,11 @@ function markSprintAsProcessedByLabel(int sprintId) returns error? {
     string[] currentLabels = [];
 
     if issueJson is map<json> {
-        if issueJson.hasKey("fields") {
-            json fieldsValue = issueJson["fields"];
-            if fieldsValue is map<json> {
-                if fieldsValue.hasKey("labels") {
-                    json labelsValue = fieldsValue["labels"];
-                    if labelsValue is json[] {
-                        foreach json labelValue in labelsValue {
-                            if labelValue is string {
-                                currentLabels.push(labelValue);
-                            }
-                        }
-                    }
+        json|error labelsResult = issueJson?.fields?.labels;
+        if labelsResult is json[] {
+            foreach json labelValue in labelsResult {
+                if labelValue is string {
+                    currentLabels.push(labelValue);
                 }
             }
         }
