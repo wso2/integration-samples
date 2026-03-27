@@ -12,23 +12,24 @@
 <summary>HubSpot Setup</summary>
 
 1. Sign in to HubSpot.
-2. Go to Settings > Integrations > Private Apps.
-3. Create a private app and enable the scope `crm.objects.contacts.read`.
-4. Copy the generated access token.
-5. Use that token as `hubspotAccessToken` in the integration configuration.
+2. Go to Settings > Integrations > Legacy Apps.
+3. Create a Legacy app and enable the scope `crm.objects.contacts.read`.
+4. Obtain the generated access token.
 
 </details>
 
 <details>
-<summary>Google Sheets Setup</summary>
+<summary>Google Sheets Setup Guide</summary>
 
-1. Create or select a Google Cloud project.
-2. Enable Google Sheets API for the project.
-3. Create OAuth 2.0 credentials (Web application).
-4. Add this redirect URI: `https://developers.google.com/oauthplayground`.
-5. In OAuth Playground, use your own OAuth credentials and authorize scope `https://www.googleapis.com/auth/spreadsheets`.
-6. Exchange the authorization code and copy the refresh token.
-7. Use `googleClientId`, `googleClientSecret`, and `googleRefreshToken` in the integration configuration.
+1. A Google Cloud project with Google Sheets API enabled
+2. OAuth2 credentials:
+  - Client ID
+  - Client Secret
+  - Refresh Token
+3. Scopes Required
+  - `https://www.googleapis.com/auth/drive`
+  - `https://www.googleapis.com/auth/spreadsheets`
+This integration uses refresh token flow for auth. [Learn how to Develop on Google Workspace](https://developers.google.com/workspace/guides/get-started).
 
 </details>
 

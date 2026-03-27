@@ -34,7 +34,8 @@ configurable string contactFilterProperty = "";
 configurable string contactFilterValue = "";
 
 // Row Limit Configuration
-configurable int maxRows = 2;
+// 0 means no limit; set to a positive integer to cap incremental sync batches.
+configurable int maxRows = 3;
 
 // Sync Mode Configuration
 // "upsert"  - Update existing row if email matches, insert if not (default)

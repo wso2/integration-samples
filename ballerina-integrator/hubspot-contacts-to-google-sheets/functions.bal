@@ -10,20 +10,13 @@ const decimal INITIAL_WRITE_BACKOFF_SECONDS = 2d;
 function validateExternalConnections() returns error? {
     sheets:Spreadsheet _ = check sheetsClient->openSpreadsheetById(spreadsheetId);
     hubspotcontacts:CollectionResponseSimplePublicObjectWithAssociationsForwardPaging _ = check fetchContactsPage(());
-    return;
 }
 
 // Check if the sheet is empty and insert headers if needed
 function ensureHeaderRow(string targetSheet) returns error? {
     check ensureSheetExists(targetSheet);
 
-    sheets:Range|error rangeResult = sheetsClient->getRange(spreadsheetId, targetSheet, "A1:Z1");
-
-    if rangeResult is error {
-        return rangeResult;
-    }
-
-    sheets:Range rangeData = rangeResult;
+    sheets:Range rangeData = check sheetsClient->getRange(spreadsheetId, targetSheet, "A1:Z1");
 
     if rangeData.values.length() == 0 {
         io:println(string `---- Sheet '${targetSheet}' is empty. Inserting headers`);
@@ -56,10 +49,13 @@ function ensureSheetExists(string targetSheet) returns error? {
 // Insert header row
 function insertHeaderRow(string targetSheet) returns error? {
 
-    (string|int|decimal)[] headers = [];
+    // email is always first — it is the upsert key and must map to Column A.
+    (string|int|decimal)[] headers = [convertFieldToHeader("email")];
 
     foreach string fieldName in fields {
-        headers.push(convertFieldToHeader(fieldName));
+        if fieldName != "email" {
+            headers.push(convertFieldToHeader(fieldName));
+        }
     }
 
     headers.push("Last Synced");
@@ -200,22 +196,13 @@ returns hubspotcontacts:CollectionResponseSimplePublicObjectWithAssociationsForw
 }
 
 function getHubSpotRequestProperties() returns string[] {
-    string[] requestProperties = [];
+    // email must always be first — it is the upsert key and maps to Column A.
+    string[] requestProperties = ["email"];
 
     foreach string fieldName in fields {
-        requestProperties.push(fieldName);
-    }
-
-    // `email` must always be fetched — it is the UPSERT key.
-    boolean hasEmail = false;
-    foreach string fieldName in requestProperties {
-        if fieldName == "email" {
-            hasEmail = true;
-            break;
+        if fieldName != "email" {
+            requestProperties.push(fieldName);
         }
-    }
-    if !hasEmail {
-        requestProperties.push("email");
     }
 
     string filterProperty = contactFilterProperty.trim();
@@ -252,7 +239,13 @@ function getHubSpotRequestProperties() returns string[] {
 // Build email → row map.
 // Propagates read errors so the caller cannot silently treat a failed
 // sheet read as an empty sheet (which would cause duplicate inserts).
-function buildEmailRowMap(string targetSheet) returns map<int>|error {
+// Build email → row map.
+// Propagates read errors so the caller cannot silently treat a failed
+// sheet read as an empty sheet (which would cause duplicate inserts).
+// Returns a tuple of [emailRowMap, totalRowCount] where totalRowCount is the
+// actual number of rows in the sheet (header + data), used by the caller to
+// determine the correct row number for new inserts.
+function buildEmailRowMap(string targetSheet) returns [map<int>, int]|error {
 
     map<int> emailRowMap = {};
 
@@ -280,7 +273,13 @@ function buildEmailRowMap(string targetSheet) returns map<int>|error {
 
     io:println(string `---- Existing contacts in '${targetSheet}': ${emailRowMap.length()}`);
 
-    return emailRowMap;
+    // rangeData.values.length() is the total number of rows returned by the
+    // Sheets API for column A (header + all data rows, including blank-email
+    // rows that were skipped above).  The next new row goes at position
+    // totalRowCount + 1.
+    int totalRowCount = rangeData.values.length();
+
+    return [emailRowMap, totalRowCount];
 }
 
 // Update row
@@ -391,16 +390,14 @@ function getColumnLetter(int columnNumber) returns string {
 
 // Clear all data rows in a sheet (keeps header row)
 function clearSheetData(string targetSheet) returns error? {
-    sheets:Range|error result = sheetsClient->getRange(spreadsheetId, targetSheet, "A:Z");
-    if result is error {
-        return;
-    }
-    int totalRows = result.values.length();
+    string endCol = getColumnLetter(fields.length() + 1); // +1 for "Last Synced" column
+    sheets:Range rangeData = check sheetsClient->getRange(spreadsheetId, targetSheet, string `A:${endCol}`);
+    int totalRows = rangeData.values.length();
     if totalRows <= 1 {
         return;
     }
     // Clear from row 2 downward
-    string clearRange = string `A2:Z${totalRows}`;
+    string clearRange = string `A2:${endCol}${totalRows}`;
     check sheetsClient->clearRange(spreadsheetId, targetSheet, clearRange);
     io:println(string `---- Cleared ${totalRows - 1} data rows from '${targetSheet}'`);
 }
@@ -436,6 +433,12 @@ function exportContactsToSheet(Contact[] contacts, string lastSyncTimestamp, boo
     int updateCount = 0;
     int errorCount = 0;
 
+    // Tracks the next available physical row number per sheet for upsert inserts.
+    // Seeded from the actual row count returned by buildEmailRowMap and
+    // incremented on each successful append — avoids the stale-count bug
+    // that emailRowMap.length() + 2 would cause when blank-email rows exist.
+    map<int> nextRowBySheet = {};
+
     string latestTimestamp = lastSyncTimestamp;
     int processedCount = 0;
     boolean limitReached = false;
@@ -465,9 +468,12 @@ function exportContactsToSheet(Contact[] contacts, string lastSyncTimestamp, boo
             continue;
         }
 
-        (string|int|decimal)[] rowData = [];
+        // email is always first — must map to Column A to match the header row.
+        (string|int|decimal)[] rowData = [email];
         foreach string fieldName in fields {
-            rowData.push(getContactPropertyValue(props, fieldName));
+            if fieldName != "email" {
+                rowData.push(getContactPropertyValue(props, fieldName));
+            }
         }
         rowData.push(getCurrentTimestamp());
 
@@ -492,8 +498,10 @@ function exportContactsToSheet(Contact[] contacts, string lastSyncTimestamp, boo
                 emailRowMap = existingSheetMap;
             } else {
                 check ensureHeaderRow(targetSheet);
-                emailRowMap = check buildEmailRowMap(targetSheet);
+                [map<int>, int] [builtMap, totalRowCount] = check buildEmailRowMap(targetSheet);
+                emailRowMap = builtMap;
                 emailRowMapBySheet[targetSheet] = emailRowMap;
+                nextRowBySheet[targetSheet] = totalRowCount + 1;
             }
 
             int? existingRow = emailRowMap[email];
@@ -514,7 +522,15 @@ function exportContactsToSheet(Contact[] contacts, string lastSyncTimestamp, boo
                 } else {
                     insertCount += 1;
                     writeSucceeded = true;
-                    emailRowMap[email] = emailRowMap.length() + 2;
+                    // Assign the actual row number for this new entry, then
+                    // advance the counter for the next insert into this sheet.
+                    // nextRowBySheet is guaranteed to be seeded when buildEmailRowMap
+                    // is first called for this sheet (in the else branch above).
+                    // The <int> cast makes this invariant explicit — a panic here
+                    // would indicate a real logic bug, not a normal nil case.
+                    int nextRow = <int>nextRowBySheet[targetSheet];
+                    emailRowMap[email] = nextRow;
+                    nextRowBySheet[targetSheet] = nextRow + 1;
                 }
             }
         }

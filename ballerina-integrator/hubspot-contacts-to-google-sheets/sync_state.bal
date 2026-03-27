@@ -22,6 +22,8 @@ function getLastSyncTimestamp() returns string {
             io:println(string `---- Loaded checkpoint from sheet '${SYNC_STATE_SHEET}': ${timestamp}`);
             return timestamp;
         }
+    } else {
+        io:println(string `---- Warning: could not read checkpoint from sheet '${SYNC_STATE_SHEET}': ${sheetCheckpoint.message()}. Falling back to file/config.`);
     }
 
     // Fallback: check if there's a persisted timestamp in file
@@ -86,6 +88,13 @@ function saveLastSyncTimestamp(string timestamp) returns error? {
 }
 
 function readCheckpointFromSheet() returns string|error {
+    // On the very first run the sync-state sheet does not exist yet.
+    // Return "" silently rather than propagating a confusing 400 error —
+    // the sheet will be created by writeCheckpointToSheet() at the end of the run.
+    sheets:Sheet|error existingSheet = sheetsClient->getSheetByName(spreadsheetId, SYNC_STATE_SHEET);
+    if existingSheet is error {
+        return "";
+    }
     sheets:Cell checkpointCell = check sheetsClient->getCell(spreadsheetId, SYNC_STATE_SHEET, SYNC_STATE_CELL);
     return checkpointCell.value.toString();
 }
@@ -129,7 +138,7 @@ function isNewerThan(string timestamp1, string timestamp2) returns boolean {
 
     if time1 is time:Utc && time2 is time:Utc {
         decimal diff = time:utcDiffSeconds(time1, time2);
-        return diff > 0d;
+        return diff >= 0d;
     }
 
     // Log the parse failure so it doesn't go unnoticed, then include the

@@ -10,14 +10,11 @@ generated/
 # See https://ballerina.io/learn/provide-values-to-configurable-variables/ for more details.
 Config.toml
 
-
 # Dependency definitions
 Dependencies.toml
 
 last_sync_timestamp.txt
 
-target/
-Dependencies.toml
 .DS_Store
 
 .vscode
