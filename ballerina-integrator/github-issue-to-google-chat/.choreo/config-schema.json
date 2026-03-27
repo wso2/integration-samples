@@ -2,123 +2,66 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "type": "object",
   "properties": {
-    "ballerina": {
+    "wso2": {
       "type": "object",
       "properties": {
-        "log": {
+        "github_issue_to_google_chat": {
           "type": "object",
           "properties": {
-            "destinations": {
-              "type": "array",
-              "items": {
-                "anyOf": [
-                  {
-                    "type": "object",
-                    "properties": {
-                      "type": {
-                        "enum": [
-                          "stderr",
-                          "stdout"
-                        ]
-                      }
-                    },
-                    "additionalProperties": false,
-                    "required": [
-                      "type"
-                    ],
-                    "name": "ballerina/log:2.14.0:StandardDestination"
-                  },
-                  {
-                    "type": "object",
-                    "properties": {
-                      "type": {
-                        "enum": [
-                          "file"
-                        ]
-                      },
-                      "path": {
-                        "type": "string"
-                      },
-                      "mode": {
-                        "enum": [
-                          "APPEND",
-                          "TRUNCATE"
-                        ]
-                      }
-                    },
-                    "additionalProperties": false,
-                    "required": [
-                      "type",
-                      "path",
-                      "mode"
-                    ],
-                    "name": "ballerina/log:2.14.0:FileOutputDestination"
-                  }
-                ]
-              },
-              "description": ""
-            },
-            "modules": {
-              "type": "array",
-              "items": {
-                "type": "object",
-                "properties": {
-                  "name": {
-                    "type": "string"
-                  },
-                  "level": {
-                    "enum": [
-                      "WARN",
-                      "INFO",
-                      "ERROR",
-                      "DEBUG"
-                    ]
-                  }
-                },
-                "additionalProperties": false,
-                "required": [
-                  "name",
-                  "level"
-                ],
-                "name": "ballerina/log:2.14.0:Module"
-              },
-              "description": ""
-            },
-            "keyValues": {
+            "googleChatConfig": {
               "type": "object",
               "properties": {
-                "msg": {},
-                "error": {},
-                "stackTrace": {},
-                "module": {}
+                "spaceId": {
+                  "type": "string"
+                },
+                "key": {
+                  "type": "string"
+                },
+                "token": {
+                  "type": "string"
+                }
               },
               "additionalProperties": false,
-              "name": "ballerina/log:2.14.0:AnydataKeyValues",
-              "description": ""
-            },
-            "format": {
-              "enum": [
-                "logfmt",
-                "json"
+              "required": [
+                "spaceId",
+                "key",
+                "token"
               ],
               "description": ""
             },
-            "level": {
-              "enum": [
-                "WARN",
-                "INFO",
-                "ERROR",
-                "DEBUG"
+            "githubConfig": {
+              "type": "object",
+              "properties": {
+                "webhookSecret": {
+                  "type": "string"
+                },
+                "triggerLabels": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              },
+              "additionalProperties": false,
+              "required": [
+                "webhookSecret",
+                "triggerLabels"
               ],
-              "description": ""
-            },
-            "enableSensitiveDataMasking": {
-              "type": "boolean",
               "description": ""
             }
           },
-          "additionalProperties": false
-        },
+          "additionalProperties": false,
+          "required": [
+            "googleChatConfig",
+            "githubConfig"
+          ]
+        }
+      },
+      "additionalProperties": false
+    },
+    "ballerina": {
+      "type": "object",
+      "properties": {
         "http": {
           "type": "object",
           "properties": {
@@ -183,7 +126,7 @@
                     "keepAlive",
                     "maxPipelinedRequests"
                   ],
-                  "name": "ballerina/http:2.15.0:ListenerHttp1Settings"
+                  "name": "ballerina/http:2.15.4:ListenerHttp1Settings"
                 },
                 "secureSocket": {
                   "anyOf": [
@@ -207,7 +150,7 @@
                                 "path",
                                 "password"
                               ],
-                              "name": "ballerina/crypto:2.9.2:KeyStore"
+                              "name": "ballerina/crypto:2.9.3:KeyStore"
                             },
                             {
                               "type": "object",
@@ -227,7 +170,7 @@
                                 "certFile",
                                 "keyFile"
                               ],
-                              "name": "ballerina/http:2.15.0:CertKey"
+                              "name": "ballerina/http:2.15.4:CertKey"
                             }
                           ]
                         },
@@ -257,7 +200,7 @@
                                     "path",
                                     "password"
                                   ],
-                                  "name": "ballerina/crypto:2.9.2:TrustStore"
+                                  "name": "ballerina/crypto:2.9.3:TrustStore"
                                 },
                                 {
                                   "type": "string"
@@ -339,7 +282,7 @@
                         "ciphers",
                         "shareSession"
                       ],
-                      "name": "ballerina/http:2.15.0:ListenerSecureSocket"
+                      "name": "ballerina/http:2.15.4:ListenerSecureSocket"
                     },
                     {
                       "type": ""
@@ -385,7 +328,7 @@
                     "maxHeaderSize",
                     "maxEntityBodySize"
                   ],
-                  "name": "ballerina/http:2.15.0:RequestLimitConfigs"
+                  "name": "ballerina/http:2.15.4:RequestLimitConfigs"
                 },
                 "gracefulStopTimeout": {
                   "type": "number"
@@ -425,7 +368,7 @@
                     "socketReuse",
                     "keepAlive"
                   ],
-                  "name": "ballerina/http:2.15.0:ServerSocketConfig"
+                  "name": "ballerina/http:2.15.4:ServerSocketConfig"
                 },
                 "http2InitialWindowSize": {
                   "type": "integer"
@@ -452,7 +395,7 @@
                 "minIdleTimeInStaleState",
                 "timeBetweenStaleEviction"
               ],
-              "name": "ballerina/http:2.15.0:ListenerConfiguration",
+              "name": "ballerina/http:2.15.4:ListenerConfiguration",
               "description": ""
             },
             "traceLogConsole": {
@@ -479,7 +422,7 @@
               "required": [
                 "console"
               ],
-              "name": "ballerina/http:2.15.0:TraceLogAdvancedConfiguration",
+              "name": "ballerina/http:2.15.4:TraceLogAdvancedConfiguration",
               "description": ""
             },
             "accessLogConfig": {
@@ -506,77 +449,11 @@
                 "console",
                 "format"
               ],
-              "name": "ballerina/http:2.15.0:AccessLogConfiguration",
+              "name": "ballerina/http:2.15.4:AccessLogConfiguration",
               "description": ""
             }
           },
           "additionalProperties": false
-        }
-      },
-      "additionalProperties": false
-    },
-    "wso2": {
-      "type": "object",
-      "properties": {
-        "signup_sfchatsync": {
-          "type": "object",
-          "properties": {
-            "googleChatConfig": {
-              "type": "object",
-              "properties": {
-                "spaceId": {
-                  "type": "string"
-                },
-                "token": {
-                  "type": "string"
-                },
-                "key": {
-                  "type": "string"
-                }
-              },
-              "additionalProperties": false,
-              "required": [
-                "spaceId",
-                "token",
-                "key"
-              ],
-              "description": ""
-            },
-            "salesforceConfig": {
-              "type": "object",
-              "properties": {
-                "refreshToken": {
-                  "type": "string"
-                },
-                "clientId": {
-                  "type": "string"
-                },
-                "clientSecret": {
-                  "type": "string"
-                },
-                "refreshUrl": {
-                  "type": "string"
-                },
-                "baseUrl": {
-                  "type": "string"
-                }
-              },
-              "additionalProperties": false,
-              "required": [
-                "refreshToken",
-                "clientId",
-                "clientSecret",
-                "refreshUrl",
-                "baseUrl"
-              ],
-              "description": ""
-            }
-          },
-          "additionalProperties": false,
-          "required": [
-            "googleChatConfig",
-            "salesforceConfig"
-          ]
         }
       },
       "additionalProperties": false

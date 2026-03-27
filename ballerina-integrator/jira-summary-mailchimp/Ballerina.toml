@@ -1,0 +1,9 @@
+[package]
+org = "wso2"
+name = "jira_summary_mailchimp"
+version = "0.1.0"
+title = "jira-summary-mailchimp"
+distribution = "2201.13.1"
+
+[build-options]
+sticky = true

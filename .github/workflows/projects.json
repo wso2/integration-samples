@@ -4,11 +4,38 @@
   },
   {
     "path": "ballerina-integrator/new-shopify-customer-to-stripe"
-  }, 
+  },
   {
     "path": "ballerina-integrator/signup-sfchatsync"
   },
   {
     "path": "ballerina-integrator/jira-sprint-summary-email"
-   }
+  },
+  {
+    "path": "ballerina-integrator/salesforce-leads-to-googlesheets"
+  },
+  {
+    "path": "ballerina-integrator/shopify-customer-to-salesforce"
+  },
+  {
+    "path": "ballerina-integrator/shopify-order-to-google-sheets"
+  },
+  {
+    "path": "ballerina-integrator/new-shopify-order-to-slack"
+  },
+  {
+    "path": "ballerina-integrator/jira-summary-mailchimp"
+  },
+  {
+    "path": "ballerina-integrator/salesforce-closed-won-slack-notifier"
+  },
+  {
+    "path": "ballerina-integrator/salesforce-performance-summary-to-email"
+  },
+  {
+    "path": "ballerina-integrator/shopify-to-quickbooks-transaction"
+  },
+  {
+    "path": "ballerina-integrator/github-issue-to-google-chat"
+  }
 ]
