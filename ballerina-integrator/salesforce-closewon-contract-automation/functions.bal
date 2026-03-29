@@ -157,10 +157,12 @@ function getOpportunityFieldValue(Opportunity opportunity, string fieldName) ret
 
 // Update Salesforce opportunity stage
 function updateOpportunityStage(string opportunityId, string stageName) returns error? {
-    // Note: The Salesforce client doesn't have a direct update method
-    // We'll log the update for now - in production, you'd use the REST API directly
-    log:printInfo(string `Would update opportunity ${opportunityId} stage to ${stageName}`);
-    log:printWarn("Opportunity stage update requires additional Salesforce REST API implementation");
+    // NOTE: This function does not currently perform a real Salesforce update.
+    // To enable contract status tracking and prevent duplicate envelope sends,
+    // wire this to the Salesforce REST API (PATCH /sobjects/Opportunity/{Id})
+    // to set the StageName field appropriately.
+    log:printError(string `Opportunity stage update for ${opportunityId} to ${stageName} is not implemented`);
+    return error("Opportunity stage update is not implemented; integrate with Salesforce REST API before using this function in production flows");
 }
 
 // Check if opportunity meets criteria
