@@ -11,7 +11,7 @@ This integration automatically sends Docusign contracts when Salesforce opportun
 - Listens to Salesforce Opportunity change events and validates they meet business criteria (Closed Won stage, minimum deal value)
 - Retrieves contact details based on configured signer role and selects the appropriate Docusign template
 - Creates and sends Docusign envelope with pre-filled fields, configured signers, and CC recipients
-- Updates Salesforce opportunity stage to track contract status
+- Logs contract status related to the Salesforce opportunity without changing the opportunity stage
 
 ## Prerequisites
 
