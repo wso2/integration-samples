@@ -128,154 +128,188 @@
         "closewon_contract_automation": {
           "type": "object",
           "properties": {
-            "salesforceUsername": {
-              "type": "string",
-              "description": ""
-            },
-            "salesforcePassword": {
-              "type": "string",
-              "description": ""
-            },
-            "docusignAccountId": {
-              "type": "string",
-              "description": ""
-            },
-            "docusignAccessToken": {
-              "type": "string",
-              "description": ""
-            },
-            "docusignBaseUrl": {
-              "type": "string",
-              "description": ""
-            },
-            "defaultTemplateId": {
-              "type": "string",
-              "description": ""
-            },
-            "templateConfigs": {
-              "type": "array",
-              "items": {
-                "type": "object",
-                "properties": {
-                  "templateId": {
-                    "type": "string"
-                  },
-                  "productType": {
-                    "type": "string"
-                  },
-                  "dealType": {
-                    "type": "string"
-                  },
-                  "expirationDays": {
-                    "type": "integer"
-                  }
+            "salesforceConfig": {
+              "type": "object",
+              "properties": {
+                "clientId": {
+                  "type": "string"
                 },
-                "additionalProperties": false,
-                "required": [
-                  "templateId"
-                ],
-                "name": "wso2/closewon_contract_automation:0.1.0:TemplateConfig"
+                "clientSecret": {
+                  "type": "string"
+                },
+                "refreshToken": {
+                  "type": "string"
+                },
+                "refreshUrl": {
+                  "type": "string"
+                },
+                "baseUrl": {
+                  "type": "string"
+                }
               },
-              "description": ""
-            },
-            "signerRole": {
-              "enum": [
-                "Executive Sponsor",
-                "Decision Maker",
-                "Billing Contact",
-                "Primary Contact"
+              "additionalProperties": false,
+              "required": [
+                "clientId",
+                "clientSecret",
+                "refreshToken",
+                "refreshUrl",
+                "baseUrl"
               ],
+              "name": "wso2/closewon_contract_automation:0.1.0:SalesforceConfig",
               "description": ""
             },
-            "ccRecipients": {
-              "type": "array",
-              "items": {
-                "type": "object",
-                "properties": {
-                  "email": {
-                    "type": "string"
-                  },
-                  "name": {
-                    "type": "string"
+            "docusignConfig": {
+              "type": "object",
+              "properties": {
+                "accountId": {
+                  "type": "string"
+                },
+                "clientId": {
+                  "type": "string"
+                },
+                "clientSecret": {
+                  "type": "string"
+                },
+                "refreshToken": {
+                  "type": "string"
+                },
+                "refreshUrl": {
+                  "type": "string"
+                },
+                "baseUrl": {
+                  "type": "string"
+                }
+              },
+              "additionalProperties": false,
+              "required": [
+                "accountId",
+                "clientId",
+                "clientSecret",
+                "refreshToken",
+                "refreshUrl",
+                "baseUrl"
+              ],
+              "name": "wso2/closewon_contract_automation:0.1.0:DocusignConfig",
+              "description": ""
+            },
+            "templateSettings": {
+              "type": "object",
+              "properties": {
+                "defaultTemplateId": {
+                  "type": "string"
+                },
+                "templateConfigs": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "templateId": {
+                        "type": "string"
+                      },
+                      "productType": {
+                        "type": "string"
+                      },
+                      "dealType": {
+                        "type": "string"
+                      },
+                      "expirationDays": {
+                        "type": "integer"
+                      }
+                    },
+                    "additionalProperties": false,
+                    "required": [
+                      "templateId"
+                    ],
+                    "name": "wso2/closewon_contract_automation:0.1.0:TemplateConfig"
+                  }
+                }
+              },
+              "additionalProperties": false,
+              "required": [
+                "defaultTemplateId",
+                "templateConfigs"
+              ],
+              "name": "wso2/closewon_contract_automation:0.1.0:TemplateSettings",
+              "description": ""
+            },
+            "businessRulesConfig": {
+              "type": "object",
+              "properties": {
+                "minimumDealValue": {
+                  "type": "number"
+                },
+                "signerRole": {
+                  "enum": [
+                    "Executive Sponsor",
+                    "Decision Maker",
+                    "Billing Contact",
+                    "Primary Contact"
+                  ]
+                },
+                "ccRecipients": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "email": {
+                        "type": "string"
+                      },
+                      "name": {
+                        "type": "string"
+                      }
+                    },
+                    "additionalProperties": false,
+                    "required": [
+                      "email",
+                      "name"
+                    ],
+                    "name": "wso2/closewon_contract_automation:0.1.0:CcRecipient"
                   }
                 },
-                "additionalProperties": false,
-                "required": [
-                  "email",
-                  "name"
-                ],
-                "name": "wso2/closewon_contract_automation:0.1.0:CcRecipient"
-              },
-              "description": ""
-            },
-            "fieldMappings": {
-              "type": "array",
-              "items": {
-                "type": "object",
-                "properties": {
-                  "opportunityField": {
-                    "type": "string"
-                  },
-                  "docusignField": {
-                    "type": "string"
+                "fieldMappings": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "opportunityField": {
+                        "type": "string"
+                      },
+                      "docusignField": {
+                        "type": "string"
+                      }
+                    },
+                    "additionalProperties": false,
+                    "required": [
+                      "opportunityField",
+                      "docusignField"
+                    ],
+                    "name": "wso2/closewon_contract_automation:0.1.0:FieldMapping"
                   }
                 },
-                "additionalProperties": false,
-                "required": [
-                  "opportunityField",
-                  "docusignField"
-                ],
-                "name": "wso2/closewon_contract_automation:0.1.0:FieldMapping"
+                "contractSentStage": {
+                  "type": "string"
+                },
+                "expirationReminderDays": {
+                  "type": "integer"
+                }
               },
-              "description": ""
-            },
-            "minimumDealValue": {
-              "type": "number",
-              "description": ""
-            },
-            "expirationReminderDays": {
-              "type": "integer",
-              "description": ""
-            },
-            "contractSentStage": {
-              "type": "string",
-              "description": ""
-            },
-            "salesforceChannelName": {
-              "type": "string",
-              "description": ""
-            },
-            "salesforceBaseUrl": {
-              "type": "string",
-              "description": ""
-            },
-            "salesforceClientId": {
-              "type": "string",
-              "description": ""
-            },
-            "salesforceClientSecret": {
-              "type": "string",
-              "description": ""
-            },
-            "salesforceRefreshToken": {
-              "type": "string",
-              "description": ""
-            },
-            "salesforceRefreshUrl": {
-              "type": "string",
+              "additionalProperties": false,
+              "required": [
+                "minimumDealValue",
+                "signerRole",
+                "ccRecipients",
+                "fieldMappings",
+                "contractSentStage",
+                "expirationReminderDays"
+              ],
+              "name": "wso2/closewon_contract_automation:0.1.0:BusinessRulesConfig",
               "description": ""
             }
           },
           "additionalProperties": false,
           "required": [
-            "salesforceUsername",
-            "salesforcePassword",
-            "docusignAccountId",
-            "docusignAccessToken",
-            "defaultTemplateId",
-            "salesforceClientId",
-            "salesforceClientSecret",
-            "salesforceRefreshToken"
+            "salesforceConfig",
+            "docusignConfig"
           ]
         }
       },
