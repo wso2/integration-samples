@@ -1,0 +1,9 @@
+[package]
+org = "wso2"
+name = "new_inte"
+version = "0.1.0"
+distribution = "2201.13.1"
+title = "new-inte"
+
+[build-options]
+sticky = true
