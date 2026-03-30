@@ -1,9 +1,9 @@
 [package]
 org = "wso2"
-name = "new_inte"
+name = "redis_connector_sample"
 version = "0.1.0"
 distribution = "2201.13.1"
-title = "new-inte"
+title = "redis_connector_sample"
 
 [build-options]
 sticky = true
