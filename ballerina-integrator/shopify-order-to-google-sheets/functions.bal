@@ -3,10 +3,32 @@ import ballerina/time;
 import ballerinax/googleapis.sheets;
 import ballerinax/trigger.shopify;
 
+isolated string[] initializedSheets = [];
+
+# Extracts line item details and creates a row for each line item
+# + rowValues - The base row values from the order event
+# + lineItems - The list of line items from the order event
+# + return - A list of rows with line item details included
+isolated function expandLineItems((int|string|decimal)[] rowValues, shopify:LineItem[] lineItems) returns (int|string|decimal)[][] {
+    (int|string|decimal)[][] allRows = [];
+    foreach var item in lineItems {
+        (int|string|decimal)[] lineItemValues = rowValues.clone();
+        lineItemValues.push(item?.title ?: "");
+        lineItemValues.push(item?.sku ?: "");
+        lineItemValues.push(item?.variant_title ?: "");
+        lineItemValues.push(item?.quantity ?: 0);
+        lineItemValues.push(item?.price ?: "0.00");
+        lineItemValues.push(item?.product_id.toString());
+        lineItemValues.push(item?.variant_id.toString());
+        allRows.push(lineItemValues);
+    }
+    return allRows;
+}
+
 # Apply filters to determine if order should be processed
 # + event - The order event
 # + return - True if order should be filtered out (skipped), false if it should be processed
-function applyFilters(shopify:OrderEvent event) returns boolean {
+isolated function applyFilters(shopify:OrderEvent event) returns boolean {
     string orderNumber = event?.order_number.toString();
 
     if allowedCountryCodes.length() > 0 {
@@ -51,21 +73,17 @@ function applyFilters(shopify:OrderEvent event) returns boolean {
 
     string orderTags = event?.tags ?: "";
     string:RegExp commaPattern = re `,`;
-    string[] orderTagList = orderTags == "" ? [] : from string tag in commaPattern.split(orderTags) select tag.trim();
+    
+    string[] tempTagList = orderTags == "" ? [] : from string tag in commaPattern.split(orderTags) select tag.trim();    
+    final string[] & readonly orderTagList = tempTagList.cloneReadOnly();
     
     if requiredTags.length() > 0 {
         if orderTagList.length() == 0 {
             log:printWarn(string `Filter failed for order ${orderNumber}: No tags found, but required tags are configured`);
             return true;
         }
-        boolean hasRequiredTag = false;
-        foreach string requiredTag in requiredTags {
-            if orderTagList.indexOf(requiredTag) !is () {
-                hasRequiredTag = true;
-                break;
-            }
-        }
-        if !hasRequiredTag {
+        
+        if !requiredTags.some(isolated function(string tag) returns boolean => orderTagList.indexOf(tag) is int) {
             log:printWarn(string `Filter failed for order ${orderNumber}: Order tags '${orderTags}' do not contain any required tags`);
             return true;
         }
@@ -83,7 +101,7 @@ function applyFilters(shopify:OrderEvent event) returns boolean {
     return false;
 }
 
-function resolveSheetName(shopify:OrderEvent event) returns string|error {
+isolated function resolveSheetName(shopify:OrderEvent event) returns string|error {
     if !groupByMonth {
         check ensureSheetExists(sheetName);
         return sheetName;
@@ -100,7 +118,7 @@ function resolveSheetName(shopify:OrderEvent event) returns string|error {
     return name;
 }
 
-function ensureSheetExists(string sheetName) returns error? {
+isolated function ensureSheetExists(string sheetName) returns error? {
     sheets:Sheet|error sheet = sheetsClient->getSheetByName(googleSheetsConfig.spreadsheetId, sheetName);
     
     if sheet is error {
@@ -120,7 +138,7 @@ function ensureSheetExists(string sheetName) returns error? {
 # create row from order event
 # + event - The order event
 # + return - Error if operation fails
-function createRowFromEvent(shopify:OrderEvent event) returns error? {
+isolated function createRowFromEvent(shopify:OrderEvent event) returns error? {
     log:printDebug(string `Received order event: ${event?.order_number.toString()}`);
     boolean shouldFilter = applyFilters(event);
     if shouldFilter {
@@ -129,6 +147,7 @@ function createRowFromEvent(shopify:OrderEvent event) returns error? {
 
     string sheetName = check resolveSheetName(event);
     check addHeader(sheetName);
+
     (int|string|decimal)[] rowValues = eventToRowData(event);
     sheets:A1Range a1Range = {
         sheetName: sheetName,
@@ -141,19 +160,7 @@ function createRowFromEvent(shopify:OrderEvent event) returns error? {
             var lineItems = event?.line_items;
 
             if !(lineItems is ()) && lineItems.length() > 0 {
-                (int|string|decimal)[][] allRows = [];
-                foreach var item in lineItems {
-                    (int|string|decimal)[] lineItemValues = rowValues.clone();
-                    lineItemValues.push(item?.title ?: "");
-                    lineItemValues.push(item?.sku ?: "");
-                    lineItemValues.push(item?.variant_title ?: "");
-                    lineItemValues.push(item?.quantity ?: 0);
-                    lineItemValues.push(item?.price ?: "0.00");
-                    lineItemValues.push(item?.product_id ?: "");
-                    lineItemValues.push(item?.variant_id ?: "");
-                    allRows.push(lineItemValues);
-                }
-                
+                (int|string|decimal)[][] allRows = expandLineItems(rowValues, lineItems);
                 _ = check sheetsClient->appendValues(googleSheetsConfig.spreadsheetId, allRows, a1Range);
                 return;
             } 
@@ -166,14 +173,18 @@ function createRowFromEvent(shopify:OrderEvent event) returns error? {
             check upsertOrderWithoutLineItems(event, rowValues, a1Range, sheetName);
         }
     }
-
-    return;
 }
 
 # Adds the header row for an empty sheet
 # + sheetName - Target sheet name
 # + return - Error if operation fails
-function addHeader(string sheetName) returns error? {
+isolated function addHeader(string sheetName) returns error? {
+    lock {
+        if (initializedSheets.indexOf(sheetName) is int) {
+            return;
+        }
+    }
+    
     sheets:Row firstRow = check sheetsClient->getRow(googleSheetsConfig.spreadsheetId, sheetName, 1);
     (int|string|decimal)[] firstRowValues = firstRow.values;
 
@@ -252,6 +263,9 @@ function addHeader(string sheetName) returns error? {
         }
         check sheetsClient->createOrUpdateRow(googleSheetsConfig.spreadsheetId, sheetName, 1, headerRow);
     }
+    lock {
+        initializedSheets.push(sheetName);
+    }
 }
 
 # Upsert order without line items (single row per order)
@@ -260,7 +274,7 @@ function addHeader(string sheetName) returns error? {
 # + a1Range - The A1 range for appending
 # + sheetName - Target sheet name
 # + return - Error if operation fails
-function upsertOrderWithoutLineItems(shopify:OrderEvent event, (int|string|decimal)[] rowValues, sheets:A1Range a1Range, string sheetName) returns error? {
+isolated function upsertOrderWithoutLineItems(shopify:OrderEvent event, (int|string|decimal)[] rowValues, sheets:A1Range a1Range, string sheetName) returns error? {
     sheets:Column orderNumberRowData = check sheetsClient->getColumn(googleSheetsConfig.spreadsheetId, sheetName, "B");
     (int|string|decimal)[] orderNums = orderNumberRowData.values;
 
@@ -284,7 +298,7 @@ function upsertOrderWithoutLineItems(shopify:OrderEvent event, (int|string|decim
 # + a1Range - The A1 range for appending
 # + sheetName - Target sheet name
 # + return - Error if operation fails
-function upsertOrderWithLineItems(shopify:OrderEvent event, (int|string|decimal)[] rowValues, sheets:A1Range a1Range, string sheetName) returns error? {
+isolated function upsertOrderWithLineItems(shopify:OrderEvent event, (int|string|decimal)[] rowValues, sheets:A1Range a1Range, string sheetName) returns error? {
     sheets:Column orderNumberRowData = check sheetsClient->getColumn(googleSheetsConfig.spreadsheetId, sheetName, "B");
     (int|string|decimal)[] orderNums = orderNumberRowData.values;
 
@@ -300,17 +314,7 @@ function upsertOrderWithLineItems(shopify:OrderEvent event, (int|string|decimal)
     var lineItems = event?.line_items;
     (int|string|decimal)[][] allRows = [];
     if !(lineItems is ()) && lineItems.length() > 0 {
-        foreach var item in lineItems {
-            (int|string|decimal)[] lineItemValues = rowValues.clone();
-            lineItemValues.push(item?.title ?: "");
-            lineItemValues.push(item?.sku ?: "");
-            lineItemValues.push(item?.variant_title ?: "");
-            lineItemValues.push(item?.quantity ?: 0);
-            lineItemValues.push(item?.price ?: "0.00");
-            lineItemValues.push(item?.product_id ?: "");
-            lineItemValues.push(item?.variant_id ?: "");
-            allRows.push(lineItemValues);
-        }
+        allRows = expandLineItems(rowValues, lineItems);
     } else {
         // No line items, just use base row
         allRows.push(rowValues);
