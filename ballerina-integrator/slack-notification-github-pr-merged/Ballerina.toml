@@ -4,3 +4,8 @@ name = "slack_notification_github_pr_merged"
 version = "0.1.0"
 title = "slack-notification-github-pr-merged"
 distribution = "2201.13.1"
+
+[[dependency]]
+org = "ballerinax"
+name = "trigger.github"
+version = "0.11.0"
