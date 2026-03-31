@@ -1,4 +1,4 @@
-public type SheetRow (int|string|decimal)[];
+type SheetRow (int|string|decimal)[];
 
 type IssueData record {
     string key;

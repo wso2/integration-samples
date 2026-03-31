@@ -6,8 +6,10 @@ This integration extracts Jira issues from a specified project using JQL (Jira Q
 
 ### What It Does
 
-- **Queries Jira issues** from a specific project (e.g., `project=PROJ`)
-- **Creates a new Google Sheets spreadsheet** with a timestamped name (e.g., "Jira Issues 2026-03-10 13:08")
+- **Queries Jira issues** from a specific project (e.g., `project=PROJ`), optionally filtered by timeFrame (e.g., issues created in the last 7 days)
+- **Creates or updates Google Sheets:**
+  - Creates a new timestamped Google Sheets spreadsheet if `spreadsheetId` is not provided
+  - Appends a new timestamped sheet to an existing spreadsheet if `spreadsheetId` is provided
 - **Exports the following Jira fields:**
     - Issue Key
     - Summary
@@ -16,7 +18,7 @@ This integration extracts Jira issues from a specified project using JQL (Jira Q
     - Created Date
     - Due Date
 
-- **Appends all issue data** to the spreadsheet
+- **Timestamps** are generated in the configured timezone (default:UTC)
 
 ## Prerequisites
 

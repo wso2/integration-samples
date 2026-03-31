@@ -1,8 +1,8 @@
+import ballerina/log;
 import ballerinax/googleapis.sheets as sheets;
 import ballerinax/jira;
-import ballerina/log;
 
-SheetRow columns = [
+const SheetRow columns = [
     "Issue Key",
     "Summary",
     "Status",
@@ -12,11 +12,11 @@ SheetRow columns = [
 ];
 
 function getOrCreateSpreadsheet(string sheetName) returns [string, sheets:Sheet]|error {
-    string trimmedId = spreadsheetId.trim();
-    if trimmedId != "" {
-        log:printInfo("Using existing spreadsheet with ID: " + trimmedId);
-        sheets:Sheet sheet = check sheetsClient->addSheet(trimmedId, sheetName);
-        return [trimmedId, sheet];
+    string? existingSpreadsheetId = spreadsheetId;
+    if existingSpreadsheetId is string {
+        log:printInfo("Using existing spreadsheet with ID: " + existingSpreadsheetId);
+        sheets:Sheet sheet = check sheetsClient->addSheet(existingSpreadsheetId, sheetName);
+        return [existingSpreadsheetId, sheet];
     }
     
     sheets:Spreadsheet spreadsheet = check sheetsClient->createSpreadsheet(name = sheetName);
@@ -24,31 +24,39 @@ function getOrCreateSpreadsheet(string sheetName) returns [string, sheets:Sheet]
     return [spreadsheet.spreadsheetId, spreadsheet.sheets[0]];
 }
 
-public function runAutomation() returns error? {
+public function sendJiraIssuesToGoogleSheets() returns error? {
 
      do {
          string currentTimeStamp = check getFormattedCurrentTimeStamp();
          
-         string jql = string `project=${jiraConfig.projectKey}`;
-         string prefix = "Jira Issues";
+         string jql;
+         string prefix;
 
-         if timeFrame == YESTERDAY {
-             jql += " AND created >= -1d";
-             prefix = "New Jira Issues Since Yesterday";
-         } else if timeFrame == LAST_WEEK {
-             jql += " AND created >= -7d";
-             prefix = "New Jira Issues Since Last Week";
-         } else if timeFrame == LAST_MONTH {
-             jql += " AND created >= -30d";
-             prefix = "New Jira Issues Since Last Month";
-         } else if timeFrame == LAST_QUARTER {
-             jql += " AND created >= -90d";
-             prefix = "New Jira Issues Since Last Quarter";
+         match timeFrame {
+             YESTERDAY => {
+                 jql = string `project=${jiraConfig.projectKey} AND created >= -1d`;
+                 prefix = "New Jira Issues Since Yesterday";
+             }
+             LAST_WEEK => {
+                 jql = string `project=${jiraConfig.projectKey} AND created >= -7d`;
+                 prefix = "New Jira Issues Since Last Week";
+             }
+             LAST_MONTH => {
+                 jql = string `project=${jiraConfig.projectKey} AND created >= -30d`;
+                 prefix = "New Jira Issues Since Last Month";
+             }
+             LAST_QUARTER => {
+                 jql = string `project=${jiraConfig.projectKey} AND created >= -90d`;
+                 prefix = "New Jira Issues Since Last Quarter";
+             }
+             _ => {
+                 jql = string `project=${jiraConfig.projectKey}`;
+                 prefix = "Jira Issues";
+             }
          }
          string spreadSheetName = string `${prefix} ${currentTimeStamp}`;
 
-         string selectedTimeFrame = timeFrame.toString();
-         log:printInfo("Time frame selected: " + selectedTimeFrame);
+         log:printInfo("Time frame selected: " + timeFrame);
          log:printInfo("Executing JQL: " + jql);
 
          jira:SearchAndReconcileResults result = check jiraClient->/api/'3/search/jql(
@@ -57,26 +65,21 @@ public function runAutomation() returns error? {
          );
 
          jira:IssueBean[]? issueBeans = result.issues;
-
-         IssueData[] issues = [];
-         if issueBeans is jira:IssueBean[] {
-             if issueBeans.length() == 0 {
-                 return error("No Jira issues found. Please verify your Jira configurations.");
-             }
-             issues = from jira:IssueBean bean in issueBeans
-                      select convertBeanToIssueData(bean);
+         if issueBeans is () {
+             log:printInfo("No Jira issues found matching the criteria.");
+             return;
          }
+
+         IssueData[] issues = from jira:IssueBean bean in issueBeans
+                              select convertBeanToIssueData(bean);
 
          SheetRow[] issueValues =
              from IssueData issue in issues
              select mapIssueToRow(issue);
 
-         SheetRow[] allValues = [columns];
-         allValues.push(...issueValues);
+         SheetRow[] allValues = [columns, ...issueValues];
 
-         [string, sheets:Sheet] spreadsheetResult = check getOrCreateSpreadsheet(spreadSheetName);
-         string workingSpreadsheetId = spreadsheetResult[0];
-         sheets:Sheet sheet = spreadsheetResult[1];
+         [string, sheets:Sheet] [workingSpreadsheetId, sheet] = check getOrCreateSpreadsheet(spreadSheetName);
 
          sheets:A1Range a1Range = {
              sheetName: sheet.properties.title
@@ -88,9 +91,7 @@ public function runAutomation() returns error? {
              a1Range = a1Range
          );
 
-         log:printInfo(
-             string `${issueValues.length()} ${issueValues.length() == 1 ? "issue" : "issues"} added to the spreadsheet successfully.`
-         );
+         log:printInfo(string `${issueValues.length()} issue(s) added to the spreadsheet successfully.`);
 
      } on fail error e {
          log:printError("Error: " + e.message());

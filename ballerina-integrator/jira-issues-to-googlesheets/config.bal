@@ -1,19 +1,23 @@
-configurable record {
+type JiraConfig record {|
     string baseUrl;
     string email;
     string apiToken;
     string projectKey;
-} jiraConfig = ?;
+|};
 
-configurable record {
+type GoogleSheetsConfig record {|
     string refreshToken;
     string clientId;
     string clientSecret;
-} googleSheetsConfig = ?;
+|};
+
+configurable JiraConfig jiraConfig = ?;
+
+configurable GoogleSheetsConfig googleSheetsConfig = ?;
 
 configurable string timezone = "UTC";
 
-configurable string spreadsheetId = "";
+configurable string? spreadsheetId = ();
 
 public enum TimeFrame {
     ALL,
