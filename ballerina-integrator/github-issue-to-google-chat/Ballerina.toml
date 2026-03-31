@@ -1,0 +1,9 @@
+[package]
+org = "wso2"
+name = "github_issue_to_google_chat"
+version = "0.2.0"
+title = "github-issue-to-google-chat"
+distribution = "2201.13.2"
+
+[build-options]
+sticky = true
