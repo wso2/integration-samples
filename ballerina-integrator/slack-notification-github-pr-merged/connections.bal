@@ -9,4 +9,4 @@ final slack:Client slackClient = check new ({
 });
 
 // Initialize GitHub webhook listener
-listener github:Listener githubListener = new (listenerConfig = { webhookSecret: githubConfig.webhookSecret }, listenOn = 8090);
+listener github:Listener githubListener = new (listenerConfig = { webhookSecret: githubConfig.webhookSecret }, listenOn = 9090);
