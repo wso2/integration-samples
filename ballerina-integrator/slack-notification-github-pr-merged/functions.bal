@@ -5,9 +5,9 @@ import ballerina/time;
 // Check if PR matches the configured filters
 function shouldProcessPullRequest(github:PullRequest pr) returns boolean {
     // Filter by base branch (e.g., only main/release branches)
-    if filterBaseBranches.length() > 0 {
+    if githubConfig.filterBaseBranches.length() > 0 {
         boolean matchesBaseBranch = false;
-        foreach string branch in filterBaseBranches {
+        foreach string branch in githubConfig.filterBaseBranches {
             if pr.base.'ref == branch {
                 matchesBaseBranch = true;
                 break;
@@ -19,12 +19,12 @@ function shouldProcessPullRequest(github:PullRequest pr) returns boolean {
     }
 
     // Filter by label
-    if filterLabels.length() > 0 {
+    if githubConfig.filterLabels.length() > 0 {
         boolean hasMatchingLabel = false;
         github:Label[]? prLabels = pr.labels;
         if prLabels is github:Label[] {
             foreach github:Label prLabel in prLabels {
-                foreach string filterLabel in filterLabels {
+                foreach string filterLabel in githubConfig.filterLabels {
                     if prLabel.name == filterLabel {
                         hasMatchingLabel = true;
                         break;
@@ -41,8 +41,8 @@ function shouldProcessPullRequest(github:PullRequest pr) returns boolean {
     }
 
     // Filter by author
-    if filterAuthor != "" {
-        if pr.user.login != filterAuthor {
+    if githubConfig.filterAuthor != "" {
+        if pr.user.login != githubConfig.filterAuthor {
             return false;
         }
     }

@@ -8,10 +8,16 @@ configurable record {
     string[] channelRouting = [];
 } slackConfig = ?;
 
-// Optional filters
-configurable string[] filterBaseBranches = ["main"];
-configurable string[] filterLabels = [];
-configurable string filterAuthor = "";
+// GitHub webhook configuration
+configurable record {
+    int port = 8090;
+    string callbackUrl = "";
+    string[] repos;
+    string webhookSecret;
+    string[] filterBaseBranches = ["main"];
+    string[] filterLabels = [];
+    string filterAuthor = "";
+} githubConfig = ?;
 
 // Message customization
 configurable boolean includePrDescription = true;

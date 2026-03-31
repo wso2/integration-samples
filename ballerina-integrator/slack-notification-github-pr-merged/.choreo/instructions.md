@@ -28,7 +28,7 @@
 The following should be done after deploying the integration, and the endpoint URL is available.
 
 1. Set up a webhook on the repository:
-   - Go to your GitHub repository **Settings > Webhooks > Add webhook**
+   - Go to your GitHub repository **Settings** > **Webhooks** > **Add webhook**
    - Set **Payload URL** to your deployed integration endpoint
    - Set **Content type** to `application/json`
    - Optionally set a secret for security (if you do, make sure to add it to the integration configuration as well)
@@ -41,32 +41,7 @@ The following should be done after deploying the integration, and the endpoint U
 <details>
 <summary>Additional Configurations</summary>
 
-### Required Configurations
-
-1. `slackToken`
-   - Your Slack Bot User OAuth Token (starts with `xoxb-`)
-   - Obtained from Slack App "OAuth & Permissions" page
-
-2. `slackChannelId`
-   - Default Slack channel ID to post notifications (e.g., `C0AKY8K8DT3`)
-   - Found in Slack channel details
-
-3. `githubRepos`
-   - Array of GitHub repositories to monitor in `org/repo` format
-   - Example: `["TharaniDJ/devant", "myorg/myrepo"]`
-
-### Webhook Configuration
-
-1. `webhookPort`
-   - Port number for the webhook listener
-   - Default: `8090`
-
-2. `githubCallback`
-   - Public URL for GitHub webhooks
-   - Leave empty for local testing
-   - For production, set to your deployed endpoint URL
-
-### Optional Filters
+### Filters
 
 1. `filterBaseBranches`
    - Only notify for PRs targeting specific branches

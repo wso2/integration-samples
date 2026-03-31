@@ -49,16 +49,24 @@ The following configurations are required in your `Config.toml` file:
 
 ### Slack Configuration
 
-- `slackToken` - Your Slack Bot User OAuth Token (e.g., `xoxb-...`)
-- `slackChannelId` - Default Slack channel ID to post notifications (e.g., `C0AKY8K8DT3`)
+- `slackConfig.token` - Your Slack Bot User OAuth Token (e.g., `xoxb-...`)
+- `slackConfig.channelId` - Default Slack channel ID to post notifications (e.g., `C0AKY8K8DT3`)
+- `slackConfig.channelRouting` - Optional channel routing rules per repository or branch
+
+### GitHub Webhook Configuration
+
+- `githubConfig.port` - Port number for the webhook listener (default: `8090`)
+- `githubConfig.callbackUrl` - Public URL for GitHub webhooks (leave empty for local testing)
+- `githubConfig.repos` - Array of repositories to monitor in `org/repo` format (e.g., `["TharaniDJ/devant"]`)
+- `githubConfig.webhookSecret` - Webhook secret configured in your GitHub webhook settings
 
 ### Optional Filters
 
 Customize which PRs trigger notifications:
 
-- `filterBaseBranches` - Only notify for PRs targeting specific branches (e.g., `["main", "develop"]`)
-- `filterLabels` - Only notify for PRs with specific labels (empty array allows all labels)
-- `filterAuthor` - Only notify for PRs from a specific GitHub username (empty string allows all authors)
+- `githubConfig.filterBaseBranches` - Only notify for PRs targeting specific branches (e.g., `["main", "develop"]`)
+- `githubConfig.filterLabels` - Only notify for PRs with specific labels (empty array allows all labels)
+- `githubConfig.filterAuthor` - Only notify for PRs from a specific GitHub username (empty string allows all authors)
 
 ### Message Customization
 
@@ -73,13 +81,13 @@ Control what information appears in Slack notifications:
 
 Route notifications to different channels based on repository or branch:
 
-- `channelRouting` - Array of routing rules in format:
+- `slackConfig.channelRouting` - Array of routing rules in format:
   - `"org/repo:CHANNEL_ID"` - Route all PRs from a repo to a specific channel
   - `"org/repo/branch:CHANNEL_ID"` - Route PRs to a specific branch to a channel
 
 Example:
 ```toml
-channelRouting = [
+slackConfig.channelRouting = [
     "TharaniDJ/devant/main:C0AKY8K8DT3",      # Main branch PRs → #releases
     "TharaniDJ/devant/develop:C0AKY8UU74Z"    # Develop branch PRs → #dev-updates
 ]
@@ -92,8 +100,10 @@ channelRouting = [
 3. Select the **Technology** as `WSO2 Integrator: BI`.
 4. Choose the **Integration** Type as `Event-Driven` and click **Create**.
 5. Once the build is successful, click **Configure to Continue** and set up the required environment variables:
-   - `slackToken` - Your Slack Bot OAuth Token
-   - `slackChannelId` - Default Slack channel ID
+   - `slackConfig.token` - Your Slack Bot OAuth Token
+   - `slackConfig.channelId` - Default Slack channel ID
+   - `githubConfig.repos` - Repositories to monitor
+   - `githubConfig.webhookSecret` - Webhook secret configured in GitHub
    - Configure optional filters and message customization as needed
 6. Click **Deploy** to deploy the integration.
 7. Configure GitHub webhook:
