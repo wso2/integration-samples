@@ -1,5 +1,13 @@
 type SheetRow (int|string|decimal)[];
 
+type JiraIssueFields record {|
+    string summary?;
+    record {| string name; |} status?;
+    record {| string displayName; |} assignee?;
+    string created?;
+    string duedate?;
+|};
+
 type IssueData record {
     string key;
     IssueFields fields;

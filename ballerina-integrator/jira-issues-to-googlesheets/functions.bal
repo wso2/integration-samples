@@ -3,60 +3,50 @@ import ballerina/time;
 import ballerinax/jira;
 
 function convertBeanToIssueData(jira:IssueBean bean) returns IssueData {
-    string summary = "";
-    string statusName = "Unknown";
-    AssigneeData? assignee = ();
-    string created = "";
-    string dueDate = "";
-    
     record {| anydata...; |}? beanFields = bean.fields;
     if beanFields is () {
         return {
             key: bean.key ?: "",
             fields: {
-                summary,
-                status: {name: statusName},
-                assignee,
-                created,
-                dueDate
+                summary: "",
+                status: {name: "Unknown"},
+                assignee: (),
+                created: "",
+                dueDate: ""
             }
         };
     }
 
-    map<anydata> fields = beanFields;
+    JiraIssueFields|error jiraFields = beanFields.cloneWithType();
+    if jiraFields is error {
+        return {
+            key: bean.key ?: "",
+            fields: {
+                summary: "",
+                status: {name: "Unknown"},
+                assignee: (),
+                created: "",
+                dueDate: ""
+            }
+        };
+    }
+
+    string summary = jiraFields.summary ?: "";
+    string statusName = jiraFields.status?.name ?: "Unknown";
     
-    anydata summaryValue = fields["summary"];
-    if summaryValue is string {
-        summary = summaryValue;
+    AssigneeData? assignee = ();
+    record {| string displayName; |}? assigneeRecord = jiraFields.assignee;
+    if assigneeRecord is record {| string displayName; |} {
+        assignee = {displayName: assigneeRecord.displayName};
     }
     
-    anydata createdValue = fields["created"];
+    string created = "";
+    string? createdValue = jiraFields.created;
     if createdValue is string {
         created = formatIsoDateTime(createdValue);
     }
     
-    anydata duedateValue = fields["duedate"];
-    if duedateValue is string {
-        dueDate = duedateValue;
-    }
-    
-    anydata statusValue = fields["status"];
-    if statusValue is record {} {
-        map<anydata> statusMap = statusValue;
-        anydata statusNameValue = statusMap["name"];
-        if statusNameValue is string {
-            statusName = statusNameValue;
-        }
-    }
-    
-    anydata assigneeValue = fields["assignee"];
-    if assigneeValue is record {} {
-        map<anydata> assigneeMap = assigneeValue;
-        anydata displayNameValue = assigneeMap["displayName"];
-        if displayNameValue is string {
-            assignee = {displayName: displayNameValue};
-        }
-    }
+    string dueDate = jiraFields.duedate ?: "";
 
     return {
         key: bean.key ?: "",
