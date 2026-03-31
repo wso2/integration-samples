@@ -6,9 +6,9 @@ service github:PullRequestService on githubListener {
 
     remote function onClosed(github:PullRequestEvent event) returns error? {
 
-        // Check if this is a merged PR event
-        boolean? merged = event.pull_request.merged;
-        if merged != true {
+        // Check if this is a merged PR event using merged_at (more reliable than merged flag)
+        string? mergedAt = event.pull_request.merged_at;
+        if mergedAt is () || mergedAt == "" {
             log:printInfo("PR not merged, skipping notification");
             return;
         }
