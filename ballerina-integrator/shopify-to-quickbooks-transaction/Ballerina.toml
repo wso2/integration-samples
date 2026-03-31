@@ -1,0 +1,9 @@
+[package]
+org = "wso2"
+name = "shopify_to_quickbooks_transaction"
+version = "0.2.0"
+distribution = "2201.13.1"
+title = "shopify-to-quickbooks-transaction"
+
+[build-options]
+sticky = false

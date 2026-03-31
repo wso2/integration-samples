@@ -10,11 +10,11 @@
 
 1. A Salesforce account with API access
 2. OAuth2 credentials:
-  - Client ID
-  - Client Secret
-  - Refresh Token
-  - Refresh URL
-  - Base URL (your Salesforce instance URL)
+    - Client ID
+    - Client Secret
+    - Refresh Token
+    - Refresh URL
+    - Base URL (your Salesforce instance URL)
 
 This integration uses refresh token flow for auth. [Learn how to set up Salesforce OAuth](https://help.salesforce.com/s/articleView?id=xcloud.create_a_local_external_client_app.htm&type=5).
 
@@ -26,12 +26,12 @@ This integration uses refresh token flow for auth. [Learn how to set up Salesfor
 
 1. A Google Cloud project with Google Sheets API enabled
 2. OAuth2 credentials:
-  - Client ID
-  - Client Secret
-  - Refresh Token
+    - Client ID
+    - Client Secret
+    - Refresh Token
 3. Scopes Required
-  - `https://www.googleapis.com/auth/drive`
-  - `https://www.googleapis.com/auth/spreadsheets`
+    - `https://www.googleapis.com/auth/drive`
+    - `https://www.googleapis.com/auth/spreadsheets`
 
 This integration uses refresh token flow for auth. [Learn how to Develop on Google Workspace](https://developers.google.com/workspace/guides/get-started).
 

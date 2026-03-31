@@ -1,7 +1,7 @@
 [package]
 org = "wso2"
 name = "new_shopify_customer_to_stripe"
-version = "0.1.0"
+version = "0.2.0"
 title = "new-shopify-customer-to-stripe"
 distribution= "2201.13.1"
 
