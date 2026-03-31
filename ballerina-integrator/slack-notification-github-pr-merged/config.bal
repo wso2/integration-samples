@@ -10,9 +10,7 @@ configurable record {
 
 // GitHub webhook configuration
 configurable record {
-    int port = 8090;
-    string callbackUrl = "";
-    string[] repos;
+    int port = 9090;
     string webhookSecret;
     string[] filterBaseBranches = ["main"];
     string[] filterLabels = [];
