@@ -158,41 +158,62 @@
     "wso2": {
       "type": "object",
       "properties": {
-        "devant": {
+        "slack_notification_github_pr_merged": {
           "type": "object",
           "properties": {
-            "slackToken": {
-              "type": "string",
-              "description": ""
-            },
-            "slackChannelId": {
-              "type": "string",
-              "description": ""
-            },
-            "webhookPort": {
-              "type": "integer",
-              "description": ""
-            },
-            "githubCallback": {
-              "type": "string",
-              "description": ""
-            },
-            "filterBaseBranches": {
-              "type": "array",
-              "items": {
-                "type": "string"
+            "slackConfig": {
+              "type": "object",
+              "properties": {
+                "token": {
+                  "type": "string"
+                },
+                "channelId": {
+                  "type": "string"
+                },
+                "channelRouting": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                }
               },
+              "additionalProperties": false,
+              "required": [
+                "token",
+                "channelId",
+                "channelRouting"
+              ],
               "description": ""
             },
-            "filterLabels": {
-              "type": "array",
-              "items": {
-                "type": "string"
+            "githubConfig": {
+              "type": "object",
+              "properties": {
+                "webhookSecret": {
+                  "type": "string"
+                },
+                "filterBaseBranches": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "filterLabels": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "filterAuthor": {
+                  "type": "string"
+                }
               },
-              "description": ""
-            },
-            "filterAuthor": {
-              "type": "string",
+              "additionalProperties": false,
+              "required": [
+                "webhookSecret",
+                "filterBaseBranches",
+                "filterLabels",
+                "filterAuthor"
+              ],
               "description": ""
             },
             "includePrDescription": {
@@ -210,19 +231,12 @@
             "includeCycleTime": {
               "type": "boolean",
               "description": ""
-            },
-            "channelRouting": {
-              "type": "array",
-              "items": {
-                "type": "string"
-              },
-              "description": ""
             }
           },
           "additionalProperties": false,
           "required": [
-            "slackToken",
-            "slackChannelId"
+            "slackConfig",
+            "githubConfig"
           ]
         }
       },
