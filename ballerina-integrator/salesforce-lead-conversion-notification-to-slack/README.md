@@ -72,7 +72,7 @@ The following configurations are required to connect to Salesforce and Slack.
 
 - `teamChannelMappings` *(optional)* - A list of team-to-channel mappings for routing notifications based on the lead owner's Salesforce role. Each entry has:
   - `teamName` - A substring to match against the owner's role name (case-insensitive)
-  - `channelId` - The Slack channel ID (e.g., `C01234ABCDE`) or channel name (e.g., `#general`) to route to for that team
+  - `channel` - The Slack channel ID (e.g., `C01234ABCDE`) or channel name (e.g., `#general`) to route to for that team
 - `filterLeadSources` *(optional)* - A list of lead sources to process (e.g., `["Web", "Phone"]`). If empty, all lead sources are processed.
 - `filterOwnerIds` *(optional)* - A list of Salesforce owner IDs to process. If empty, all owners are processed.
 - `messageTemplate` *(optional)* - A customizable message template. Supports the following placeholders:

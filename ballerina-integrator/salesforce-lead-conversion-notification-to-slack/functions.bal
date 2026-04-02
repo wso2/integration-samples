@@ -170,7 +170,7 @@ function determineSlackChannel(string? ownerId) returns string {
                         continue;
                     }
                     if roleName.toLowerAscii().includes(teamName.toLowerAscii()) {
-                        return mapping.channelId;
+                        return mapping.channel;
                     }
                 }
             }

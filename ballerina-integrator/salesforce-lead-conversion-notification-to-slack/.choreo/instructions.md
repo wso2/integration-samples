@@ -47,7 +47,7 @@ This integration uses refresh token flow for auth. [Learn how to set up Salesfor
 2. `teamChannelMappings` *(optional)*
     - A list of team-to-channel mappings for routing notifications based on the lead owner's Salesforce role. Each entry has:
         - `teamName` — a substring to match against the owner's role name (case-insensitive)
-        - `channelId` — the Slack channel ID to route to for that team
+        - `channel` — the Slack channel ID to route to for that team
 3. `filterLeadSources` *(optional)*
     - A list of lead sources to process (e.g., `["Web", "Phone"]`). If empty, all lead sources are processed.
 4. `filterOwnerIds` *(optional)*
