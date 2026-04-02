@@ -23,5 +23,3 @@ function sendTrelloSummary() returns error? {
     check sendEmailSummary(emailContent);
     log:printInfo("Email sent successfully");
 }
-
-

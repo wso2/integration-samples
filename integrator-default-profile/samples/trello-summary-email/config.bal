@@ -30,4 +30,3 @@ configurable record {
     boolean showAttachmentCount = true;
     boolean showChecklistProgress = true;
 } summaryConfig = {};
-
