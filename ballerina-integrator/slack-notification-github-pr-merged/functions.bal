@@ -6,13 +6,7 @@ import ballerina/time;
 function shouldProcessPullRequest(github:PullRequest pr) returns boolean {
     // Filter by base branch (e.g., only main/release branches)
     if githubConfig.filterBaseBranches.length() > 0 {
-        boolean matchesBaseBranch = false;
-        foreach string branch in githubConfig.filterBaseBranches {
-            if pr.base.'ref == branch {
-                matchesBaseBranch = true;
-                break;
-            }
-        }
+        boolean matchesBaseBranch = githubConfig.filterBaseBranches.some(branch => pr.base.'ref == branch);
         if !matchesBaseBranch {
             return false;
         }
@@ -20,21 +14,10 @@ function shouldProcessPullRequest(github:PullRequest pr) returns boolean {
 
     // Filter by label
     if githubConfig.filterLabels.length() > 0 {
-        boolean hasMatchingLabel = false;
-        github:Label[]? prLabels = pr.labels;
-        if prLabels is github:Label[] {
-            foreach github:Label prLabel in prLabels {
-                foreach string filterLabel in githubConfig.filterLabels {
-                    if prLabel.name == filterLabel {
-                        hasMatchingLabel = true;
-                        break;
-                    }
-                }
-                if hasMatchingLabel {
-                    break;
-                }
-            }
-        }
+        github:Label[] prLabels = pr.labels;
+        boolean hasMatchingLabel = prLabels.some(
+            prLabel => githubConfig.filterLabels.some(filterLabel => prLabel.name == filterLabel)
+        );
         if !hasMatchingLabel {
             return false;
         }
@@ -75,19 +58,27 @@ function getTargetChannel(github:Repository repo, string branch) returns string 
 
     // Check for repo/branch specific channel
     string repoBranchKey = string `${repoFullName}/${branch}`;
-    foreach string routing in slackConfig.channelRouting {
-        string[] parts = regex:split(routing, ":");
-        if parts.length() == 2 && parts[0] == repoBranchKey {
-            return parts[1];
+    string? repoBranchMatch = slackConfig.channelRouting.reduce(function(string? acc, string routing) returns string? {
+        if acc != () {
+            return acc;
         }
+        string[] parts = regex:split(routing, ":");
+        return (parts.length() == 2 && parts[0] == repoBranchKey) ? parts[1] : ();
+    }, ());
+    if repoBranchMatch is string {
+        return repoBranchMatch;
     }
 
     // Check for repo-level channel
-    foreach string routing in slackConfig.channelRouting {
-        string[] parts = regex:split(routing, ":");
-        if parts.length() == 2 && parts[0] == repoFullName {
-            return parts[1];
+    string? repoMatch = slackConfig.channelRouting.reduce(function(string? acc, string routing) returns string? {
+        if acc != () {
+            return acc;
         }
+        string[] parts = regex:split(routing, ":");
+        return (parts.length() == 2 && parts[0] == repoFullName) ? parts[1] : ();
+    }, ());
+    if repoMatch is string {
+        return repoMatch;
     }
 
     // Return default channel
