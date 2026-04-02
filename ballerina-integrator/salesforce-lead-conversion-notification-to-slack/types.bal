@@ -3,7 +3,7 @@ import ballerina/time;
 // Configuration types
 type TeamChannelMapping record {|
     string teamName;
-    string channelId;
+    string channel;
 |};
 
 // Salesforce Lead related types
