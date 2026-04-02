@@ -57,35 +57,29 @@ The following configurations are required to connect to Salesforce and Slack.
 
 ### Salesforce Credentials
 
-- `salesforceBaseUrl` - Your Salesforce instance URL (e.g., `https://your-instance.salesforce.com`)
-- `salesforceClientId` - Your Salesforce OAuth2 client ID
-- `salesforceClientSecret` - Your Salesforce OAuth2 client secret
-- `salesforceRefreshToken` - Your Salesforce OAuth2 refresh token
-- `salesforceRefreshUrl` - Salesforce OAuth2 token endpoint (e.g., `https://your-instance.salesforce.com/services/oauth2/token`)
+- `baseUrl` - Your Salesforce instance URL (e.g., `https://your-instance.salesforce.com`)
+- `clientId` - Your Salesforce OAuth2 client ID
+- `clientSecret` - Your Salesforce OAuth2 client secret
+- `refreshToken` - Your Salesforce OAuth2 refresh token
+- `refreshUrl` - Salesforce OAuth2 token endpoint (e.g., `https://your-instance.salesforce.com/services/oauth2/token`)
 
 ### Slack Credentials
 
-- `slackToken` - Your Slack Bot OAuth token
+- `token` - Your Slack Bot OAuth token
+- `defaultChannel` - The fallback Slack channel ID (e.g., `C01234ABCDE`) or channel name (e.g., `#general`) to post notifications to
 
-### Channel & Routing Configuration
+### Notification Configuration (`notificationConfig`)
 
-- `defaultSlackChannel` - The fallback Slack channel ID to post notifications to (e.g., `C01234ABCDE`)
 - `teamChannelMappings` *(optional)* - A list of team-to-channel mappings for routing notifications based on the lead owner's Salesforce role. Each entry has:
   - `teamName` - A substring to match against the owner's role name (case-insensitive)
-  - `channelId` - The Slack channel ID to route to for that team
-
-### Filter Configuration *(optional)*
-
-- `filterLeadSources` - A list of lead sources to process (e.g., `["Web", "Phone"]`). If empty, all lead sources are processed.
-- `filterOwnerIds` - A list of Salesforce owner IDs to process. If empty, all owners are processed.
-
-### Message Template Configuration *(optional)*
-
-- `messageTemplate` - A customizable message template. Supports the following placeholders:
+  - `channelId` - The Slack channel ID (e.g., `C01234ABCDE`) or channel name (e.g., `#general`) to route to for that team
+- `filterLeadSources` *(optional)* - A list of lead sources to process (e.g., `["Web", "Phone"]`). If empty, all lead sources are processed.
+- `filterOwnerIds` *(optional)* - A list of Salesforce owner IDs to process. If empty, all owners are processed.
+- `messageTemplate` *(optional)* - A customizable message template. Supports the following placeholders:
   - `{{lead.name}}` — the lead's name
   - `{{lead.company}}` — the lead's company
   - `{{lead.owner}}` — the lead owner's name (or Slack mention if available)
-- `includeConversionDetails` - Set to `true` (default) to append account, contact, opportunity, and lifecycle duration to the message.
+- `includeConversionDetails` *(optional)* - Set to `true` (default) to append account, contact, opportunity, and lifecycle duration to the message.
 
 ## Deploying on **Devant**
 
