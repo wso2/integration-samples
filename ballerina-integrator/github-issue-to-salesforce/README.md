@@ -78,7 +78,7 @@ The following configurations are required to run this integration.
 5. Once the build is successful, click **Configure to Continue** and set up 
    the required environment variables
 6. Set up your GitHub webhook:
-   - Go to your GitHub repository **Settings → Webhooks → Add webhook**
+   - Go to your GitHub repository **Settings** > **Webhooks** > **Add webhook**
    - Set **Payload URL** to your Devant service URL
    - Set **Content type** to `application/json`
    - Under events select **"Let me select individual events"**
