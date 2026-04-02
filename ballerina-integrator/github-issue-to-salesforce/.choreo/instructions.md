@@ -37,8 +37,8 @@ The following should be done after deploying the integration, and the endpoint U
 This integration uses refresh token flow for auth. [Learn how to set up Salesforce OAuth](https://help.salesforce.com/s/articleView?id=xcloud.create_a_local_external_client_app.htm&type=5).
 
 3. Create a custom field on the Salesforce Case object:
-   - Go to **Setup → Object Manager → Case**
-   - Click **Fields & Relationships → New**
+   - Go to **Setup** > **Object Manager** > **Case**
+   - Click **Fields & Relationships** > **New**
    - Select **URL** as the field type
    - Set Field Label as `GitHub Issue URL`
    - Ensure API Name is `GitHub_Issue_URL__c`
@@ -52,29 +52,19 @@ This integration uses refresh token flow for auth. [Learn how to set up Salesfor
    - List of GitHub issue labels that trigger Salesforce case creation
    - Example: `triggerLabels = ["bug", "support", "help wanted"]`
 
-2. `githubRepositories`
-   - List of GitHub repository URLs to monitor
-   - Example: 
-```
-     githubRepositories = [
-       "https://github.com/org/repo1",
-       "https://github.com/org/repo2"
-     ]
-```
-
-3. `caseStatus`
+2. `caseStatus`
    - Default status for newly created Salesforce cases
    - Example: `"New"`
 
-4. `casePriority`
+3. `casePriority`
    - Default priority for newly created Salesforce cases
    - Possible values: `"High"`, `"Medium"`, `"Low"`
 
-5. `caseRecordType`
+4. `caseRecordType`
    - Default type for newly created Salesforce cases
    - Example: `"Mechanical"`
 
-6. `caseOwnerId`
+5. `caseOwnerId`
    - Salesforce User ID or Queue ID to assign cases to
    - User ID format: `005XXXXXXXXXXXXXXX`
    - Queue ID format: `00GXXXXXXXXXXXXXXX`
