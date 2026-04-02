@@ -36,8 +36,8 @@ tracking between GitHub and Salesforce.
 > [Learn how to get OAuth2 credentials](https://help.salesforce.com/s/articleView?id=sf.remoteaccess_oauth_web_server_flow.htm&type=5)
 
 ### Salesforce Custom Field Setup
-1. Go to **Setup → Object Manager → Case**
-2. Click **Fields & Relationships → New**
+1. Go to **Setup** > **Object Manager** > **Case**
+2. Click **Fields & Relationships** > **New**
 3. Select **URL** as the field type
 4. Set Field Label as `GitHub Issue URL`
 5. Ensure API Name (field name) is `GitHub_Issue_URL__c`
