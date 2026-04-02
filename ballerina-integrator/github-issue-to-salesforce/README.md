@@ -36,8 +36,8 @@ tracking between GitHub and Salesforce.
 > [Learn how to get OAuth2 credentials](https://help.salesforce.com/s/articleView?id=sf.remoteaccess_oauth_web_server_flow.htm&type=5)
 
 ### Salesforce Custom Field Setup
-1. Go to **Setup → Object Manager → Case**
-2. Click **Fields & Relationships → New**
+1. Go to **Setup** > **Object Manager** > **Case**
+2. Click **Fields & Relationships** > **New**
 3. Select **URL** as the field type
 4. Set Field Label as `GitHub Issue URL`
 5. Ensure API Name (field name) is `GitHub_Issue_URL__c`
@@ -78,7 +78,7 @@ The following configurations are required to run this integration.
 5. Once the build is successful, click **Configure to Continue** and set up 
    the required environment variables
 6. Set up your GitHub webhook:
-   - Go to your GitHub repository **Settings → Webhooks → Add webhook**
+   - Go to your GitHub repository **Settings** > **Webhooks** > **Add webhook**
    - Set **Payload URL** to your Devant service URL
    - Set **Content type** to `application/json`
    - Under events select **"Let me select individual events"**
