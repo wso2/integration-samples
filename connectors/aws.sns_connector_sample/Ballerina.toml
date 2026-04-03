@@ -1,9 +1,9 @@
 [package]
 org = "wso2"
-name = "awa.sns_connector_sample"
+name = "aws.sns_connector_sample"
 version = "0.1.0"
 distribution = "2201.13.1"
-title = "awa.sns-connector-sample"
+title = "aws.sns-connector-sample"
 
 [build-options]
 sticky = true
