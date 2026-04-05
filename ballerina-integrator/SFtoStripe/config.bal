@@ -1,36 +1,48 @@
 import ballerina/http;
 import ballerinax/'client.config as clientConfig;
 
+// Salesforce Configuration Record
+public type SalesforceConfig record {|
+    string baseUrl;
+    string clientId;
+    string clientSecret;
+    string refreshToken;
+    string refreshUrl;
+|};
+
+// Stripe Configuration Record
+public type StripeConfig record {|
+    string apiKey;
+|};
+
+// Sync Configuration Record
+public type SyncConfig record {|
+    SourceObject sourceObject = BOTH;
+    MatchKey matchKey = EMAIL;
+    boolean writeBackStripeId = true;
+    string[] recordTypeFilter = [];
+    string[] accountStatusFilter = [];
+    boolean deleteStripeCustomerOnSalesforceDelete = true;
+|};
+
 // Salesforce Configuration
-configurable string salesforceBaseUrl = ?;
-configurable string salesforceClientId = ?;
-configurable string salesforceClientSecret = ?;
-configurable string salesforceRefreshToken = ?;
-configurable string salesforceRefreshUrl = ?;
+configurable SalesforceConfig salesforceConfig = ?;
 
 // Stripe Configuration
-configurable string stripeApiKey = ?;
+configurable StripeConfig stripeConfig = ?;
 
 // Sync Configuration
-configurable SyncDirection syncDirection = SF_TO_STRIPE;
-configurable SourceObject sourceObject = BOTH;
-configurable MatchKey matchKey = EMAIL;
-configurable boolean writeBackStripeId = true;
-configurable string[] recordTypeFilter = [];
-configurable string[] accountStatusFilter = [];
-
-// Delete Handling Configuration
-configurable boolean deleteStripeCustomerOnSalesforceDelete = true;
+configurable SyncConfig syncConfig = {};
 
 // Salesforce Auth Configuration
 public function getSalesforceAuthConfig() returns clientConfig:OAuth2RefreshTokenGrantConfig => {
-    refreshUrl: salesforceRefreshUrl,
-    refreshToken: salesforceRefreshToken,
-    clientId: salesforceClientId,
-    clientSecret: salesforceClientSecret
+    refreshUrl: salesforceConfig.refreshUrl,
+    refreshToken: salesforceConfig.refreshToken,
+    clientId: salesforceConfig.clientId,
+    clientSecret: salesforceConfig.clientSecret
 };
 
 // Stripe Auth Configuration
 public function getStripeAuthConfig() returns http:BearerTokenConfig => {
-    token: stripeApiKey
+    token: stripeConfig.apiKey
 };

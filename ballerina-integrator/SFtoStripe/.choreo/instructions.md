@@ -1,5 +1,4 @@
 # Salesforce to Stripe Customer Sync Integration
-
 ## What It Does
 
 This integration listens for Salesforce Account and Contact creation, update, and deletion events and automatically syncs them to Stripe:
@@ -15,20 +14,17 @@ This integration listens for Salesforce Account and Contact creation, update, an
 <summary>Salesforce Setup Guide</summary>
 1. A Salesforce account with API access and Change Data Capture enabled
 2. OAuth2 credentials:
-  - Client ID
-  - Client Secret
-  - Refresh Token
-  - Refresh URL
-  - Base URL (your Salesforce instance URL)
+  - clientId
+  - clientSecret
+  - refreshToken
+  - refreshUrl
+  - baseUrl (your Salesforce instance URL)
 3. Change Data Capture must be enabled for the **Account** and **Contact** objects
-
-3. **Create Custom Field** `Stripe_Customer_Id__c` (Text, 255 chars):
+4. **Create Custom Field** `Stripe_Customer_Id__c` (Text, 255 chars):
    - On Account object
    - On Contact object
-
-Optional: To sync account emails to Stripe, create a custom field `Email__c` (Email, 255 chars) on the Account object.
-
- (Optional) Create a custom field `AccountStatus__c` on Account object to use the accountStatusFilter configuration
+5. Optional: To sync account emails to Stripe, create a custom field `Email__c` (Email, 255 chars) on the Account object.
+6. Optional: Create a custom field `AccountStatus__c` on Account object to use the accountStatusFilter configuration
 
 This integration uses refresh token flow for auth. [Learn how to set up Salesforce OAuth](https://help.salesforce.com/s/articleView?id=xcloud.create_a_local_external_client_app.htm&type=5).
 </details>
@@ -38,7 +34,7 @@ This integration uses refresh token flow for auth. [Learn how to set up Salesfor
 <summary>Stripe Setup Guide</summary>
 1. Log in to your Stripe account and navigate to the **Developers** section.
 2. Click on **API keys** in the left sidebar.
-3. Copy the value of the **Secret key**. This should be the `secretKey` configuration.
+3. Copy the value of the **Secret key**. This should be the `apiKey` configuration.
 </details>
 
 <details>

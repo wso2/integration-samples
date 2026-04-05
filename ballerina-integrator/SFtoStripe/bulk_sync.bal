@@ -4,48 +4,12 @@ import ballerina/log;
 public function bulkSyncAccountsToStripe() returns error? {
     log:printInfo("Starting bulk sync of Accounts from Salesforce to Stripe");
 
-    // Try with all optional fields first, fallback if they don't exist
-    string soqlQueryFull = "SELECT Id, Name, Email__c, Phone, ShippingStreet, ShippingCity, ShippingState, " +
-                           "ShippingPostalCode, ShippingCountry, Description, Stripe_Customer_Id__c, RecordTypeId, AccountStatus__c FROM Account";
-    string soqlQueryNoEmail = "SELECT Id, Name, Phone, ShippingStreet, ShippingCity, ShippingState, " +
-                              "ShippingPostalCode, ShippingCountry, Description, Stripe_Customer_Id__c, RecordTypeId, AccountStatus__c FROM Account";
-    string soqlQueryNoStatus = "SELECT Id, Name, Email__c, Phone, ShippingStreet, ShippingCity, ShippingState, " +
-                               "ShippingPostalCode, ShippingCountry, Description, Stripe_Customer_Id__c, RecordTypeId FROM Account";
-    string soqlQueryMinimal = "SELECT Id, Name, Phone, ShippingStreet, ShippingCity, ShippingState, " +
-                              "ShippingPostalCode, ShippingCountry, Description, Stripe_Customer_Id__c, RecordTypeId FROM Account";
+    // Query only Id - all other fields are optional and accessed dynamically
+    // We query common fields to populate the record, but if they don't exist, we just get Id
+    string soqlQuery = "SELECT Id FROM Account";
 
-    // Execute query with fallback logic
-    stream<SalesforceAccount, error?>|error accountStreamResult = salesforceClient->query(soqlQueryFull);
-    stream<SalesforceAccount, error?> accountStream;
-    if accountStreamResult is error {
-        string errorMsg = accountStreamResult.message();
-        if errorMsg.includes("Email__c") {
-            log:printInfo("Email__c field not found, querying without it");
-            stream<SalesforceAccount, error?>|error fallbackResult = salesforceClient->query(soqlQueryNoEmail);
-            if fallbackResult is error {
-                return fallbackResult;
-            }
-            accountStream = fallbackResult;
-        } else if errorMsg.includes("AccountStatus__c") {
-            log:printInfo("AccountStatus__c field not found, querying without it");
-            stream<SalesforceAccount, error?>|error fallbackResult = salesforceClient->query(soqlQueryNoStatus);
-            if fallbackResult is error {
-                string fallbackErrorMsg = fallbackResult.message();
-                if fallbackErrorMsg.includes("Email__c") {
-                    log:printInfo("Email__c also not found, using minimal query");
-                    accountStream = check salesforceClient->query(soqlQueryMinimal);
-                } else {
-                    return fallbackResult;
-                }
-            } else {
-                accountStream = fallbackResult;
-            }
-        } else {
-            return accountStreamResult;
-        }
-    } else {
-        accountStream = accountStreamResult;
-    }
+    // Execute query
+    stream<SalesforceAccount, error?> accountStream = check salesforceClient->query(soqlQuery);
 
     int successCount = 0;
     int errorCount = 0;
@@ -53,12 +17,27 @@ public function bulkSyncAccountsToStripe() returns error? {
     // Process each account
     check from SalesforceAccount account in accountStream
         do {
-            error? result = syncAccountToStripe(account);
-            if result is error {
-                log:printError("Failed to sync Account", accountId = account?.Id, 'error = result);
-                errorCount += 1;
-            } else {
-                successCount += 1;
+            // Fetch full record for each account to get all available fields
+            string accountId = account?.Id ?: "";
+            if accountId != "" {
+                string detailQuery = "SELECT Id, Name, Email__c, Phone, ShippingStreet, ShippingCity, ShippingState, ShippingPostalCode, ShippingCountry, Description, Stripe_Customer_Id__c FROM Account WHERE Id = '" + accountId + "'";
+                stream<SalesforceAccount, error?>|error detailResult = salesforceClient->query(detailQuery);
+                
+                SalesforceAccount fullAccount = account;
+                if detailResult is stream<SalesforceAccount, error?> {
+                    record {|SalesforceAccount value;|}? detailRecord = check detailResult.next();
+                    if detailRecord is record {|SalesforceAccount value;|} {
+                        fullAccount = detailRecord.value;
+                    }
+                }
+                
+                error? result = syncAccountToStripe(fullAccount);
+                if result is error {
+                    log:printError("Failed to sync Account", accountId = fullAccount?.Id, 'error = result);
+                    errorCount += 1;
+                } else {
+                    successCount += 1;
+                }
             }
         };
 
@@ -69,10 +48,8 @@ public function bulkSyncAccountsToStripe() returns error? {
 public function bulkSyncContactsToStripe() returns error? {
     log:printInfo("Starting bulk sync of Contacts from Salesforce to Stripe");
 
-    // Build SOQL query
-    string soqlQuery = "SELECT Id, FirstName, LastName, Email, Phone, MailingStreet, MailingCity, " +
-                       "MailingState, MailingPostalCode, MailingCountry, Description, " +
-                       "Stripe_Customer_Id__c, RecordTypeId FROM Contact";
+    // Query only Id - all other fields are optional and accessed dynamically
+    string soqlQuery = "SELECT Id FROM Contact";
 
     // Execute query
     stream<SalesforceContact, error?> contactStream = check salesforceClient->query(soqlQuery);
@@ -83,12 +60,27 @@ public function bulkSyncContactsToStripe() returns error? {
     // Process each contact
     check from SalesforceContact contact in contactStream
         do {
-            error? result = syncContactToStripe(contact);
-            if result is error {
-                log:printError("Failed to sync Contact", contactId = contact?.Id, 'error = result);
-                errorCount += 1;
-            } else {
-                successCount += 1;
+            // Fetch full record for each contact to get all available fields
+            string contactId = contact?.Id ?: "";
+            if contactId != "" {
+                string detailQuery = "SELECT Id, FirstName, LastName, Email, Phone, MailingStreet, MailingCity, MailingState, MailingPostalCode, MailingCountry, Description, Stripe_Customer_Id__c FROM Contact WHERE Id = '" + contactId + "'";
+                stream<SalesforceContact, error?>|error detailResult = salesforceClient->query(detailQuery);
+                
+                SalesforceContact fullContact = contact;
+                if detailResult is stream<SalesforceContact, error?> {
+                    record {|SalesforceContact value;|}? detailRecord = check detailResult.next();
+                    if detailRecord is record {|SalesforceContact value;|} {
+                        fullContact = detailRecord.value;
+                    }
+                }
+                
+                error? result = syncContactToStripe(fullContact);
+                if result is error {
+                    log:printError("Failed to sync Contact", contactId = fullContact?.Id, 'error = result);
+                    errorCount += 1;
+                } else {
+                    successCount += 1;
+                }
             }
         };
 
@@ -97,13 +89,13 @@ public function bulkSyncContactsToStripe() returns error? {
 
 // Main bulk sync function based on configuration
 public function bulkSync() returns error? {
-    log:printInfo("Starting bulk sync based on configuration", sourceObject = sourceObject);
+    log:printInfo("Starting bulk sync based on configuration", sourceObject = syncConfig.sourceObject);
 
-    if sourceObject == ACCOUNT || sourceObject == BOTH {
+    if syncConfig.sourceObject == ACCOUNT || syncConfig.sourceObject == BOTH {
         check bulkSyncAccountsToStripe();
     }
 
-    if sourceObject == CONTACT || sourceObject == BOTH {
+    if syncConfig.sourceObject == CONTACT || syncConfig.sourceObject == BOTH {
         check bulkSyncContactsToStripe();
     }
 }

@@ -35,24 +35,35 @@ public isolated function mapAccountToStripeCustomer(SalesforceAccount account) r
         }
     };
 
-    putIfNonEmpty(payload, "name", account?.Name);
-    putIfNonEmpty(payload, "email", account?.Email__c);
-    putIfNonEmpty(payload, "phone", account?.Phone);
-    putIfNonEmpty(payload, "description", account?.Description);
+    string? accountName = account["Name"] is string ? <string>account["Name"] : ();
+    string? email = account["Email__c"] is string ? <string>account["Email__c"] : ();
+    string? phone = account["Phone"] is string ? <string>account["Phone"] : ();
+    string? description = account["Description"] is string ? <string>account["Description"] : ();
+    
+    putIfNonEmpty(payload, "name", accountName);
+    putIfNonEmpty(payload, "email", email);
+    putIfNonEmpty(payload, "phone", phone);
+    putIfNonEmpty(payload, "description", description);
 
     // Shipping Address -> Stripe shipping.address field
+    string? shippingStreet = account["ShippingStreet"] is string ? <string>account["ShippingStreet"] : ();
+    string? shippingCity = account["ShippingCity"] is string ? <string>account["ShippingCity"] : ();
+    string? shippingState = account["ShippingState"] is string ? <string>account["ShippingState"] : ();
+    string? shippingPostalCode = account["ShippingPostalCode"] is string ? <string>account["ShippingPostalCode"] : ();
+    string? shippingCountry = account["ShippingCountry"] is string ? <string>account["ShippingCountry"] : ();
+    
     map<json>? shippingAddress = buildAddress(
-        account?.ShippingStreet,
-        account?.ShippingCity,
-        account?.ShippingState,
-        account?.ShippingPostalCode,
-        account?.ShippingCountry
+        shippingStreet,
+        shippingCity,
+        shippingState,
+        shippingPostalCode,
+        shippingCountry
     );
     if shippingAddress is map<json> {
         map<json> shipping = {
             "address": shippingAddress
         };
-        putIfNonEmpty(shipping, "name", account?.Name);
+        putIfNonEmpty(shipping, "name", accountName);
         payload["shipping"] = shipping;
     }
 
@@ -69,22 +80,32 @@ public isolated function mapContactToStripeCustomer(SalesforceContact contact) r
     };
 
     // Build full name from first and last name
-    string firstName = contact?.FirstName ?: "";
-    string lastName = contact?.LastName ?: "";
+    string firstName = contact["FirstName"] is string ? <string>contact["FirstName"] : "";
+    string lastName = contact["LastName"] is string ? <string>contact["LastName"] : "";
     string fullName = (firstName + " " + lastName).trim();
+    
+    string? email = contact["Email"] is string ? <string>contact["Email"] : ();
+    string? phone = contact["Phone"] is string ? <string>contact["Phone"] : ();
+    string? description = contact["Description"] is string ? <string>contact["Description"] : ();
 
     putIfNonEmpty(payload, "name", fullName);
-    putIfNonEmpty(payload, "email", contact?.Email);
-    putIfNonEmpty(payload, "phone", contact?.Phone);
-    putIfNonEmpty(payload, "description", contact?.Description);
+    putIfNonEmpty(payload, "email", email);
+    putIfNonEmpty(payload, "phone", phone);
+    putIfNonEmpty(payload, "description", description);
 
     // Mailing Address -> Shipping Address (shipping.address)
+    string? mailingStreet = contact["MailingStreet"] is string ? <string>contact["MailingStreet"] : ();
+    string? mailingCity = contact["MailingCity"] is string ? <string>contact["MailingCity"] : ();
+    string? mailingState = contact["MailingState"] is string ? <string>contact["MailingState"] : ();
+    string? mailingPostalCode = contact["MailingPostalCode"] is string ? <string>contact["MailingPostalCode"] : ();
+    string? mailingCountry = contact["MailingCountry"] is string ? <string>contact["MailingCountry"] : ();
+    
     map<json>? shippingAddress = buildAddress(
-        contact?.MailingStreet,
-        contact?.MailingCity,
-        contact?.MailingState,
-        contact?.MailingPostalCode,
-        contact?.MailingCountry
+        mailingStreet,
+        mailingCity,
+        mailingState,
+        mailingPostalCode,
+        mailingCountry
     );
     if shippingAddress is map<json> {
         map<json> shipping = {
@@ -100,13 +121,13 @@ public isolated function mapContactToStripeCustomer(SalesforceContact contact) r
 // Check if record passes filters
 public function passFilters(string? recordTypeId, string? accountStatus) returns boolean {
     // Check RecordType filter
-    if recordTypeFilter.length() > 0 {
+    if syncConfig.recordTypeFilter.length() > 0 {
         if recordTypeId is () {
             log:printDebug("Record filtered out: No RecordTypeId");
             return false;
         }
         boolean recordTypeMatch = false;
-        foreach string allowedType in recordTypeFilter {
+        foreach string allowedType in syncConfig.recordTypeFilter {
             if recordTypeId == allowedType {
                 recordTypeMatch = true;
                 break;
@@ -119,13 +140,13 @@ public function passFilters(string? recordTypeId, string? accountStatus) returns
     }
 
     // Check AccountStatus filter
-    if accountStatusFilter.length() > 0 {
+    if syncConfig.accountStatusFilter.length() > 0 {
         if accountStatus is () {
             log:printDebug("Record filtered out: No AccountStatus");
             return false;
         }
         boolean statusMatch = false;
-        foreach string allowedStatus in accountStatusFilter {
+        foreach string allowedStatus in syncConfig.accountStatusFilter {
             if accountStatus == allowedStatus {
                 statusMatch = true;
                 break;

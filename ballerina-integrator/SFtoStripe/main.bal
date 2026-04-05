@@ -7,12 +7,12 @@ import ballerinax/salesforce;
 // Using OAuth2 refresh token auth (avoids SOAP username/password/security token requirement)
 listener salesforce:Listener changeEventListener = new ({
     auth: {
-        refreshUrl: salesforceRefreshUrl,
-        refreshToken: salesforceRefreshToken,
-        clientId: salesforceClientId,
-        clientSecret: salesforceClientSecret
+        refreshUrl: salesforceConfig.refreshUrl,
+        refreshToken: salesforceConfig.refreshToken,
+        clientId: salesforceConfig.clientId,
+        clientSecret: salesforceConfig.clientSecret
     },
-    baseUrl: salesforceBaseUrl
+    baseUrl: salesforceConfig.baseUrl
 });
 
 // Salesforce Change Event Service
@@ -24,15 +24,9 @@ service "/data/ChangeEvents" on changeEventListener {
     remote function onCreate(salesforce:EventData eventData) returns error? {
         log:printInfo("Received create event from Salesforce");
 
-        // Only process if sync direction allows SF to Stripe
-        if syncDirection == STRIPE_TO_SF {
-            log:printInfo("Sync direction is Stripe to SF, skipping create event");
-            return;
-        }
-
         // Determine object type from event metadata
         string entityType = eventData.metadata?.entityName ?: "";
-        log:printInfo("[onCreate] entityType=" + entityType + " sourceObject=" + sourceObject);
+        log:printInfo("[onCreate] entityType=" + entityType + " sourceObject=" + syncConfig.sourceObject);
 
         // CDC changedData does not include Id — inject it from metadata.recordId
         string recordId = eventData.metadata?.recordId ?: "";
@@ -40,46 +34,26 @@ service "/data/ChangeEvents" on changeEventListener {
         data["Id"] = recordId;
 
         // Route to appropriate handler based on entity type
-        if entityType == "Account" && (sourceObject == ACCOUNT || sourceObject == BOTH) {
+        if entityType == "Account" && (syncConfig.sourceObject == ACCOUNT || syncConfig.sourceObject == BOTH) {
             // Try to fetch full Account record to ensure we have all fields
             SalesforceAccount account;
-            string soqlQueryFull = string `SELECT Id, Name, Email__c, Phone, ShippingStreet, ShippingCity, ShippingState, ShippingPostalCode, ShippingCountry, Description, Stripe_Customer_Id__c, RecordTypeId, AccountStatus__c FROM Account WHERE Id = '${recordId}'`;
-            string soqlQueryNoEmail = string `SELECT Id, Name, Phone, ShippingStreet, ShippingCity, ShippingState, ShippingPostalCode, ShippingCountry, Description, Stripe_Customer_Id__c, RecordTypeId, AccountStatus__c FROM Account WHERE Id = '${recordId}'`;
-            string soqlQueryNoStatus = string `SELECT Id, Name, Email__c, Phone, ShippingStreet, ShippingCity, ShippingState, ShippingPostalCode, ShippingCountry, Description, Stripe_Customer_Id__c, RecordTypeId FROM Account WHERE Id = '${recordId}'`;
-            string soqlQueryMinimal = string `SELECT Id, Name, Phone, ShippingStreet, ShippingCity, ShippingState, ShippingPostalCode, ShippingCountry, Description, Stripe_Customer_Id__c, RecordTypeId FROM Account WHERE Id = '${recordId}'`;
+            
+            string baseFields = "Id, Name, Phone, ShippingStreet, ShippingCity, ShippingState, ShippingPostalCode, ShippingCountry, Description, Stripe_Customer_Id__c";
+            string soqlQueryFull = string `SELECT ${baseFields}, Email__c FROM Account WHERE Id = '${recordId}'`;
+            string soqlQueryMinimal = string `SELECT ${baseFields} FROM Account WHERE Id = '${recordId}'`;
             
             stream<SalesforceAccount, error?>|error queryResultOrError = salesforceClient->query(soqlQueryFull);
             stream<SalesforceAccount, error?> queryResult;
             if queryResultOrError is error {
                 string errorMsg = queryResultOrError.message();
                 if errorMsg.includes("Email__c") {
-                    log:printInfo("[onCreate] Email__c field not found, querying without it");
-                    stream<SalesforceAccount, error?>|error fallbackResult = salesforceClient->query(soqlQueryNoEmail);
-                    if fallbackResult is error {
-                        log:printError("[onCreate] SOQL query failed", 'error = fallbackResult, recordId = recordId);
+                    log:printInfo("[onCreate] Email__c field not found, falling back to minimal query");
+                    stream<SalesforceAccount, error?>|error minimalResult = salesforceClient->query(soqlQueryMinimal);
+                    if minimalResult is error {
+                        log:printError("[onCreate] SOQL query failed", 'error = minimalResult, recordId = recordId);
                         return;
                     }
-                    queryResult = fallbackResult;
-                } else if errorMsg.includes("AccountStatus__c") {
-                    log:printInfo("[onCreate] AccountStatus__c field not found, querying without it");
-                    stream<SalesforceAccount, error?>|error fallbackResult = salesforceClient->query(soqlQueryNoStatus);
-                    if fallbackResult is error {
-                        string fallbackErrorMsg = fallbackResult.message();
-                        if fallbackErrorMsg.includes("Email__c") {
-                            log:printInfo("[onCreate] Email__c also not found, using minimal query");
-                            stream<SalesforceAccount, error?>|error minimalResult = salesforceClient->query(soqlQueryMinimal);
-                            if minimalResult is error {
-                                log:printError("[onCreate] SOQL query failed", 'error = minimalResult, recordId = recordId);
-                                return;
-                            }
-                            queryResult = minimalResult;
-                        } else {
-                            log:printError("[onCreate] SOQL query failed", 'error = fallbackResult, recordId = recordId);
-                            return;
-                        }
-                    } else {
-                        queryResult = fallbackResult;
-                    }
+                    queryResult = minimalResult;
                 } else {
                     log:printError("[onCreate] SOQL query failed", 'error = queryResultOrError, recordId = recordId);
                     return;
@@ -107,7 +81,7 @@ service "/data/ChangeEvents" on changeEventListener {
             if result is error {
                 log:printError("[onCreate] Failed to sync Account to Stripe", 'error = result, accountId = account?.Id);
             }
-        } else if entityType == "Contact" && (sourceObject == CONTACT || sourceObject == BOTH) {
+        } else if entityType == "Contact" && (syncConfig.sourceObject == CONTACT || syncConfig.sourceObject == BOTH) {
             // CDC changedData may not include FirstName/LastName on create (only Name)
             // Fetch full record to ensure we have all fields
             SalesforceContact contact;
@@ -133,7 +107,7 @@ service "/data/ChangeEvents" on changeEventListener {
                 log:printError("[onCreate] Failed to sync Contact to Stripe", 'error = result, contactId = contact?.Id);
             }
         } else {
-            log:printInfo("[onCreate] No handler for entityType='" + entityType + "' sourceObject='" + sourceObject + "'");
+            log:printInfo("[onCreate] No handler for entityType='" + entityType + "' sourceObject='" + syncConfig.sourceObject + "'");
         }
     }
 
@@ -141,16 +115,10 @@ service "/data/ChangeEvents" on changeEventListener {
     remote function onUpdate(salesforce:EventData eventData) returns error? {
         log:printInfo("Received update event from Salesforce");
 
-        // Only process if sync direction allows SF to Stripe
-        if syncDirection == STRIPE_TO_SF {
-            log:printInfo("Sync direction is Stripe to SF, skipping update event");
-            return;
-        }
-
         // Determine object type from event metadata
         string entityType = eventData.metadata?.entityName ?: "";
         string recordId = eventData.metadata?.recordId ?: "";
-        log:printInfo("[onUpdate] entityType=" + entityType + " recordId=" + recordId + " sourceObject=" + sourceObject);
+        log:printInfo("[onUpdate] entityType=" + entityType + " recordId=" + recordId + " sourceObject=" + syncConfig.sourceObject);
 
         // Skip writeback-triggered update events (only Stripe_Customer_Id__c changed)
         map<json> changedFields = eventData.changedData;
@@ -190,46 +158,26 @@ service "/data/ChangeEvents" on changeEventListener {
         log:printInfo("[onUpdate] changedData keys: " + data.keys().toString());
 
         // Route to appropriate handler based on entity type
-        if entityType == "Account" && (sourceObject == ACCOUNT || sourceObject == BOTH) {
+        if entityType == "Account" && (syncConfig.sourceObject == ACCOUNT || syncConfig.sourceObject == BOTH) {
             // CDC changedData only contains changed fields - fetch full record to get all fields including Stripe_Customer_Id__c
             SalesforceAccount account;
-            string soqlQueryFull = string `SELECT Id, Name, Email__c, Phone, ShippingStreet, ShippingCity, ShippingState, ShippingPostalCode, ShippingCountry, Description, Stripe_Customer_Id__c, RecordTypeId, AccountStatus__c FROM Account WHERE Id = '${recordId}'`;
-            string soqlQueryNoEmail = string `SELECT Id, Name, Phone, ShippingStreet, ShippingCity, ShippingState, ShippingPostalCode, ShippingCountry, Description, Stripe_Customer_Id__c, RecordTypeId, AccountStatus__c FROM Account WHERE Id = '${recordId}'`;
-            string soqlQueryNoStatus = string `SELECT Id, Name, Email__c, Phone, ShippingStreet, ShippingCity, ShippingState, ShippingPostalCode, ShippingCountry, Description, Stripe_Customer_Id__c, RecordTypeId FROM Account WHERE Id = '${recordId}'`;
-            string soqlQueryMinimal = string `SELECT Id, Name, Phone, ShippingStreet, ShippingCity, ShippingState, ShippingPostalCode, ShippingCountry, Description, Stripe_Customer_Id__c, RecordTypeId FROM Account WHERE Id = '${recordId}'`;
+            
+            string baseFields = "Id, Name, Phone, ShippingStreet, ShippingCity, ShippingState, ShippingPostalCode, ShippingCountry, Description, Stripe_Customer_Id__c";
+            string soqlQueryFull = string `SELECT ${baseFields}, Email__c FROM Account WHERE Id = '${recordId}'`;
+            string soqlQueryMinimal = string `SELECT ${baseFields} FROM Account WHERE Id = '${recordId}'`;
             
             stream<SalesforceAccount, error?>|error queryResultOrError = salesforceClient->query(soqlQueryFull);
             stream<SalesforceAccount, error?> queryResult;
             if queryResultOrError is error {
                 string errorMsg = queryResultOrError.message();
                 if errorMsg.includes("Email__c") {
-                    log:printInfo("[onUpdate] Email__c field not found, querying without it");
-                    stream<SalesforceAccount, error?>|error fallbackResult = salesforceClient->query(soqlQueryNoEmail);
-                    if fallbackResult is error {
-                        log:printError("[onUpdate] SOQL query failed, cannot sync without full record", 'error = fallbackResult, recordId = recordId);
+                    log:printInfo("[onUpdate] Email__c field not found, falling back to minimal query");
+                    stream<SalesforceAccount, error?>|error minimalResult = salesforceClient->query(soqlQueryMinimal);
+                    if minimalResult is error {
+                        log:printError("[onUpdate] SOQL query failed, cannot sync without full record", 'error = minimalResult, recordId = recordId);
                         return;
                     }
-                    queryResult = fallbackResult;
-                } else if errorMsg.includes("AccountStatus__c") {
-                    log:printInfo("[onUpdate] AccountStatus__c field not found, querying without it");
-                    stream<SalesforceAccount, error?>|error fallbackResult = salesforceClient->query(soqlQueryNoStatus);
-                    if fallbackResult is error {
-                        string fallbackErrorMsg = fallbackResult.message();
-                        if fallbackErrorMsg.includes("Email__c") {
-                            log:printInfo("[onUpdate] Email__c also not found, using minimal query");
-                            stream<SalesforceAccount, error?>|error minimalResult = salesforceClient->query(soqlQueryMinimal);
-                            if minimalResult is error {
-                                log:printError("[onUpdate] SOQL query failed, cannot sync without full record", 'error = minimalResult, recordId = recordId);
-                                return;
-                            }
-                            queryResult = minimalResult;
-                        } else {
-                            log:printError("[onUpdate] SOQL query failed, cannot sync without full record", 'error = fallbackResult, recordId = recordId);
-                            return;
-                        }
-                    } else {
-                        queryResult = fallbackResult;
-                    }
+                    queryResult = minimalResult;
                 } else {
                     log:printError("[onUpdate] SOQL query failed, cannot sync without full record", 'error = queryResultOrError, recordId = recordId);
                     return;
@@ -250,12 +198,13 @@ service "/data/ChangeEvents" on changeEventListener {
                 log:printWarn("[onUpdate] SOQL query returned no results, cannot sync without full record", recordId = recordId);
                 return;
             }
-            log:printInfo("[onUpdate] Account parsed", accountId = account?.Id, stripeCustomerId = account?.Stripe_Customer_Id__c);
+            string? stripeCustomerId = account["Stripe_Customer_Id__c"] is string ? <string>account["Stripe_Customer_Id__c"] : ();
+            log:printInfo("[onUpdate] Account parsed", accountId = account?.Id, stripeCustomerId = stripeCustomerId);
             error? result = syncAccountToStripe(account, true);
             if result is error {
                 log:printError("[onUpdate] Failed to sync Account to Stripe", 'error = result, accountId = account?.Id);
             }
-        } else if entityType == "Contact" && (sourceObject == CONTACT || sourceObject == BOTH) {
+        } else if entityType == "Contact" && (syncConfig.sourceObject == CONTACT || syncConfig.sourceObject == BOTH) {
             // CDC changedData only contains changed fields - fetch full record to get FirstName/LastName
             SalesforceContact contact;
             string soqlQuery = string `SELECT Id, FirstName, LastName, Email, Phone, MailingStreet, MailingCity, MailingState, MailingPostalCode, MailingCountry, Description, Stripe_Customer_Id__c FROM Contact WHERE Id = '${recordId}'`;
@@ -283,19 +232,13 @@ service "/data/ChangeEvents" on changeEventListener {
                 log:printError("[onUpdate] Failed to sync Contact to Stripe", 'error = result, contactId = contact?.Id);
             }
         } else {
-            log:printInfo("[onUpdate] No handler for entityType='" + entityType + "' sourceObject='" + sourceObject + "'");
+            log:printInfo("[onUpdate] No handler for entityType='" + entityType + "' sourceObject='" + syncConfig.sourceObject + "'");
         }
     }
 
     // Handle Delete Events
     remote function onDelete(salesforce:EventData eventData) returns error? {
         log:printInfo("Received delete event from Salesforce");
-
-        // Only process if sync direction allows SF to Stripe
-        if syncDirection == STRIPE_TO_SF {
-            log:printInfo("Sync direction is Stripe to SF, skipping delete event");
-            return;
-        }
 
         // Determine object type from event metadata
         string entityType = eventData.metadata?.entityName ?: "";
@@ -309,18 +252,18 @@ service "/data/ChangeEvents" on changeEventListener {
         log:printInfo("[onDelete] Processing delete", entityType = entityType, recordId = recordId);
 
         // Check if delete handling is enabled
-        if !deleteStripeCustomerOnSalesforceDelete {
+        if !syncConfig.deleteStripeCustomerOnSalesforceDelete {
             log:printInfo("[onDelete] Delete handling disabled, skipping Stripe customer deletion", recordId = recordId);
             return;
         }
 
         // Record is already deleted in SF — find Stripe customer by salesforce_id metadata
-        if entityType == "Account" && (sourceObject == ACCOUNT || sourceObject == BOTH) {
+        if entityType == "Account" && (syncConfig.sourceObject == ACCOUNT || syncConfig.sourceObject == BOTH) {
             error? result = deleteStripeCustomerBySalesforceId(recordId);
             if result is error {
                 log:printError("Failed to handle Account deletion", accountId = recordId, 'error = result);
             }
-        } else if entityType == "Contact" && (sourceObject == CONTACT || sourceObject == BOTH) {
+        } else if entityType == "Contact" && (syncConfig.sourceObject == CONTACT || syncConfig.sourceObject == BOTH) {
             error? result = deleteStripeCustomerBySalesforceId(recordId);
             if result is error {
                 log:printError("Failed to handle Contact deletion", contactId = recordId, 'error = result);
@@ -332,12 +275,6 @@ service "/data/ChangeEvents" on changeEventListener {
     remote function onRestore(salesforce:EventData eventData) returns error? {
         log:printInfo("Received restore event from Salesforce");
 
-        // Only process if sync direction allows SF to Stripe
-        if syncDirection == STRIPE_TO_SF {
-            log:printInfo("Sync direction is Stripe to SF, skipping restore event");
-            return;
-        }
-
         // Determine object type from event metadata
         string entityType = eventData.metadata?.entityName ?: "";
 
@@ -347,10 +284,10 @@ service "/data/ChangeEvents" on changeEventListener {
         data["Id"] = recordId;
 
         // Route to appropriate handler based on entity type
-        if entityType == "Account" && (sourceObject == ACCOUNT || sourceObject == BOTH) {
+        if entityType == "Account" && (syncConfig.sourceObject == ACCOUNT || syncConfig.sourceObject == BOTH) {
             SalesforceAccount account = check data.cloneWithType();
             check syncAccountToStripe(account);
-        } else if entityType == "Contact" && (sourceObject == CONTACT || sourceObject == BOTH) {
+        } else if entityType == "Contact" && (syncConfig.sourceObject == CONTACT || syncConfig.sourceObject == BOTH) {
             SalesforceContact contact = check data.cloneWithType();
             check syncContactToStripe(contact);
         }

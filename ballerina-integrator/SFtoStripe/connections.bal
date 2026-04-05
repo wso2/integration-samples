@@ -3,7 +3,7 @@ import ballerinax/stripe;
 
 // Salesforce Client
 final salesforce:Client salesforceClient = check new ({
-    baseUrl: salesforceBaseUrl,
+    baseUrl: salesforceConfig.baseUrl,
     auth: getSalesforceAuthConfig()
 });
 

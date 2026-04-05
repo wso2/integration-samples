@@ -40,15 +40,15 @@ The following configurations are required for the integration:
 
 Salesforce Configuration
 
-- salesforceRefreshToken: Your Salesforce OAuth2 refresh token
-- salesforceClientId: Your Salesforce OAuth2 client ID
-- salesforceClientSecret: Your Salesforce OAuth2 client secret
-- salesforceRefreshUrl: Salesforce OAuth2 token endpoint (https://login.salesforce.com/services/oauth2/token)
-- salesforceBaseUrl: Your Salesforce instance URL (https://your-org.my.salesforce.com)
+- refreshToken: Your Salesforce OAuth2 refresh token
+- clientId: Your Salesforce OAuth2 client ID
+- clientSecret: Your Salesforce OAuth2 client secret
+- refreshUrl: Salesforce OAuth2 token endpoint (https://login.salesforce.com/services/oauth2/token)
+- baseUrl: Your Salesforce instance URL (https://your-org.my.salesforce.com)
 
 
 Stripe Configuration
-- stripeApiKey: The Stripe Secret API key obtained from the Stripe setup
+- apiKey: The Stripe Secret API key obtained from the Stripe setup
 
 Deploying on Devant
 

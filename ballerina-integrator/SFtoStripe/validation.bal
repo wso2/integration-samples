@@ -8,8 +8,8 @@ public function validateAccount(SalesforceAccount account) returns error? {
     }
 
     // Validate email format if present and match key is EMAIL
-    if matchKey == EMAIL {
-        string? email = account?.Email__c;
+    if syncConfig.matchKey == EMAIL {
+        string? email = account["Email__c"] is string ? <string>account["Email__c"] : ();
         if email is string && email != "" && !isValidEmail(email) {
             log:printWarn("Account has invalid email format", accountId = account?.Id, email = email);
             return error("Invalid email format");
@@ -31,8 +31,8 @@ public function validateContact(SalesforceContact contact) returns error? {
     }
 
     // Validate email format if present and match key is EMAIL
-    if matchKey == EMAIL {
-        string? email = contact?.Email;
+    if syncConfig.matchKey == EMAIL {
+        string? email = contact["Email"] is string ? <string>contact["Email"] : ();
         if email is string && email != "" && !isValidEmail(email) {
             log:printWarn("Contact has invalid email format", contactId = contact?.Id, email = email);
             return error("Invalid email format");
