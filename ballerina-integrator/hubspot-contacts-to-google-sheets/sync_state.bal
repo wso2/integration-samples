@@ -20,11 +20,11 @@ function getLastSyncTimestamp() returns string {
         string timestamp = sheetCheckpoint.trim();
         if timestamp != "" {
             currentSyncTimestamp = timestamp;
-            log:printInfo(string `---- Loaded checkpoint from sheet '${SYNC_STATE_SHEET}': ${timestamp}`);
+            log:printInfo(string `Loaded checkpoint from sheet '${SYNC_STATE_SHEET}': ${timestamp}`);
             return timestamp;
         }
     } else {
-        log:printError(string `---- Warning: could not read checkpoint from sheet '${SYNC_STATE_SHEET}': ${sheetCheckpoint.message()}. Falling back to file/config.`);
+        log:printError(string `Warning: could not read checkpoint from sheet '${SYNC_STATE_SHEET}': ${sheetCheckpoint.message()}. Falling back to file/config.`);
     }
 
     // Fallback: check if there's a persisted timestamp in file
@@ -35,7 +35,7 @@ function getLastSyncTimestamp() returns string {
             string timestamp = fileContent.trim();
             if timestamp != "" {
                 currentSyncTimestamp = timestamp;
-                log:printInfo(string `---- Loaded checkpoint from file: ${timestamp}`);
+                log:printInfo(string `Loaded checkpoint from file: ${timestamp}`);
                 return timestamp;
             }
         }
@@ -43,11 +43,11 @@ function getLastSyncTimestamp() returns string {
     
     // Fall back to configurable value
     if currentSyncTimestamp != "" {
-        log:printInfo(string `---- Using runtime/configured checkpoint: ${currentSyncTimestamp}`);
+        log:printInfo(string `Using runtime/configured checkpoint: ${currentSyncTimestamp}`);
         return currentSyncTimestamp;
     }
     
-    log:printInfo("---- No checkpoint found. Starting full sync");
+    log:printInfo("No checkpoint found. Starting full sync");
     return "";
 }
 
@@ -64,28 +64,28 @@ function saveLastSyncTimestamp(string timestamp) returns error? {
         time:Utc advanced = time:utcAddSeconds(parsedTime, 0.001d);
         checkpointToSave = time:utcToString(advanced);
     } else {
-        log:printError(string `---- Warning: could not advance checkpoint timestamp '${timestamp}': ${parsedTime.message()}. Saving as-is.`);
+        log:printError(string `Warning: could not advance checkpoint timestamp '${timestamp}': ${parsedTime.message()}. Saving as-is.`);
     }
 
     currentSyncTimestamp = checkpointToSave;
 
     error? sheetWriteResult = writeCheckpointToSheet(checkpointToSave);
     if sheetWriteResult is () {
-        log:printInfo(string `---- Saved checkpoint in sheet '${SYNC_STATE_SHEET}': ${checkpointToSave}`);
+        log:printInfo(string `Saved checkpoint in sheet '${SYNC_STATE_SHEET}': ${checkpointToSave}`);
         return;
     }
 
     error? writeResult = io:fileWriteString(SYNC_STATE_FILE, checkpointToSave);
     if writeResult is error {
-        log:printError(string `---- Warning: could not persist checkpoint to sheet '${SYNC_STATE_SHEET}': ${sheetWriteResult.message()}.`);
-        log:printError(string `---- Warning: could not persist checkpoint to '${SYNC_STATE_FILE}': ${writeResult.message()}. Using in-memory checkpoint for this process.`);
-        log:printInfo(string `---- Saved checkpoint in memory: ${checkpointToSave}`);
+        log:printError(string `Warning: could not persist checkpoint to sheet '${SYNC_STATE_SHEET}': ${sheetWriteResult.message()}.`);
+        log:printError(string `Warning: could not persist checkpoint to '${SYNC_STATE_FILE}': ${writeResult.message()}. Using in-memory checkpoint for this process.`);
+        log:printInfo(string `Saved checkpoint in memory: ${checkpointToSave}`);
         return;
     }
 
-    log:printError(string `---- Warning: could not persist checkpoint to sheet '${SYNC_STATE_SHEET}': ${sheetWriteResult.message()}. Falling back to file.`);
+    log:printError(string `Warning: could not persist checkpoint to sheet '${SYNC_STATE_SHEET}': ${sheetWriteResult.message()}. Falling back to file.`);
 
-    log:printInfo(string `---- Saved checkpoint: ${checkpointToSave}`);
+    log:printInfo(string `Saved checkpoint: ${checkpointToSave}`);
 }
 
 function readCheckpointFromSheet() returns string|error {
@@ -145,10 +145,10 @@ function isNewerThan(string timestamp1, string timestamp2) returns boolean {
     // Log the parse failure so it doesn't go unnoticed, then include the
     // contact to be safe (better to re-process than to silently drop it).
     if time1 is error {
-        log:printError(string `---- Warning: could not parse timestamp '${timestamp1}': ${time1.message()}. Including contact.`);
+        log:printError(string `Warning: could not parse timestamp '${timestamp1}': ${time1.message()}. Including contact.`);
     }
     if time2 is error {
-        log:printError(string `---- Warning: could not parse checkpoint '${timestamp2}': ${time2.message()}. Including contact.`);
+        log:printError(string `Warning: could not parse checkpoint '${timestamp2}': ${time2.message()}. Including contact.`);
     }
     return true;
 }

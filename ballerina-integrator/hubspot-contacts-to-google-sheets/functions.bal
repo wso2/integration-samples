@@ -19,10 +19,10 @@ function ensureHeaderRow(string targetSheet) returns error? {
     sheets:Range rangeData = check sheetsClient->getRange(spreadsheetId, targetSheet, "A1:Z1");
 
     if rangeData.values.length() == 0 {
-        log:printInfo(string `---- Sheet '${targetSheet}' is empty. Inserting headers`);
+        log:printInfo(string `Sheet '${targetSheet}' is empty. Inserting headers`);
         check insertHeaderRow(targetSheet);
     } else {
-        log:printInfo(string `---- Header exists in '${targetSheet}'`);
+        log:printInfo(string `Header exists in '${targetSheet}'`);
     }
 }
 
@@ -39,7 +39,7 @@ function ensureSheetExists(string targetSheet) returns error? {
         sheets:Sheet sheetAfterRetry = check sheetsClient->getSheetByName(spreadsheetId, targetSheet);
     }
 
-    log:printInfo(string `---- Created missing sheet '${targetSheet}'`);
+    log:printInfo(string `Created missing sheet '${targetSheet}'`);
 }
 
 // Insert header row
@@ -58,7 +58,7 @@ function insertHeaderRow(string targetSheet) returns error? {
 
     check sheetsClient->appendRowToSheet(spreadsheetId, targetSheet, headers);
 
-    log:printInfo(string `---- Header inserted in '${targetSheet}'`);
+    log:printInfo(string `Header inserted in '${targetSheet}'`);
 }
 
 // Convert field name to header
@@ -96,13 +96,13 @@ function fetchHubSpotContacts(string lastSyncTime) returns Contact[]|error {
     boolean hasContactFilter = contactFilterProperty.trim() != "" && contactFilterValue.trim() != "";
     
     if isIncrementalSync {
-        log:printInfo(string `---- Incremental sync from ${lastSyncTime} (maxRows = ${maxRows})`);
+        log:printInfo(string `Incremental sync from ${lastSyncTime} (maxRows = ${maxRows})`);
     } else {
-        log:printInfo("---- Full sync mode (maxRows ignored)");
+        log:printInfo("Full sync mode (maxRows ignored)");
     }
 
     if hasContactFilter {
-        log:printInfo(string `---- Contact filter: ${contactFilterProperty} = ${contactFilterValue}`);
+        log:printInfo(string `Contact filter: ${contactFilterProperty} = ${contactFilterValue}`);
     }
 
     while true {
@@ -156,7 +156,7 @@ function fetchHubSpotContacts(string lastSyncTime) returns Contact[]|error {
         }
     }
 
-    log:printInfo(string `---- Contacts selected for export: ${allContacts.length()}`);
+    log:printInfo(string `Contacts selected for export: ${allContacts.length()}`);
 
     // Sort by updatedAt ascending so oldest unprocessed contacts are handled first.
     // This ensures the checkpoint advances steadily when maxRows is set.
@@ -267,7 +267,7 @@ function buildEmailRowMap(string targetSheet) returns [map<int>, int]|error {
         rowIndex += 1;
     }
 
-    log:printInfo(string `---- Existing contacts in '${targetSheet}': ${emailRowMap.length()}`);
+    log:printInfo(string `Existing contacts in '${targetSheet}': ${emailRowMap.length()}`);
 
     // rangeData.values.length() is the total number of rows returned by the
     // Sheets API for column A (header + all data rows, including blank-email
@@ -316,7 +316,7 @@ function appendSheetRowWithRetry(string targetSheet, (string|int|decimal)[] rowD
         }
 
         attempt += 1;
-        log:printError(string `---- Rate limit hit while inserting contact ${contactId} in '${targetSheet}'. Retrying in ${backoff}s (attempt ${attempt}/${MAX_WRITE_RETRY_ATTEMPTS})`);
+        log:printError(string `Rate limit hit while inserting contact ${contactId} in '${targetSheet}'. Retrying in ${backoff}s (attempt ${attempt}/${MAX_WRITE_RETRY_ATTEMPTS})`);
         runtime:sleep(backoff);
         backoff *= 2d;
     }
@@ -337,7 +337,7 @@ function updateSheetRowWithRetry(string targetSheet, int rowNumber, (string|int|
         }
 
         attempt += 1;
-        log:printError(string `---- Rate limit hit while updating contact ${contactId} in '${targetSheet}'. Retrying in ${backoff}s (attempt ${attempt}/${MAX_WRITE_RETRY_ATTEMPTS})`);
+        log:printError(string `Rate limit hit while updating contact ${contactId} in '${targetSheet}'. Retrying in ${backoff}s (attempt ${attempt}/${MAX_WRITE_RETRY_ATTEMPTS})`);
         runtime:sleep(backoff);
         backoff *= 2d;
     }
@@ -395,14 +395,14 @@ function clearSheetData(string targetSheet) returns error? {
     // Clear from row 2 downward
     string clearRange = string `A2:${endCol}${totalRows}`;
     check sheetsClient->clearRange(spreadsheetId, targetSheet, clearRange);
-    log:printInfo(string `---- Cleared ${totalRows - 1} data rows from '${targetSheet}'`);
+    log:printInfo(string `Cleared ${totalRows - 1} data rows from '${targetSheet}'`);
 }
 
 // Export contacts to Google Sheet using the configured sync mode
 function exportContactsToSheet(Contact[] contacts, string lastSyncTimestamp, boolean isFullSync) returns string|error {
 
     string mode = syncMode.trim().toLowerAscii();
-    log:printInfo(string `---- Preparing sheet export (mode: ${mode})`);
+    log:printInfo(string `Preparing sheet export (mode: ${mode})`);
 
     // For replace mode: clear ALL possible target sheets upfront — even if the
     // current contact batch is empty.  Clearing only sheets found in `contacts`
@@ -459,7 +459,7 @@ function exportContactsToSheet(Contact[] contacts, string lastSyncTimestamp, boo
             .toLowerAscii();
 
         if email == "" {
-            log:printInfo(string `---- Skipping ${contact.id}: missing email`);
+            log:printInfo(string `Skipping ${contact.id}: missing email`);
             errorCount += 1;
             continue;
         }
@@ -480,7 +480,7 @@ function exportContactsToSheet(Contact[] contacts, string lastSyncTimestamp, boo
             check ensureHeaderRow(targetSheet);
             error? result = appendSheetRowWithRetry(targetSheet, rowData, contact.id);
             if result is error {
-                log:printError(string `---- Insert failed for contact ${contact.id} in '${targetSheet}': ${result.message()}`);
+                log:printError(string `Insert failed for contact ${contact.id} in '${targetSheet}': ${result.message()}`);
                 errorCount += 1;
             } else {
                 insertCount += 1;
@@ -504,7 +504,7 @@ function exportContactsToSheet(Contact[] contacts, string lastSyncTimestamp, boo
             if existingRow is int {
                 error? result = updateSheetRowWithRetry(targetSheet, existingRow, rowData, contact.id);
                 if result is error {
-                    log:printError(string `---- Update failed for contact ${contact.id} in '${targetSheet}': ${result.message()}`);
+                    log:printError(string `Update failed for contact ${contact.id} in '${targetSheet}': ${result.message()}`);
                     errorCount += 1;
                 } else {
                     updateCount += 1;
@@ -513,7 +513,7 @@ function exportContactsToSheet(Contact[] contacts, string lastSyncTimestamp, boo
             } else {
                 error? result = appendSheetRowWithRetry(targetSheet, rowData, contact.id);
                 if result is error {
-                    log:printError(string `---- Insert failed for contact ${contact.id} in '${targetSheet}': ${result.message()}`);
+                    log:printError(string `Insert failed for contact ${contact.id} in '${targetSheet}': ${result.message()}`);
                     errorCount += 1;
                 } else {
                     insertCount += 1;
@@ -542,7 +542,7 @@ function exportContactsToSheet(Contact[] contacts, string lastSyncTimestamp, boo
 
     string limitInfo = limitReached ? " (limit reached)" : "";
     log:printInfo(
-        string `---- Export summary: inserted ${insertCount}, updated ${updateCount}, failed ${errorCount}${limitInfo}`
+        string `Export summary: inserted ${insertCount}, updated ${updateCount}, failed ${errorCount}${limitInfo}`
     );
 
     return latestTimestamp;

@@ -1,21 +1,21 @@
 import ballerina/log;
 
 public function main() returns error? {
-    log:printInfo("---- HubSpot -> Google Sheets Sync Started");
+    log:printInfo("HubSpot -> Google Sheets Sync Started");
 
     do {
-        log:printInfo("---- Validating HubSpot and Google Sheets access");
+        log:printInfo("Validating HubSpot and Google Sheets access");
         check validateExternalConnections();
-        log:printInfo("---- Configuration validation passed");
+        log:printInfo("Configuration validation passed");
     } on fail error startupErr {
         printRunError(startupErr);
-        log:printError("---- Startup validation failed. Fix configuration and retry");
+        log:printError("Startup validation failed. Fix configuration and retry");
         return;
     }
     
     do {
-        log:printInfo("---- Run Start");
-        log:printInfo("---- Fetching contacts from HubSpot");
+        log:printInfo("Run Start");
+        log:printInfo("Fetching contacts from HubSpot");
         
         // Get the last sync timestamp
         string lastSyncTime = getLastSyncTimestamp();
@@ -30,16 +30,16 @@ public function main() returns error? {
         
         if contacts.length() == 0 && !isFullSync {
             // Incremental run with no changed contacts — nothing to export.
-            log:printInfo("---- No new or updated contacts found");
+            log:printInfo("No new or updated contacts found");
         } else {
             // Step 2: Export contacts to Google Sheet and get latest timestamp.
             // Always called in replace/full-sync mode so sheet-clearing runs
             // even when the source returns zero contacts.
-            log:printInfo("---- Exporting contacts to Google Sheets");
+            log:printInfo("Exporting contacts to Google Sheets");
             latestTimestamp = check exportContactsToSheet(contacts, effectiveSyncTime, isFullSync);
 
             if contacts.length() == 0 {
-                log:printInfo("---- No contacts found");
+                log:printInfo("No contacts found");
                 if isFullSync {
                     latestTimestamp = getCurrentTimestamp();
                 }
@@ -48,11 +48,11 @@ public function main() returns error? {
 
         // Step 3: Save the latest timestamp for next run after processing finishes.
         if latestTimestamp != lastSyncTime {
-            log:printInfo("---- Saving sync checkpoint");
+            log:printInfo("Saving sync checkpoint");
             check saveLastSyncTimestamp(latestTimestamp);
         }
         
-        log:printInfo("---- Run Completed");
+        log:printInfo("Run Completed");
     } on fail error runErr {
         printRunError(runErr);
     }
@@ -61,18 +61,18 @@ public function main() returns error? {
 function printRunError(error err) {
     string errorText = err.toString();
 
-    log:printError("---- Run Failed");
-    log:printError(string `---- Error: ${errorText}`);
+    log:printError("Run Failed");
+    log:printError(string `Error: ${errorText}`);
 
     if errorText.includes("Unable to parse range") || errorText.includes("Requested entity was not found") {
-        log:printInfo("---- Hint: Verify spreadsheetId and sheet names in Config.toml");
+        log:printInfo("Hint: Verify spreadsheetId and sheet names in Config.toml");
     }
 
     if errorText.includes("PERMISSION_DENIED") || errorText.includes("insufficient") || errorText.includes("forbidden") {
-        log:printInfo("---- Hint: Verify Google OAuth credentials and spreadsheet sharing permissions");
+        log:printInfo("Hint: Verify Google OAuth credentials and spreadsheet sharing permissions");
     }
 
     if errorText.includes("UNAUTHENTICATED") || errorText.includes("401") || errorText.includes("invalid_grant") {
-        log:printInfo("---- Hint: Refresh HubSpot/Google tokens in Config.toml");
+        log:printInfo("Hint: Refresh HubSpot/Google tokens in Config.toml");
     }
 }
