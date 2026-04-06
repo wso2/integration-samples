@@ -49,13 +49,3 @@ The following should be done after deploying the integration, and the endpoint U
 
 This integration uses refresh token flow for auth. [Learn how to set up QuickBooks OAuth](https://developer.intuit.com/app/developer/qbo/docs/develop/authentication-and-authorization/oauth-2.0).
 </details>
-
-<summary>Additional Configurations</summary>
-
-1. `salesforceClientId`, `salesforceClientSecret`, `salesforceRefreshToken`, `salesforceRefreshUrl`, `salesforceBaseUrl`
-   - Credentials and endpoint values required to authenticate and call Salesforce APIs.
-2. `quickbooksClientId`, `quickbooksClientSecret`, `quickbooksRefreshToken`, `quickbooksRealmId`, `quickbooksBaseUrl`
-   - Credentials and endpoint values required to authenticate and call QuickBooks APIs.
-3. `webhookPort`, `webhookVerifyToken`
-   - Service port and verification token used by the QuickBooks webhook endpoint.
-</details>
