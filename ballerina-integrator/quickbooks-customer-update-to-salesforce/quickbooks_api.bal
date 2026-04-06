@@ -56,5 +56,3 @@ public function fetchQuickBooksCustomerDetails(string customerId) returns QuickB
 
     return customer;
 }
-
-

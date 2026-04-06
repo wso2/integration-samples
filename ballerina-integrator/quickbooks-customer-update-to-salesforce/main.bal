@@ -12,16 +12,16 @@ import ballerina/crypto;
 // - Parent-child relationships are maintained automatically
 
 // HTTP Listener for QuickBooks Webhooks
-listener http:Listener webhookListener = check new (webhookConfig.port);
+listener http:Listener webhookListener = check new (9090);
 
 // Startup logging
 function init() {
     log:printInfo("###################################################################################################");
     log:printInfo("QUICKBOOKS TO SALESFORCE SYNC SERVICE STARTING");
     log:printInfo("###################################################################################################");
-    log:printInfo(string `Webhook Port: ${webhookConfig.port}`);
-    log:printInfo(string `Webhook Endpoint: http://localhost:${webhookConfig.port}/quickbooks/webhook`);
-    log:printInfo(string `Health Check: http://localhost:${webhookConfig.port}/quickbooks/health`);
+    log:printInfo(string `Webhook Port: ${9090}`);
+    log:printInfo(string `Webhook Endpoint: http://localhost:${9090}/quickbooks/webhook`);
+    log:printInfo(string `Health Check: http://localhost:${9090}/quickbooks/health`);
     log:printInfo(string `Conflict Resolution: ${syncConfig.conflictResolution}`);
     log:printInfo(string `Filter Active Only: ${syncConfig.filterActiveOnly}`);
     log:printInfo("###################################################################################################");
@@ -69,7 +69,7 @@ service /quickbooks on webhookListener {
     
     // Webhook verification endpoint (GET)
     resource function get webhook(@http:Query string verifyToken) returns string|http:Unauthorized {
-        if verifyToken == webhookConfig.verifyToken {
+        if verifyToken == quickbooksConfig.verifyToken {
             log:printInfo("Webhook verification successful");
             return "Webhook verified successfully";
         }
@@ -104,7 +104,7 @@ service /quickbooks on webhookListener {
         string intuitSignature = intuitSignatureHeader;
         
         // Compute HMAC-SHA256 using webhook verify token as key
-        byte[]|error computedHmac = computeHmacSignature(rawPayload, webhookConfig.verifyToken);
+        byte[]|error computedHmac = computeHmacSignature(rawPayload, quickbooksConfig.verifyToken);
         
         if computedHmac is error {
             log:printError(string `Failed to compute HMAC signature: ${computedHmac.message()}`);

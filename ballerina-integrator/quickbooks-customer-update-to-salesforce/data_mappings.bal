@@ -125,5 +125,3 @@ public isolated function mapQuickBooksCustomerToSalesforceAccount(QuickBooksCust
     
     return sfAccount;
 }
-
-

@@ -11,8 +11,3 @@ final salesforce:Client salesforceClient = check new ({
         refreshUrl: salesforceConfig.refreshUrl
     }
 });
-
-
-// QuickBooks Base URL MUST be set in Config.toml:
-// - Sandbox: https://sandbox-quickbooks.api.intuit.com/v3/company
-

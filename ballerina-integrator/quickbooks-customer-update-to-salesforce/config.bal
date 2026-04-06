@@ -15,11 +15,6 @@ public type QuickBooksConfig record {|
     string realmId;
     string baseUrl;
     string tokenUrl = "https://oauth.platform.intuit.com/oauth2/v1/tokens/bearer";
-|};
-
-// Webhook Configuration Record
-public type WebhookConfig record {|
-    int port = 8080;
     string verifyToken;
 |};
 
@@ -32,5 +27,4 @@ public type SyncConfig record {|
 // Grouped Configurables
 configurable SalesforceConfig salesforceConfig = ?;
 configurable QuickBooksConfig quickbooksConfig = ?;
-configurable WebhookConfig webhookConfig = ?;
 configurable SyncConfig syncConfig = {};
