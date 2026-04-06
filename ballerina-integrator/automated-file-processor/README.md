@@ -11,7 +11,7 @@ A scheduled task that reads a local text file, counts the number of words, and l
 2. Click **Deploy** and follow the instructions.
 3. Once deployed and configured, it will read the file and log the word count every five minutes.
 
-Note: If scheduling this job is not a requirement, you can execute the integration locally using the Run button in Ballerina Integrator.
+Note: If scheduling this job is not a requirement, you can execute the integration locally using the Run button in WSO2 Integrator.
 
 ## References
 

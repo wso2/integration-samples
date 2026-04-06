@@ -15,7 +15,6 @@ This application suggests Spotify playlists based on the **current weather** at 
 1. Visit [https://www.weatherapi.com/](https://www.weatherapi.com/)
 2. Sign up for a free account
 3. Get your API key from the **Dashboard**
-4. Save it in the `Config.toml` file as shown below
 
 ### Spotify API
 
@@ -36,7 +35,7 @@ WEATHER_API_KEY = ""	# Type of STRING
 
 2. Run the integration locally using the **Run** button in WSO2 Integrator.
 
-2. Use the **"Try It"** feature (auto popup) to send a request.
+3. Use the **"Try It"** feature (auto popup) to send a request.
 
 ## Deploy on **WSO2 Cloud**
 
