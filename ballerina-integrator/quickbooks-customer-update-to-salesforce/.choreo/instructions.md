@@ -1,5 +1,3 @@
-# QuickBooks to Salesforce Sync - Instructions
-
 ## What It Does
 
 - Receives real-time webhook notifications from QuickBooks when customers are created or updated
@@ -60,6 +58,4 @@ This integration uses refresh token flow for auth. [Learn how to set up QuickBoo
    - Credentials and endpoint values required to authenticate and call QuickBooks APIs.
 3. `webhookPort`, `webhookVerifyToken`
    - Service port and verification token used by the QuickBooks webhook endpoint.
-
-
 </details>
