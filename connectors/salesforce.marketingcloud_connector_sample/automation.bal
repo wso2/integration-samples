@@ -14,9 +14,8 @@ public function main() returns error? {
     }
     ") ;
 }
- on fail error e{
-    log: printError("Error occurred", 'error = e)
-;
+ on fail error e {
+    log:printError("Error occurred", 'error = e);
  return e      ;
 }
 }
