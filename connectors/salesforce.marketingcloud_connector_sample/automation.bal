@@ -3,16 +3,17 @@ import ballerinax/salesforce.marketingcloud;
 
 public function main() returns error? {
     do {
-        marketingcloud:SendEmailMessageResponse marketingcloudSendemailmessageresponse = check marketingcloudClient->sendEmailMessage("{
-                        definitionKey : "Welcome_Email_v1",
-        recipients:[
-        {
-            contactKey: "contact-001",
-            to: "john.doe@example.com"
-        }
-        ]
-    }
-    ") ;
+        json payload = {
+            definitionKey: "Welcome_Email_v1",
+            recipients: [
+                {
+                    contactKey: "contact-001",
+                    to: "john.doe@example.com"
+                }
+            ]
+        };
+        marketingcloud:SendEmailMessageResponse marketingcloudSendemailmessageresponse =
+            check marketingcloudClient->sendEmailMessage(payload);
 }
  on fail error e {
     log:printError("Error occurred", 'error = e);
