@@ -1,0 +1,2 @@
+
+configurable string sapCommerceServiceUrl = ?;
