@@ -20,7 +20,7 @@ Retail stores generate daily sales reports as JSON files and upload them to a ce
 
 Try this in Devant:
 
-[![Deploy to Devant](https://openindevant.choreoapps.dev/images/DeployDevant.svg)](https://console.devant.dev/new?gh=wso2/integration-samples/tree/main/ballerina-integrator/sales-data-sync&t=file)
+[![Deploy to Devant](https://openindevant.choreoapps.dev/images/DeployDevant.svg)](https://console.devant.dev/new?gh=wso2/integration-samples/tree/main/integrator/samples/sales-data-sync&t=file)
 
 
 ## Prerequisites

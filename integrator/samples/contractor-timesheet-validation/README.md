@@ -6,7 +6,7 @@ This integration validates and processes daily contractor timesheet files for a 
 
 Try this in Devant:
 
-[![Deploy to Devant](https://openindevant.choreoapps.dev/images/DeployDevant.svg)](https://console.devant.dev/new?gh=wso2/integration-samples/tree/main/ballerina-integrator/contractor-timesheet-validation&t=file)
+[![Deploy to Devant](https://openindevant.choreoapps.dev/images/DeployDevant.svg)](https://console.devant.dev/new?gh=wso2/integration-samples/tree/main/integrator/samples/contractor-timesheet-validation&t=file)
 
 
 ## Architecture Overview
