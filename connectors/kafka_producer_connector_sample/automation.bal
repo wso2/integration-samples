@@ -1,5 +1,4 @@
 import ballerina/log;
-import ballerinax/kafka;
 
 public function main() returns error? {
     do {
