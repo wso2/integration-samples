@@ -4,12 +4,9 @@ import ballerina/time;
 # Formats a date string according to the configured date format
 # + dateString - The input date string (RFC 3339 format from Shopify)
 # + return - Formatted date string or original if formatting fails/not configured
-function formatDate(string? dateString) returns string {
+isolated function formatDate(string? dateString) returns string {
     if dateString is () {
         return "";
-    }
-    if dateFormat == "default" || dateString.trim() == "" {
-        return dateString;
     }
 
     time:Civil|time:Error civilResult = time:civilFromString(dateString);
@@ -17,65 +14,46 @@ function formatDate(string? dateString) returns string {
         return dateString;
     }
 
-    time:Civil civil = civilResult;
-
-    if dateFormat == "iso8601" {
-        string|time:Error formatted = time:civilToString(civil);
-        if formatted is string {
-            return formatted;
+    match dateFormat {
+        "iso8601" => {
+            string|time:Error formatted = time:civilToString(civilResult);
+            if formatted is string {
+                return formatted;
+            }
         }
-    } else if dateFormat == "rfc5322" {
-        string|time:Error formatted = time:civilToEmailString(civil, time:PREFER_ZONE_OFFSET);
-        if formatted is string {
-            return formatted;
+        "rfc5322" => {
+            string|time:Error formatted = time:civilToEmailString(civilResult, time:PREFER_ZONE_OFFSET);
+            if formatted is string {
+                return formatted;
+            }
         }
     }
-
     return dateString;
 }
 
 # Helper function to extract discount codes
 # + codes - Array of discount code objects from Shopify order
 # + return - Comma-separated string of discount codes or empty string if none
-function getDiscountCodes(shopify:DiscountCode[]? codes) returns string {
+isolated function getDiscountCodes(shopify:DiscountCode[]? codes) returns string {
     if codes is () || codes.length() == 0 {
         return "";
     }
-    string[] codeList = from var code in codes select code?.code ?: "";
+    string[] codeList = from var code in codes let string c = code?.code ?: "" where c != "" select c;
+
     return string:'join(", ", ...codeList);
 }
 
-# Helper function to extract shipping method
+# Helper function to retrieve the first shipping line
 # + lines - Array of shipping line objects from Shopify order
-# + return - Shipping method title or empty string if not available
-function getShippingMethod(shopify:ShippingLine[]? lines) returns string {
+# + return - The first ShippingLine record, or nil if not available
+isolated function getFirstShippingLine(shopify:ShippingLine[]? lines) returns shopify:ShippingLine? {
     if lines is () || lines.length() == 0 {
-        return "";
+        return ();
     }
-    return lines[0]?.title ?: "";
+    return lines[0];
 }
 
-# Helper function to get shipping price
-# + lines - Array of shipping line objects from Shopify order
-# + return - Shipping price as string or "0.00" if not available
-function getShippingPrice(shopify:ShippingLine[]? lines) returns string {
-    if lines is () || lines.length() == 0 {
-        return "0.00";
-    }
-    return lines[0]?.price ?: "0.00";
-}
-
-# Helper function to get customer ID
-# + customerId - Customer ID from Shopify order (nullable)
-# + return - Customer ID as string or empty string if not available
-function getCustomerId(int? customerId) returns string {
-    if customerId is () {
-        return "";
-    }
-    return customerId.toString();
-}
-
-function eventToRowData(shopify:OrderEvent event) returns (int|string|decimal)[] => [
+isolated function eventToRowData(shopify:OrderEvent event) returns (int|string|decimal)[] => [
     // Order Identifiers
     event?.id.toString(),
     event?.order_number ?: "",
@@ -87,7 +65,7 @@ function eventToRowData(shopify:OrderEvent event) returns (int|string|decimal)[]
     event?.subtotal_price ?: "0.00",
     event?.total_tax ?: "0.00",
     event?.total_discounts ?: "0.00",
-    getShippingPrice(event?.shipping_lines),
+    getFirstShippingLine(event?.shipping_lines)?.price ?: "0.00",
     event?.total_line_items_price ?: "0.00",
     event?.currency ?: "",
     
@@ -102,7 +80,7 @@ function eventToRowData(shopify:OrderEvent event) returns (int|string|decimal)[]
     formatDate(event?.cancelled_at),
     
     // Customer Information
-    getCustomerId(event?.customer?.id),
+    event?.customer?.id ?: "",
     event?.email ?: "",
     event?.customer?.first_name ?: "",
     event?.customer?.last_name ?: "",
@@ -120,7 +98,7 @@ function eventToRowData(shopify:OrderEvent event) returns (int|string|decimal)[]
     event?.shipping_address?.country ?: "",
     event?.shipping_address?.country_code ?: "",
     event?.shipping_address?.phone ?: "",
-    getShippingMethod(event?.shipping_lines),
+    getFirstShippingLine(event?.shipping_lines)?.title ?: "",
     
     // Billing Address
     event?.billing_address?.first_name ?: "",
