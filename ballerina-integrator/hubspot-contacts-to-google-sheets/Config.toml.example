@@ -1,0 +1,41 @@
+# HubSpot API
+hubspotAccessToken = "<your-hubspot-legacy-app-token>"
+
+# Google OAuth2
+googleClientId = "<your-google-client-id>"
+googleClientSecret = "<your-google-client-secret>"
+googleRefreshToken = "<your-google-refresh-token>"
+
+# Google Spreadsheet target
+spreadsheetId = "<your-google-spreadsheet-id>"
+
+# Lifecycle routing sheets
+# Each HubSpot lifecycle stage routes to its own sheet by default.
+# To merge multiple stages into one sheet, set them to the same name.
+# To send all contacts to a single sheet, set all names to the same value.
+subscriberSheetName = "Subscribers"
+leadSheetName = "Leads"
+marketingqualifiedleadSheetName = "MQLs"
+salesqualifiedleadSheetName = "SQLs"
+opportunitySheetName = "Opportunities"
+customerSheetName = "Customers"
+evangelistSheetName = "Evangelists"
+otherSheetName = "Others"
+defaultSheetName = "Sheet1"
+
+# Limits
+maxRows = 0
+
+# Sync mode
+# "upsert"  - Update existing row if email matches, insert if not (default)
+# "append"  - Always insert a new row, never check for duplicates
+# "replace" - Clear the sheet first, then write all contacts fresh
+syncMode = "upsert"
+
+# Optional contact filter (leave empty to export all)
+contactFilterProperty = ""
+contactFilterValue = ""
+
+# Example filter:
+# contactFilterProperty = "lifecyclestage"
+# contactFilterValue = "customer"
