@@ -1,0 +1,243 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "properties": {
+    "wso2": {
+      "type": "object",
+      "properties": {
+        "jira_sprint_summary_email": {
+          "type": "object",
+          "properties": {
+            "gmail": {
+              "type": "object",
+              "properties": {
+                "clientId": {
+                  "type": "string"
+                },
+                "clientSecret": {
+                  "type": "string"
+                },
+                "refreshToken": {
+                  "type": "string"
+                },
+                "recipients": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              },
+              "additionalProperties": false,
+              "required": [
+                "clientId",
+                "clientSecret",
+                "refreshToken",
+                "recipients"
+              ],
+              "name": "wso2/jira_sprint_summary_email:0.1.0:GmailConfig",
+              "description": ""
+            },
+            "jira": {
+              "type": "object",
+              "properties": {
+                "email": {
+                  "type": "string"
+                },
+                "apiToken": {
+                  "type": "string"
+                },
+                "baseUrl": {
+                  "type": "string"
+                },
+                "projectKey": {
+                  "type": "string"
+                }
+              },
+              "additionalProperties": false,
+              "required": [
+                "email",
+                "apiToken",
+                "baseUrl",
+                "projectKey"
+              ],
+              "name": "wso2/jira_sprint_summary_email:0.1.0:JiraConfig",
+              "description": ""
+            },
+            "email": {
+              "type": "object",
+              "properties": {
+                "timeZone": {
+                  "type": "string"
+                },
+                "subjectTemplate": {
+                  "type": "string"
+                }
+              },
+              "additionalProperties": false,
+              "required": [
+                "timeZone",
+                "subjectTemplate"
+              ],
+              "name": "wso2/jira_sprint_summary_email:0.1.0:EmailConfig",
+              "description": ""
+            },
+            "summary": {
+              "type": "object",
+              "properties": {
+                "includeCompletedIssues": {
+                  "type": "boolean"
+                },
+                "includeCarriedOverIssues": {
+                  "type": "boolean"
+                },
+                "includeAssigneeBreakdown": {
+                  "type": "boolean"
+                },
+                "includeMidSprintAdditions": {
+                  "type": "boolean"
+                }
+              },
+              "additionalProperties": false,
+              "required": [
+                "includeCompletedIssues",
+                "includeCarriedOverIssues",
+                "includeAssigneeBreakdown",
+                "includeMidSprintAdditions"
+              ],
+              "name": "wso2/jira_sprint_summary_email:0.1.0:SummaryConfig",
+              "description": ""
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "gmail",
+            "jira"
+          ]
+        }
+      },
+      "additionalProperties": false
+    },
+    "ballerina": {
+      "type": "object",
+      "properties": {
+        "log": {
+          "type": "object",
+          "properties": {
+            "destinations": {
+              "type": "array",
+              "items": {
+                "anyOf": [
+                  {
+                    "type": "object",
+                    "properties": {
+                      "type": {
+                        "enum": [
+                          "stderr",
+                          "stdout"
+                        ]
+                      }
+                    },
+                    "additionalProperties": false,
+                    "required": [
+                      "type"
+                    ],
+                    "name": "ballerina/log:2.14.0:StandardDestination"
+                  },
+                  {
+                    "type": "object",
+                    "properties": {
+                      "type": {
+                        "enum": [
+                          "file"
+                        ]
+                      },
+                      "path": {
+                        "type": "string"
+                      },
+                      "mode": {
+                        "enum": [
+                          "APPEND",
+                          "TRUNCATE"
+                        ]
+                      }
+                    },
+                    "additionalProperties": false,
+                    "required": [
+                      "type",
+                      "path",
+                      "mode"
+                    ],
+                    "name": "ballerina/log:2.14.0:FileOutputDestination"
+                  }
+                ]
+              },
+              "description": ""
+            },
+            "modules": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string"
+                  },
+                  "level": {
+                    "enum": [
+                      "WARN",
+                      "INFO",
+                      "ERROR",
+                      "DEBUG"
+                    ]
+                  }
+                },
+                "additionalProperties": false,
+                "required": [
+                  "name",
+                  "level"
+                ],
+                "name": "ballerina/log:2.14.0:Module"
+              },
+              "description": ""
+            },
+            "keyValues": {
+              "type": "object",
+              "properties": {
+                "msg": {},
+                "error": {},
+                "stackTrace": {},
+                "module": {}
+              },
+              "additionalProperties": false,
+              "name": "ballerina/log:2.14.0:AnydataKeyValues",
+              "description": ""
+            },
+            "format": {
+              "enum": [
+                "logfmt",
+                "json"
+              ],
+              "description": ""
+            },
+            "level": {
+              "enum": [
+                "WARN",
+                "INFO",
+                "ERROR",
+                "DEBUG"
+              ],
+              "description": ""
+            },
+            "enableSensitiveDataMasking": {
+              "type": "boolean",
+              "description": ""
+            }
+          },
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false,
+  "requiredLevel": 3
+}
