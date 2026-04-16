@@ -51,7 +51,7 @@
       "buildPack": "ballerina",
       "repositoryUrl": "https://github.com/wso2/integration-samples/",
       "componentPath": "/ballerina-integrator/automated-file-processor",
-      "thumbnailPath": "/file.svg",
+      "thumbnailPath": "https://devant-cdn.wso2.com/console/sample-icons/file.svg",
       "tags": ["Integration", "Automation", "File Processing"],
       "imageUrl": "choreoanonymouspullable.azurecr.io/samples/reading-list-rest-service-in-go:1.0.0"
     },
@@ -62,7 +62,7 @@
       "buildPack": "ballerina",
       "repositoryUrl": "https://github.com/wso2/integration-samples/",
       "componentPath": "/ballerina-integrator/currency-converter",
-      "thumbnailPath": "/Billing.svg",
+      "thumbnailPath": "https://devant-cdn.wso2.com/console/sample-icons/Billing.svg",
       "tags": ["Integration", "REST", "HTTP"],
       "imageUrl": "choreoanonymouspullable.azurecr.io/samples/reading-list-rest-service-in-go:1.0.0"
     },
@@ -73,7 +73,7 @@
       "buildPack": "ballerina",
       "repositoryUrl": "https://github.com/wso2/integration-samples/",
       "componentPath": "/ballerina-integrator/math-tutor",
-      "thumbnailPath": "/AIAgent.svg",
+      "thumbnailPath": "https://devant-cdn.wso2.com/console/sample-icons/AIAgent.svg",
       "tags": ["AzureOpenAi", "Integration"],
       "imageUrl": "choreoanonymouspullable.azurecr.io/samples/reading-list-rest-service-in-go:1.0.0"
     },
@@ -84,7 +84,7 @@
       "buildPack": "ballerina",
       "repositoryUrl": "https://github.com/wso2/integration-samples/",
       "componentPath": "/ballerina-integrator/pizza-shop-integration",
-      "thumbnailPath": "/AIAgent.svg",
+      "thumbnailPath": "https://devant-cdn.wso2.com/console/sample-icons/AIAgent.svg",
       "tags": ["OpenAI", "Integration"],
       "imageUrl": "choreoanonymouspullable.azurecr.io/samples/reading-list-rest-service-in-go:1.0.0"
     },
@@ -95,7 +95,7 @@
       "buildPack": "ballerina",
       "repositoryUrl": "https://github.com/wso2/integration-samples/",
       "componentPath": "/ballerina-integrator/hr-ai-chat-agent",
-      "thumbnailPath": "/AIAgent.svg",
+      "thumbnailPath": "https://devant-cdn.wso2.com/console/sample-icons/AIAgent.svg",
       "tags": ["RAG", "OpenAI", "Pinecone", "Integration"],
       "imageUrl": "choreoanonymouspullable.azurecr.io/samples/reading-list-rest-service-in-go:1.0.0"
     },
@@ -106,7 +106,7 @@
       "buildPack": "ballerina",
       "repositoryUrl": "https://github.com/wso2/integration-samples/",
       "componentPath": "/ballerina-integrator/weather-based-activity-recommender",
-      "thumbnailPath": "/AIAgent.svg",
+      "thumbnailPath": "https://devant-cdn.wso2.com/console/sample-icons/AIAgent.svg",
       "tags": ["Automation", "Integration", "OpenAI", "OpenWeatherMap"],
       "imageUrl": "choreoanonymouspullable.azurecr.io/samples/reading-list-rest-service-in-go:1.0.0"
     },
@@ -194,7 +194,7 @@
       "buildPack": "wso2-mi",
       "repositoryUrl": "https://github.com/wso2/integration-samples/",
       "componentPath": "/micro-integrator/FileTransfer",
-      "thumbnailPath": "/file.svg",
+      "thumbnailPath": "https://devant-cdn.wso2.com/console/sample-icons/file.svg",
       "tags": ["Integration", "File", "FTP"],
       "imageUrl": "choreoanonymouspullable.azurecr.io/samples/reading-list-rest-service-in-go:1.0.0"
     },
