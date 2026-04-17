@@ -1,5 +1,5 @@
 
-type Location record {|
+type Location record {
     string name;
     string region;
     string country;
@@ -8,15 +8,15 @@ type Location record {|
     string tz_id;
     int localtime_epoch;
     string localtime;
-|};
+};
 
-type Condition record {|
+type Condition record {
     string text;
     string icon;
     int code;
-|};
+};
 
-type Current record {|
+type Current record {
     int last_updated_epoch;
     string last_updated;
     decimal temp_c;
@@ -46,7 +46,7 @@ type Current record {|
     decimal uv;
     decimal gust_mph;
     decimal gust_kph;
-|};
+};
 
 type WeatherData record {|
     Location location;
