@@ -1,0 +1,9 @@
+[package]
+org = "wso2"
+name = "hubspot.crm.obj.feedback_connector_sample"
+version = "0.1.0"
+distribution = "2201.13.1"
+title = "hubspot.crm.obj.feedback-connector-sample"
+
+[build-options]
+sticky = true
