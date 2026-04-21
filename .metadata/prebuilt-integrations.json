@@ -42,7 +42,7 @@
     {
       "displayName": "Send a Google Chat message when a GitHub issue is created",
       "description": "When an issue is labeled in GitHub, this integration sends a message to a Google Chat space with the issue details.",
-      "componentType": "service",
+      "componentType": "webhook",
       "buildPack": "ballerina",
       "repositoryUrl": "https://github.com/wso2/integration-samples/",
       "branch": "main",
