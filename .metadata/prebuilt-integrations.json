@@ -16,7 +16,7 @@
     {
       "displayName": "Create Stripe Customer when a new Shopify Customer is Created",
       "description": "This webhook-based Integration as API listens for new customer creation events in Shopify and creates a corresponding customer in Stripe.",
-      "componentType": "service",
+      "componentType": "webhook",
       "buildPack": "ballerina",
       "repositoryUrl": "https://github.com/wso2/integration-samples/",
       "branch": "main",
@@ -94,7 +94,7 @@
     {
       "displayName": "Send a message to a Slack channel when a Shopify order is made",
       "description": "When a new Shopify order is placed, automatically post an order notification message to a designated Slack channel.",
-      "componentType": "service",
+      "componentType": "webhook",
       "buildPack": "ballerina",
       "repositoryUrl": "https://github.com/wso2/integration-samples/",
       "branch": "main",
@@ -107,7 +107,7 @@
     {
       "displayName": "Update a Google Sheet When a Shopify Order is Created",
       "description": "When a new Shopify order is placed, automatically append the order details as a new row in a Google Sheet.",
-      "componentType": "service",
+      "componentType": "webhook",
       "buildPack": "ballerina",
       "repositoryUrl": "https://github.com/wso2/integration-samples/",
       "branch": "main",
@@ -120,7 +120,7 @@
     {
       "displayName": "Create a Salesforce Contact When a New Shopify Customer Signs Up",
       "description": "When a new customer signs up on Shopify, automatically create a corresponding contact in Salesforce.",
-      "componentType": "service",
+      "componentType": "webhook",
       "buildPack": "ballerina",
       "repositoryUrl": "https://github.com/wso2/integration-samples/",
       "branch": "main",
@@ -146,7 +146,7 @@
     {
       "displayName": "Create a Transaction in QuickBooks When a Shopify Order is Completed",
       "description": "When a Shopify order is marked as completed, automatically create a corresponding transaction record in QuickBooks.",
-      "componentType": "service",
+      "componentType": "webhook",
       "buildPack": "ballerina",
       "repositoryUrl": "https://github.com/wso2/integration-samples/",
       "branch": "main",
