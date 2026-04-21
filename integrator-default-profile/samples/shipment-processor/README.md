@@ -32,7 +32,7 @@ You can use a tool such as `FileZilla` to connect to the remote SFTP server and 
 * `250915_2k_shipments.csv` file contains set of sample data
 * `QR250901_shipments.csv` file contains set of qurantine data
 
-Add the sample CSV file in this repo location `integration-samples/ballerina-integrator/shipment-processor/data/<sample-csv>` to the following directory in the SFTP server: 
+Add the sample CSV file in this repo location `integration-samples/integrator-default-profile/samples/shipment-processor/data/<sample-csv>` to the following directory in the SFTP server: 
 `/csv/prod`
 
 <img width="800" height="auto" alt="image" src="images/SFTPlocation.png" />
