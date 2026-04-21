@@ -6,7 +6,7 @@
       "componentType": "service",
       "buildPack": "ballerina",
       "repositoryUrl": "https://github.com/wso2/integration-samples/",
-      "componentPath": "/ballerina-integrator/hello-world-service",
+      "componentPath": "/integrator-default-profile/samples/hello-world-service",
       "thumbnailPath": "https://choreo-shared-choreo-samples-cdne.azureedge.net/icons/hello-world.png",
       "tags": ["HTTP", "Integration", "REST"],
       "imageUrl": "choreoanonymouspullable.azurecr.io/samples/reading-list-rest-service-in-go:1.0.0"
@@ -17,7 +17,7 @@
       "componentType": "scheduled-task",
       "buildPack": "ballerina",
       "repositoryUrl": "https://github.com/wso2/integration-samples/",
-      "componentPath": "/ballerina-integrator/scheduled-logger",
+      "componentPath": "/integrator-default-profile/samples/scheduled-logger",
       "thumbnailPath": "https://choreo-shared-choreo-samples-cdne.azureedge.net/icons/docker-time-logger-schedule.svg",
       "tags": ["Integration", "Automation", "Logging"],
       "imageUrl": "choreoanonymouspullable.azurecr.io/samples/reading-list-rest-service-in-go:1.0.0"
@@ -28,7 +28,7 @@
       "componentType": "service",
       "buildPack": "ballerina",
       "repositoryUrl": "https://github.com/wso2/integration-samples/",
-      "componentPath": "/ballerina-integrator/json-to-xml-converter",
+      "componentPath": "/integrator-default-profile/samples/json-to-xml-converter",
       "thumbnailPath": "https://choreo-shared-choreo-samples-cdne.azureedge.net/icons/json-to-xml-conversion.png",
       "tags": ["HTTP", "Integration", "REST"],
       "imageUrl": "choreoanonymouspullable.azurecr.io/samples/reading-list-rest-service-in-go:1.0.0"
@@ -39,7 +39,7 @@
       "componentType": "automation",
       "buildPack": "ballerina",
       "repositoryUrl": "https://github.com/wso2/integration-samples/",
-      "componentPath": "/ballerina-integrator/daily-email-notifier",
+      "componentPath": "/integrator-default-profile/samples/daily-email-notifier",
       "thumbnailPath": "https://choreo-shared-choreo-samples-cdne.azureedge.net/icons/newsapi_headlines-to-email.png",
       "tags": ["Integration", "Automation", "Email"],
       "imageUrl": "choreoanonymouspullable.azurecr.io/samples/reading-list-rest-service-in-go:1.0.0"
@@ -50,7 +50,7 @@
       "componentType": "scheduled-task",
       "buildPack": "ballerina",
       "repositoryUrl": "https://github.com/wso2/integration-samples/",
-      "componentPath": "/ballerina-integrator/automated-file-processor",
+      "componentPath": "/integrator-default-profile/samples/automated-file-processor",
       "thumbnailPath": "https://devant-cdn.wso2.com/console/sample-icons/file.svg",
       "tags": ["Integration", "Automation", "File Processing"],
       "imageUrl": "choreoanonymouspullable.azurecr.io/samples/reading-list-rest-service-in-go:1.0.0"
@@ -61,7 +61,7 @@
       "componentType": "service",
       "buildPack": "ballerina",
       "repositoryUrl": "https://github.com/wso2/integration-samples/",
-      "componentPath": "/ballerina-integrator/currency-converter",
+      "componentPath": "/integrator-default-profile/samples/currency-converter",
       "thumbnailPath": "https://devant-cdn.wso2.com/console/sample-icons/Billing.svg",
       "tags": ["Integration", "REST", "HTTP"],
       "imageUrl": "choreoanonymouspullable.azurecr.io/samples/reading-list-rest-service-in-go:1.0.0"
@@ -72,7 +72,7 @@
       "componentType": "ai-agent",
       "buildPack": "ballerina",
       "repositoryUrl": "https://github.com/wso2/integration-samples/",
-      "componentPath": "/ballerina-integrator/math-tutor",
+      "componentPath": "/integrator-default-profile/samples/math-tutor",
       "thumbnailPath": "https://devant-cdn.wso2.com/console/sample-icons/AIAgent.svg",
       "tags": ["AzureOpenAi", "Integration"],
       "imageUrl": "choreoanonymouspullable.azurecr.io/samples/reading-list-rest-service-in-go:1.0.0"
@@ -83,7 +83,7 @@
       "componentType": "ai-agent",
       "buildPack": "ballerina",
       "repositoryUrl": "https://github.com/wso2/integration-samples/",
-      "componentPath": "/ballerina-integrator/pizza-shop-integration",
+      "componentPath": "/integrator-default-profile/samples/pizza-shop-integration",
       "thumbnailPath": "https://devant-cdn.wso2.com/console/sample-icons/AIAgent.svg",
       "tags": ["OpenAI", "Integration"],
       "imageUrl": "choreoanonymouspullable.azurecr.io/samples/reading-list-rest-service-in-go:1.0.0"
@@ -94,7 +94,7 @@
       "componentType": "ai-agent",
       "buildPack": "ballerina",
       "repositoryUrl": "https://github.com/wso2/integration-samples/",
-      "componentPath": "/ballerina-integrator/hr-ai-chat-agent",
+      "componentPath": "/integrator-default-profile/samples/hr-ai-chat-agent",
       "thumbnailPath": "https://devant-cdn.wso2.com/console/sample-icons/AIAgent.svg",
       "tags": ["RAG", "OpenAI", "Pinecone", "Integration"],
       "imageUrl": "choreoanonymouspullable.azurecr.io/samples/reading-list-rest-service-in-go:1.0.0"
@@ -105,7 +105,7 @@
       "componentType": "scheduled-task",
       "buildPack": "ballerina",
       "repositoryUrl": "https://github.com/wso2/integration-samples/",
-      "componentPath": "/ballerina-integrator/weather-based-activity-recommender",
+      "componentPath": "/integrator-default-profile/samples/weather-based-activity-recommender",
       "thumbnailPath": "https://devant-cdn.wso2.com/console/sample-icons/AIAgent.svg",
       "tags": ["Automation", "Integration", "OpenAI", "OpenWeatherMap"],
       "imageUrl": "choreoanonymouspullable.azurecr.io/samples/reading-list-rest-service-in-go:1.0.0"
@@ -116,7 +116,7 @@
       "componentType": "file-integration",
       "buildPack": "ballerina",
       "repositoryUrl": "https://github.com/wso2/integration-samples/",
-      "componentPath": "/ballerina-integrator/weather-data-listener",
+      "componentPath": "/integrator-default-profile/samples/weather-data-listener",
       "thumbnailPath": "https://mi-connectors.wso2.com/samples/icons/Transformation_Templates.png",
       "tags": ["FTP", "Integration"],
       "imageUrl": "choreoanonymouspullable.azurecr.io/samples/reading-list-rest-service-in-go:1.0.0"
@@ -127,7 +127,7 @@
       "componentType": "service",
       "buildPack": "wso2-mi",
       "repositoryUrl": "https://github.com/wso2/integration-samples/",
-      "componentPath": "/micro-integrator/APITesting",
+      "componentPath": "/integrator-mi-profile/APITesting",
       "thumbnailPath": "https://mi-connectors.wso2.com/samples/icons/Testing_Templates.png",
       "tags": ["Integration", "HTTP", "REST"],
       "imageUrl": "choreoanonymouspullable.azurecr.io/samples/reading-list-rest-service-in-go:1.0.0"
@@ -138,7 +138,7 @@
       "componentType": "service",
       "buildPack": "wso2-mi",
       "repositoryUrl": "https://github.com/wso2/integration-samples/",
-      "componentPath": "/micro-integrator/ContentBasedRouting",
+      "componentPath": "/integrator-mi-profile/ContentBasedRouting",
       "thumbnailPath": "https://mi-connectors.wso2.com/samples/icons/Routing_Templates.png",
       "tags": ["Integration", "HTTP", "REST"],
       "imageUrl": "choreoanonymouspullable.azurecr.io/samples/reading-list-rest-service-in-go:1.0.0"
@@ -149,7 +149,7 @@
       "componentType": "service",
       "buildPack": "wso2-mi",
       "repositoryUrl": "https://github.com/wso2/integration-samples/",
-      "componentPath": "/micro-integrator/DatabasePolling",
+      "componentPath": "/integrator-mi-profile/DatabasePolling",
       "thumbnailPath": "https://mi-connectors.wso2.com/samples/icons/DataIntegration_Templates.png",
       "tags": ["Integration", "Database", "SQL"],
       "imageUrl": "choreoanonymouspullable.azurecr.io/samples/reading-list-rest-service-in-go:1.0.0"
@@ -160,7 +160,7 @@
       "componentType": "service",
       "buildPack": "wso2-mi",
       "repositoryUrl": "https://github.com/wso2/integration-samples/",
-      "componentPath": "/micro-integrator/EmailService",
+      "componentPath": "/integrator-mi-profile/EmailService",
       "thumbnailPath": "https://choreo-shared-choreo-samples-cdne.azureedge.net/icons/weather-to-email-integration.svg",
       "tags": ["Integration", "SMTP", "EMAIL", "IMAP"],
       "imageUrl": "choreoanonymouspullable.azurecr.io/samples/reading-list-rest-service-in-go:1.0.0"
@@ -171,7 +171,7 @@
       "componentType": "service",
       "buildPack": "wso2-mi",
       "repositoryUrl": "https://github.com/wso2/integration-samples/",
-      "componentPath": "/micro-integrator/ExceptionHandling",
+      "componentPath": "/integrator-mi-profile/ExceptionHandling",
       "thumbnailPath": "https://mi-connectors.wso2.com/samples/icons/ErrorHandling_Templates.png",
       "tags": ["Integration"],
       "imageUrl": "choreoanonymouspullable.azurecr.io/samples/reading-list-rest-service-in-go:1.0.0"
@@ -182,7 +182,7 @@
       "componentType": "service",
       "buildPack": "wso2-mi",
       "repositoryUrl": "https://github.com/wso2/integration-samples/",
-      "componentPath": "/micro-integrator/FetchSalesForceAccounts",
+      "componentPath": "/integrator-mi-profile/FetchSalesForceAccounts",
       "thumbnailPath": "https://mi-connectors.wso2.com/samples/icons/SaaS_Templates.png",
       "tags": ["Integration", "salesforce"],
       "imageUrl": "choreoanonymouspullable.azurecr.io/samples/reading-list-rest-service-in-go:1.0.0"
@@ -193,7 +193,7 @@
       "componentType": "scheduled-task",
       "buildPack": "wso2-mi",
       "repositoryUrl": "https://github.com/wso2/integration-samples/",
-      "componentPath": "/micro-integrator/FileTransfer",
+      "componentPath": "/integrator-mi-profile/FileTransfer",
       "thumbnailPath": "https://devant-cdn.wso2.com/console/sample-icons/file.svg",
       "tags": ["Integration", "File", "FTP"],
       "imageUrl": "choreoanonymouspullable.azurecr.io/samples/reading-list-rest-service-in-go:1.0.0"
@@ -204,7 +204,7 @@
       "componentType": "service",
       "buildPack": "wso2-mi",
       "repositoryUrl": "https://github.com/wso2/integration-samples/",
-      "componentPath": "/micro-integrator/GuaranteedDelivery",
+      "componentPath": "/integrator-mi-profile/GuaranteedDelivery",
       "thumbnailPath": "https://mi-connectors.wso2.com/samples/icons/Messaging_Templates.png",
       "tags": ["Integration"],
       "imageUrl": "choreoanonymouspullable.azurecr.io/samples/reading-list-rest-service-in-go:1.0.0"
@@ -215,7 +215,7 @@
       "componentType": "service",
       "buildPack": "wso2-mi",
       "repositoryUrl": "https://github.com/wso2/integration-samples/",
-      "componentPath": "/micro-integrator/HeaderBasedRouting",
+      "componentPath": "/integrator-mi-profile/HeaderBasedRouting",
       "thumbnailPath": "https://mi-connectors.wso2.com/samples/icons/Routing_Templates.png",
       "tags": ["Integration", "HTTP", "REST"],
       "imageUrl": "choreoanonymouspullable.azurecr.io/samples/reading-list-rest-service-in-go:1.0.0"
@@ -226,7 +226,7 @@
       "componentType": "service",
       "buildPack": "wso2-mi",
       "repositoryUrl": "https://github.com/wso2/integration-samples/",
-      "componentPath": "/micro-integrator/HelloDocker",
+      "componentPath": "/integrator-mi-profile/HelloDocker",
       "thumbnailPath": "https://mi-connectors.wso2.com/samples/icons/Container_Templates.png",
       "tags": ["Integration", "DOCKER"],
       "imageUrl": "choreoanonymouspullable.azurecr.io/samples/reading-list-rest-service-in-go:1.0.0"
@@ -237,7 +237,7 @@
       "componentType": "event-handler",
       "buildPack": "wso2-mi",
       "repositoryUrl": "https://github.com/wso2/integration-samples/",
-      "componentPath": "/micro-integrator/JMSIntegration",
+      "componentPath": "/integrator-mi-profile/JMSIntegration",
       "thumbnailPath": "https://mi-connectors.wso2.com/samples/icons/Messaging_Templates.png",
       "tags": ["Integration", "JMS"],
       "imageUrl": "choreoanonymouspullable.azurecr.io/samples/reading-list-rest-service-in-go:1.0.0"
@@ -248,7 +248,7 @@
       "componentType": "event-handler",
       "buildPack": "wso2-mi",
       "repositoryUrl": "https://github.com/wso2/integration-samples/",
-      "componentPath": "/micro-integrator/KafkaConsumerAndProducer",
+      "componentPath": "/integrator-mi-profile/KafkaConsumerAndProducer",
       "thumbnailPath": "https://mi-connectors.wso2.com/samples/icons/Messaging_Templates.png",
       "tags": ["Integration", "Kafka"],
       "imageUrl": "choreoanonymouspullable.azurecr.io/samples/reading-list-rest-service-in-go:1.0.0"
@@ -259,7 +259,7 @@
       "componentType": "service",
       "buildPack": "wso2-mi",
       "repositoryUrl": "https://github.com/wso2/integration-samples/",
-      "componentPath": "/micro-integrator/MessageFiltering",
+      "componentPath": "/integrator-mi-profile/MessageFiltering",
       "thumbnailPath": "https://mi-connectors.wso2.com/samples/icons/Routing_Templates.png",
       "tags": ["Integration", "REST", "HTTP"],
       "imageUrl": "choreoanonymouspullable.azurecr.io/samples/reading-list-rest-service-in-go:1.0.0"
@@ -270,7 +270,7 @@
       "componentType": "scheduled-task",
       "buildPack": "wso2-mi",
       "repositoryUrl": "https://github.com/wso2/integration-samples/",
-      "componentPath": "/micro-integrator/PeriodicalScheduledTasks",
+      "componentPath": "/integrator-mi-profile/PeriodicalScheduledTasks",
       "thumbnailPath": "https://mi-connectors.wso2.com/samples/icons/Task_Templates.png",
       "tags": ["Integration"],
       "imageUrl": "choreoanonymouspullable.azurecr.io/samples/reading-list-rest-service-in-go:1.0.0"
@@ -281,7 +281,7 @@
       "componentType": "service",
       "buildPack": "wso2-mi",
       "repositoryUrl": "https://github.com/wso2/integration-samples/",
-      "componentPath": "/micro-integrator/ProtocolSwitching",
+      "componentPath": "/integrator-mi-profile/ProtocolSwitching",
       "thumbnailPath": "https://mi-connectors.wso2.com/samples/icons/Routing_Templates.png",
       "tags": ["Integration", "REST"],
       "imageUrl": "choreoanonymouspullable.azurecr.io/samples/reading-list-rest-service-in-go:1.0.0"
@@ -292,7 +292,7 @@
       "componentType": "service",
       "buildPack": "wso2-mi",
       "repositoryUrl": "https://github.com/wso2/integration-samples/",
-      "componentPath": "/micro-integrator/RESTDataService",
+      "componentPath": "/integrator-mi-profile/RESTDataService",
       "thumbnailPath": "https://mi-connectors.wso2.com/samples/icons/DataIntegration_Templates.png",
       "tags": ["Integration", "REST"],
       "imageUrl": "choreoanonymouspullable.azurecr.io/samples/reading-list-rest-service-in-go:1.0.0"
@@ -303,7 +303,7 @@
       "componentType": "event-handler",
       "buildPack": "wso2-mi",
       "repositoryUrl": "https://github.com/wso2/integration-samples/",
-      "componentPath": "/micro-integrator/RabbitMQIntegration",
+      "componentPath": "/integrator-mi-profile/RabbitMQIntegration",
       "thumbnailPath": "https://choreo-shared-choreo-samples-cdne.azureedge.net/icons/mi-rabbitmq-listener.svg",
       "tags": ["Integration", "RabbitMQ"],
       "imageUrl": "choreoanonymouspullable.azurecr.io/samples/reading-list-rest-service-in-go:1.0.0"
@@ -314,7 +314,7 @@
       "componentType": "service",
       "buildPack": "wso2-mi",
       "repositoryUrl": "https://github.com/wso2/integration-samples/",
-      "componentPath": "/micro-integrator/XMLtoJSONMapping",
+      "componentPath": "/integrator-mi-profile/XMLtoJSONMapping",
       "thumbnailPath": "https://mi-connectors.wso2.com/samples/icons/Transformation_Templates.png",
       "tags": ["Integration", "HTTP", "REST"],
       "imageUrl": "choreoanonymouspullable.azurecr.io/samples/reading-list-rest-service-in-go:1.0.0"
@@ -325,7 +325,7 @@
       "componentType": "service",
       "buildPack": "wso2-mi",
       "repositoryUrl": "https://github.com/wso2/integration-samples/",
-      "componentPath": "/micro-integrator/XMLToJSONTransformation",
+      "componentPath": "/integrator-mi-profile/XMLToJSONTransformation",
       "thumbnailPath": "https://mi-connectors.wso2.com/samples/icons/Transformation_Templates.png",
       "tags": ["Integration", "HTTP", "REST"],
       "imageUrl": "choreoanonymouspullable.azurecr.io/samples/reading-list-rest-service-in-go:1.0.0"
