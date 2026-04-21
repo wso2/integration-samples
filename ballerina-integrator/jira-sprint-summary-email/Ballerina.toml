@@ -1,0 +1,9 @@
+[package]
+org = "wso2"
+name = "jira_sprint_summary_email"
+version = "0.1.0"
+title = "jira-sprint-summary-email"
+distribution = "2201.13.1"
+
+[build-options]
+observabilityIncluded = true

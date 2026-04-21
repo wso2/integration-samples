@@ -9,6 +9,9 @@
     "path": "ballerina-integrator/signup-sfchatsync"
   },
   {
+    "path": "ballerina-integrator/jira-sprint-summary-email"
+  },
+  {
     "path": "ballerina-integrator/salesforce-leads-to-googlesheets"
   },
   {
