@@ -1,0 +1,9 @@
+[package]
+org = "wso2"
+name = "wso2.apim.catalog_connector_sample"
+version = "0.1.0"
+distribution = "2201.13.1"
+title = "wso2.apim.catalog-connector-sample"
+
+[build-options]
+sticky = true
