@@ -1,12 +1,12 @@
 [
   {
-    "path": "ballerina-integrator/salesforceops-to-googlesheets"
+    "path": "integrator-default-profile/samples/salesforceops-to-googlesheets"
   },
   {
-    "path": "ballerina-integrator/new-shopify-customer-to-stripe"
+    "path": "integrator-default-profile/samples/new-shopify-customer-to-stripe"
   },
   {
-    "path": "ballerina-integrator/signup-sfchatsync"
+    "path": "integrator-default-profile/samples/signup-sfchatsync"
   },
   {
     "path": "ballerina-integrator/slack-notification-github-pr-merged"
@@ -15,27 +15,30 @@
     "path": "ballerina-integrator/salesforce-leads-to-googlesheets"
   },
   {
-    "path": "ballerina-integrator/shopify-customer-to-salesforce"
+    "path": "integrator-default-profile/samples/salesforce-leads-to-googlesheets"
   },
   {
-    "path": "ballerina-integrator/shopify-order-to-google-sheets"
+    "path": "integrator-default-profile/samples/shopify-customer-to-salesforce"
   },
   {
-    "path": "ballerina-integrator/new-shopify-order-to-slack"
+    "path": "integrator-default-profile/samples/shopify-order-to-google-sheets"
   },
   {
-    "path": "ballerina-integrator/jira-summary-mailchimp"
+    "path": "integrator-default-profile/samples/new-shopify-order-to-slack"
   },
   {
-    "path": "ballerina-integrator/salesforce-closed-won-slack-notifier"
+    "path": "integrator-default-profile/samples/jira-summary-mailchimp"
   },
   {
-    "path": "ballerina-integrator/salesforce-performance-summary-to-email"
+    "path": "integrator-default-profile/samples/salesforce-closed-won-slack-notifier"
   },
   {
-    "path": "ballerina-integrator/shopify-to-quickbooks-transaction"
+    "path": "integrator-default-profile/samples/salesforce-performance-summary-to-email"
   },
   {
-    "path": "ballerina-integrator/github-issue-to-google-chat"
+    "path": "integrator-default-profile/samples/shopify-to-quickbooks-transaction"
+  },
+  {
+    "path": "integrator-default-profile/samples/github-issue-to-google-chat"
   }
 ]
