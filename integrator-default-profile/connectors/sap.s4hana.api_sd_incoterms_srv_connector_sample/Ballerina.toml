@@ -1,0 +1,9 @@
+[package]
+org = "wso2"
+name = "sap.s4hana.api_sd_incoterms_srv_connector_sample"
+version = "0.1.0"
+distribution = "2201.13.1"
+title = "sap.s4hana.api_sd_incoterms_srv-connector-sample"
+
+[build-options]
+sticky = true
