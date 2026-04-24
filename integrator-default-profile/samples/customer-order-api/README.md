@@ -2,18 +2,18 @@
 
 ## Description
 
-A minimal integration sample showing how to use a **Ballerina database persist client** from an HTTP service. The database models a small e-commerce schema (customers, products, orders, order items), and the service exposes a REST API that performs basic CRUD and a cross-entity insert via the generated persist client.
+A minimal integration sample showing how to use a database `persist` client from an HTTP service. The database models a small e-commerce schema (customers, products, orders, order items), and the service exposes a REST API that performs basic CRUD and a cross-entity insert via the generated persist client.
 
 The goal is to be small enough to read end-to-end. There is no auth, pagination, OpenAPI spec, or validation beyond what the sample needs to make sense.
 
 ## What this sample demonstrates
 
 - Defining entities with `@sql:` annotations in `persist/db/model.bal`
-- Generating a typed persist client (`bal persist generate`) and using it from a Ballerina service
+- Generating a typed persist client (`bal persist generate`) and using it from an HTTP service
 - Collection operations — `get`, `post`, `put`, `delete` — on the generated client
 - Fetching a single record by primary key
 - Filtering a collection with a `whereClause` (customers → their orders)
-- Creating an `Order` first and then inserting its `OrderItem[]` rows in a follow-up call, wrapped in a single Ballerina transaction
+- Creating an `Order` first and then inserting its `OrderItem[]` rows in a follow-up call, wrapped in a single `transaction` block
 - Reusing the generated record types directly as request/response payloads
 
 ## Prerequisites
@@ -63,7 +63,7 @@ The service listens on `http://localhost:9090/api/v1`.
 - The service listens on port `9090` under the `/api/v1` base path.
 - On startup, a typed `persist` client is created from the entities defined in `persist/db/model.bal` and pointed at the configured Postgres instance.
 - Each resource function maps directly to an operation on the generated client — for example, `GET /customers` returns `customerDb->/customers.get()`.
-- Creating an order is wrapped in a Ballerina `transaction` block: the `Order` row is inserted first to obtain its primary key, then the `OrderItem[]` rows are inserted with that key and the order total (computed from current product prices) is persisted in the same commit.
+- Creating an order is wrapped in a `transaction` block: the `Order` row is inserted first to obtain its primary key, then the `OrderItem[]` rows are inserted with that key and the order total (computed from current product prices) is persisted in the same commit.
 - Requests for records that do not exist return `404 Not Found`; invalid order payloads (empty items, non-positive quantity, unknown customer or product) return `400 Bad Request`.
 
 ## API
