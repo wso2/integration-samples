@@ -9,7 +9,8 @@ service /api/v1 on new http:Listener(9090) {
     // Customers
 
     resource function get customers() returns dbpersist:Customer[]|error {
-        return customerDb->/customers.get();
+        dbpersist:Customer[] customers = check customerDb->/customers.get();
+        return customers;
     }
 
     resource function get customers/[int id]() returns dbpersist:Customer|http:NotFound|error {
@@ -24,7 +25,8 @@ service /api/v1 on new http:Listener(9090) {
         int[] ids = check customerDb->/customers.post([
             {name: payload.name, email: payload.email, createdAt: time:utcNow()}
         ]);
-        return customerDb->/customers/[ids[0]].get();
+        dbpersist:Customer created = check customerDb->/customers/[ids[0]].get();
+        return created;
     }
 
     resource function put customers/[int id](dbpersist:CustomerUpdate payload)
@@ -53,7 +55,8 @@ service /api/v1 on new http:Listener(9090) {
     // Products
 
     resource function get products() returns dbpersist:Product[]|error {
-        return customerDb->/products.get();
+        dbpersist:Product[] products = check customerDb->/products.get();
+        return products;
     }
 
     // Orders
