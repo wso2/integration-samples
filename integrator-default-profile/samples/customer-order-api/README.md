@@ -11,7 +11,7 @@ The goal is to be small enough to read end-to-end. There is no auth, pagination,
 - Collection operations — `get`, `post`, `put`, `delete` — on the generated client
 - Fetching a single record by primary key
 - Filtering a collection with a `whereClause` (customers → their orders)
-- Inserting a parent row and child rows together (`Order` + `OrderItem[]`)
+- Creating an `Order` first and then inserting its `OrderItem[]` rows in a follow-up call, wrapped in a single Ballerina transaction
 - Reusing the generated record types directly as request/response payloads
 
 ## Prerequisites
@@ -31,14 +31,14 @@ This starts Postgres on `localhost:5432`, creates the `db_persist` database, run
 
 ### 2. Configure the DB password
 
-`Config.toml` already sets the password for the bundled Postgres container:
+Create a `Config.toml` in the sample root with the password for the bundled Postgres container:
 
 ```toml
-[danniles.customer_order_api]
+[wso2.customer_order_api]
 dbPassword = "postgres"
 ```
 
-Override `dbHost`, `dbPort`, `dbUser`, or `dbDatabase` there if you are pointing at a different DB.
+Replace `wso2` with the `org` value from your `Ballerina.toml` if you have changed it. Override `dbHost`, `dbPort`, `dbUser`, or `dbDatabase` in the same section if you are pointing at a different DB.
 
 ### 3. Run the service
 
@@ -115,7 +115,6 @@ bal persist generate
 
 ## Ideas to extend this sample
 
-- Wrap `POST /orders` in a persist transaction so the order and its items commit atomically
 - Add a `GET /orders/{id}` that returns the order with its items (`OrderWithRelations`)
 - Decrement `Product.stock` when an order is placed
 - Add pagination via `limitClause` and `orderByClause`

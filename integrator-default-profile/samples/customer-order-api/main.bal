@@ -63,6 +63,21 @@ service /api/v1 on new http:Listener(9090) {
         if payload.items.length() == 0 {
             return <http:BadRequest>{body: "order must contain at least one item"};
         }
+        foreach NewOrderItem item in payload.items {
+            if item.quantity <= 0 {
+                return <http:BadRequest>{
+                    body: string `item quantity must be positive (productId=${item.productId}, quantity=${item.quantity})`
+                };
+            }
+        }
+
+        dbpersist:Customer|persist:Error customer = customerDb->/customers/[payload.customerId].get();
+        if customer is persist:NotFoundError {
+            return <http:BadRequest>{body: string `customer ${payload.customerId} not found`};
+        }
+        if customer is persist:Error {
+            return customer;
+        }
 
         decimal total = 0;
         dbpersist:OrderItemInsert[] itemInserts = [];
@@ -83,22 +98,29 @@ service /api/v1 on new http:Listener(9090) {
             });
         }
 
-        int[] orderIds = check customerDb->/orders.post([
-            {
-                customerId: payload.customerId,
-                status: payload.status ?: "pending",
-                total: total,
-                createdAt: time:utcNow()
+        int createdOrderId = 0;
+        transaction {
+            int[] orderIds = check customerDb->/orders.post([
+                {
+                    customerId: payload.customerId,
+                    status: payload.status ?: "pending",
+                    total: total,
+                    createdAt: time:utcNow()
+                }
+            ]);
+            createdOrderId = orderIds[0];
+
+            foreach int i in 0 ..< itemInserts.length() {
+                itemInserts[i].orderId = createdOrderId;
             }
-        ]);
-        int orderId = orderIds[0];
+            _ = check customerDb->/orderitems.post(itemInserts);
 
-        foreach int i in 0 ..< itemInserts.length() {
-            itemInserts[i].orderId = orderId;
+            check commit;
+        } on fail error e {
+            return e;
         }
-        _ = check customerDb->/orderitems.post(itemInserts);
 
-        dbpersist:Order created = check customerDb->/orders/[orderId].get();
+        dbpersist:Order created = check customerDb->/orders/[createdOrderId].get();
         return created;
     }
 }

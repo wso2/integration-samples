@@ -1,5 +1,5 @@
 [package]
-org = "danniles"
+org = "wso2"
 name = "customer_order_api"
 version = "0.1.0"
 distribution = "2201.13.3"
@@ -19,7 +19,7 @@ options.withInitParams = true
 [[dependency]]
 org = "ballerina"
 name = "tool.persist"
-version = "1.9.1"
+version = "1.9.2"
 
 [[platform.java21.dependency]]
 groupId = "io.ballerina.stdlib"

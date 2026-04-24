@@ -14,11 +14,11 @@ INSERT INTO products ("sku", "name", "price", "stock") VALUES
 INSERT INTO orders ("customerId", "status", "total") VALUES
     (1, 'paid',     115.49),
     (2, 'pending',  329.00),
-    (3, 'shipped',   64.94);
+    (3, 'shipped',   65.94);
 
 INSERT INTO order_items ("orderId", "productId", "quantity", "unitPrice") VALUES
     (1, 1, 1, 25.99),
     (1, 2, 1, 89.50),
     (2, 3, 1, 329.00),
     (3, 4, 1, 39.95),
-    (3, 1, 1, 24.99);
+    (3, 1, 1, 25.99);
