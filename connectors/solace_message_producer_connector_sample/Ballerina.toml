@@ -1,9 +1,9 @@
 [package]
 org = "wso2"
-name = "solace_connector_sample"
+name = "solace_message_producer_connector_sample"
 version = "0.1.0"
 distribution = "2201.13.1"
-title = "solace-connector-sample"
+title = "solace-message-producer-connector-sample"
 
 [build-options]
 sticky = true
