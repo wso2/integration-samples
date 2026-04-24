@@ -25,4 +25,3 @@ version = "1.9.2"
 groupId = "io.ballerina.stdlib"
 artifactId = "persist.sql-native"
 version = "1.7.2"
-

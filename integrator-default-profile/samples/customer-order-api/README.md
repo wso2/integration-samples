@@ -1,5 +1,7 @@
 # Customer Order API
 
+## Description
+
 A minimal integration sample showing how to use a **Ballerina database persist client** from an HTTP service. The database models a small e-commerce schema (customers, products, orders, order items), and the service exposes a REST API that performs basic CRUD and a cross-entity insert via the generated persist client.
 
 The goal is to be small enough to read end-to-end. There is no auth, pagination, OpenAPI spec, or validation beyond what the sample needs to make sense.
@@ -19,7 +21,7 @@ The goal is to be small enough to read end-to-end. There is no auth, pagination,
 - Ballerina 2201.13.3 or newer
 - Docker (for the Postgres container) or a local Postgres 16 instance
 
-## Setup
+## Usage Instructions
 
 ### 1. Start Postgres
 
@@ -47,6 +49,22 @@ bal run
 ```
 
 The service listens on `http://localhost:9090/api/v1`.
+
+### Deploy on the **WSO2 Integration Platform**
+
+1. Deploy this integration on the **WSO2 Integration Platform** as an **Integration as API**.
+2. Host a Postgres database for the application. You can create one directly on the **WSO2 Integration Platform** — in the [**Console**](https://console.devant.dev), select your **Organization** and go to the **Databases** section under the **Admin** tab.
+3. Run `db/init/01_schema.sql` (and optionally `db/init/02_seed.sql`) against the database to initialize the schema and sample data.
+4. In the **Overview** section of the newly created integration, configure `dbHost`, `dbPort`, `dbUser`, `dbPassword`, and `dbDatabase` before deploying.
+5. Once deployed, click on **"Test"** to try out the API.
+
+## How It Works
+
+- The service listens on port `9090` under the `/api/v1` base path.
+- On startup, a typed `persist` client is created from the entities defined in `persist/db/model.bal` and pointed at the configured Postgres instance.
+- Each resource function maps directly to an operation on the generated client — for example, `GET /customers` returns `customerDb->/customers.get()`.
+- Creating an order is wrapped in a Ballerina `transaction` block: the `Order` row is inserted first to obtain its primary key, then the `OrderItem[]` rows are inserted with that key and the order total (computed from current product prices) is persisted in the same commit.
+- Requests for records that do not exist return `404 Not Found`; invalid order payloads (empty items, non-positive quantity, unknown customer or product) return `400 Bad Request`.
 
 ## API
 
@@ -119,3 +137,8 @@ bal persist generate
 - Decrement `Product.stock` when an order is placed
 - Add pagination via `limitClause` and `orderByClause`
 - Add a scheduled job that produces a daily sales summary
+
+## References
+
+- [Ballerina `persist` library](https://ballerina.io/learn/persist-your-data-with-ballerina/)
+- [Develop an Integration as an API](https://wso2.com/devant/docs/quick-start-guides/develop-an-integration-as-an-api/) on the WSO2 Integration Platform
