@@ -63,8 +63,9 @@ public function main() returns error? {
         int missingInSf = discrepancies.filter(d => d.discrepancyType == "missing_in_sf").length();
 
         int fieldMismatchCount = discrepancies.filter(d => d.discrepancyType == "field_mismatch").length();
+        time:Utc generatedAt = time:utcNow();
         ReconciliationReport report = {
-            generatedAt: time:utcToString(time:utcNow()),
+            generatedAt: time:utcToString(generatedAt),
             totalSalesforceRecords: sfCustomers.length(),
             totalDatabaseRecords: pgCustomers.length(),
             matchedRecords: sfCustomers.length() - missingInDb - fieldMismatchCount,
@@ -73,7 +74,7 @@ public function main() returns error? {
             missingInSalesforce: missingInSf,
             discrepancies: discrepancies
         };
-        string fileName = string `./reports/reconciliation-${time:utcToString(time:utcNow())}.json`;
+        string fileName = string `./reports/reconciliation-${time:utcToString(generatedAt)}.json`;
         check io:fileWriteJson(string `${fileName}`, report);
         log:printInfo("Reconciliation complete", matched = report.matchedRecords, mismatched = report.mismatchedRecords, missingInDb = report.missingInDatabase, missingInSf = report.missingInSalesforce);
     } on fail error e {
