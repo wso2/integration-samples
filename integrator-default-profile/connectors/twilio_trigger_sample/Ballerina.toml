@@ -1,0 +1,9 @@
+[package]
+org = "wso2"
+name = "twilio_trigger_sample"
+version = "0.1.0"
+distribution = "2201.13.1"
+title = "twilio-trigger-sample"
+
+[build-options]
+sticky = true
