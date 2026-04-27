@@ -1,0 +1,9 @@
+[package]
+org = "wso2"
+name = "confluent.cregistry_connector_sample"
+version = "0.1.0"
+distribution = "2201.13.1"
+title = "confluent.cregistry-connector-sample"
+
+[build-options]
+sticky = true
