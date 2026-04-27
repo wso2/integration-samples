@@ -8,9 +8,9 @@ The integration listens to the FTP server, retrieves new weather data files, and
 
 1. Run the integration locally using the Run button in Ballerina Integrator.
 
-## Deploy on Devant
+## Deploy on WSO2 Cloud
 
-1. Deploy this integration on **Devant** as an **File Integration**.
+1. Deploy this integration on **WSO2 Cloud** as an **File Integration**.
 
 ## How It Works
 

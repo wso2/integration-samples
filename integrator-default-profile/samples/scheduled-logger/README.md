@@ -5,9 +5,9 @@ A scheduled task that logs the current timestamp every five seconds. Useful for 
 
 ## Usage Instructions
 
-### Deploy on **Devant**
+### Deploy on **WSO2 Cloud**
 
-1. Deploy this integration on **Devant** as an **Automation**.
+1. Deploy this integration on **WSO2 Cloud** as an **Automation**.
 2. Once deployed, it will log the current timestamp every five seconds.
 
 ## References

@@ -77,10 +77,10 @@ The following configurations are required to connect to Salesforce and Slack.
   - Format: `["threshold:channelID"]`
   - Deals are routed to the highest matching threshold
 
-## Deploying on **Devant**
+## Deploying on **WSO2 Cloud**
 
-1. Sign in to your Devant account.
-2. Create a new Integration and follow instructions in [Devant Documentation](https://wso2.com/devant/docs/references/import-a-repository/) to import this repository.
+1. Sign in to your WSO2 Cloud account.
+2. Create a new Integration and follow instructions in [WSO2 Cloud Documentation](https://wso2.com/devant/docs/references/import-a-repository/) to import this repository.
 3. Select the **Technology** as `WSO2 Integrator: BI`.
 4. Choose the **Integration** Type as `Event Integration` and click **Create**.
 5. Once the build is successful, click **Configure to Continue** and set up the required environment variables for Salesforce and Slack credentials.

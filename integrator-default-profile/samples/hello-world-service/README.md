@@ -8,7 +8,7 @@ A basic REST API that responds with a personalized greeting when accessed. Sends
 1. Run the integration locally using the **Run** button in Ballerina Integrator.
 2. Use the **"Try It"** feature (auto popup) to send a request to `GET /greeting?name=your_name` and view the response.
 
-### Deploy on **Devant**
+### Deploy on **WSO2 Cloud**
 
-1. Deploy this integration on **Devant** as an **Integration as API**.
+1. Deploy this integration on **WSO2 Cloud** as an **Integration as API**.
 2. Once deployed, click on **"Test"** to try out the API.

@@ -47,10 +47,10 @@ The following configurations are required for the integration:
 - `customMessage`: (Optional) The text template for the Slack message with placeholders for order details. A default template is provided in `config.bal`. Use `<br>` to indicate line breaks if customizing the message. Available placeholders: `{orderId}`, `{customerName}`, `{customerEmail}`, `{currency}`, `{totalPrice}`, `{itemCount}`, `{items}`, `{shippingAddress}`, `{financialStatus}`, `{fulfillmentStatus}`, `{createdAt}`, `{subtotal}`, `{taxes}`, `{shipping}`.
 - `minimumOrderPrice`: (Optional) Minimum order price threshold in decimal format. Only orders with a total price greater than or equal to this value will trigger Slack notifications. Default is `0.0` (all orders are notified).
 
-## Deploying on **Devant**
+## Deploying on **WSO2 Cloud**
 
-1. Sign in to your Devant account.
-2. Create a new Integration and follow instructions in [Devant Documentation](https://wso2.com/devant/docs/references/import-a-repository/) to import this repository.
+1. Sign in to your WSO2 Cloud account.
+2. Create a new Integration and follow instructions in [WSO2 Cloud Documentation](https://wso2.com/devant/docs/references/import-a-repository/) to import this repository.
 3. Select the **Technology** as `WSO2 Integrator: BI`.
 4. Choose the **Integration Type** as `Integration as API` and click **Create**.
 5. Once the build is successful, click **Configure to Continue** and set the required environment variables.
