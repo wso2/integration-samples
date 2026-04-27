@@ -1,3 +1,3 @@
 import ballerina/email;
 
-final email:SmtpClient emailSmtpclient = check new (string `${emailHost}`, string `${emailUsername}`, string `${emailPassword}`, port = emailPort, security = "SSL");
+final email:SmtpClient emailSmtpClient = check new (emailHost, emailUsername, emailPassword, port = emailPort, security = email:SSL);
