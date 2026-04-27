@@ -1,0 +1,9 @@
+[package]
+org = "wso2"
+name = "rabbitmq_trigger_sample"
+version = "0.1.0"
+distribution = "2201.13.1"
+title = "rabbitmq-trigger-sample"
+
+[build-options]
+sticky = true
