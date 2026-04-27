@@ -26,4 +26,4 @@ endpoints:
     # Defaults to wildcard route if not specified.
     # This is only applicable to REST endpoint types.
     # The path should be relative to the docker context.
-    schemaFilePath: .choreo/openapi.yaml
+    schemaFilePath: .wso2/openapi.yaml
