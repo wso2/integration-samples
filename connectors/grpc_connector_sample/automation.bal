@@ -1,4 +1,3 @@
-import ballerina/grpc;
 import ballerina/log;
 
 public function main() returns error? {

@@ -1,4 +1,3 @@
-import ballerina/ftp;
 import ballerina/log;
 
 public function main() returns error? {
