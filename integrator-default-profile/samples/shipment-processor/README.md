@@ -1,7 +1,7 @@
 # Shipment Processing Use Case
 
 ## Overview
-Following digrams depicts the overview of the shipment processing use case hosted in WSO2 platform (Devant and Bijira):
+Following digrams depicts the overview of the shipment processing use case hosted in WSO2 platform (WSO2 Cloud and Bijira):
 <img width="800" height="auto" alt="image" src="images/OverView.png" />
 
 
@@ -13,9 +13,9 @@ Following diagram depicts the flow of the scenario:
 
 ## How to run and test the use case
 
-**Please note**: All the services are hosted in WSO2 iPaas (Devant) and WSO2 APIM SaaS (Bijira). Please login to the platforms to proceed with the next steps.
+**Please note**: All the services are hosted in WSO2 iPaas (WSO2 Cloud) and WSO2 APIM SaaS (Bijira). Please login to the platforms to proceed with the next steps.
 
-* Devant - [https://console.devant.dev](https://console.devant.dev/)
+* WSO2 Cloud - [https://console.devant.dev](https://console.devant.dev/)
 * Bijira - [https://console.bijira](https://devportal.bijira.dev/)
 * Bijira DevPortal - [https://devportal.bijira.dev](https://devportal.bijira.dev/kochdemo/views/default)
 
@@ -39,7 +39,7 @@ Add the sample CSV file in this repo location `integration-samples/integrator-de
 
 **Step 02**
 
-The file will be automatically processed. Login to Devant under your organization and you will be able to observe logs as mentioned below:
+The file will be automatically processed. Login to WSO2 Cloud under your organization and you will be able to observe logs as mentioned below:
 `Shipment Processor` Project -> `Observability` -> `Logs`
 
 <img width="800" height="auto" alt="image" src="images/ShipmentLogs.png" />

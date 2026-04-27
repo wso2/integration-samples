@@ -23,9 +23,9 @@ exchange rates using Redis to improve performance and reduce external API calls.
     - `to` (default: `LKR`): The target currency.
     - `amount` (default: `1`): The amount to be converted.
 
-### Deploy on **Devant**
+### Deploy on **WSO2 Cloud**
 
-1. Deploy this integration on **Devant** as an **Integration as API**.
+1. Deploy this integration on **WSO2 Cloud** as an **Integration as API**.
 2. Configure ExchangeRate API `apiKey`, and `redisConnectionString` before running the integration.
 3. Once deployed, click on **"Test"** to try out the API.
 

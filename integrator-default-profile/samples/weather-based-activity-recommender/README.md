@@ -20,7 +20,7 @@ userName = "YOUR_NAME"
 
 ## Usage Instructions
 
-1. Deploy this integration in **Devant** as a scheduled job.
+1. Deploy this integration in **WSO2 Cloud** as a scheduled job.
 2. Once deployed, it will fetch weather data, generate activity recommendations, and display the output.
 
 Note: If scheduling this job is not a requirement, you can execute the integration locally using the Run button in Ballerina Integrator.

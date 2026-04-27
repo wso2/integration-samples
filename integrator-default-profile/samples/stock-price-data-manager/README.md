@@ -15,9 +15,9 @@ This integration retrieves a daily summary of stock price data from a public API
 - Configure `ftpHost`, `ftpUsername`, `ftpPassword`, and `ftpPort` configurations before running the integration.
 - Run the integration locally using the **Run** button in Ballerina Integrator.
 
-## Deploy on **Devant**
+## Deploy on **WSO2 Cloud**
 
-1. Deploy this integration on **Devant** as an **Automation**.
+1. Deploy this integration on **WSO2 Cloud** as an **Automation**.
 2. Configure the FTP server credentials (`ftpHost`, `ftpUsername`, `ftpPassword`, and `ftpPort`) before running the **Automation**.
 2. Once deployed, it will automatically fetch the stock price data daily at the specified time and upload it to the FTP server.
 

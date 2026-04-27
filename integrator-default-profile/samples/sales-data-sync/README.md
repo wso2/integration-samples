@@ -18,9 +18,9 @@ Retail stores generate daily sales reports as JSON files and upload them to a ce
 4. Processed files are moved to `/sales/processed/`
 5. If any errors are encountered while processing, files are moved to `/sales/error`
 
-Try this in Devant:
+Try this in WSO2 Cloud:
 
-[![Deploy to Devant](https://openindevant.choreoapps.dev/images/DeployDevant.svg)](https://console.devant.dev/new?gh=wso2/integration-samples/tree/main/integrator-default-profile/samples/sales-data-sync&t=file)
+[![Deploy to WSO2 Cloud](https://openindevant.choreoapps.dev/images/DeployDevant.svg)](https://console.devant.dev/new?gh=wso2/integration-samples/tree/main/integrator-default-profile/samples/sales-data-sync&t=file)
 
 
 ## Prerequisites
@@ -194,7 +194,7 @@ ls sales/processed
 bye
 ```
 
-## Deploy on Devant
+## Deploy on WSO2 Cloud
 
-1. Deploy this integration on **Devant** as a **File Integration**
+1. Deploy this integration on **WSO2 Cloud** as a **File Integration**
 2. Configure the FTP and MySQL connection parameters with your production values

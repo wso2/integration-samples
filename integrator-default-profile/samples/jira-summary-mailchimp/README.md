@@ -11,9 +11,9 @@ via Mailchimp Transactional (Mandrill).
 - Fetches issue details and generates an HTML summary (shows up to `maxIssuesToDisplay` issues)
 - Sends the summary email using Mailchimp Transactional
 
-Try this in Devant:
+Try this in WSO2 Cloud:
 
-[![Deploy to Devant](https://openindevant.choreoapps.dev/images/DeployDevant.svg)](https://console.devant.dev/new?gh=wso2/integration-samples/tree/main/jira-summary-mailchimp)
+[![Deploy to WSO2 Cloud](https://openindevant.choreoapps.dev/images/DeployDevant.svg)](https://console.devant.dev/new?gh=wso2/integration-samples/tree/main/jira-summary-mailchimp)
 
 ## Prerequisites
 
@@ -85,8 +85,8 @@ recipients = ["dev-team@example.com"]
 
 ## Deploying on WSO2 Integration Platform
 
-1. Sign in to your Devant account.
-2. Create a new Integration and follow instructions in [Devant Documentation](https://wso2.com/devant/docs/references/import-a-repository/) to import this repository.
+1. Sign in to your WSO2 Cloud account.
+2. Create a new Integration and follow instructions in [WSO2 Cloud Documentation](https://wso2.com/devant/docs/references/import-a-repository/) to import this repository.
 3. Select the **Technology** as `WSO2 Integrator: BI`.
 4. Choose the **Integration** Type as `Automation` and click **Create**.
 5. Once the build is successful, click **Configure to Continue** and set the required configuration values.

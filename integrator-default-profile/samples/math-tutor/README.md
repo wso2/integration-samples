@@ -19,7 +19,7 @@ An AI-powered math tutor that uses Azure OpenAI's GPT models to assist with spec
 2. Run the Ballerina application to start the math tutoring service.
 3. Enter your math problems involving addition, multiplication, or square roots.
 4. The AI tutor will use the appropriate agent tools to solve the problem.
-5. To expose your AI agent through API endpoints and integrate it within your applications, deploy this integration as an AI agent in **Devant**.
+5. To expose your AI agent through API endpoints and integrate it within your applications, deploy this integration as an AI agent in **WSO2 Cloud**.
 
 ## How It Works
 

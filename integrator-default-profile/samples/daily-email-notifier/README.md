@@ -18,9 +18,9 @@ Ballerina with an external email service.
 2. Also set up `senderEmail`, `receiverEmail`, and `gmailUserId` values in the `Config.toml` file.
 3. Run the Ballerina application to send an email update.
 
-### Deploy on **Devant**
+### Deploy on **WSO2 Cloud**
 
-1. Deploy this integration on **Devant** as an **Automation**.
+1. Deploy this integration on **WSO2 Cloud** as an **Automation**.
 2. Configure the Gmail API credentials (`clientId`, `clientSecret`, and `refreshToken`), `senderEmail`, `receiverEmail`, and `gmailUserId` before running the **Automation**.
 2. Once deployed, it will send the email every day at 8 AM.
 

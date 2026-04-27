@@ -4,9 +4,9 @@
 
 This integration validates and processes daily contractor timesheet files for a construction company. It implements an "all-or-nothing" integrity check - if a file fails validation (record count mismatch or too many invalid contractor IDs), the entire file is quarantined for manual review, preventing corrupt data from entering the payroll system.
 
-Try this in Devant:
+Try this in WSO2 Cloud:
 
-[![Deploy to Devant](https://openindevant.choreoapps.dev/images/DeployDevant.svg)](https://console.devant.dev/new?gh=wso2/integration-samples/tree/main/integrator-default-profile/samples/contractor-timesheet-validation&t=file)
+[![Deploy to WSO2 Cloud](https://openindevant.choreoapps.dev/images/DeployDevant.svg)](https://console.devant.dev/new?gh=wso2/integration-samples/tree/main/integrator-default-profile/samples/contractor-timesheet-validation&t=file)
 
 
 ## Architecture Overview
@@ -182,7 +182,7 @@ docker exec ftp-timesheets ls /home/ftpuser/timesheets/quarantine
 # Should contain: timetrack-2024-01-16-bad.csv
 ```
 
-## Deploy on Devant
+## Deploy on WSO2 Cloud
 
-1. Deploy this integration on **Devant** as a **File Integration**
+1. Deploy this integration on **WSO2 Cloud** as a **File Integration**
 2. Configure the FTP and Kafka connection parameters with your production values
