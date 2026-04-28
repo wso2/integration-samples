@@ -391,15 +391,15 @@
     <maven.compiler.source>1.8</maven.compiler.source>
     <maven.compiler.target>1.8</maven.compiler.target>
     <project.scm.id>integration-project</project.scm.id>
-    <project.runtime.version>4.4.0</project.runtime.version>
+    <project.runtime.version>4.6.0</project.runtime.version>
     <dockerfile.base.image>wso2/wso2mi:${project.runtime.version}</dockerfile.base.image>
-    <car.plugin.version>5.2.97</car.plugin.version>
+    <car.plugin.version>5.4.16</car.plugin.version>
     <test.server.type>local</test.server.type>
     <test.server.host>localhost</test.server.host>
     <test.server.port>9008</test.server.port>
     <test.server.path>/</test.server.path>
     <test.server.version>${project.runtime.version}</test.server.version>
-    <testServerDownloadLink>https://github.com/wso2/micro-integrator/releases/download/v${test.server.version}/wso2mi-${test.server.version}.zip</testServerDownloadLink>
+    <testServerDownloadLink></testServerDownloadLink>
     <maven.test.skip>false</maven.test.skip>
   </properties>
   <dependencies>
