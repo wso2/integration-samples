@@ -2,13 +2,18 @@
 <localEntry key="UsersHttpEPConnection" xmlns="http://ws.apache.org/ns/synapse">
   <http.init>
     <connectionType>HTTPS</connectionType>
-    <baseUrl>https://reqres.in/api</baseUrl>
+    <baseUrl>https://jsonplaceholder.typicode.com</baseUrl>
+    <certificateConfigurable/>
     <authType>None</authType>
+    <timeoutDuration/>
     <timeoutAction>Never</timeoutAction>
+    <retryErrorCodes/>
     <retryCount>0</retryCount>
     <retryDelay>0</retryDelay>
+    <suspendErrorCodes/>
     <suspendInitialDuration>-1</suspendInitialDuration>
     <suspendProgressionFactor>1</suspendProgressionFactor>
+    <suspendMaximumDuration/>
     <name>UsersHttpEPConnection</name>
   </http.init>
 </localEntry>
