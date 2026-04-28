@@ -473,7 +473,6 @@ function generateEmailContent(GroupedSummary[] groupedSummaries, int totalCards,
             <tr><td height="40" style="font-size: 0; line-height: 0;">&nbsp;</td></tr>
 
         </table>
-
     </center>
 </body>
 </html>`;
