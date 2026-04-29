@@ -1,0 +1,9 @@
+[package]
+org = "wso2"
+name = "http_connector_sample"
+version = "0.1.0"
+distribution = "2201.13.1"
+title = "http-connector-sample"
+
+[build-options]
+sticky = true

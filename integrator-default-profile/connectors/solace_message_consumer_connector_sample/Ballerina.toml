@@ -1,0 +1,9 @@
+[package]
+org = "wso2"
+name = "solace_message_consumer_connector_sample"
+version = "0.1.0"
+distribution = "2201.13.1"
+title = "solace-message-consumer-connector-sample"
+
+[build-options]
+sticky = true

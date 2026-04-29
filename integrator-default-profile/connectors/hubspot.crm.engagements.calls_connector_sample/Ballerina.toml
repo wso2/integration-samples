@@ -1,0 +1,9 @@
+[package]
+org = "wso2"
+name = "hubspot.crm.engagements.calls_connector_sample"
+version = "0.1.0"
+distribution = "2201.13.1"
+title = "hubspot.crm.engagements.calls-connector-sample"
+
+[build-options]
+sticky = true
