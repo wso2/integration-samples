@@ -1,9 +1,7 @@
 import ballerina/log;
 import ballerinax/kafka;
 
-// Creates a Kafka producer using the configurable bootstrapServers
-kafka:Producer kafkaProducer = check new (string `${kafkaBootstrapServers}`);
-
+// Creates a Kafka listener using the configurable bootstrapServers
 listener kafka:Listener kafkaListener = new (string `${kafkaBootstrapServers}`, {
     groupId: string `${kafkaGroupId}`,
     topics: [string `${kafkaTopic}`],
@@ -25,11 +23,13 @@ service kafka:Service on kafkaListener {
                 log:printInfo("onConsumerRecord triggered", orderId = orderEvent.orderId);
             } on fail error e {
                 batchHasFailure = true;
-                log:printError("Failed to process message, skipping", 'error = e, offset = msg.offset.offset, partition = msg.offset.partition.partition);
+                log:printError("Failed to process message; offsets will not be committed and the batch will be retried", 'error = e, offset = msg.offset.offset, partition = msg.offset.partition.partition);
             }
         }
         if (!batchHasFailure) {
             check caller->commit();
+        } else {
+            log:printInfo("Skipping offset commit because at least one message in the batch failed; the batch will be re-delivered");
         }
     }
 }
