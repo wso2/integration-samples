@@ -15,6 +15,7 @@ listener kafka:Listener kafkaListener = new (string `${kafkaBootstrapServers}`, 
 service kafka:Service on kafkaListener {
 
     remote function onConsumerRecord(kafka:AnydataConsumerRecord[] messages, kafka:Caller caller) returns error? {
+        boolean batchHasFailure = false;
         foreach kafka:AnydataConsumerRecord msg in messages {
             do {
                 byte[] msgBytes = check msg.value.ensureType();
@@ -23,9 +24,12 @@ service kafka:Service on kafkaListener {
                 processOrder(orderEvent); // Implement a processing logic under processOrder() method in functions.bal file
                 log:printInfo("onConsumerRecord triggered", orderId = orderEvent.orderId);
             } on fail error e {
+                batchHasFailure = true;
                 log:printError("Failed to process message, skipping", 'error = e, offset = msg.offset.offset, partition = msg.offset.partition.partition);
             }
         }
-        check caller->commit();
+        if (!batchHasFailure) {
+            check caller->commit();
+        }
     }
 }
