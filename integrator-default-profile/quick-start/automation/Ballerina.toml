@@ -1,0 +1,9 @@
+[package]
+org = "radith"
+name = "automation"
+version = "0.1.0"
+distribution = "2201.13.4"
+title = "Automation"
+
+[build-options]
+sticky = true

@@ -1,0 +1,3 @@
+[workspace]
+title = "quickstart"
+packages = ["automation", "aiagent", "helloworldapi", "orderprocessor", "filetracker"]
