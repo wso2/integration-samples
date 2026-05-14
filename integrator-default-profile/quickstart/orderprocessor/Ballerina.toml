@@ -1,0 +1,9 @@
+[package]
+org = "wso2"
+name = "orderprocessor"
+version = "0.1.0"
+distribution = "2201.13.4"
+title = "OrderProcessor"
+
+[build-options]
+sticky = true
