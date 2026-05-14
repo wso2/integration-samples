@@ -293,13 +293,13 @@ dependencies = [
 ]
 
 [[package]]
-org = "radith"
+org = "wso2"
 name = "helloworldapi"
 version = "0.1.0"
 dependencies = [
 	{org = "ballerina", name = "http"}
 ]
 modules = [
-	{org = "radith", packageName = "helloworldapi", moduleName = "helloworldapi"}
+	{org = "wso2", packageName = "helloworldapi", moduleName = "helloworldapi"}
 ]
 

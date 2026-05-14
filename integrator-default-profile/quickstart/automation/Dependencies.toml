@@ -55,7 +55,7 @@ dependencies = [
 ]
 
 [[package]]
-org = "radith"
+org = "wso2"
 name = "automation"
 version = "0.1.0"
 dependencies = [
@@ -63,6 +63,6 @@ dependencies = [
 	{org = "ballerina", name = "log"}
 ]
 modules = [
-	{org = "radith", packageName = "automation", moduleName = "automation"}
+	{org = "wso2", packageName = "automation", moduleName = "automation"}
 ]
 

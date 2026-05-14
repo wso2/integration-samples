@@ -374,7 +374,7 @@ dependencies = [
 ]
 
 [[package]]
-org = "radith"
+org = "wso2"
 name = "aiagent"
 version = "0.1.0"
 dependencies = [
@@ -382,6 +382,6 @@ dependencies = [
 	{org = "ballerina", name = "http"}
 ]
 modules = [
-	{org = "radith", packageName = "aiagent", moduleName = "aiagent"}
+	{org = "wso2", packageName = "aiagent", moduleName = "aiagent"}
 ]
 

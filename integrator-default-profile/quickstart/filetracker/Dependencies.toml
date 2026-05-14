@@ -83,7 +83,7 @@ dependencies = [
 ]
 
 [[package]]
-org = "radith"
+org = "wso2"
 name = "filetracker"
 version = "0.1.0"
 dependencies = [
@@ -91,6 +91,6 @@ dependencies = [
 	{org = "ballerina", name = "log"}
 ]
 modules = [
-	{org = "radith", packageName = "filetracker", moduleName = "filetracker"}
+	{org = "wso2", packageName = "filetracker", moduleName = "filetracker"}
 ]
 

@@ -150,7 +150,7 @@ modules = [
 ]
 
 [[package]]
-org = "radith"
+org = "wso2"
 name = "orderprocessor"
 version = "0.1.0"
 dependencies = [
@@ -158,6 +158,6 @@ dependencies = [
 	{org = "ballerinax", name = "rabbitmq"}
 ]
 modules = [
-	{org = "radith", packageName = "orderprocessor", moduleName = "orderprocessor"}
+	{org = "wso2", packageName = "orderprocessor", moduleName = "orderprocessor"}
 ]
 
