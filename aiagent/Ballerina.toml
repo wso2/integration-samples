@@ -1,0 +1,9 @@
+[package]
+org = "radith"
+name = "aiagent"
+version = "0.1.0"
+distribution = "2201.13.4"
+title = "AIAgent"
+
+[build-options]
+sticky = true
