@@ -8,6 +8,12 @@ An AI-powered math tutor that uses the WSO2 default model provider to assist wit
 
 - Deploy this integration as an AI agent in **WSO2 Cloud** to obtain access to the default model provider, or configure your own model provider.
 
+## Configuring the Default Model Provider
+
+To set up the default model provider, manually run `Ballerina: Configure default WSO2 model provider` from the Command Palette (Cmd+Shift+P / Ctrl+Shift+P). Sign in with your WSO2 account when prompted, and WSO2 Integrator wires the configuration into your project automatically.
+
+> **Note:** The access token expires after a few hours. If requests to the default model provider start failing, rerun `Ballerina: Configure default WSO2 model provider` from the Command Palette to refresh the token.
+
 ## Usage Instructions
 
 1. Run the integration to start the math tutoring service.
@@ -17,7 +23,7 @@ An AI-powered math tutor that uses the WSO2 default model provider to assist wit
 
 ## How It Works
 
-- The application uses `ai:getDefaultModelProvider()` to connect to the WSO2 default model provider.
+- The application connects to the WSO2 default model provider.
 - It implements four agent tools:
   - **sumTool**: Adds two numbers together
   - **subtractTool**: Subtracts the second number from the first
