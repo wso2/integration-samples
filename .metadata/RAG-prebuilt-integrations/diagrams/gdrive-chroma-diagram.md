@@ -1,10 +1,8 @@
-DataSource["Google Drive"]
-Chunking["Document Chunking"]
-Embedding["Embedding Generation"]
-Ingestion["Data Ingestion"]
-VectorDB["Chroma"]
+A(["Begin"]):::startNode
+B["Read from Google Drive"]:::processNode
+C["Document Chunking"]:::processNode
+D["Embedding Generation"]:::processNode
+E["Ingest to Chroma"]:::processNode
+F(["Complete"]):::endNode
 
-DataSource --> Chunking
-Chunking --> Embedding
-Embedding --> Ingestion
-Ingestion --> VectorDB
+A --> B --> C --> D --> E --> F
