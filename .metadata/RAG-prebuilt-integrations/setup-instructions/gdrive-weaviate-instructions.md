@@ -69,4 +69,8 @@ Use this method if the API Key method doesn't work for your use case.
 - You will see two keys (KEY 1 and KEY 2). You can use either one. Copy the key and store it securely
 - Base URL (Endpoint): The Endpoint URL will be displayed here, typically in the format `https://<your-resource-name>.openai.azure.com/`
 
+#### Set **Embedding Model**:
+  - OpenAI/Azure OpenAI: `text-embedding-3-small`, `text-embedding-3-large`, or `text-embedding-ada-002`
+  - Mistral: `mistral-embed`
+
 </details>
