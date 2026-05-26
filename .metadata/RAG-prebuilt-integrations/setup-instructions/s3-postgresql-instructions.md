@@ -9,7 +9,7 @@
 
 - Set up AWS credentials:
 	- Log in to AWS Management Console
-	- Navigate to IAM > Users
+	- Navigate to **IAM** > **Users**
 	- Create a new user with S3 access
 	- Generate Access Key ID and Secret Access Key
 	- Save these credentials securely
@@ -42,8 +42,8 @@
 #### OpenAI
 
 - Go to OpenAI platform and login to your account
-- In the left sidebar, click on "API keys"
-- Click the "Create secret key" button
+- In the left sidebar, click on **API keys**
+- Click the **Create secret key** button
 - Copy the key and store it securely
 
 #### Mistral AI
@@ -55,8 +55,8 @@
 #### Azure OpenAI
 
 - Go to Azure OpenAI Service
-- Go to the Keys and Endpoint section located in the left-hand navigation menu under "Resource Management"
+- Go to the Keys and Endpoint section located in the left-hand navigation menu under **Resource Management**
 - You will see two keys (KEY 1 and KEY 2). You can use either one. Copy the key and store it securely
-- Base URL (Endpoint): The Endpoint URL will be displayed here, typically in the format https://<your-resource-name>.openai.azure.com/
+- Base URL (Endpoint): The Endpoint URL will be displayed here, typically in the format `https://<your-resource-name>.openai.azure.com/`
 
 </details>

@@ -17,9 +17,9 @@
 - Get Folder ID:
 	- Open your Google Drive folder in a browser
 	- Copy the folder ID from the URL (after /folders/)
-	- Example: https://drive.google.com/drive/folders/ABC123XYZ
+	- Example: `https://drive.google.com/drive/folders/ABC123XYZ`
 
-#### Method 2: OAuth (Client Credentials) - Optional
+#### Method 2: OAuth (Refresh Token) - Optional
 
 Use this method if the API Key method doesn't work for your use case.
 
@@ -52,8 +52,8 @@ Use this method if the API Key method doesn't work for your use case.
 #### OpenAI
 
 - Go to OpenAI platform and login to your account
-- In the left sidebar, click on "API keys"
-- Click the "Create secret key" button
+- In the left sidebar, click on **API keys**
+- Click the **Create secret key** button
 - Copy the key and store it securely
 
 #### Mistral AI
@@ -65,8 +65,8 @@ Use this method if the API Key method doesn't work for your use case.
 #### Azure OpenAI
 
 - Go to Azure OpenAI Service
-- Go to the Keys and Endpoint section located in the left-hand navigation menu under "Resource Management"
+- Go to the Keys and Endpoint section located in the left-hand navigation menu under **Resource Management**
 - You will see two keys (KEY 1 and KEY 2). You can use either one. Copy the key and store it securely
-- Base URL (Endpoint): The Endpoint URL will be displayed here, typically in the format https://<your-resource-name>.openai.azure.com/
+- Base URL (Endpoint): The Endpoint URL will be displayed here, typically in the format `https://<your-resource-name>.openai.azure.com/`
 
 </details>
