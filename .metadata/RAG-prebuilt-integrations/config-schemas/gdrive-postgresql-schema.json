@@ -1,0 +1,247 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "title": "Google Drive to PostgreSQL Configuration",
+  "properties": {
+    "googledriveconfig": {
+      "type": "object",
+      "title": "Google Drive Configuration",
+      "properties": {
+        "gdriveAuthType": {
+          "type": "string",
+          "title": "Google Drive Auth Type",
+          "enum": ["api_Key", "oauth"],
+          "description": "Select authentication type: API Key or OAuth."
+        },
+         "gdriveApiKey": {
+          "type": "string",
+          "format": "password",
+          "title": "API Key (Auth type: API Key)"
+        },
+        "gdriveFolderId": {
+          "type": "string",
+          "title": "Google Drive Folder ID"
+        },
+        "clientId": {
+          "type": "string",
+          "title": "Client ID (Auth type: OAuth)"
+        },
+        "clientSecret": {
+          "type": "string",
+          "format": "password",
+          "title": "Client Secret (Auth type: OAuth)"
+        },
+        "refreshToken": {
+          "type": "string",
+          "format": "password",
+          "title": "Refresh Token (Auth type: OAuth)"
+        }
+      },
+      "required": ["gdriveAuthType", "gdriveFolderId"]
+    },
+    "postgresqlconfig": {
+      "type": "object",
+      "title": "PostgreSQL Configuration",
+      "properties": {
+        "postgresHost": {
+          "type": "string",
+          "title": "PostgreSQL Host"
+        },
+        "postgresPort": {
+          "type": "integer",
+          "title": "PostgreSQL Port"
+        },
+        "postgresUser": {
+          "type": "string",
+          "title": "PostgreSQL User"
+        },
+        "postgresPassword": {
+          "type": "string",
+          "format": "password",
+          "title": "PostgreSQL Password"
+        },
+        "postgresDb": {
+          "type": "string",
+          "title": "PostgreSQL Database"
+        },
+        "postgresTable": {
+          "type": "string",
+          "title": "PostgreSQL Table Name"
+        }
+      },
+      "required": ["postgresHost", "postgresPort", "postgresUser", "postgresPassword", "postgresDb", "postgresTable"]
+    },
+    "embeddingconfig": {
+      "type": "object",
+      "title": "Embedding Configuration",
+      "properties": {
+        "embeddingProvider": {
+          "type": "string",
+          "title": "Embedding Provider",
+          "enum": ["openai", "azure-openai", "mistral"]
+        },
+        "embeddingModel": {
+          "type": "string",
+          "title": "Embedding Model",
+          "enum": ["text-embedding-3-small", "text-embedding-3-large", "text-embedding-ada-002", "mistral-embed"]
+        },
+        "embeddingApiKey": {
+          "type": "string",
+          "format": "password",
+          "title": "Embedding API Key",
+          "description": "API key for OpenAI, Azure OpenAI, or Mistral (depending on provider selected)"
+        },
+        "azureBaseUrl": {
+          "type": "string",
+          "title": "Azure Base URL",
+          "description": "Required if using Azure OpenAI. Format: https://resource-name.openai.azure.com/openai"
+        },
+        "azureApiVersion": {
+          "type": "string",
+          "title": "Azure API Version",
+          "default": "2024-06-01",
+          "description": "Required if using Azure OpenAI. Example: 2024-06-01"
+        }
+      },
+      "required": ["embeddingProvider", "embeddingModel", "embeddingApiKey"]
+    },
+    "chunkingconfig": {
+      "type": "object",
+      "title": "Chunking Configuration",
+      "properties": {
+        "chunkingStrategy": {
+          "type": "string",
+          "enum": ["recursive", "sentence", "character"],
+          "title": "Chunking Strategy"
+        },
+        "maxSegmentSize": {
+          "type": "integer",
+          "minimum": 1,
+          "default": 1000,
+          "title": "Max Segment Size (characters)"
+        },
+        "maxOverlapSize": {
+          "type": "integer",
+          "minimum": 0,
+          "default": 200,
+          "title": "Max Overlap Size (characters)"
+        }
+      },
+      "required": ["chunkingStrategy", "maxSegmentSize", "maxOverlapSize"]
+    }
+  },
+  "required": ["googledriveconfig", "postgresqlconfig", "embeddingconfig", "chunkingconfig"],
+  "additionalProperties": false,
+  "requiredLevel": 2,
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "googledriveconfig": {
+            "properties": {
+              "gdriveAuthType": { "const": "api_Key" }
+            }
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "googledriveconfig": {
+            "required": ["gdriveAuthType", "gdriveApiKey", "gdriveFolderId"]
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "googledriveconfig": {
+            "properties": {
+              "gdriveAuthType": { "const": "oauth" }
+            }
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "googledriveconfig": {
+            "required": ["gdriveAuthType", "clientId", "clientSecret", "refreshToken", "gdriveFolderId"]
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "embeddingconfig": {
+            "properties": {
+              "embeddingProvider": {
+                "const": "openai"
+              }
+            }
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "embeddingconfig": {
+            "properties": {
+              "embeddingModel": {
+                "enum": ["text-embedding-3-small", "text-embedding-3-large", "text-embedding-ada-002"]
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "embeddingconfig": {
+            "properties": {
+              "embeddingProvider": {
+                "const": "azure-openai"
+              }
+            }
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "embeddingconfig": {
+            "properties": {
+              "embeddingModel": {
+                "enum": ["text-embedding-3-small", "text-embedding-3-large", "text-embedding-ada-002"]
+              }
+            },
+            "required": ["embeddingProvider", "embeddingModel", "embeddingApiKey", "azureBaseUrl", "azureApiVersion"]
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "embeddingconfig": {
+            "properties": {
+              "embeddingProvider": {
+                "const": "mistral"
+              }
+            }
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "embeddingconfig": {
+            "properties": {
+              "embeddingModel": {
+                "enum": ["mistral-embed"]
+              }
+            }
+          }
+        }
+      }
+    }
+  ]
+}

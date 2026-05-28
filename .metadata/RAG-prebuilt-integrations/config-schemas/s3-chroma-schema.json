@@ -1,0 +1,183 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "title": "Amazon S3 to Chroma Configuration",
+  "properties": {
+    "amazons3config": {
+      "type": "object",
+      "title": "Amazon S3 Configuration",
+      "properties": {
+        "s3AccessKeyId": {
+          "type": "string",
+          "format": "password",
+          "title": "S3 Access Key ID"
+        },
+        "s3SecretKey": {
+          "type": "string",
+          "format": "password",
+          "title": "S3 Secret Access Key"
+        },
+        "s3BucketName": {
+          "type": "string",
+          "title": "S3 Bucket Name"
+        }
+      },
+      "required": ["s3AccessKeyId", "s3SecretKey", "s3BucketName"]
+    },
+    "chromaconfig": {
+      "type": "object",
+      "title": "Chroma Configuration",
+      "properties": {
+        "chromaHost": {
+          "type": "string",
+          "title": "Chroma Host"
+        },
+        "chromaPort": {
+          "type": "integer",
+          "title": "Chroma Port"
+        },
+        "chromaCollection": {
+          "type": "string",
+          "title": "Chroma Collection Name"
+        }
+      },
+      "required": ["chromaHost", "chromaPort", "chromaCollection"]
+    },
+    "embeddingconfig": {
+      "type": "object",
+      "title": "Embedding Configuration",
+      "properties": {
+        "embeddingProvider": {
+          "type": "string",
+          "title": "Embedding Provider",
+          "enum": ["openai", "azure-openai", "mistral"]
+        },
+        "embeddingModel": {
+          "type": "string",
+          "title": "Embedding Model",
+          "enum": ["text-embedding-3-small", "text-embedding-3-large", "text-embedding-ada-002", "mistral-embed"]
+        },
+        "embeddingApiKey": {
+          "type": "string",
+          "format": "password",
+          "title": "Embedding API Key",
+          "description": "API key for OpenAI, Azure OpenAI, or Mistral (depending on provider selected)"
+        },
+        "azureBaseUrl": {
+          "type": "string",
+          "title": "Azure Base URL",
+          "description": "Required if using Azure OpenAI. Format: https://resource-name.openai.azure.com/openai"
+        },
+        "azureApiVersion": {
+          "type": "string",
+          "title": "Azure API Version",
+          "default": "2024-06-01",
+          "description": "Required if using Azure OpenAI. Example: 2024-06-01"
+        }
+      },
+      "required": ["embeddingProvider", "embeddingModel", "embeddingApiKey"]
+    },
+    "chunkingconfig": {
+      "type": "object",
+      "title": "Chunking Configuration",
+      "properties": {
+        "chunkingStrategy": {
+          "type": "string",
+          "enum": ["recursive", "sentence", "character"],
+          "title": "Chunking Strategy"
+        },
+        "maxSegmentSize": {
+          "type": "integer",
+          "minimum": 1,
+          "default": 1000,
+          "title": "Max Segment Size (characters)"
+        },
+        "maxOverlapSize": {
+          "type": "integer",
+          "minimum": 0,
+          "default": 200,
+          "title": "Max Overlap Size (characters)"
+        }
+      },
+      "required": ["chunkingStrategy", "maxSegmentSize", "maxOverlapSize"]
+    }
+  },
+  "required": ["amazons3config", "chromaconfig", "embeddingconfig", "chunkingconfig"],
+  "additionalProperties": false,
+  "requiredLevel": 2,
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "embeddingconfig": {
+            "properties": {
+              "embeddingProvider": {
+                "const": "openai"
+              }
+            }
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "embeddingconfig": {
+            "properties": {
+              "embeddingModel": {
+                "enum": ["text-embedding-3-small", "text-embedding-3-large", "text-embedding-ada-002"]
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "embeddingconfig": {
+            "properties": {
+              "embeddingProvider": {
+                "const": "azure-openai"
+              }
+            }
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "embeddingconfig": {
+            "properties": {
+              "embeddingModel": {
+                "enum": ["text-embedding-3-small", "text-embedding-3-large", "text-embedding-ada-002"]
+              }
+            },
+            "required": ["embeddingProvider", "embeddingModel", "embeddingApiKey", "azureBaseUrl", "azureApiVersion"]
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "embeddingconfig": {
+            "properties": {
+              "embeddingProvider": {
+                "const": "mistral"
+              }
+            }
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "embeddingconfig": {
+            "properties": {
+              "embeddingModel": {
+                "enum": ["mistral-embed"]
+              }
+            }
+          }
+        }
+      }
+    }
+  ]
+}
