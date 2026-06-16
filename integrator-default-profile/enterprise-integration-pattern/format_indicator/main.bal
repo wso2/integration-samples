@@ -3,19 +3,15 @@ import ballerina/http;
 listener http:Listener httpListener = new (port = 8080);
 
 service /api/v1 on httpListener {
-    resource function post data/patient(PatientReq patintReq) returns error? {
+    resource function post data/patient(PatientReq patientReq) returns error? {
         Patient patient;
-        if patintReq is PatientReqV1 {
-            patient = {
-                dob: patintReq.dob,
-                fullName: patintReq.firstName + " " + patintReq.lastName,
-                diagnosis: patintReq.diagnosis
-            };
+        if patientReq is PatientReqV1 {
+            patient = toPatient(patientReq);
         } else {
             patient = {
-                dob: patintReq.patient.dob,
-                fullName: patintReq.patient.fullName,
-                diagnosis: patintReq.patient.diagnosis
+                dob: patientReq.patient.dob,
+                fullName: patientReq.patient.fullName,
+                diagnosis: patientReq.patient.diagnosis
             };
         }
         http:Response response = check patientClient->/patient.post(patient, targetType = http:Response);

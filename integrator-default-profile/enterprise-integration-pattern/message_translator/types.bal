@@ -1,7 +1,7 @@
 
 type SalesData record {|
     Customer customer;
-    Oppotunity[] opportunities;
+    Opportunity[] opportunities;
 |};
 
 type Customer record {|
@@ -10,7 +10,7 @@ type Customer record {|
     string email;
 |};
 
-type Oppotunity record {|
+type Opportunity record {|
     string id;
     decimal amount;
     string closeDate;
