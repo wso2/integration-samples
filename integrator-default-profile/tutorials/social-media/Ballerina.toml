@@ -1,0 +1,3 @@
+[workspace]
+title = "social-media"
+packages = ["social_media", "sentiment_api", "post_notifier"]

@@ -1,0 +1,3 @@
+[workspace]
+title = "order-hub-freshmart"
+packages = ["order_intake", "daily_summary"]
