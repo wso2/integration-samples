@@ -1,9 +1,9 @@
 [package]
 org = "wso2"
-name = "sap.businessone_connector_sample"
+name = "sap.businessone.crm_connector_sample"
 version = "0.1.0"
 distribution = "2201.13.4"
-title = "sap.businessone-connector-sample"
+title = "sap.businessone.crm-connector-sample"
 
 [build-options]
 sticky = true
