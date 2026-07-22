@@ -1,0 +1,114 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "properties": {
+    "wso2": {
+      "type": "object",
+      "properties": {
+        "hubspot_contacts_to_google_sheet": {
+          "type": "object",
+          "properties": {
+            "hubspotAccessToken": {
+              "type": "string",
+              "description": "Legacy app access token used to authenticate with the HubSpot CRM API."
+            },
+            "googleClientId": {
+              "type": "string",
+              "description": "OAuth 2.0 client ID for authenticating with the Google Sheets API."
+            },
+            "googleClientSecret": {
+              "type": "string",
+              "description": "OAuth 2.0 client secret for authenticating with the Google Sheets API."
+            },
+            "googleRefreshToken": {
+              "type": "string",
+              "description": "OAuth 2.0 refresh token used to obtain new access tokens for the Google Sheets API."
+            },
+            "googleRefreshUrl": {
+              "type": "string",
+              "description": "The token endpoint URL used to refresh Google OAuth 2.0 access tokens."
+            },
+            "spreadsheetId": {
+              "type": "string",
+              "description": "The unique identifier of the Google Spreadsheet where HubSpot contacts will be synced."
+            },
+            "subscriberSheetName": {
+              "type": "string",
+              "description": "Name of the worksheet for contacts with lifecycle stage 'Subscriber'."
+            },
+            "leadSheetName": {
+              "type": "string",
+              "description": "Name of the worksheet for contacts with lifecycle stage 'Lead'."
+            },
+            "marketingqualifiedleadSheetName": {
+              "type": "string",
+              "description": "Name of the worksheet for contacts with lifecycle stage 'Marketing Qualified Lead'."
+            },
+            "salesqualifiedleadSheetName": {
+              "type": "string",
+              "description": "Name of the worksheet for contacts with lifecycle stage 'Sales Qualified Lead'."
+            },
+            "opportunitySheetName": {
+              "type": "string",
+              "description": "Name of the worksheet for contacts with lifecycle stage 'Opportunity'."
+            },
+            "customerSheetName": {
+              "type": "string",
+              "description": "Name of the worksheet for contacts with lifecycle stage 'Customer'."
+            },
+            "evangelistSheetName": {
+              "type": "string",
+              "description": "Name of the worksheet for contacts with lifecycle stage 'Evangelist'."
+            },
+            "otherSheetName": {
+              "type": "string",
+              "description": "Name of the worksheet for contacts with lifecycle stage 'Other'."
+            },
+            "defaultSheetName": {
+              "type": "string",
+              "description": "Name of the fallback worksheet for contacts whose lifecycle stage does not match any known value."
+            },
+            "fields": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "description": "List of HubSpot contact property names to include as columns in the Google Sheet (e.g. ['email', 'firstname', 'lastname', 'phone'])."
+            },
+            "lastSyncTimestamp": {
+              "type": "string",
+              "description": "ISO 8601 timestamp used as the starting checkpoint for incremental sync. Leave empty to perform a full sync on the first run."
+            },
+            "contactFilterProperty": {
+              "type": "string",
+              "description": "HubSpot contact property name to filter synced contacts by (e.g. 'hs_lead_status'). Leave empty to sync all contacts."
+            },
+            "contactFilterValue": {
+              "type": "string",
+              "description": "Expected value of the filter property. Only contacts matching this value will be synced."
+            },
+            "maxRows": {
+              "type": "integer",
+              "description": "Maximum number of contacts to process per incremental sync run. Set to 0 for no limit."
+            },
+            "syncMode": {
+              "type": "string",
+              "description": "Sync strategy: 'upsert' (default) updates existing rows and inserts new ones; 'append' always inserts; 'replace' clears the sheet then inserts all contacts."
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "hubspotAccessToken",
+            "googleClientId",
+            "googleClientSecret",
+            "googleRefreshToken",
+            "spreadsheetId"
+          ]
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false,
+  "requiredLevel": 3
+}
