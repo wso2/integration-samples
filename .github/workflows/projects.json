@@ -34,5 +34,11 @@
   },
   {
     "path": "integrator-default-profile/samples/github-issue-to-google-chat"
+  },
+  {
+    "path": "ballerina-integrator/github-issue-to-google-chat"
+  },
+  {
+    "path": "ballerina-integrator/salesforce-lead-conversion-notification-to-slack"
   }
 ]
