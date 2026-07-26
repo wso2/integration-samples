@@ -1,0 +1,4 @@
+[package]
+org = "wso2"
+name = "dlq_asb"
+version = "1.0.0"
