@@ -4,7 +4,7 @@ Demonstrates the CQRS pattern: match result events flow through Kafka, a project
 
 ## How it works
 
-- `POST /matches/record` publishes a `MatchResult` event to the Kafka topic.
+- `POST /matches/add` publishes a `MatchResult` event to the Kafka topic.
 - The Kafka consumer (`leaderboard-projector`) upserts each result into the `leaderboard` table.
 - `GET /leaderboard/top` queries the pre-computed table.
 
@@ -29,7 +29,7 @@ CREATE TABLE leaderboard (
 ```bash
 bal run
 # Publish a match result
-curl -X POST http://localhost:8090/matches/record \
+curl -X POST http://localhost:8090/matches/add \
   -H 'Content-Type: application/json' \
   -d '{"playerId":"p1","displayName":"Alice","score":120}'
 # Read the leaderboard

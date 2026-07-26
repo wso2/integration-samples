@@ -8,9 +8,12 @@ public type ResizeJob record {
     string sourceUrl;
 };
 
-listener rabbitmq:Listener rabbitmqListener = new (rabbitmqHost, rabbitmqPort);
+listener rabbitmq:Listener rabbitmqListener = new (rabbitmqHost, rabbitmqPort,
+    username = rabbitmqUser,
+    password = rabbitmqPassword
+);
 
-service /jobs on new http:Listener(8090) {
+service /jobs on new http:Listener(httpPort) {
     resource function post resize(ResizeJob job) returns error? {
         check thumbnailPublisher->publishMessage({
             content: job.toJsonString().toBytes(),

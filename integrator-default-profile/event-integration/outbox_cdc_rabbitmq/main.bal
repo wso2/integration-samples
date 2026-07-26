@@ -39,7 +39,7 @@ service /users on new http:Listener(8090) {
                  VALUES (${eventId}, 'user', 'UserRegistered', ${payload.toJsonString()}::jsonb)`);
             check commit;
         }
-        log:printInfo("User registered", userId = user.id, email = user.email);
+        log:printInfo("User registered", userId = user.id);
     }
 }
 

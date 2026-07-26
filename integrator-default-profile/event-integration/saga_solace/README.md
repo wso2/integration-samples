@@ -6,7 +6,7 @@ Demonstrates a choreography-based Saga: a trip booking coordinates flight → ho
 
 **Happy path:** `POST /trips/book` → FlightBooked → hotel books room → HotelBooked
 
-**Compensation:** `POST /trips/failCar` → CarFailed → hotel cancels room → HotelCancelled → flight releases seat
+**Compensation:** `POST /trips/book` with `destination=fail` → CarFailed → hotel cancels room → HotelCancelled → flight releases seat
 
 ## Prerequisites
 
@@ -15,6 +15,7 @@ Demonstrates a choreography-based Saga: a trip booking coordinates flight → ho
 
 ```bash
 solace-cli queue create hotel-on-flight-booked    --subscription trip/flight/booked
+solace-cli queue create car-on-hotel-booked       --subscription trip/hotel/booked
 solace-cli queue create hotel-on-car-failed       --subscription trip/car/failed
 solace-cli queue create flight-on-hotel-cancelled --subscription trip/hotel/cancelled
 ```
@@ -27,10 +28,10 @@ bal run
 curl -X POST http://localhost:8090/trips/book \
   -H 'Content-Type: application/json' \
   -d '{"tripId":"t1","destination":"Paris"}'
-# Inject compensation
-curl -X POST http://localhost:8090/trips/failCar \
+# Trigger compensation path
+curl -X POST http://localhost:8090/trips/book \
   -H 'Content-Type: application/json' \
-  -d '{"tripId":"t1"}'
+  -d '{"tripId":"t1","destination":"fail"}'
 ```
 
 ## Deploy on Devant

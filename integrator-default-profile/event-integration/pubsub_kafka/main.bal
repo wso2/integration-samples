@@ -10,10 +10,13 @@ public type PageViewed record {|
 
 listener kafka:Listener kafkaListener = new (bootstrapServers, {
     groupId: groupId,
-    topics: [topicName]
+    topics: [topicName],
+    offsetReset: kafka:OFFSET_RESET_EARLIEST
 });
 
-service /publish on new http:Listener(8090) {
+listener http:Listener httpListener = new (8090);
+
+service /publish on httpListener {
     resource function post pageview(PageViewed event) returns error? {
         check pageViewProducer->send({topic: topicName, value: event});
         log:printInfo("PageViewed event published", userId = event.userId, url = event.url);
