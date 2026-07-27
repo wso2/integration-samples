@@ -48,7 +48,7 @@ listener solace:Listener solaceListener = check new (
 
 service /trips on new http:Listener(8090) {
     resource function post book(FlightBooked event) returns error? {
-        check flightBookedProducer->send({payload: event});
+        check sagaProducer->send({payload: event}, {topicName: "trip/flight/booked"});
         log:printInfo("Saga initiated", tripId = event.tripId, destination = event.destination);
     }
 }
@@ -58,7 +58,7 @@ service solace:Service on solaceListener {
     remote function onMessage(FlightBookedMessage event) returns error? {
         FlightBooked payload = event.payload;
         log:printInfo("Room booked", tripId = payload.tripId, destination = payload.destination);
-        check hotelBookedProducer->send({payload: {tripId: payload.tripId, destination: payload.destination}});
+        check sagaProducer->send({payload: {tripId: payload.tripId, destination: payload.destination}}, {topicName: "trip/hotel/booked"});
     }
 }
 
@@ -68,7 +68,7 @@ service solace:Service on solaceListener {
         HotelBooked payload = event.payload;
         if payload.destination == "fail" {
             log:printInfo("Car booking failed, triggering compensation", tripId = payload.tripId);
-            check carFailedProducer->send({payload: {tripId: payload.tripId}});
+            check sagaProducer->send({payload: {tripId: payload.tripId}}, {topicName: "trip/car/failed"});
         } else {
             log:printInfo("Car reserved, saga complete", tripId = payload.tripId, destination = payload.destination);
         }
@@ -79,7 +79,7 @@ service solace:Service on solaceListener {
 service solace:Service on solaceListener {
     remote function onMessage(CarFailedMessage event) returns error? {
         log:printInfo("Compensation: room cancelled", tripId = event.payload.tripId);
-        check hotelCancelledProducer->send({payload: {tripId: event.payload.tripId}});
+        check sagaProducer->send({payload: {tripId: event.payload.tripId}}, {topicName: "trip/hotel/cancelled"});
     }
 }
 
