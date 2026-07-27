@@ -25,8 +25,8 @@ curl -X POST http://localhost:8090/jobs/resize \
   -d '{"imageId":"img-1","sourceUrl":"https://example.com/photo.jpg"}'
 ```
 
-## Deploy on Devant
+## Deploy on WSO2 Cloud
 
-Deploy this integration on **Devant** as an **Event Integration**.
+Deploy this integration on **WSO2 Cloud** as an **Event Integration**.
 
-[![Deploy to Devant](https://openindevant.choreoapps.dev/images/DeployDevant-White.svg)](https://console.devant.dev/new?gh=wso2/integration-samples/tree/main/integrator-default-profile/event-integration/competing_consumers_rabbitmq)
+[![Deploy on WSO2 Cloud](https://openindevant.choreoapps.dev/images/DeployDevant-White.svg)](https://console.devant.dev/new?gh=wso2/integration-samples/tree/main/integrator-default-profile/event-integration/competing_consumers_rabbitmq)

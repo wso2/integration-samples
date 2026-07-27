@@ -37,8 +37,8 @@ curl -X POST http://localhost:8090/notifications/send \
   -d '{"channel":"sms","recipient":"invalid","message":"Hello"}'
 ```
 
-## Deploy on Devant
+## Deploy on WSO2 Cloud
 
-Deploy this integration on **Devant** as an **Event Integration**.
+Deploy this integration on **WSO2 Cloud** as an **Event Integration**.
 
-[![Deploy to Devant](https://openindevant.choreoapps.dev/images/DeployDevant-White.svg)](https://console.devant.dev/new?gh=wso2/integration-samples/tree/main/integrator-default-profile/event-integration/dlq_asb)
+[![Deploy on WSO2 Cloud](https://openindevant.choreoapps.dev/images/DeployDevant-White.svg)](https://console.devant.dev/new?gh=wso2/integration-samples/tree/main/integrator-default-profile/event-integration/dlq_asb)
