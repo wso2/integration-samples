@@ -1,2 +1,2 @@
 
-type Currency "AUD"|"INR"|"BGP";
+type Currency "AUD"|"INR"|"GBP";
