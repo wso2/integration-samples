@@ -1,0 +1,3 @@
+[workspace]
+title = "order-management-automation"
+packages = ["orderprocessingautomation"]
