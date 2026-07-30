@@ -1,0 +1,15 @@
+{
+  "samples": [
+    {
+      "displayName": "AI Chat Agent",
+      "description": "Create a chattable AI agent using an LLM, prompts and tools.",
+      "componentType": "service",
+      "buildPack": "agent-builder",
+      "repositoryUrl": "https://github.com/wso2/integration-samples/",
+      "componentPath": "/agent-builder-mode/ai-chat-agent",
+      "thumbnailPath": "https://choreo-shared-choreo-samples-cdne.azureedge.net/icons/hello-world.png",
+      "tags": ["HTTP", "AI", "Agent"],
+      "imageUrl": "choreoanonymouspullable.azurecr.io/samples/reading-list-rest-service-in-go:1.0.0"
+    }
+  ]
+}
