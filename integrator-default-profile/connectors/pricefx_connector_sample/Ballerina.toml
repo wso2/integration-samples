@@ -1,0 +1,9 @@
+[package]
+org = "wso2"
+name = "pricefx_connector_sample"
+version = "0.1.0"
+distribution = "2201.13.4"
+title = "pricefx-connector-sample"
+
+[build-options]
+sticky = true
