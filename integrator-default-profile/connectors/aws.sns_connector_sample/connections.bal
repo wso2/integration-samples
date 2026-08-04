@@ -1,3 +1,9 @@
 import ballerinax/aws.sns;
 
-final sns:Client snsClient = check new ({accessKeyId: snsAccessKeyId, secretAccessKey: snsSecretAccessKey, securityToken: snsSecurityToken, region: snsRegion});
+final sns:Client snsClient = check new ({
+    auth: {
+        accessKeyId: snsAccessKeyId,
+        secretAccessKey: snsSecretAccessKey
+    },
+    region: snsRegion
+});
