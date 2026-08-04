@@ -1,0 +1,4 @@
+[package]
+org = "wso2"
+name = "saga_solace"
+version = "1.0.0"

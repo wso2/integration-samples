@@ -1,0 +1,4 @@
+[package]
+org = "wso2"
+name = "pubsub_kafka"
+version = "1.0.0"
