@@ -5,26 +5,30 @@ Template for a chattable AI agent using an LLM, prompts and tools.
 ## Layout
 
 ```
-ai-chat-agent/
-└── PROJECT_HANDLE/          # workspace root (only when createAsWorkspace is true)
-    ├── Ballerina.toml       # [workspace] title + packages
-    ├── .vscode/
-    │   └── settings.json    # ballerina.isBI
-    └── PACKAGE_NAME/        # integration package
-        ├── Ballerina.toml
-        ├── main.bal         # chat service
-        ├── agents.bal       # agent definition
-        ├── connections.bal
-        ├── automation.bal
-        ├── config.bal
-        ├── data_mappings.bal
-        ├── functions.bal
-        ├── types.bal
-        ├── .gitignore
-        └── .vscode/
-            ├── settings.json    # ballerina.isBI
-            └── launch.json      # Ballerina debug configurations
+ai-chat-agent/                # this whole folder is the workspace root
+├── Ballerina.toml            # [workspace] title + packages
+├── .vscode/
+│   └── settings.json         # ballerina.isBI
+└── PACKAGE_NAME/             # integration package
+    ├── Ballerina.toml
+    ├── main.bal              # chat service
+    ├── agents.bal            # agent definition
+    ├── connections.bal
+    ├── automation.bal
+    ├── config.bal
+    ├── data_mappings.bal
+    ├── functions.bal
+    ├── types.bal
+    ├── .gitignore
+    └── .vscode/
+        ├── settings.json     # ballerina.isBI
+        └── launch.json       # Ballerina debug configurations
 ```
+
+There is no placeholder directory for the workspace root itself — the tooling
+is expected to copy `ai-chat-agent/`'s contents into a directory it names
+itself (from `projectHandle` / `projectPath`) rather than rename a folder
+inside the template.
 
 `Config.toml` is deliberately absent — it is ignored repo-wide (root
 `.gitignore` `**/Config.toml`) and generated per project, since it carries the
@@ -46,7 +50,6 @@ so the mapping is 1:1 with the call site and needs no translation table.
 
 | Placeholder | `createBIProject` field | Used in |
 | --- | --- | --- |
-| `PROJECT_HANDLE` | `projectHandle` | workspace root directory name |
 | `WORKSPACE_NAME` | `workspaceName` | root `Ballerina.toml` &rarr; `workspace.title` |
 | `PACKAGE_NAME` | `packageName` | package directory name; root `Ballerina.toml` &rarr; `workspace.packages`; package `Ballerina.toml` &rarr; `package.name` |
 | `PROJECT_NAME` | `projectName` | package `Ballerina.toml` &rarr; `package.title` |
@@ -58,7 +61,6 @@ Worked example for form input `projectName` / `integrationName` / `agentName`:
 
 | Placeholder | Value |
 | --- | --- |
-| `PROJECT_HANDLE` | `projectname` |
 | `WORKSPACE_NAME` | `projectName` |
 | `PACKAGE_NAME` | `integrationname` |
 | `PROJECT_NAME` | `integrationName` |
@@ -76,9 +78,9 @@ Worked example for form input `projectName` / `integrationName` / `agentName`:
   that call, so whichever step scaffolds the agent has to substitute it in
   `main.bal` and `agents.bal`.
 - **`createAsWorkspace: false`** means no workspace is created. In that case the
-  `PROJECT_HANDLE/` level and its `Ballerina.toml` do not apply, and
-  `PACKAGE_NAME/` becomes the project root. `workspaceName` and `projectHandle`
-  are `undefined` in that mode.
+  root `Ballerina.toml` (`[workspace]`) and root `.vscode/` do not apply, and
+  `PACKAGE_NAME/`'s contents become the project root instead. `workspaceName`
+  and `projectHandle` are `undefined` in that mode.
 - **`VERSION` must always be written.** `version` is optional in the payload
   (`formData.version || undefined`), but `package.version` must be valid semver —
   an unsubstituted `VERSION` will not build. Fall back to `0.1.0` when the form
