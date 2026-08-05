@@ -8,6 +8,8 @@ Template for a chattable AI agent using an LLM, prompts and tools.
 ai-chat-agent/
 └── PROJECT_HANDLE/          # workspace root (only when createAsWorkspace is true)
     ├── Ballerina.toml       # [workspace] title + packages
+    ├── .vscode/
+    │   └── settings.json    # ballerina.isBI
     └── PACKAGE_NAME/        # integration package
         ├── Ballerina.toml
         ├── main.bal         # chat service
@@ -17,8 +19,21 @@ ai-chat-agent/
         ├── config.bal
         ├── data_mappings.bal
         ├── functions.bal
-        └── types.bal
+        ├── types.bal
+        ├── .gitignore
+        └── .vscode/
+            ├── settings.json    # ballerina.isBI
+            └── launch.json      # Ballerina debug configurations
 ```
+
+`Config.toml` is deliberately absent — it is ignored repo-wide (root
+`.gitignore` `**/Config.toml`) and generated per project, since it carries the
+model provider access token.
+
+The `.vscode/` files are tracked even though the root `.gitignore` excludes
+`.vscode`: they were added with `git add -f`, which keeps them tracked from then
+on. **Any new file added under these `.vscode/` directories needs `git add -f`
+too**, or it will be silently ignored.
 
 ## Placeholders
 
