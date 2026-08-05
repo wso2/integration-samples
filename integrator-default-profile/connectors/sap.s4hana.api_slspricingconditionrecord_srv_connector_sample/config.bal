@@ -1,3 +1,3 @@
-
 configurable string sapHostname = ?;
-configurable string apiToken = ?;
+configurable string username = ?;
+configurable string password = ?;
