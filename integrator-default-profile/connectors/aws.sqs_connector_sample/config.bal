@@ -1,3 +1,4 @@
 
-configurable string sqsAccessKey = ?;
-configurable string sqsSecretKey = ?;
+configurable string accessKeyId = ?;
+configurable string secretAccessKey = ?;
+configurable string region = "us-east-1";

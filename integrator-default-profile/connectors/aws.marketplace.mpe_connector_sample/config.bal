@@ -1,5 +1,5 @@
 
-configurable string awsAccessKeyId = ?;
-configurable string awsSecretAccessKey = ?;
-configurable string awsRegion = ?;
-configurable string awsProductCode = ?;
+configurable string accessKeyId = ?;
+configurable string secretAccessKey = ?;
+configurable string region = ?;
+configurable string productCode = ?;

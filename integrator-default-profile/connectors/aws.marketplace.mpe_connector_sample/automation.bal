@@ -3,7 +3,7 @@ import ballerinax/aws.marketplace.mpe;
 
 public function main() returns error? {
     do {
-        mpe:EntitlementsResponse mpeEntitlementsresponse = check mpeClient->getEntitlements(productCode = awsProductCode);
+        mpe:EntitlementsResponse mpeEntitlementsresponse = check mpeClient->getEntitlements(productCode = productCode);
     } on fail error e {
         log:printError("Error occurred", 'error = e);
         return e;
