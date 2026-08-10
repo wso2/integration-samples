@@ -1,9 +1,0 @@
-[package]
-org = "ORG_HANDLE"
-name = "PACKAGE_NAME"
-version = "VERSION"
-distribution = "2201.13.4"
-title = "PROJECT_NAME"
-
-[build-options]
-sticky = true
