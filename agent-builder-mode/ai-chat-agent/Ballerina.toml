@@ -1,3 +1,0 @@
-[workspace]
-title = "ai-chat-agent"
-packages = ["ai_chat_agent"]
