@@ -123,7 +123,7 @@
     },
     {
       "displayName": "AI Chat Agent",
-      "description": "Create a chattable AI agent using an LLM, prompts and tools.",
+      "description": "Create a conversational AI agent using an LLM, prompts and tools.",
       "componentType": "ai-agent",
       "buildPack": "ballerina",
       "repositoryUrl": "https://github.com/wso2/integration-samples/",
