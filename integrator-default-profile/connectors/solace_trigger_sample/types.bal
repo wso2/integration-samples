@@ -1,12 +1,10 @@
 import ballerinax/solace;
 
-type SolaceMessagePayload record {|
-    string messageId;
-    string content;
-    string destination;
+type OrderMessage record {|
+    string orderId;
 |};
 
-type SolaceMessage record {|
+type Message record {|
     *solace:Message;
-    SolaceMessagePayload payload;
+    OrderMessage payload;
 |};

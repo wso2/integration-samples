@@ -3,8 +3,8 @@ import ballerinax/solace;
 
 public function main() returns error? {
     do {
-        solace:Message|() result = check solaceMessageconsumer->receive();
-        log:printInfo(result.toJsonString());
+        solace:Message? t = check solaceMessageconsumer->receive();
+        log:printInfo(t.toJsonString());
     } on fail error e {
         log:printError("Error occurred", 'error = e);
         return e;
