@@ -1,6 +1,6 @@
 [package]
 org = "wso2"
-name = "supportticketapi"
+name = "support_ticket_api"
 version = "1.0.0"
 distribution = "2201.13.4"
 title = "support-ticket-api"
