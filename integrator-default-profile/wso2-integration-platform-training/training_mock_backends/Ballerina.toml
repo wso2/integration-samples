@@ -1,0 +1,6 @@
+[package]
+org = "devant"
+name = "Sample"
+version = "1.0.0"
+distribution = "2201.13.4"
+title = "training-mock-backends"

@@ -1,0 +1,3 @@
+- org: sampleorg123456
+  project: wso2-integration-platform-training
+  local: true
