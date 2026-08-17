@@ -306,13 +306,13 @@ dependencies = [
 
 [[package]]
 org = "wso2"
-name = "mockbackends"
+name = "supportticketapi"
 version = "1.0.0"
 dependencies = [
 	{org = "ballerina", name = "http"},
 	{org = "ballerina", name = "random"}
 ]
 modules = [
-	{org = "wso2", packageName = "mockbackends", moduleName = "mockbackends"}
+	{org = "wso2", packageName = "supportticketapi", moduleName = "supportticketapi"}
 ]
 

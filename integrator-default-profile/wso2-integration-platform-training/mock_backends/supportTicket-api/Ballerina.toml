@@ -1,9 +1,9 @@
 [package]
 org = "wso2"
-name = "mockbackends"
+name = "supportticketapi"
 version = "1.0.0"
 distribution = "2201.13.4"
-title = "training-mock-backends"
+title = "support-ticket-api"
 
 [build-options]
 sticky = true

@@ -1,3 +1,0 @@
-[workspace]
-title = "WSO2 Integration Platform Training"
-packages = ["training_mock_backends"]
