@@ -43,7 +43,7 @@ service /users on new http:Listener(8090) {
     }
 }
 
-@cdc:ServiceConfig {tables: "accounts.public.outbox"}
+@cdc:ServiceConfig {tables: string `${dbName}.public.outbox`}
 service cdc:Service on postgresqlCdcListener {
     remote function onCreate(OutboxRow row, string tableName) returns error? {
         check rabbitmqClient->publishMessage({
