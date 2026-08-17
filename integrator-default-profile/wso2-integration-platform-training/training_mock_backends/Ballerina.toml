@@ -1,6 +1,9 @@
 [package]
-org = "devant"
-name = "Sample"
+org = "wso2"
+name = "mockbackends"
 version = "1.0.0"
 distribution = "2201.13.4"
 title = "training-mock-backends"
+
+[build-options]
+sticky = true
