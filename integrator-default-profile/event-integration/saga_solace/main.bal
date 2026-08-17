@@ -41,7 +41,7 @@ public type HotelCancelledMessage record {|
 |};
 
 listener solace:Listener solaceListener = check new (
-    url = solaceUrl,
+    solaceUrl,
     messageVpn = messageVpn,
     auth = {username: solaceUser, password: solacePassword}
 );
