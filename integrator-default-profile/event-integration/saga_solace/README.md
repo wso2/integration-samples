@@ -1,6 +1,6 @@
 # Saga (Choreography) with Solace PubSub+
 
-Demonstrates a choreography-based Saga: a trip booking coordinates flight → hotel in sequence. If a downstream step fails, compensation events unwind the completed steps. All three services share one named Solace listener; each binds to its queue via `@solace:ServiceConfig`.
+Demonstrates a choreography-based Saga: a trip booking coordinates flight → hotel in sequence. If a downstream step fails, compensation events unwind the completed steps. All services share one named Solace listener; each binds to its queue via `@solace:ServiceConfig`.
 
 ## How it works
 

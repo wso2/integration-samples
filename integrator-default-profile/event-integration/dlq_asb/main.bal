@@ -8,12 +8,6 @@ public type NotificationJob record {|
     string message;
 |};
 
-public enum DeliveryOutcome {
-    DELIVERED,
-    PROVIDER_UNAVAILABLE,
-    INVALID_RECIPIENT
-}
-
 listener asb:Listener asbListener = new ({
     connectionString: connectionString,
     entityConfig: {queueName: queueName},
