@@ -1,0 +1,23 @@
+[package]
+org = "wso2"
+name = "sap.jco_trigger_sample"
+version = "0.1.0"
+distribution = "2201.13.1"
+title = "sap.jco-trigger-sample"
+
+[build-options]
+sticky = true
+
+[[platform.java21.dependency]]
+path = "./libs/sapidoc3.jar"
+groupId = "com.sap"
+artifactId = "com.sap.conn.idoc"
+version = "3.1.*"
+scope = "provided"
+
+[[platform.java21.dependency]]
+path = "./libs/sapjco3.jar"
+groupId = "com.sap"
+artifactId = "com.sap.conn.jco"
+version = "3.1.*"
+scope = "provided"
