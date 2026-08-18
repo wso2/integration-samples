@@ -1,0 +1,4 @@
+[package]
+org = "wso2"
+name = "outbox_cdc_rabbitmq"
+version = "1.0.0"
