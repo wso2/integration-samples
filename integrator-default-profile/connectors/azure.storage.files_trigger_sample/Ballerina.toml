@@ -1,0 +1,9 @@
+[package]
+org = "wso2"
+name = "azure.storage.files_trigger_sample"
+version = "0.1.0"
+distribution = "2201.13.1"
+title = "azure.storage.files-trigger-sample"
+
+[build-options]
+sticky = true
