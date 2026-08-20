@@ -1,11 +1,11 @@
 import ballerina/log;
-import ballerinax/solace;
+import ballerinax/solace.jms;
 
 public function main() returns error? {
     do {
-        solace:Message? t = check solaceMessageconsumer->receive();
-        if t is solace:Message {
-            log:printInfo(t.toJsonString());
+        jms:Message? t = check jmsMessageconsumer->receive();
+        if t is jms:Message {
+            log:printInfo(t.toString());
         } else {
             log:printInfo("No message received");
         }

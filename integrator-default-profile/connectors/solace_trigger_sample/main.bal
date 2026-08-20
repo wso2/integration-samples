@@ -1,14 +1,11 @@
 import ballerina/log;
 import ballerinax/solace;
 
-listener solace:Listener solaceListener = new ("solaceHost", messageVpn = "solaceVpnName", auth = {username: "solaceUsername", password: "solacePassword"});
+listener solace:Listener solaceListener = new (string `${solaceHost}`, messageVpn = "default", transacted = false, auth = {username: solaceUsername, password: solacePassword});
 
-@solace:ServiceConfig {
-    queueName: "solaceQueueName",
-    sessionAckMode: "AUTO_ACKNOWLEDGE"
-}
+@solace:ServiceConfig {queueName: solaceQueueName, ackMode: "AUTO_ACK"}
 service solace:Service on solaceListener {
-    remote function onMessage(SolaceMessage message) returns error? {
+    remote function onMessage(Message message, solace:Caller caller) returns solace:Error?|error? {
         do {
             log:printInfo(message.toJsonString());
         } on fail error err {

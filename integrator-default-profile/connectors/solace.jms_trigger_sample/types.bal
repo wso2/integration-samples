@@ -1,10 +1,10 @@
-import ballerinax/solace;
+import ballerinax/solace.jms;
 
 type OrderMessage record {|
     string orderId;
 |};
 
 type Message record {|
-    *solace:Message;
+    *jms:Message;
     OrderMessage payload;
 |};
