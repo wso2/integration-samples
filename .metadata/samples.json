@@ -133,6 +133,17 @@
       "imageUrl": "choreoanonymouspullable.azurecr.io/samples/reading-list-rest-service-in-go:1.0.0"
     },
     {
+      "displayName": "Azure Files Change Tracker",
+      "description": "Report what changed on an Azure Files share since the last run. Each scheduled run diffs the share's entity tags against a snapshot saved on the share and logs created, modified, and deleted events.",
+      "componentType": "scheduled-task",
+      "buildPack": "ballerina",
+      "repositoryUrl": "https://github.com/wso2/integration-samples/",
+      "componentPath": "/integrator-default-profile/samples/azure-files-change-tracker",
+      "thumbnailPath": "https://mi-connectors.wso2.com/samples/icons/Transformation_Templates.png",
+      "tags": ["Azure Files", "Automation", "Integration"],
+      "imageUrl": "choreoanonymouspullable.azurecr.io/samples/reading-list-rest-service-in-go:1.0.0"
+    },
+    {
       "displayName": "API Testing",
       "description": "An API that handles standard HTTP methods (GET, POST, PUT, DELETE) with predefined responses. Ideal for testing request handling and API interactions.",
       "componentType": "service",
