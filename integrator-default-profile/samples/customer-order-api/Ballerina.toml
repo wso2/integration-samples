@@ -1,0 +1,27 @@
+[package]
+org = "wso2"
+name = "customer_order_api"
+version = "0.1.0"
+distribution = "2201.13.3"
+title = "Customer Order API"
+
+[build-options]
+sticky = true
+
+[[tool.persist]]
+id = "customer_order_api.dbpersist"
+targetModule = "customer_order_api.dbpersist"
+filePath = "persist/db/model.bal"
+options.datastore = "postgresql"
+options.eagerLoading = true
+options.withInitParams = true
+
+[[dependency]]
+org = "ballerina"
+name = "tool.persist"
+version = "1.9.2"
+
+[[platform.java21.dependency]]
+groupId = "io.ballerina.stdlib"
+artifactId = "persist.sql-native"
+version = "1.7.2"
