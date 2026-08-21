@@ -45,7 +45,7 @@ tradingPartner = "SUPERMART"
 
 ## Regenerating the library
 
-The schema was generated from the free UN/EDIFACT D03A directory, then adjusted for this partner — the `QTY` segment of a line item, optional in the standard, is required here because the partner always sends it.
+The schema was generated from the free UN/EDIFACT D03A directory, then adjusted for this partner — the `QTY` segment of a line item, optional in the standard, is required here because the partner always sends it. That adjustment is why this sample generates a library: a partner sending the standard `ORDERS` message unchanged can import [`ballerinax/edifact.d03a.supplychain`](https://central.ballerina.io/ballerinax/edifact.d03a.supplychain/latest) instead and skip generation entirely.
 
 Download the D03A archive from [UN/EDIFACT directory downloads](https://unece.org/trade/uncefact/unedifact/download), then:
 
