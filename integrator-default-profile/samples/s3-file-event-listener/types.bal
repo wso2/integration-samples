@@ -1,15 +1,28 @@
 
-type S3EventRecord record {
+public type Bucket record {|
+    string name;
+    string arn;
+|};
+
+public type Object record {|
+    string 'key;
+    int size;
+    string eTag;
+|};
+
+public type S3 record {|
+    Bucket bucket;
+    Object 'object;
+|};
+
+public type S3EventRecord record {|
     string eventSource;
     string eventName;
     string eventTime;
     string awsRegion;
-    record {
-        record {string name; string arn;} bucket;
-        record {string key; int size; string eTag;} 'object;
-    } s3;
-};
+    S3 s3;
+|};
 
-type S3Notification record {
-    S3EventRecord[] Records;
-};
+type S3Notification record {|
+    S3EventRecord[] events;
+|};
