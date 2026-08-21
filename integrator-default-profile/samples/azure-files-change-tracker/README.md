@@ -23,6 +23,7 @@ Create a `Config.toml` file in the project directory with the following values:
 - `accountName`: the storage account name
 - `accountKey`: the storage account access key
 - `shareName`: the name of the share to watch
+- `snapshotPath` (optional): where on the share the tracker saves its snapshot; defaults to `/.change-tracker-snapshot.json`
 
 ```toml
 accountName = "<storage account name>"
@@ -46,7 +47,7 @@ Note: If scheduling this job is not a requirement, you can execute the integrati
 - Each run lists the share once with extended info, so every file arrives with its entity tag. No file content is downloaded, and the cost of a run scales with the number of files listed, not with the share's total size.
 - The run compares the listing against the snapshot saved by the previous run: an unknown path is a creation, a changed entity tag is a modification, and a snapshot entry missing from the listing is a deletion.
 - The three hooks in `functions.bal` (`onFileCreated`, `onFileModified`, `onFileDeleted`) log the events; replace them with whatever the change should trigger.
-- The new snapshot is saved to `/.change-tracker-snapshot.json` on the share itself, so scheduled runs need no local state and deletions that happen between runs are still reported.
+- The new snapshot is saved on the share itself (to `/.change-tracker-snapshot.json` by default), so scheduled runs need no local state and deletions that happen between runs are still reported.
 - The first run reports every file already on the share as created: there is no previous snapshot, so the first listing is the baseline.
 
 ## References
