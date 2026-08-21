@@ -1,0 +1,5 @@
+[package]
+org = "wso2"
+name = "edi_order_processing"
+version = "0.1.0"
+distribution = "2201.12.0"
