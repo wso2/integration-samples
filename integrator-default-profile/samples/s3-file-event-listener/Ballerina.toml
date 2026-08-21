@@ -1,0 +1,8 @@
+[package]
+org = "wso2"
+name = "s3_file_event_listener"
+version = "0.1.0"
+distribution = "2201.13.4"
+
+[build-options]
+sticky = true
