@@ -133,6 +133,17 @@
       "imageUrl": "choreoanonymouspullable.azurecr.io/samples/reading-list-rest-service-in-go:1.0.0"
     },
     {
+      "displayName": "S3 File Event Listener",
+      "description": "An event-driven integration that reacts to S3 file uploads by consuming object-created notifications from an SQS queue using the aws.sqs listener.",
+      "componentType": "event-handler",
+      "buildPack": "ballerina",
+      "repositoryUrl": "https://github.com/wso2/integration-samples/",
+      "componentPath": "/integrator-default-profile/samples/s3-file-event-listener",
+      "thumbnailPath": "https://mi-connectors.wso2.com/samples/icons/Messaging_Templates.png",
+      "tags": ["AWS", "S3", "SQS", "Integration", "Event-Driven"],
+      "imageUrl": "choreoanonymouspullable.azurecr.io/samples/reading-list-rest-service-in-go:1.0.0"
+    },
+    {
       "displayName": "API Testing",
       "description": "An API that handles standard HTTP methods (GET, POST, PUT, DELETE) with predefined responses. Ideal for testing request handling and API interactions.",
       "componentType": "service",
