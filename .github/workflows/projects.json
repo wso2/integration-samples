@@ -34,5 +34,8 @@
   },
   {
     "path": "integrator-default-profile/samples/github-issue-to-google-chat"
+  },
+  {
+    "path": "integrator-default-profile/samples/trello-summary-email"
   }
 ]
