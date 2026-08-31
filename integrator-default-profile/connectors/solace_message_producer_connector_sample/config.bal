@@ -1,6 +1,5 @@
 
-configurable string solaceHostUrl = ?;
-configurable string solaceTopicName = ?;
-configurable string solaceMessageVpn = ?;
+configurable string solaceUrl = ?;
 configurable string solaceUsername = ?;
 configurable string solacePassword = ?;
+configurable string solaceTopicName = ?;
