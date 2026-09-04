@@ -3,7 +3,8 @@ import ballerinax/aws.secretmanager;
 
 public function main() returns error? {
     do {
-        secretmanager:SecretValue secretValue = check secretmanagerClient->getSecretValue(awsSecretId);
+        secretmanager:SecretValue secretValue = check secretmanagerClient->getSecretValue(secretId);
+        log:printInfo(string `Retrieved secret ${secretValue.name} version ${secretValue.versionId}`);
     } on fail error e {
         log:printError("Error occurred", 'error = e);
         return e;
