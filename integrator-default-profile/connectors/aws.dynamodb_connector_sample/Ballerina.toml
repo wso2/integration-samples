@@ -1,9 +1,9 @@
 [package]
 org = "wso2"
-name = "aws.secretmanager_connector_sample"
+name = "aws_dynamodb_connector_sample"
 version = "0.1.0"
 distribution = "2201.13.5"
-title = "aws.secretmanager-connector-sample"
+title = "aws_dynamodb_connector_sample"
 
 [build-options]
 sticky = true
