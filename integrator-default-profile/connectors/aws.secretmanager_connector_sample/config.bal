@@ -1,5 +1,5 @@
 
-configurable string awsAccessKeyId = ?;
-configurable string awsSecretAccessKey = ?;
-configurable string
-awsSecretId = "my-application-secret";
+configurable string region = ?;
+configurable string accessKeyId = ?;
+configurable string secretAccessKey = ?;
+configurable string secretId = ?;

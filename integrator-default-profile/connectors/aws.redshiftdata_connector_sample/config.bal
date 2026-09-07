@@ -1,5 +1,6 @@
 
-configurable string awsAccessKeyId = ?;
-configurable string awsSecretAccessKey = ?;
-configurable string awsSessionToken = ?;
-configurable string awsRegion = ?;
+configurable string region = ?;
+configurable string accessKeyId = ?;
+configurable string secretAccessKey = ?;
+configurable string clusterId = ?;
+configurable string databaseName = ?;

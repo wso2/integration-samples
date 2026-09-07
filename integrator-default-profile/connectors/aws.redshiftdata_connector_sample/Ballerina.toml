@@ -2,7 +2,7 @@
 org = "wso2"
 name = "aws.redshiftdata_connector_sample"
 version = "0.1.0"
-distribution = "2201.13.1"
+distribution = "2201.13.5"
 title = "aws.redshiftdata-connector-sample"
 
 [build-options]
