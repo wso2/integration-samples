@@ -9,6 +9,12 @@
     "path": "integrator-default-profile/samples/signup-sfchatsync"
   },
   {
+    "path": "ballerina-integrator/salesforce-closewon-contract-automation"
+  },
+  {
+    "path": "ballerina-integrator/salesforce-leads-to-googlesheets"
+  },
+  {
     "path": "integrator-default-profile/samples/salesforce-leads-to-googlesheets"
   },
   {
