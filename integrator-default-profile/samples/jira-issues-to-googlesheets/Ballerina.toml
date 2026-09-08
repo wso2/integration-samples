@@ -1,0 +1,9 @@
+[package]
+org = "wso2"
+name = "jira_issues_to_googlesheets"
+version = "0.1.0"
+title = "jira-issues-to-googlesheets"
+distribution = "2201.13.1"
+
+[build-options]
+sticky = true
