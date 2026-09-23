@@ -1,0 +1,3 @@
+[workspace]
+title = "edi-purchase-order-processing"
+packages = ["edi_order_processing", "orders"]
