@@ -1,0 +1,9 @@
+[package]
+org = "wso2"
+name = "ecpaymentinformation_connector_sample"
+version = "0.1.0"
+distribution = "2201.13.1"
+title = "ecpaymentinformation-connector-sample"
+
+[build-options]
+sticky = true
