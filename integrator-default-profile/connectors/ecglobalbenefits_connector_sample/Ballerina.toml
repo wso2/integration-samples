@@ -1,0 +1,9 @@
+[package]
+org = "wso2"
+name = "ecglobalbenefits_connector_sample"
+version = "0.1.0"
+distribution = "2201.13.1"
+title = "ecglobalbenefits-connector-sample"
+
+[build-options]
+sticky = true
