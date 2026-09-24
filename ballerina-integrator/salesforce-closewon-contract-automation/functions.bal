@@ -1,0 +1,189 @@
+import ballerina/log;
+
+// Get opportunity details from Salesforce
+function getOpportunity(string opportunityId) returns Opportunity|error {
+    log:printInfo(string `Fetching opportunity details for ID: ${opportunityId}`);
+    Opportunity|error opportunityResult = salesforceClient->getById("Opportunity", opportunityId, Opportunity);
+    if opportunityResult is error {
+        log:printError(string `Salesforce API error: ${opportunityResult.message()}`);
+        return opportunityResult;
+    }
+    return opportunityResult;
+}
+
+// Get contact by role from opportunity
+function getContactByRole(string opportunityId, SignerRole role) returns Contact|error {
+    // Query for OpportunityContactRole
+    string soqlQuery = string `SELECT ContactId, Role FROM OpportunityContactRole 
+                               WHERE OpportunityId = '${opportunityId}' 
+                               AND Role = '${role}'
+                               LIMIT 1`;
+    
+    stream<record {}, error?> roleStream = check salesforceClient->query(soqlQuery);
+    
+    record {}[] roles = check from record {} roleRecord in roleStream
+        select roleRecord;
+    
+    if roles.length() == 0 {
+        return error(string `No contact found with role: ${role}`);
+    }
+    
+    record {} contactRole = roles[0];
+    json contactRoleJson = contactRole.toJson();
+    
+    if contactRoleJson !is map<json> {
+        return error("Invalid contact role data structure");
+    }
+    
+    map<json> contactRoleMap = contactRoleJson;
+    json contactIdJson = contactRoleMap["ContactId"];
+    
+    if contactIdJson is () {
+        return error("ContactId not found in query result");
+    }
+    
+    string contactId = contactIdJson.toString();
+    
+    // Get contact details
+    Contact contact = check salesforceClient->getById("Contact", contactId, Contact);
+    return contact;
+}
+
+// Get primary contact from opportunity
+function getPrimaryContact(string opportunityId) returns Contact|error {
+    // Query for primary contact role
+    string soqlQuery = string `SELECT ContactId FROM OpportunityContactRole 
+                               WHERE OpportunityId = '${opportunityId}' 
+                               AND IsPrimary = true
+                               LIMIT 1`;
+    
+    stream<record {}, error?> roleStream = check salesforceClient->query(soqlQuery);
+    
+    record {}[] roles = check from record {} roleRecord in roleStream
+        select roleRecord;
+    
+    if roles.length() == 0 {
+        return error("No primary contact found for opportunity");
+    }
+    
+    record {} contactRole = roles[0];
+    json contactRoleJson = contactRole.toJson();
+    
+    if contactRoleJson !is map<json> {
+        return error("Invalid contact role data structure");
+    }
+    
+    map<json> contactRoleMap = contactRoleJson;
+    json contactIdJson = contactRoleMap["ContactId"];
+    
+    if contactIdJson is () {
+        return error("ContactId not found in query result");
+    }
+    
+    string contactId = contactIdJson.toString();
+    
+    // Get contact details
+    Contact contact = check salesforceClient->getById("Contact", contactId, Contact);
+    return contact;
+}
+
+// Select appropriate template based on opportunity
+function selectTemplate(Opportunity opportunity) returns TemplateConfig {
+    // Check if there are configured templates
+    foreach TemplateConfig templateConfig in templateSettings.templateConfigs {
+        string? productType = templateConfig.productType;
+        string? dealType = templateConfig.dealType;
+        string? oppType = opportunity.Type;
+        
+        // Match by product type or deal type
+        if productType is string && oppType is string && oppType == productType {
+            return templateConfig;
+        }
+        
+        if dealType is string && oppType is string && oppType == dealType {
+            return templateConfig;
+        }
+    }
+    
+    // Return default template
+    return {
+        templateId: templateSettings.defaultTemplateId,
+        expirationDays: businessRulesConfig.expirationReminderDays
+    };
+}
+
+// Note: buildTemplateFields function moved to automation.bal
+
+// Get opportunity field value by field name
+function getOpportunityFieldValue(Opportunity opportunity, string fieldName) returns string {
+    match fieldName {
+        "Name" => {
+            string? opportunityName = opportunity.Name;
+            if opportunityName is string {
+                return opportunityName;
+            }
+        }
+        "Amount" => {
+            decimal? amount = opportunity.Amount;
+            if amount is decimal {
+                return amount.toString();
+            }
+        }
+        "CloseDate" => {
+            string? closeDate = opportunity.CloseDate;
+            if closeDate is string {
+                return closeDate;
+            }
+        }
+        "Id" => {
+            return opportunity.Id;
+        }
+        "StageName" => {
+            string? stageName = opportunity.StageName;
+            if stageName is string {
+                return stageName;
+            }
+        }
+        "Type" => {
+            string? oppType = opportunity.Type;
+            if oppType is string {
+                return oppType;
+            }
+        }
+    }
+    
+    return "";
+}
+
+// Update Salesforce opportunity stage
+function updateOpportunityStage(string opportunityId, string stageName) returns error? {
+    // NOTE: This function does not currently perform a real Salesforce update.
+    // To enable contract status tracking and prevent duplicate envelope sends,
+    // wire this to the Salesforce REST API (PATCH /sobjects/Opportunity/{Id})
+    // to set the StageName field appropriately.
+    log:printError(string `Opportunity stage update for ${opportunityId} to ${stageName} is not implemented`);
+    return error("Opportunity stage update is not implemented; integrate with Salesforce REST API before using this function in production flows");
+}
+
+// Check if opportunity meets criteria
+function meetsDispatchCriteria(Opportunity opportunity) returns boolean {
+    // Check if stage is Closed Won
+    string? stageName = opportunity.StageName;
+    if stageName is () || stageName != "Closed Won" {
+        return false;
+    }
+    
+    // Check minimum deal value
+    decimal? amount = opportunity.Amount;
+    if amount is () {
+        log:printWarn(string `Opportunity ${opportunity.Id} has no amount specified`);
+        return false;
+    }
+    
+    if amount < businessRulesConfig.minimumDealValue {
+        log:printInfo(string `Opportunity ${opportunity.Id} amount ${amount} is below minimum threshold ${businessRulesConfig.minimumDealValue}`);
+        return false;
+    }
+    
+    return true;
+}
