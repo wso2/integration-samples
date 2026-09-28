@@ -1,10 +1,10 @@
 import ballerina/http;
-import ballerinax/ai.agent;
+import ballerina/ai;
 
-listener agent:Listener hrRagAgentListener = new (listenOn = check http:getDefaultListener());
+listener ai:Listener hrRagAgentListener = new (listenOn = check http:getDefaultListener());
 
 service /hrRagAgent on hrRagAgentListener {
-    resource function post chat(@http:Payload agent:ChatReqMessage request) returns agent:ChatRespMessage|error {
+    resource function post chat(@http:Payload ai:ChatReqMessage request) returns ai:ChatRespMessage|error {
         string agentResponse = check llmChat(request.message);
         return {message: agentResponse};
     }
