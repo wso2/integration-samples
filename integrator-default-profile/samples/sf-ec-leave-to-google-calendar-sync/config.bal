@@ -1,0 +1,11 @@
+configurable string apiKey = ?;
+configurable string companyId = ?;
+configurable string userName = ?;
+configurable string privateKey = ?;
+configurable string certificate = ?;
+configurable string tokenUrl = ?;
+configurable string hostName = ?;
+configurable string clientId = ?;
+configurable string refreshUrl = ?;
+configurable string refreshToken = ?;
+configurable string clientSecret = ?;
