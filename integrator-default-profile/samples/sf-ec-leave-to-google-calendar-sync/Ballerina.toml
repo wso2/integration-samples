@@ -1,0 +1,9 @@
+[package]
+org = "wso2"
+name = "sf_ec_leave_to_google_calendar_sync"
+version = "0.1.0"
+distribution = "2201.13.1"
+title = "sf-ec-leave-to-google-calendar-sync"
+
+[build-options]
+sticky = true
