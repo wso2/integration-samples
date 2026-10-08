@@ -1,0 +1,9 @@
+[package]
+org = "wso2"
+name = "post_notifier"
+version = "0.1.0"
+distribution = "2201.13.3"
+title = "post-notifier"
+
+[build-options]
+sticky = true
