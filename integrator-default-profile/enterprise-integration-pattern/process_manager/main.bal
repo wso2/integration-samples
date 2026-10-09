@@ -10,7 +10,7 @@ service /api/v1 on httpListener {
             FedexResponse fedexResp = check createFedexShipment(response);
             trackingNumber = fedexResp.trackingNumber;
         } else {
-            DHLResponse dhlResp = check creeateDhlShipment(response);
+            DHLResponse dhlResp = check createDhlShipment(response);
             trackingNumber = dhlResp.trackingNumber;
         }
         future<error?> futureResult = start sendConfirmationMail(response.address.fullName, response.email, trackingNumber);

@@ -14,7 +14,7 @@ service /api/v1 on httpListener {
                 mobileNumber: message.mobileNumber,
                 routingSlip: message.routingSlip
             };
-            http:Response targetType = check pointHandler->/points.post(payload);
+            points = check pointHandler->/points.post(payload);
         }
         return checkout(message, points);
     }
