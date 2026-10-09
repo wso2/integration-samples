@@ -9,14 +9,16 @@ import ballerinax/trigger.shopify;
 service shopify:OrdersService on shopifyListener {
 
     remote function onOrdersFulfilled(shopify:OrderEvent event) returns error? {
-        string|error num = orderNumStr(event);
-        log:printInfo(string `[Shopify] orders/fulfilled received: #${num is string ? num : "unknown"}`);
+        // #13: Fail fast if order has no identifiable number
+        string num = check orderNumStr(event);
+        log:printInfo(string `[Shopify] orders/fulfilled received: #${num}`);
         return processOrder(event);
     }
 
     remote function onOrdersPaid(shopify:OrderEvent event) returns error? {
-        string|error num = orderNumStr(event);
-        log:printInfo(string `[Shopify] orders/paid received: #${num is string ? num : "unknown"}`);
+        // #13: Fail fast if order has no identifiable number
+        string num = check orderNumStr(event);
+        log:printInfo(string `[Shopify] orders/paid received: #${num}`);
         return processOrder(event);
     }
 
