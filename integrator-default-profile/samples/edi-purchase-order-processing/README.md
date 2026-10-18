@@ -4,7 +4,7 @@
 
 Reads an inbound EDIFACT purchase order interchange, identifies the trading partner from the envelope headers without a schema, and parses the orders inside it into typed Ballerina records. A message the schema cannot read is quarantined with its parse error, and the rest of the interchange is still processed.
 
-This is the finished code for the [Process Inbound EDI Purchase Orders from Trading Partners](https://wso2.com/integrator/docs/guides/howtoguides/edi-purchase-order-processing/) guide.
+This is the finished code for the [Process Inbound EDI Purchase Orders from Trading Partners](https://wso2.com/integration-platform/docs/integrator/guides/business-use-cases/edi-purchase-order-processing/) guide.
 
 ## Project layout
 
@@ -56,6 +56,6 @@ cd orders && bal edi codegen -i ../schema/ORDERS.json -o orders.bal
 
 ## References
 
-- [EDI Processing](https://wso2.com/integrator/docs/develop/transform/edi/)
-- [EDI tool](https://wso2.com/integrator/docs/develop/tools/integration-tools/edi-tool/)
+- [EDI Processing](https://wso2.com/integration-platform/docs/integrator/develop-and-test/data-transformation/edi/)
+- [EDI tool](https://wso2.com/integration-platform/docs/integrator/develop-and-test/developer-tools/integration-tools/edi-tool/)
 - [`ballerina/edi` API docs](https://central.ballerina.io/ballerina/edi/latest)

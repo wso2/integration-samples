@@ -2633,6 +2633,13 @@
                     ]
                 },
                 {
+                    "tag": "DUTY_OR_TAX_OR_FEE_ASSESSMENT_BASIS_QUANTITY",
+                    "dataType": "string",
+                    "required": false,
+                    "repeat": false,
+                    "components": []
+                },
+                {
                     "tag": "DUTY_TAX_FEE_DETAIL",
                     "dataType": "composite",
                     "required": false,
@@ -4231,6 +4238,10 @@
                     "required": false,
                     "repeat": false,
                     "components": [
+                        {
+                            "tag": "United_Nations_Dangerous_Goods_UNDG_identifier",
+                            "required": false
+                        },
                         {
                             "tag": "Dangerous_goods_flashpoint_description",
                             "required": false,
