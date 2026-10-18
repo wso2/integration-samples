@@ -122,6 +122,17 @@
       "imageUrl": "choreoanonymouspullable.azurecr.io/samples/reading-list-rest-service-in-go:1.0.0"
     },
     {
+      "displayName": "EDI Purchase Order Processing",
+      "description": "An SFTP-driven integration that picks up EDIFACT purchase orders from a trading partner, identifies the sender from the envelope headers, and parses each order into typed records with the prebuilt D03A package, logging any message it cannot read.",
+      "componentType": "file-integration",
+      "buildPack": "ballerina",
+      "repositoryUrl": "https://github.com/wso2/integration-samples/",
+      "componentPath": "/integrator-default-profile/samples/edi-purchase-order-processing",
+      "thumbnailPath": "https://devant-cdn.wso2.com/console/sample-icons/file.svg",
+      "tags": ["EDI", "FTP", "File", "Integration"],
+      "imageUrl": "choreoanonymouspullable.azurecr.io/samples/reading-list-rest-service-in-go:1.0.0"
+    },
+    {
       "displayName": "AI Chat Agent",
       "description": "Create a conversational AI agent using an LLM, prompts and tools.",
       "componentType": "ai-agent",
