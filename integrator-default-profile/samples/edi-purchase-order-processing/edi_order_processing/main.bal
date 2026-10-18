@@ -1,11 +1,12 @@
 import ballerina/edi;
 import ballerina/ftp;
 import ballerina/log;
+import ballerinax/edifact.d03a.supplychain.mAPERAK;
 import ballerinax/edifact.d03a.supplychain.mORDERS;
 
 listener ftp:Listener ftpListener = new (host = "localhost", protocol = ftp:SFTP, port = 2222, auth = {credentials: {username: string `${sftpUsername}`, password: string `${sftpPassword}`}});
 
-@ftp:ServiceConfig {path: "/edi/inbox"}
+@ftp:ServiceConfig {path: "/edi/inbox", fileNamePattern: "^.*\\.edi$"}
 service ftp:Service on ftpListener {
     @ftp:FunctionConfig {afterProcess: {moveTo: "/edi/processed"}, afterError: {moveTo: "/edi/rejected"}}
     remote function onFile(byte[] content, ftp:FileInfo fileInfo) returns error? {
@@ -20,12 +21,15 @@ service ftp:Service on ftpListener {
             foreach mORDERS:EDI_ORDERS_ORDERSTransaction txn in interchange.transactions {
                 mORDERS:EDI_ORDERS_ORDERS|error body = txn.body;
                 if body is error {
-                    log:printError("Quarantined message", body, reference = txn.transactionHeader.Message_header.message_reference_number);
+                    log:printError("Message rejected", body, reference = txn.transactionHeader.Message_header.message_reference_number);
                     continue;
                 }
                 string orderId = body.Beginning_of_message?.DOCUMENT_MESSAGE_IDENTIFICATION?.Document_identifier ?: "";
                 log:printInfo(string `Order ${orderId} received from ${headers.unb.sender.id}`);
             }
+            mAPERAK:EDI_APERAK_APERAKInterchange acknowledgement = buildAcknowledgement(interchange);
+            string acknowledgementText = check mAPERAK:interchangeToEdiString(acknowledgement);
+            check ftpClient->putText(string `/edi/outbox/${fileInfo.name}`, acknowledgementText);
         } on fail error err {
             // handle error
             return error("unhandled error", err);
