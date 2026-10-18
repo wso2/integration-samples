@@ -1,5 +1,5 @@
 # Local SFTP server standing in for the trading partner's mailbox.
-# Creates user partner/partner123 with the inbox, processed, rejected, and outbox folders.
+# Creates user partner/partner123 with the inbox, processed, and rejected folders.
 # Start with: docker compose up -d
 services:
   sftp:
@@ -7,4 +7,4 @@ services:
     container_name: edi-sftp
     ports:
       - "2222:22"
-    command: partner:partner123:::edi/inbox,edi/processed,edi/rejected,edi/outbox
+    command: partner:partner123:::edi/inbox,edi/processed,edi/rejected

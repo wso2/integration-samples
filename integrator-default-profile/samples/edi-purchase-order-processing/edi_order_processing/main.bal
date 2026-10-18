@@ -1,7 +1,6 @@
 import ballerina/edi;
 import ballerina/ftp;
 import ballerina/log;
-import ballerinax/edifact.d03a.supplychain.mAPERAK;
 import ballerinax/edifact.d03a.supplychain.mORDERS;
 
 listener ftp:Listener ftpListener = new (host = "localhost", protocol = ftp:SFTP, port = 2222, auth = {credentials: {username: string `${sftpUsername}`, password: string `${sftpPassword}`}});
@@ -27,9 +26,6 @@ service ftp:Service on ftpListener {
                 string orderId = body.Beginning_of_message?.DOCUMENT_MESSAGE_IDENTIFICATION?.Document_identifier ?: "";
                 log:printInfo(string `Order ${orderId} received from ${headers.unb.sender.id}`);
             }
-            mAPERAK:EDI_APERAK_APERAKInterchange acknowledgement = buildAcknowledgement(interchange);
-            string acknowledgementText = check mAPERAK:interchangeToEdiString(acknowledgement);
-            check ftpClient->putText(string `/edi/outbox/${fileInfo.name}`, acknowledgementText);
         } on fail error err {
             // handle error
             return error("unhandled error", err);
