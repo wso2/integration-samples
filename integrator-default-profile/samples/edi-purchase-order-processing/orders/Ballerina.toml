@@ -1,10 +1,9 @@
 [package]
-org = "wso2"
+org = "supplier"
 name = "orders"
 version = "0.1.0"
 distribution = "2201.14.1"
+title = "orders"
 
-[[dependency]]
-org="ballerina"
-name="edi"
-version="1.7.1"
+[build-options]
+sticky = true

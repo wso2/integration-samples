@@ -638,8 +638,8 @@
                 {
                     "ref": "QTY",
                     "tag": "Quantity",
-                    "maxOccurances": 99,
-                    "minOccurances": 1
+                    "minOccurances": 1,
+                    "maxOccurances": 99
                 },
                 {
                     "ref": "PCD",

@@ -64,19 +64,28 @@ dependencies = [
 [[package]]
 org = "ballerina"
 name = "observe"
-version = "1.7.4"
+version = "1.8.0"
 dependencies = [
 	{org = "ballerina", name = "jballerina.java"}
 ]
 
 [[package]]
-org = "wso2"
+org = "supplier"
 name = "orders"
 version = "0.1.0"
 dependencies = [
-	{org = "ballerina", name = "edi"}
+	{org = "ballerina", name = "edi"},
+	{org = "wso2", name = "strict.library"}
 ]
 modules = [
-	{org = "wso2", packageName = "orders", moduleName = "orders"}
+	{org = "supplier", packageName = "orders", moduleName = "orders"}
+]
+
+[[package]]
+org = "wso2"
+name = "strict.library"
+version = "0.9.0"
+modules = [
+	{org = "wso2", packageName = "strict.library", moduleName = "strict.library"}
 ]
 
