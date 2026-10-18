@@ -1,8 +1,7 @@
 import ballerina/edi;
 import ballerina/ftp;
 import ballerina/log;
-
-import supplier/orders;
+import ballerinax/edifact.d03a.supplychain.mORDERS;
 
 listener ftp:Listener ftpListener = new (host = "localhost", protocol = ftp:SFTP, port = 2222, auth = {credentials: {username: string `${sftpUsername}`, password: string `${sftpPassword}`}});
 
@@ -17,9 +16,9 @@ service ftp:Service on ftpListener {
                 return error(string `Unknown trading partner: ${headers.unb.sender.id}`);
             }
             log:printInfo(string `Order file from ${headers.unb.sender.id}, reference ${headers.unb.controlRef}`);
-            orders:ORDERSInterchange interchange = check orders:interchangeFromEdiString(ediText);
-            foreach orders:ORDERSTransaction txn in interchange.transactions {
-                orders:ORDERS|error body = txn.body;
+            mORDERS:EDI_ORDERS_ORDERSInterchange interchange = check mORDERS:interchangeFromEdiString(ediText);
+            foreach mORDERS:EDI_ORDERS_ORDERSTransaction txn in interchange.transactions {
+                mORDERS:EDI_ORDERS_ORDERS|error body = txn.body;
                 if body is error {
                     log:printError("Quarantined message", body, reference = txn.transactionHeader.Message_header.message_reference_number);
                     continue;

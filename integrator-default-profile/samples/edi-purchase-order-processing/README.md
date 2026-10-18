@@ -2,7 +2,7 @@
 
 ## Description
 
-Picks up EDIFACT purchase order interchanges that a trading partner drops on an SFTP server, identifies the partner from the envelope headers without a schema, and parses the orders inside into typed Ballerina records. A file from an unknown partner is moved to a `rejected` folder. A message the schema cannot read is quarantined with its parse error, and the rest of the interchange is still processed.
+Picks up EDIFACT purchase order interchanges that a trading partner drops on an SFTP server, identifies the partner from the envelope headers without a schema, and parses the orders inside into typed Ballerina records with the prebuilt [`ballerinax/edifact.d03a.supplychain`](https://central.ballerina.io/ballerinax/edifact.d03a.supplychain/latest) package. A file from an unknown partner is moved to a `rejected` folder. A message the schema cannot read is quarantined with its parse error, and the rest of the interchange is still processed.
 
 This is the finished code for the [Process Inbound EDI Purchase Orders from Trading Partners](https://wso2.com/integration-platform/docs/integrator/guides/business-use-cases/edi-purchase-order-processing/) guide.
 
@@ -11,8 +11,6 @@ This is the finished code for the [Process Inbound EDI Purchase Orders from Trad
 ```text
 edi-purchase-order-processing/
 ├── edi_order_processing/   # the integration: an SFTP service with an onFile handler
-├── orders/                 # typed ORDERS library, generated with `bal edi codegen`
-├── schema/ORDERS.json      # the EDI schema, adjusted for this trading partner
 ├── orders.edi              # sample interchange: two valid orders and one malformed message
 └── docker-compose.yml      # local SFTP server standing in for the partner's mailbox
 ```
@@ -59,19 +57,13 @@ edi-purchase-order-processing/
 
 The expected partner is configurable with `tradingPartner` (default `SUPERMART`).
 
-## Regenerating the library
+## Using your own message schema
 
-The schema was generated from the free UN/EDIFACT D03A directory, then adjusted for this partner: the `QTY` segment of a line item, optional in the standard, is required here because the partner always sends it. That adjustment is why this sample generates a library. A partner sending the standard `ORDERS` message unchanged can import [`ballerinax/edifact.d03a.supplychain`](https://central.ballerina.io/ballerinax/edifact.d03a.supplychain/latest) instead and skip generation entirely.
-
-Download the D03A archive from [UN/EDIFACT directory downloads](https://unece.org/trade/uncefact/unedifact/download), then:
-
-```bash
-bal edi convertEdifactSchema -v d03a -t ORDERS -i d03a.zip -o schema
-cd orders && bal edi codegen -i ../schema/ORDERS.json -o orders.bal
-```
+The prebuilt package covers the standard UN/EDIFACT D03A `ORDERS` message. When a partner deviates from the standard, or sends a message type or directory version that no prebuilt package covers, generate a parser from the specification with the `bal edi` tool, adjust its schema to what the partner sends, and call its `interchangeFromEdiString` in place of the package's. See [Generating code from an EDIFACT spec](https://wso2.com/integration-platform/docs/integrator/develop-and-test/data-transformation/edi/#generating-code-from-an-edifact-spec) and [Adapting the schema to a trading partner](https://wso2.com/integration-platform/docs/integrator/develop-and-test/data-transformation/edi/#adapting-the-schema-to-a-trading-partner).
 
 ## References
 
 - [EDI Processing](https://wso2.com/integration-platform/docs/integrator/develop-and-test/data-transformation/edi/)
 - [EDI tool](https://wso2.com/integration-platform/docs/integrator/develop-and-test/developer-tools/integration-tools/edi-tool/)
 - [`ballerina/edi` API docs](https://central.ballerina.io/ballerina/edi/latest)
+- [`ballerinax/edifact.d03a.supplychain` API docs](https://central.ballerina.io/ballerinax/edifact.d03a.supplychain/latest)
