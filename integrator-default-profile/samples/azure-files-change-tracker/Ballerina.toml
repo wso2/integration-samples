@@ -1,0 +1,9 @@
+[package]
+org = "wso2"
+name = "azure_files_change_tracker"
+version = "0.1.0"
+distribution = "2201.13.1"
+title = "azure-files-change-tracker"
+
+[build-options]
+sticky = true
