@@ -165,6 +165,7 @@
         <server.path>${test.server.path}</server.path>
         <server.version>${test.server.version}</server.version>
         <server.download.link>${test.server.download.link}</server.download.link>
+        <mainSequence>PersonRecordSeq</mainSequence>
       </properties>
     </profile>
     <profile>
