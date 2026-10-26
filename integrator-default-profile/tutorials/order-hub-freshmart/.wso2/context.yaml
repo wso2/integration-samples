@@ -1,0 +1,3 @@
+- org: wso2
+  project: order-hub-freshmart
+  local: true
