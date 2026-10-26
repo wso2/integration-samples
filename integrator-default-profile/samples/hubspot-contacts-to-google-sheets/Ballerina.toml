@@ -1,0 +1,6 @@
+[package]
+org = "wso2"
+name = "hubspot_contacts_to_google_sheet"
+version = "0.1.0"
+title = "hubspot-contacts-to-google-sheet"
+distribution = "2201.13.1"
