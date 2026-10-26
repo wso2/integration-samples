@@ -23,6 +23,7 @@ type QuickBooksConfig record {
     string realmId;
     string serviceUrl;
     "INVOICE"|"SALES_RECEIPT" transactionType = "INVOICE";
+    int invoiceDueDays = 30;
     boolean createCustomerIfNotFound = true;
     string productMappingJson = "{}";
     boolean mapShippingAsSeparateLine = true;

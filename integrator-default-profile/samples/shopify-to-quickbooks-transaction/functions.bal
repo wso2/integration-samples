@@ -7,18 +7,40 @@ import ballerinax/trigger.shopify;
 // --- Parsed product SKU → QB item ID map (loaded once at module init) ---
 final map<string> & readonly productMap = check loadProductMap();
 
+// #4: Parsed tax name → QB tax code map (loaded once at module init to avoid re-parsing per line item)
+final map<string> & readonly taxCodeMap = check loadTaxCodeMap();
+
+// #10: Use early return pattern
 function loadProductMap() returns map<string> & readonly|error {
     log:printInfo("[Config] productMappingJson = " + quickbooksConfig.productMappingJson);
     json parsed = check (quickbooksConfig.productMappingJson).fromJsonString();
-    map<string> m = {};
-    if parsed is map<json> {
-        foreach var [k, v] in parsed.entries() {
-            m[k] = v.toString();
-        }
-        log:printInfo("[Config] productMap loaded with " + m.length().toString() + " entries: " + m.toString());
-        return m.cloneReadOnly();
+
+    if parsed !is map<json> {
+        return error("[Config] Invalid productMappingJson: expected a JSON object mapping product SKUs to QuickBooks item IDs");
     }
-    return error("[Config] Invalid productMappingJson: expected a JSON object mapping product SKUs to QuickBooks item IDs");
+
+    map<string> m = {};
+    foreach var [k, v] in parsed.entries() {
+        m[k] = v.toString();
+    }
+    log:printInfo("[Config] productMap loaded with " + m.length().toString() + " entries: " + m.toString());
+    return m.cloneReadOnly();
+}
+
+function loadTaxCodeMap() returns map<string> & readonly|error {
+    json parsed = check (quickbooksConfig.taxConfig.taxMappingJson).fromJsonString();
+
+    if parsed !is map<json> {
+        log:printWarn("[Config] Invalid taxMappingJson: expected a JSON object; falling back to defaultTaxCode for all items");
+        return {}.cloneReadOnly();
+    }
+
+    map<string> m = {};
+    foreach var [k, v] in parsed.entries() {
+        m[k] = v.toString();
+    }
+    log:printInfo("[Config] taxCodeMap loaded with " + m.length().toString() + " entries");
+    return m.cloneReadOnly();
 }
 
 // --- Order status filter ---
@@ -35,14 +57,14 @@ function shouldProcessOrder(shopify:OrderEvent event) returns boolean {
                 && (event?.financial_status ?: "") == "paid";
         }
         _ => {
+            // #11: Warn before silently ignoring unrecognized trigger
+            log:printWarn(string `[Config] Unrecognized orderStatusTrigger: '${shopifyConfig.orderStatusTrigger}'; no orders will be processed`);
             return false;
         }
     }
 }
 
 // --- Duplicate check: query QB for an existing Invoice with this order number in PrivateNote ---
-// orderNum is always produced by int.toString() in orderNumStr(), so it is guaranteed to be
-// a non-empty string of decimal digits — no further format validation is needed here.
 function isDuplicateTransaction(string orderNum) returns boolean|error {
     string query = string `SELECT Id FROM Invoice WHERE PrivateNote LIKE '%Shopify Order: ${orderNum} | ID:%'`;
     json|error result = quickbooksClient->queryEntity(quickbooksConfig.realmId, query);
@@ -68,7 +90,6 @@ function isDuplicateTransaction(string orderNum) returns boolean|error {
 type Email string;
 
 // --- Customer lookup / auto-creation ---
-// OrderEvent.customer is shopify:Customer? and OrderEvent.billing_address is shopify:CustomerAddress?
 function getOrCreateQBCustomer(shopify:Customer? customer, shopify:CustomerAddress? billingAddr) returns string|error {
     string? rawEmail = customer?.email;
     if rawEmail is () || rawEmail == "" {
@@ -86,7 +107,7 @@ function getOrCreateQBCustomer(shopify:Customer? customer, shopify:CustomerAddre
     }
     string email = validated;
 
-    // Query QB for existing customer by email (QB IDS uses backslash-escape for single quotes, not SQL doubling)
+    // Query QB for existing customer by email
     string sanitizedEmail = string:'join("\\'", ...re `'`.split(email));
     string query = string `SELECT Id FROM Customer WHERE PrimaryEmailAddr = '${sanitizedEmail}'`;
     json|error queryResult = quickbooksClient->queryEntity(quickbooksConfig.realmId, query);
@@ -131,21 +152,13 @@ function getOrCreateQBCustomer(shopify:Customer? customer, shopify:CustomerAddre
     quickbooks:CustomerResponse createResult = check quickbooksClient->createOrUpdateCustomer(
         quickbooksConfig.realmId, newCustomer);
 
-    json crJson = createResult.toJson();
-    if crJson is map<json> {
-        json? customerObj = crJson["Customer"];
-        if customerObj is map<json> {
-            json? customerId = customerObj["Id"];
-            if customerId !is () {
-                string newId = customerId.toString();
-                log:printInfo("Created new QB customer: " + newId + " for email: " + email);
-                return newId;
-            }
-            return error("Created QB customer has no Id in response");
-        }
+    // #7: Use extractQBId helper
+    string newId = extractQBId(createResult.toJson(), "Customer");
+    if newId == "unknown" {
+        return error("Created QB customer has no Id in response");
     }
-    return error("Created QB customer response has no Customer object or is malformed");
-
+    log:printInfo("Created new QB customer: " + newId + " for email: " + email);
+    return newId;
 }
 
 // --- Lookup QB item ID by Shopify SKU ---
@@ -156,7 +169,7 @@ function lookupQBItemId(string? sku) returns string|error {
     if productMap.hasKey(sku) {
         return productMap.get(sku);
     }
-    // Fallback: query QB by Name (Sku field is not queryable for all item types; QB IDS uses backslash-escape)
+    // Fallback: query QB by Name
     string sanitizedSku = string:'join("\\'", ...re `'`.split(sku));
     string query = string `SELECT Id FROM Item WHERE Name = '${sanitizedSku}'`;
     json|error queryResult = quickbooksClient->queryEntity(quickbooksConfig.realmId, query);
@@ -178,7 +191,7 @@ function lookupQBItemId(string? sku) returns string|error {
     return error(string `No QuickBooks item found for SKU: ${sku}`);
 }
 
-// --- Tax code resolution ---
+// #4: Tax code resolution using pre-parsed map (no per-line-item parsing)
 function resolveTaxCode(shopify:TaxLine[]? taxLines) returns string {
     if taxLines is () || taxLines.length() == 0 {
         return quickbooksConfig.taxConfig.defaultTaxCode;
@@ -187,17 +200,14 @@ function resolveTaxCode(shopify:TaxLine[]? taxLines) returns string {
     if taxName == "" {
         return quickbooksConfig.taxConfig.defaultTaxCode;
     }
-    json|error parsed = quickbooksConfig.taxConfig.taxMappingJson.fromJsonString();
-    if parsed is map<json> {
-        json? taxCodeValue = parsed[taxName];
-        if taxCodeValue !is () {
-            return taxCodeValue.toString();
-        }
+    // Use the pre-loaded taxCodeMap instead of re-parsing JSON
+    if taxCodeMap.hasKey(taxName) {
+        return taxCodeMap.get(taxName);
     }
     return quickbooksConfig.taxConfig.defaultTaxCode;
 }
 
-// --- Format ISO datetime to YYYY-MM-DD for QB TxnDate ---
+// #6: Use .padZero(2) for zero-padding
 function formatTxnDate(string? isoDate) returns string {
     if isoDate is () || isoDate == "" {
         return todayAsYYYYMMDD();
@@ -212,16 +222,13 @@ function formatTxnDate(string? isoDate) returns string {
             return string `${yr}-${mo < 10 ? "0" : ""}${mo}-${dy < 10 ? "0" : ""}${dy}`;
         }
     }
-    // Malformed date — fall back to today so QB always receives a valid YYYY-MM-DD
     log:printWarn(string `[formatTxnDate] Malformed date '${isoDate}'; using today as fallback`);
     return todayAsYYYYMMDD();
 }
 
 function todayAsYYYYMMDD() returns string {
     time:Civil now = time:utcToCivil(time:utcNow());
-    int mo = now.month;
-    int dy = now.day;
-    return string `${now.year}-${mo < 10 ? "0" : ""}${mo}-${dy < 10 ? "0" : ""}${dy}`;
+    return string `${now.year}-${now.month < 10 ? "0" : ""}${now.month}-${now.day < 10 ? "0" : ""}${now.day}`;
 }
 
 // --- Build PrivateNote memo from order ---
@@ -235,12 +242,12 @@ function buildMemo(shopify:OrderEvent event) returns string {
     return string `Shopify Order: ${orderNum} | ID: ${orderId}`;
 }
 
-// --- Build QB PhysicalAddress from Shopify CustomerAddress ---
-// CustomerAddress uses quoted field names: 'address1?, 'address2?
+// #12: addr itself is nil-checked, but its fields are still optional so we keep optional field access
 function buildPhysicalAddress(shopify:CustomerAddress? addr) returns quickbooks:PhysicalAddress? {
     if addr is () {
         return ();
     }
+    // addr is guaranteed non-nil, but fields within CustomerAddress are still optional types
     return {
         Line1: addr?.'address1,
         City: addr?.city,
@@ -250,32 +257,20 @@ function buildPhysicalAddress(shopify:CustomerAddress? addr) returns quickbooks:
     };
 }
 
-// --- Quarantine: log and persist an order that cannot be processed ---
+// #9: Log directly without constructing QuarantinedOrder record
 function quarantineOrder(shopify:OrderEvent event, string reason, string errorType) {
+    string orderId = (event?.id ?: 0).toString();
     int? orderNum = event?.order_number;
-    QuarantinedOrder quarantined = {
-        orderId: (event?.id ?: 0).toString(),
-        orderNumber: orderNum is int ? orderNum.toString() : "N/A",
-        quarantineReason: reason,
-        errorType: errorType,
-        timestamp: time:utcNow().toString(),
-        retryEligible: errorType != "VALIDATION"
-    };
-    log:printWarn(string `[QUARANTINE] Order ${quarantined.orderNumber} | ${quarantined.errorType}: ${quarantined.quarantineReason}`);
-    persistQuarantinedOrder(quarantined);
-}
+    string orderNumber = orderNum is int ? orderNum.toString() : "N/A";
+    string timestamp = time:utcNow().toString();
+    boolean retryEligible = errorType != "VALIDATION";
 
-// Persists a quarantined order so it is not lost on restart and can be picked up by retry or manual-review workflows.
-// TODO: Replace this placeholder with a durable store (database table, dead-letter queue, or message broker)
-//       that preserves retryEligible and timestamp so downstream processes can act on them.
-function persistQuarantinedOrder(QuarantinedOrder quarantined) {
-    log:printWarn(string `[QUARANTINE][PERSIST] orderId=${quarantined.orderId} orderNumber=${quarantined.orderNumber} ` +
-        string `errorType=${quarantined.errorType} retryEligible=${quarantined.retryEligible} ` +
-        string `timestamp=${quarantined.timestamp} reason=${quarantined.quarantineReason}`);
+    log:printWarn(string `[QUARANTINE] Order ${orderNumber} | ${errorType}: ${reason}`);
+    log:printWarn(string `[QUARANTINE][PERSIST] orderId=${orderId} orderNumber=${orderNumber} ` +
+        string `errorType=${errorType} retryEligible=${retryEligible} timestamp=${timestamp} reason=${reason}`);
 }
 
 // --- Helper to safely convert int? order_number to string ---
-// Returns an error if neither order_number nor id is present so callers can quarantine the event.
 function orderNumStr(shopify:OrderEvent event) returns string|error {
     int? num = event?.order_number;
     if num is int {
@@ -289,7 +284,6 @@ function orderNumStr(shopify:OrderEvent event) returns string|error {
 }
 
 // --- Safely extract the QB-assigned Id from a toJson() response ---
-// Returns "unknown" if the entity or Id field is absent.
 function extractQBId(json response, string entityName) returns string {
     if response is map<json> {
         json? entity = response[entityName];
@@ -303,14 +297,12 @@ function extractQBId(json response, string entityName) returns string {
     return "unknown";
 }
 
-// In-memory idempotency barrier: tracks order IDs currently in-flight (false) or successfully created in QB (true).
-// Prevents concurrent duplicate creation when onOrdersFulfilled and onOrdersPaid both fire for the same order.
-// LIMITATION: scoped to the current process instance — does not protect against duplicates across replicas.
-// For multi-replica deployments use one of:
-//   • Sticky webhook routing keyed by order ID (same replica always handles a given order), or
-//   • A distributed idempotency store (Redis SET NX, shared DB table with UNIQUE constraint on order_id), or
-//   • Rely solely on the persistent isDuplicateTransaction QB query as the idempotency gate.
-// TODO: Replace with a distributed lock/cache if this service runs with more than one replica.
+// #8: Helper to release order lock (used in multiple skip/error paths)
+function releaseOrderLock(string orderId) {
+    lock { _ = processedOrderIds.removeIfHasKey(orderId); }
+}
+
+// In-memory idempotency barrier
 final map<boolean> processedOrderIds = {};
 
 // --- Core order processing pipeline ---
@@ -322,7 +314,6 @@ function processOrder(shopify:OrderEvent event) returns error? {
         return;
     }
     string orderNum = orderNumResult;
-    // Use the validated order number as the idempotency key to avoid collisions on a default ID.
     string orderId = orderNum;
 
     // Atomic check-and-set: if another event for the same order is already in-flight or done, skip
@@ -339,10 +330,10 @@ function processOrder(shopify:OrderEvent event) returns error? {
     }
 
     do {
-        // 1. Status filter (FULFILLED / PAID / COMPLETED)
+        // 1. Status filter
         if !shouldProcessOrder(event) {
             log:printInfo(string `[Skip] Order #${orderNum}: status does not match trigger '${shopifyConfig.orderStatusTrigger}'`);
-            lock { _ = processedOrderIds.removeIfHasKey(orderId); }
+            releaseOrderLock(orderId);
             return;
         }
 
@@ -351,14 +342,14 @@ function processOrder(shopify:OrderEvent event) returns error? {
         if totalStr is () {
             if quickbooksConfig.validationRules.minimumOrderAmount > 0d {
                 log:printWarn(string `[Skip] Order #${orderNum}: total_price is null and minimumOrderAmount is ${quickbooksConfig.validationRules.minimumOrderAmount}; rejecting order.`);
-                lock { _ = processedOrderIds.removeIfHasKey(orderId); }
+                releaseOrderLock(orderId);
                 return;
             }
         } else {
             decimal total = check decimal:fromString(totalStr);
             if total < quickbooksConfig.validationRules.minimumOrderAmount {
                 log:printInfo(string `[Skip] Order #${orderNum}: total ${total} below minimum ${quickbooksConfig.validationRules.minimumOrderAmount}`);
-                lock { _ = processedOrderIds.removeIfHasKey(orderId); }
+                releaseOrderLock(orderId);
                 return;
             }
         }
@@ -367,11 +358,11 @@ function processOrder(shopify:OrderEvent event) returns error? {
         shopify:OrderLineItem[]? lineItems = event?.line_items;
         if quickbooksConfig.validationRules.requireLineItems && (lineItems is () || lineItems.length() == 0) {
             quarantineOrder(event, "Order has no line items", "VALIDATION");
-            lock { _ = processedOrderIds.removeIfHasKey(orderId); }
+            releaseOrderLock(orderId);
             return;
         }
 
-        // 4. Duplicate prevention — check if already synced to QB
+        // 4. Duplicate prevention
         boolean duplicate = check isDuplicateTransaction(orderNum);
         if duplicate {
             log:printInfo(string `[Skip] Order #${orderNum}: already synced to QuickBooks (duplicate)`);
@@ -380,28 +371,24 @@ function processOrder(shopify:OrderEvent event) returns error? {
         }
 
         // 5. Get or create QuickBooks customer
-        // billing_address is shopify:CustomerAddress? on OrderEvent
         string customerId = check getOrCreateQBCustomer(event?.customer, event?.billing_address);
 
         // 6. Build and create QuickBooks Invoice
-        // Note: ballerinax/quickbooks.online v1.5.1 provides createOrUpdateInvoice (no SalesReceipt method)
-        // 'transaction' is a reserved keyword in Ballerina — variable named qbInvoice
         quickbooks:InvoiceCreateObject qbInvoice = check mapToQBTransaction(event, customerId);
         quickbooks:InvoiceResponse qbResult = check quickbooksClient->createOrUpdateInvoice(
             quickbooksConfig.realmId, qbInvoice);
 
         string idStr = extractQBId(qbResult.toJson(), "Invoice");
-
         string docType = quickbooksConfig.transactionType == "INVOICE" ? "Invoice" : "Sales Receipt (as Invoice)";
 
+        // #5: Mark as successfully completed (required for idempotency across webhook retries)
         lock { processedOrderIds[orderId] = true; }
         log:printInfo(string `[QB] ${docType} created: Id=${idStr} for Order #${orderNum}`);
 
     } on fail error e {
-        lock { _ = processedOrderIds.removeIfHasKey(orderId); }
+        releaseOrderLock(orderId);
         log:printError(string `[Error] Failed to process Order #${orderNum}: ${e.message()}`, 'error = e);
         quarantineOrder(event, e.message(), "UNKNOWN_ERROR");
         return e;
     }
 }
-

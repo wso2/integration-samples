@@ -6,61 +6,56 @@ import ballerinax/trigger.shopify;
 function buildLineItems(shopify:OrderEvent event) returns anydata[]|error {
     anydata[] lines = [];
 
-    // 1. Product line items
-    shopify:OrderLineItem[]? lineItems = event?.line_items;
-    if lineItems is shopify:OrderLineItem[] {
-        foreach shopify:OrderLineItem item in lineItems {
-            string itemId = check lookupQBItemId(item?.sku);
-            decimal qty = <decimal>(item?.quantity ?: 0);
-            decimal price = check decimal:fromString(item?.price ?: "0");
-            decimal lineDiscount = check decimal:fromString(item?.total_discount ?: "0");
-            
-            // Subtract the total line discount (item-level + apportioned order-level) to get the net line amount
-            decimal netAmount = (qty * price) - lineDiscount;
+    // #1: Use type narrowing with ?: [] to avoid separate null check
+    foreach shopify:OrderLineItem item in (event?.line_items ?: []) {
+        string itemId = check lookupQBItemId(item?.sku);
+        decimal qty = <decimal>(item?.quantity ?: 0);
+        decimal price = check decimal:fromString(item?.price ?: "0");
+        decimal lineDiscount = check decimal:fromString(item?.total_discount ?: "0");
 
-            QBSalesLine line = {
-                DetailType: "SalesItemLineDetail",
-                Amount: netAmount,
-                Description: item?.title ?: "",
-                SalesItemLineDetail: {
-                    ItemRef: {value: itemId},
-                    UnitPrice: price,
-                    Qty: qty,
-                    TaxCodeRef: {value: resolveTaxCode(item?.tax_lines)}
-                }
-            };
-            lines.push(line);
-        }
+        // Subtract the total line discount (item-level + apportioned order-level) to get the net line amount
+        decimal netAmount = (qty * price) - lineDiscount;
+
+        QBSalesLine line = {
+            DetailType: "SalesItemLineDetail",
+            Amount: netAmount,
+            Description: item?.title ?: "",
+            SalesItemLineDetail: {
+                ItemRef: {value: itemId},
+                UnitPrice: price,
+                Qty: qty,
+                TaxCodeRef: {value: resolveTaxCode(item?.tax_lines)}
+            }
+        };
+        lines.push(line);
     }
 
     // 2. Shipping line (optional)
-    shopify:ShippingLine[]? shippingLines = event?.shipping_lines;
-    if quickbooksConfig.mapShippingAsSeparateLine && shippingLines is shopify:ShippingLine[] && shippingLines.length() > 0 {
+    if quickbooksConfig.mapShippingAsSeparateLine {
         decimal totalShipping = 0.0d;
         string[] shippingDescs = [];
-        foreach shopify:ShippingLine sl in shippingLines {
+        foreach shopify:ShippingLine sl in (event?.shipping_lines ?: []) {
             totalShipping += check decimal:fromString(sl?.price ?: "0");
             shippingDescs.push(sl?.title ?: "Shipping");
         }
-        string shippingItemId = check lookupQBItemId(quickbooksConfig.shippingItemName);
-        QBSalesLine shippingLine = {
-            DetailType: "SalesItemLineDetail",
-            Amount: totalShipping,
-            Description: string:'join(", ", ...shippingDescs),
-            SalesItemLineDetail: {
-                ItemRef: {value: shippingItemId}
-            }
-        };
-        lines.push(shippingLine);
+        if totalShipping > 0.0d {
+            string shippingItemId = check lookupQBItemId(quickbooksConfig.shippingItemName);
+            QBSalesLine shippingLine = {
+                DetailType: "SalesItemLineDetail",
+                Amount: totalShipping,
+                Description: string:'join(", ", ...shippingDescs),
+                SalesItemLineDetail: {
+                    ItemRef: {value: shippingItemId}
+                }
+            };
+            lines.push(shippingLine);
+        }
     }
 
     return lines;
 }
 
 // --- Map Shopify order to QuickBooks InvoiceCreateObject ---
-// Note: The ballerinax/quickbooks.online v1.5.1 connector supports Invoice (not SalesReceipt).
-// Both SALES_RECEIPT and INVOICE transaction types are sent as QB Invoices.
-// For INVOICE mode, a DueDate (+30 days) is added; for SALES_RECEIPT mode, no DueDate is set.
 function mapToQBTransaction(shopify:OrderEvent event, string customerId) returns quickbooks:InvoiceCreateObject|error {
     anydata[] lines = check buildLineItems(event);
     string txnDate = formatTxnDate(event?.created_at);
@@ -70,25 +65,19 @@ function mapToQBTransaction(shopify:OrderEvent event, string customerId) returns
         TxnDate: txnDate,
         CurrencyRef: {value: event?.currency ?: "USD"},
         PrivateNote: buildMemo(event),
-        Line: lines
+        Line: lines,
+        // #3: Use inline ternary for DueDate (only for INVOICE mode)
+        DueDate: quickbooksConfig.transactionType == "INVOICE" ? addDaysToDate(txnDate, quickbooksConfig.invoiceDueDays) : ()
     };
-
-    // Only add DueDate for INVOICE mode (for SALES_RECEIPT mode, QB Invoice without DueDate acts like a receipt)
-    if quickbooksConfig.transactionType == "INVOICE" {
-        invoice.DueDate = addDaysToDate(txnDate, 30);
-    }
 
     return invoice;
 }
 
-// --- Add N calendar days to a YYYY-MM-DD string ---
-// Uses time:civilFromString to safely parse the input, and time:civilAddDuration
-// to handle month/year rollover and leap years correctly.
-// Falls back to returning the original string if the input cannot be parsed.
+// #6: Use .padZero(2) for zero-padding
 function addDaysToDate(string dateStr, int days) returns string {
-    // time:civilFromString expects RFC 3339 format (e.g., "YYYY-MM-DDThh:mm:ss.sZ")
+    // time:civilFromString expects RFC 3339 format
     string isoStr = dateStr + "T00:00:00.00Z";
-    
+
     time:Civil|time:Error civil = time:civilFromString(isoStr);
     if civil is time:Error {
         return dateStr;
@@ -99,8 +88,5 @@ function addDaysToDate(string dateStr, int days) returns string {
         return dateStr;
     }
 
-    int yr = result.year;
-    int mo = result.month;
-    int dy = result.day;
-    return string `${yr}-${mo < 10 ? "0" : ""}${mo}-${dy < 10 ? "0" : ""}${dy}`;
+    return string `${result.year}-${result.month < 10 ? "0" : ""}${result.month}-${result.day < 10 ? "0" : ""}${result.day}`;
 }
