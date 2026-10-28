@@ -144,6 +144,17 @@
       "imageUrl": "choreoanonymouspullable.azurecr.io/samples/reading-list-rest-service-in-go:1.0.0"
     },
     {
+      "displayName": "Customer Support Voice Agent",
+      "description": "A customer support agent for an online store that customers can talk to by voice or chat with over HTTP. It checks order status, explains the return policy, and creates support tickets, keeping its replies short so they sound natural when spoken.",
+      "componentType": "ai-agent",
+      "buildPack": "ballerina",
+      "repositoryUrl": "https://github.com/wso2/integration-samples/",
+      "componentPath": "/integrator-default-profile/samples/customer-support-voice-agent",
+      "thumbnailPath": "https://devant-cdn.wso2.com/console/sample-icons/VoiceAgent.svg",
+      "tags": ["Voice", "OpenAI", "AI", "Agent"],
+      "imageUrl": "choreoanonymouspullable.azurecr.io/samples/reading-list-rest-service-in-go:1.0.0"
+    },
+    {
       "displayName": "S3 File Event Listener",
       "description": "An event-driven integration that reacts to S3 file uploads by consuming object-created notifications from an SQS queue using the aws.sqs listener.",
       "componentType": "event-handler",
