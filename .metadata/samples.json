@@ -320,6 +320,17 @@
       "imageUrl": "choreoanonymouspullable.azurecr.io/samples/reading-list-rest-service-in-go:1.0.0"
     },
     {
+      "displayName": "Person Lookup Automation",
+      "description": "An automation that looks up a person record from a SOAP service by a configurable ID and logs a summary of it.",
+      "componentType": "automation",
+      "buildPack": "wso2-mi",
+      "repositoryUrl": "https://github.com/wso2/integration-samples/",
+      "componentPath": "/integrator-mi-profile/PersonLookupAutomation",
+      "thumbnailPath": "https://mi-connectors.wso2.com/samples/icons/Task_Templates.png",
+      "tags": ["Integration", "Automation", "SOAP"],
+      "imageUrl": "choreoanonymouspullable.azurecr.io/samples/reading-list-rest-service-in-go:1.0.0"
+    },
+    {
       "displayName": "Protocol Switching",
       "description": "This sample demonstrates protocol switching in an integration solution.",
       "componentType": "service",
