@@ -165,7 +165,6 @@
         <server.path>${test.server.path}</server.path>
         <server.version>${test.server.version}</server.version>
         <server.download.link>${test.server.download.link}</server.download.link>
-        <mainSequence>PersonRecordSeq</mainSequence>
       </properties>
     </profile>
     <profile>
@@ -384,6 +383,7 @@
   </build>
   <properties>
     <projectType>integration-project</projectType>
+    <mainSequence>PersonRecordSeq</mainSequence>
     <uuid>9e7a821c-92cb-4813-8908-44c5b3867d7a</uuid>
     <!-- <archiveLocation>configure a custom target directory for CAPP</archiveLocation> -->
     <keystore.type>JKS</keystore.type>

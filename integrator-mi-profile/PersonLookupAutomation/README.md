@@ -22,7 +22,15 @@ personId=1
 
 1. Run the integration locally using the Run button in WSO2 Integrator: MI.
 
-To run it on a Micro Integrator server, build the project with `mvn clean install`, copy `target/PersonLookupAutomation_1.0.0.car` to `<MI_HOME>/repository/deployment/server/carbonapps/`, and start the server in automation mode:
+To run it on a Micro Integrator server, build the project with `mvn clean install`, copy `target/PersonLookupAutomation_1.0.0.car` to `<MI_HOME>/repository/deployment/server/carbonapps/`, and start the server in automation mode.
+
+With `personId` set as an environment variable:
+
+```bash
+personId=1 ./bin/micro-integrator.sh --car PersonLookupAutomation
+```
+
+With `personId` set in a `.env` file:
 
 ```bash
 ./bin/micro-integrator.sh --car PersonLookupAutomation --env-file=<project directory>/.env
