@@ -12,7 +12,7 @@ The integration reads the following value, declared in `src/main/wso2mi/resource
 
 - `personId`: the ID of the person to look up
 
-For a local run, set it as an environment variable or in the `.env` file in the project directory:
+For a local run, set it as an environment variable or create a `.env` file in the project directory with the following value:
 
 ```
 personId=1
