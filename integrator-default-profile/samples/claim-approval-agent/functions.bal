@@ -14,9 +14,13 @@ function recordClaim(string claimId, Claim claim) returns error? {
 # Checks the claim against the expense policy and says whether an approver must decide on it.
 #
 # + amount - The amount claimed
+# + businessExpense - Your judgment of the description: false for personal items, gifts, family costs or alcohol
 # + return - Whether approval is required, and why
 @workflow:Activity
-function checkPolicy(decimal amount) returns PolicyCheck|error {
+function checkPolicy(decimal amount, boolean businessExpense) returns PolicyCheck|error {
+    if !businessExpense {
+        return {approvalRequired: true, reason: "The claim does not read as a business expense."};
+    }
     if amount > approvalLimit {
         return {approvalRequired: true, reason: string `The amount is above the approval limit of ${approvalLimit}.`};
     }

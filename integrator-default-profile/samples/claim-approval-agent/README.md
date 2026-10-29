@@ -2,7 +2,7 @@
 
 ## Description
 
-An expense claim approval process run by a durable AI agent in WSO2 Integrator. An employee submits a claim over HTTP, and the agent handles it from start to finish. It checks the claim against the expense policy and decides whether a person must approve it. A claim above the approval limit, or one that does not read as a business expense, goes to an approver through a human task. The agent pauses durably until the approver decides, and then pays or rejects the claim. Every other claim is paid without waiting for anyone. The approver role and the approval limit are configurable.
+An expense claim approval process run by a durable AI agent in WSO2 Integrator. An employee submits a claim over HTTP, and the agent handles it from start to finish. It judges whether the claim reads as a business expense, and checks it against the expense policy. A claim above the approval limit, or one that is not a business expense, such as a personal gift, goes to an approver through a human task. The agent pauses durably until the approver decides, and then pays or rejects the claim. Every other claim is paid without waiting for anyone. The approver role and the approval limit are configurable.
 
 ## Prerequisites
 
@@ -77,14 +77,15 @@ enableBasicAuth = false
      -d '{"result": {"approved": true, "comment": "Budgeted for this quarter"}}'
    ```
 
-7. Check the claim again. The agent's summary says whether the claim was paid or rejected, and that a person approved it.
+7. Submit a small claim that is not a business expense, such as `{"employee": "cal", "description": "Birthday gift for my wife", "amount": 80}`. The agent sends it to the approver too, whatever the amount.
+8. Check the claim again. The agent's summary says whether the claim was paid or rejected, and that a person approved it.
 
 ## How It Works
 
 - `claimAgent` is a `workflow:DurableAgent`. Each claim is one durable run of the agent: `POST /claims` starts it with `run`, and `GET /claims/{claimId}` reads its summary with `getResult`.
 - The agent uses the default WSO2 model provider and these activities as its tools:
   - **recordClaim**: Records the claim
-  - **checkPolicy**: Says whether the claim needs approval, based on `approvalLimit`
+  - **checkPolicy**: Says whether the claim needs approval. It takes the amount and the agent's own judgment of whether the description is a business expense, so that judgment is recorded in the run's history. A claim that is not a business expense, or is above `approvalLimit`, needs approval
   - **payClaim**: Pays the claim
   - **notifyRejection**: Tells the employee that the claim was rejected
 - The activities only log in this sample, so replace them with your own systems.
