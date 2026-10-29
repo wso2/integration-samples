@@ -10,8 +10,11 @@ service /claims on httpDefaultListener {
         return {claimId};
     }
 
-    resource function get [string claimId]() returns json|error {
+    resource function get [string claimId]() returns json|http:NotFound|error {
         ClaimResult|error result = workflow:getResult(claimId);
+        if result is workflow:InstanceNotFoundError {
+            return http:NOT_FOUND;
+        }
         if result is workflow:WorkflowInProgressError {
             return {claimId, status: "IN_REVIEW"};
         }
