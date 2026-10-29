@@ -1,0 +1,9 @@
+[package]
+org = "wso2"
+name = "claim_approval_workflow"
+version = "0.1.0"
+distribution = "2201.14.1"
+title = "Claim Approval Workflow"
+
+[build-options]
+sticky = true
