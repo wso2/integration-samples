@@ -1,6 +1,9 @@
+import ballerina/constraint;
+
 public type Claim record {|
     string employee;
     string description;
+    @constraint:Number {minValue: 0.01}
     decimal amount;
 |};
 

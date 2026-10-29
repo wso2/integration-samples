@@ -15,6 +15,9 @@ service /claims on httpDefaultListener {
         if result is workflow:InstanceNotFoundError {
             return http:NOT_FOUND;
         }
+        if result is workflow:InstanceFailedError {
+            return {claimId, status: "FAILED", comment: result.message()};
+        }
         if result is workflow:WorkflowInProgressError {
             return {claimId, status: "IN_REVIEW"};
         }
