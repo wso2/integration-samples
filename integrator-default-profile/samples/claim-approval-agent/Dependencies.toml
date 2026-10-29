@@ -73,6 +73,9 @@ version = "1.7.2"
 dependencies = [
 	{org = "ballerina", name = "jballerina.java"}
 ]
+modules = [
+	{org = "ballerina", packageName = "constraint", moduleName = "constraint"}
+]
 
 [[package]]
 org = "ballerina"
@@ -417,6 +420,9 @@ dependencies = [
 	{org = "ballerina", name = "lang.int"},
 	{org = "ballerina", name = "time"}
 ]
+modules = [
+	{org = "ballerina", packageName = "uuid", moduleName = "uuid"}
+]
 
 [[package]]
 org = "ballerina"
@@ -463,8 +469,10 @@ name = "claim_approval_agent"
 version = "0.1.0"
 dependencies = [
 	{org = "ballerina", name = "ai"},
+	{org = "ballerina", name = "constraint"},
 	{org = "ballerina", name = "http"},
 	{org = "ballerina", name = "log"},
+	{org = "ballerina", name = "uuid"},
 	{org = "ballerina", name = "workflow"}
 ]
 modules = [
