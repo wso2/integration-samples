@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sequence name="PersonLookupErrorSeq" trace="disable" xmlns="http://ws.apache.org/ns/synapse">
+    <log category="ERROR" description="Log error details when the lookup fails">
+        <message>Person lookup failed for ID: ${configs.personId}</message>
+        <property name="ERROR_CODE" expression="${props.synapse.ERROR_CODE}"/>
+        <property name="ERROR_MESSAGE" expression="${props.synapse.ERROR_MESSAGE}"/>
+    </log>
+</sequence>

@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sequence name="PersonRecordSeq" onError="PersonLookupErrorSeq" trace="disable" xmlns="http://ws.apache.org/ns/synapse">
+    <log category="INFO" description="Log the lookup start">
+        <message>Looking up person record for ID: ${configs.personId}</message>
+    </log>
+    <header name="Action" scope="default" value="http://tempuri.org/SOAP.Demo.FindPerson"/>
+    <payloadFactory description="Build the FindPerson request payload" media-type="xml" template-type="default">
+        <format>
+            <tem:FindPerson xmlns:tem="http://tempuri.org">
+                <tem:id>${configs.personId}</tem:id>
+            </tem:FindPerson>
+        </format>
+    </payloadFactory>
+    <call blocking="true" description="Send the request to the person record service">
+        <endpoint key="PersonRecordEP"/>
+    </call>
+    <filter description="Check whether a person record was returned" xpath="${xpath(&quot;boolean(//*[local-name()='FindPersonResult']/*[local-name()='Name'])&quot;)}">
+        <then>
+            <log category="INFO" description="Log a summary of the person record">
+                <message>Person found: Name = ${xpath("string(//*[local-name()='FindPersonResult']/*[local-name()='Name'])")}, Age = ${xpath("string(//*[local-name()='FindPersonResult']/*[local-name()='Age'])")}, DOB = ${xpath("string(//*[local-name()='FindPersonResult']/*[local-name()='DOB'])")}, Home = ${xpath("string(//*[local-name()='Home']/*[local-name()='City'])")}, ${xpath("string(//*[local-name()='Home']/*[local-name()='State'])")}</message>
+            </log>
+        </then>
+        <else>
+            <log category="WARN" description="Log when no person matches the ID">
+                <message>No person record found for ID: ${configs.personId}</message>
+            </log>
+        </else>
+    </filter>
+</sequence>
