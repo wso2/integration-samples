@@ -1,0 +1,9 @@
+[package]
+org = "wso2"
+name = "shopify_inventory_alert_via_twilio_sms"
+version = "0.1.0"
+title = "shopify-inventory-alert-via-twilio-sms"
+distribution = "2201.13.1"
+
+[build-options]
+sticky = false
