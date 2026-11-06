@@ -57,7 +57,7 @@ Format the response as a numbered list with brief explanations.
     };
 
     chat:CreateChatCompletionResponse response = check openaiClient->/chat/completions.post(request);
-    return response.choices[0].message.content ?: "No recommendations found.";
+    return response.choices[0].message?.content ?: "No recommendations found.";
 }
 
 function showActivityInfo(string weatherSummary, string? recommendations) {

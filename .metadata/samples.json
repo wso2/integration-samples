@@ -9,7 +9,7 @@
       "componentPath": "/integrator-default-profile/samples/hello-world-service",
       "thumbnailPath": "https://choreo-shared-choreo-samples-cdne.azureedge.net/icons/hello-world.png",
       "tags": ["HTTP", "Integration", "REST"],
-      "imageUrl": "choreoanonymouspullable.azurecr.io/samples/reading-list-rest-service-in-go:1.0.0"
+      "imageUrl": "wso2integrations.azurecr.io/hello_world_service:0.1.0"
     },
     {
       "displayName": "Scheduled Logger",
@@ -20,7 +20,7 @@
       "componentPath": "/integrator-default-profile/samples/scheduled-logger",
       "thumbnailPath": "https://choreo-shared-choreo-samples-cdne.azureedge.net/icons/docker-time-logger-schedule.svg",
       "tags": ["Integration", "Automation", "Logging"],
-      "imageUrl": "choreoanonymouspullable.azurecr.io/samples/reading-list-rest-service-in-go:1.0.0"
+      "imageUrl": "wso2integrations.azurecr.io/scheduled_logger:0.1.0"
     },
     {
       "displayName": "JSON to XML Converter",
@@ -31,7 +31,7 @@
       "componentPath": "/integrator-default-profile/samples/json-to-xml-converter",
       "thumbnailPath": "https://choreo-shared-choreo-samples-cdne.azureedge.net/icons/json-to-xml-conversion.png",
       "tags": ["HTTP", "Integration", "REST"],
-      "imageUrl": "choreoanonymouspullable.azurecr.io/samples/reading-list-rest-service-in-go:1.0.0"
+      "imageUrl": "wso2integrations.azurecr.io/json_to_xml_converter:0.1.0"
     },
     {
       "displayName": "Daily Email Notifier",
@@ -42,7 +42,7 @@
       "componentPath": "/integrator-default-profile/samples/daily-email-notifier",
       "thumbnailPath": "https://choreo-shared-choreo-samples-cdne.azureedge.net/icons/newsapi_headlines-to-email.png",
       "tags": ["Integration", "Automation", "Email"],
-      "imageUrl": "choreoanonymouspullable.azurecr.io/samples/reading-list-rest-service-in-go:1.0.0"
+      "imageUrl": "wso2integrations.azurecr.io/daily_email_notifier:0.1.0"
     },
     {
       "displayName": "Automated File Processor",
@@ -53,7 +53,7 @@
       "componentPath": "/integrator-default-profile/samples/automated-file-processor",
       "thumbnailPath": "https://devant-cdn.wso2.com/console/sample-icons/file.svg",
       "tags": ["Integration", "Automation", "File Processing"],
-      "imageUrl": "choreoanonymouspullable.azurecr.io/samples/reading-list-rest-service-in-go:1.0.0"
+      "imageUrl": "wso2integrations.azurecr.io/automated_file_processor:0.1.0"
     },
     {
       "displayName": "Currency Converter API",
@@ -64,7 +64,7 @@
       "componentPath": "/integrator-default-profile/samples/currency-converter",
       "thumbnailPath": "https://devant-cdn.wso2.com/console/sample-icons/Billing.svg",
       "tags": ["Integration", "REST", "HTTP"],
-      "imageUrl": "choreoanonymouspullable.azurecr.io/samples/reading-list-rest-service-in-go:1.0.0"
+      "imageUrl": "wso2integrations.azurecr.io/currency_converter:0.1.0"
     },
     {
       "displayName": "AI Math Tutor Agent",
@@ -75,7 +75,7 @@
       "componentPath": "/integrator-default-profile/samples/math-tutor",
       "thumbnailPath": "https://devant-cdn.wso2.com/console/sample-icons/AIAgent.svg",
       "tags": ["AzureOpenAi", "Integration"],
-      "imageUrl": "choreoanonymouspullable.azurecr.io/samples/reading-list-rest-service-in-go:1.0.0"
+      "imageUrl": "wso2integrations.azurecr.io/math_tutor:0.1.0"
     },
     {
       "displayName": "Pizza Order Management Agent",
@@ -86,7 +86,7 @@
       "componentPath": "/integrator-default-profile/samples/pizza-shop-integration",
       "thumbnailPath": "https://devant-cdn.wso2.com/console/sample-icons/AIAgent.svg",
       "tags": ["OpenAI", "Integration"],
-      "imageUrl": "choreoanonymouspullable.azurecr.io/samples/reading-list-rest-service-in-go:1.0.0"
+      "imageUrl": "wso2integrations.azurecr.io/pizza_shop_integration:0.1.0"
     },
     {
       "displayName": "HR Assistant",
@@ -97,7 +97,7 @@
       "componentPath": "/integrator-default-profile/samples/hr-ai-chat-agent",
       "thumbnailPath": "https://devant-cdn.wso2.com/console/sample-icons/AIAgent.svg",
       "tags": ["RAG", "OpenAI", "Pinecone", "Integration"],
-      "imageUrl": "choreoanonymouspullable.azurecr.io/samples/reading-list-rest-service-in-go:1.0.0"
+      "imageUrl": "wso2integrations.azurecr.io/hr_ai_chat_agent:0.1.0"
     },
     {
       "displayName": "Weather Based Activity Recommender",
@@ -108,7 +108,7 @@
       "componentPath": "/integrator-default-profile/samples/weather-based-activity-recommender",
       "thumbnailPath": "https://devant-cdn.wso2.com/console/sample-icons/AIAgent.svg",
       "tags": ["Automation", "Integration", "OpenAI", "OpenWeatherMap"],
-      "imageUrl": "choreoanonymouspullable.azurecr.io/samples/reading-list-rest-service-in-go:1.0.0"
+      "imageUrl": "wso2integrations.azurecr.io/weather_based_activity_recommender:0.1.0"
     },
     {
       "displayName": "Weather Data Listener",
@@ -119,7 +119,7 @@
       "componentPath": "/integrator-default-profile/samples/weather-data-listener",
       "thumbnailPath": "https://mi-connectors.wso2.com/samples/icons/Transformation_Templates.png",
       "tags": ["FTP", "Integration"],
-      "imageUrl": "choreoanonymouspullable.azurecr.io/samples/reading-list-rest-service-in-go:1.0.0"
+      "imageUrl": "wso2integrations.azurecr.io/weather_data_listener:0.1.0"
     },
     {
       "displayName": "EDI Purchase Order Processing",
@@ -130,7 +130,7 @@
       "componentPath": "/integrator-default-profile/samples/edi-purchase-order-processing",
       "thumbnailPath": "https://devant-cdn.wso2.com/console/sample-icons/file.svg",
       "tags": ["EDI", "FTP", "File", "Integration"],
-      "imageUrl": "choreoanonymouspullable.azurecr.io/samples/reading-list-rest-service-in-go:1.0.0"
+      "imageUrl": "wso2integrations.azurecr.io/edi_order_processing:0.1.0"
     },
     {
       "displayName": "AI Chat Agent",
@@ -141,7 +141,7 @@
       "componentPath": "/integrator-default-profile/samples/ai-chat-agent",
       "thumbnailPath": "https://devant-cdn.wso2.com/console/sample-icons/AIAgent.svg",
       "tags": ["HTTP", "AI", "Agent"],
-      "imageUrl": "choreoanonymouspullable.azurecr.io/samples/reading-list-rest-service-in-go:1.0.0"
+      "imageUrl": "wso2integrations.azurecr.io/ai_chat_agent:0.1.0"
     },
     {
       "displayName": "Customer Support Voice Agent",
@@ -151,8 +151,7 @@
       "repositoryUrl": "https://github.com/wso2/integration-samples/",
       "componentPath": "/integrator-default-profile/samples/customer-support-voice-agent",
       "thumbnailPath": "https://devant-cdn.wso2.com/console/sample-icons/VoiceAgent.svg",
-      "tags": ["Voice", "OpenAI", "AI", "Agent"],
-      "imageUrl": "choreoanonymouspullable.azurecr.io/samples/reading-list-rest-service-in-go:1.0.0"
+      "tags": ["Voice", "OpenAI", "AI", "Agent"]
     },
     {
       "displayName": "S3 File Event Listener",
@@ -163,7 +162,7 @@
       "componentPath": "/integrator-default-profile/samples/s3-file-event-listener",
       "thumbnailPath": "https://mi-connectors.wso2.com/samples/icons/Messaging_Templates.png",
       "tags": ["AWS", "S3", "SQS", "Integration", "Event-Driven"],
-      "imageUrl": "choreoanonymouspullable.azurecr.io/samples/reading-list-rest-service-in-go:1.0.0"
+      "imageUrl": "wso2integrations.azurecr.io/s3_file_event_listener:0.1.0"
     },
     {
       "displayName": "Azure Files Change Tracker",
@@ -174,7 +173,7 @@
       "componentPath": "/integrator-default-profile/samples/azure-files-change-tracker",
       "thumbnailPath": "https://mi-connectors.wso2.com/samples/icons/Transformation_Templates.png",
       "tags": ["Azure Files", "Automation", "Integration"],
-      "imageUrl": "choreoanonymouspullable.azurecr.io/samples/reading-list-rest-service-in-go:1.0.0"
+      "imageUrl": "wso2integrations.azurecr.io/azure_files_change_tracker:0.1.0"
     },
     {
       "displayName": "API Testing",

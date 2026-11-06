@@ -1,0 +1,37 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "properties": {
+    "wso2": {
+      "type": "object",
+      "properties": {
+        "s3_file_event_listener": {
+          "type": "object",
+          "properties": {
+            "accessKeyId": {
+              "type": "string",
+              "description": ""
+            },
+            "secretAccessKey": {
+              "type": "string",
+              "description": ""
+            },
+            "queueUrl": {
+              "type": "string",
+              "description": ""
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "accessKeyId",
+            "secretAccessKey",
+            "queueUrl"
+          ]
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false,
+  "requiredLevel": 3
+}

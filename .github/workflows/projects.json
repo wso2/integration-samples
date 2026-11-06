@@ -34,5 +34,50 @@
   },
   {
     "path": "integrator-default-profile/samples/github-issue-to-google-chat"
+  },
+  {
+    "path": "integrator-default-profile/samples/hello-world-service"
+  },
+  {
+    "path": "integrator-default-profile/samples/scheduled-logger"
+  },
+  {
+    "path": "integrator-default-profile/samples/json-to-xml-converter"
+  },
+  {
+    "path": "integrator-default-profile/samples/daily-email-notifier"
+  },
+  {
+    "path": "integrator-default-profile/samples/automated-file-processor"
+  },
+  {
+    "path": "integrator-default-profile/samples/currency-converter"
+  },
+  {
+    "path": "integrator-default-profile/samples/math-tutor"
+  },
+  {
+    "path": "integrator-default-profile/samples/pizza-shop-integration"
+  },
+  {
+    "path": "integrator-default-profile/samples/hr-ai-chat-agent"
+  },
+  {
+    "path": "integrator-default-profile/samples/weather-based-activity-recommender"
+  },
+  {
+    "path": "integrator-default-profile/samples/weather-data-listener"
+  },
+  {
+    "path": "integrator-default-profile/samples/edi-purchase-order-processing/edi_order_processing"
+  },
+  {
+    "path": "integrator-default-profile/samples/ai-chat-agent"
+  },
+  {
+    "path": "integrator-default-profile/samples/s3-file-event-listener"
+  },
+  {
+    "path": "integrator-default-profile/samples/azure-files-change-tracker"
   }
 ]

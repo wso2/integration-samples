@@ -1,0 +1,76 @@
+openapi: 3.0.1
+info:
+  title: /
+  version: 0.1.0
+servers:
+- url: "{server}:{port}/"
+  variables:
+    server:
+      default: http://localhost
+    port:
+      default: "9090"
+paths:
+  /convert:
+    get:
+      operationId: getConvert
+      parameters:
+      - name: from
+        in: query
+        schema:
+          type: string
+          default: USD
+      - name: to
+        in: query
+        schema:
+          type: string
+          default: LKR
+      - name: amount
+        in: query
+        schema:
+          type: number
+          format: double
+          default: 1
+      responses:
+        "200":
+          description: Ok
+          content:
+            application/json:
+              schema:
+                type: object
+        "500":
+          description: InternalServerError
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorPayload'
+        "400":
+          description: BadRequest
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorPayload'
+components:
+  schemas:
+    ErrorPayload:
+      required:
+      - message
+      - method
+      - path
+      - reason
+      - status
+      - timestamp
+      type: object
+      properties:
+        timestamp:
+          type: string
+        status:
+          type: integer
+          format: int64
+        reason:
+          type: string
+        message:
+          type: string
+        path:
+          type: string
+        method:
+          type: string
