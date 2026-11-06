@@ -86,7 +86,7 @@
       "componentPath": "/integrator-default-profile/samples/pizza-shop-integration",
       "thumbnailPath": "https://devant-cdn.wso2.com/console/sample-icons/AIAgent.svg",
       "tags": ["OpenAI", "Integration"],
-      "imageUrl": "wso2integrations.azurecr.io/pizza:0.1.0"
+      "imageUrl": "wso2integrations.azurecr.io/pizza_shop_integration:0.1.0"
     },
     {
       "displayName": "HR Assistant",
@@ -151,8 +151,7 @@
       "repositoryUrl": "https://github.com/wso2/integration-samples/",
       "componentPath": "/integrator-default-profile/samples/customer-support-voice-agent",
       "thumbnailPath": "https://devant-cdn.wso2.com/console/sample-icons/VoiceAgent.svg",
-      "tags": ["Voice", "OpenAI", "AI", "Agent"],
-      "imageUrl": "wso2integrations.azurecr.io/customer_support_voice_agent:0.1.0"
+      "tags": ["Voice", "OpenAI", "AI", "Agent"]
     },
     {
       "displayName": "S3 File Event Listener",

@@ -19,5 +19,5 @@ This project is developed with the assistance of the Ballerina Copilot feature, 
 2. Host a MySQL server to store the data for the application.
 > **Note:** You can create a MySQL database directly on **WSO2 Cloud**. To do this, navigate to the [**WSO2 Cloud Console**](https://console.devant.dev), select your **Organization**, and then go to the **Databases** section under the **Admin** tab in the left navigation.
 3. Run the `environment/init.sql` script in the connected database to initialize the required database structure and configurations.
-4. In the **Overview** section of the newly created integration, Configure OpenAI API Key `openAiApiKey` and the configurables for MySQL database under `Default Configurables > admin/pizza` before deploying the AI Agent.
+4. In the **Overview** section of the newly created integration, Configure OpenAI API Key `openAiApiKey` and the configurables for MySQL database under `Default Configurables > wso2/pizza_shop_integration` before deploying the AI Agent.
 5. Once deployed, click on **"Test"** to start interacting with the agent.

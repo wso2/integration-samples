@@ -75,9 +75,6 @@
     "path": "integrator-default-profile/samples/ai-chat-agent"
   },
   {
-    "path": "integrator-default-profile/samples/customer-support-voice-agent"
-  },
-  {
     "path": "integrator-default-profile/samples/s3-file-event-listener"
   },
   {
