@@ -2,4 +2,5 @@
 org = "wso2"
 name = "weather_data_listener"
 version = "0.1.0"
+title = "weather-data-listener"
 distribution = "2201.12.0"

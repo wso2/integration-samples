@@ -2,4 +2,5 @@
 org = "wso2"
 name = "automated_file_processor"
 version = "0.1.0"
+title = "automated-file-processor"
 distribution = "2201.12.0"
