@@ -10,12 +10,12 @@ The integration has no API, proxy, or task. It runs as the main sequence of the 
 
 The integration reads the following value, declared in `src/main/wso2mi/resources/conf/config.properties`:
 
-- `personId`: the ID of the person to look up. The bundled dataset contains IDs `1` to `5`.
+- `personId`: the ID of the person to look up. The bundled dataset contains IDs `1` to `5`. Defaults to `1` if not set.
 
-For a local run, set it as an environment variable or create a `.env` file in the project directory with the following value:
+To look up a different person in a local run, set it as an environment variable or create a `.env` file in the project directory with the value, for example:
 
 ```
-personId=1
+personId=2
 ```
 
 ## Usage Instructions
@@ -24,10 +24,16 @@ personId=1
 
 To run it on a Micro Integrator server, build the project with `mvn clean install`, copy `target/PersonLookupAutomation_1.0.0.car` to `<MI_HOME>/repository/deployment/server/carbonapps/`, and start the server in automation mode.
 
+With the default `personId` (`1`):
+
+```bash
+./bin/micro-integrator.sh --car PersonLookupAutomation
+```
+
 With `personId` set as an environment variable:
 
 ```bash
-personId=1 ./bin/micro-integrator.sh --car PersonLookupAutomation
+personId=2 ./bin/micro-integrator.sh --car PersonLookupAutomation
 ```
 
 With `personId` set in a `.env` file:
@@ -39,7 +45,7 @@ With `personId` set in a `.env` file:
 ### Deploy on **WSO2 Cloud**
 
 1. Deploy this integration on **WSO2 Cloud** as an **Automation**.
-2. Before running the **Automation**, set `personId` in the Automation's configurations (for example, `1`). Do not pass it in the **Arguments** field of the run dialog. The integration reads `personId` as a configuration, not as a command-line argument.
+2. Optionally, set `personId` in the Automation's configurations to look up a different person (for example, `2`). If it is not set, the integration looks up ID `1`. Do not pass it in the **Arguments** field of the run dialog. The integration reads `personId` as a configuration, not as a command-line argument.
 3. Click **Schedule** and configure how often the lookup should run.
 
 Note: If scheduling this job is not a requirement, you can execute the integration locally using the Run button in WSO2 Integrator: MI.
@@ -47,9 +53,9 @@ Note: If scheduling this job is not a requirement, you can execute the integrati
 ## How It Works
 
 - The person records are stored in `src/main/wso2mi/resources/json/persons.json`, which is deployed as a registry resource at `gov:/mi-resources/json/persons.json`. Edit this file to add or change records.
-- `PersonRecordSeq` reads the registry resource with the `registry()` function and selects the records whose `id` matches the configured `personId`.
+- `PersonRecordSeq` reads the registry resource with the `registry()` function and selects the records whose `id` matches `personId`, or `1` if `personId` is not configured.
 - If a record matches, the sequence logs a one-line summary. If the ID matches no record, the sequence logs a warning.
-- If the lookup fails, for example because `personId` is not set, `PersonLookupErrorSeq` logs the error code and message.
+- If the lookup fails, for example because the registry resource cannot be read, `PersonLookupErrorSeq` logs the error code and message.
 
 ## Example Log Output
 
