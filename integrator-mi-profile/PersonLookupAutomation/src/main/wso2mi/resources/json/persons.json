@@ -1,0 +1,9 @@
+{
+    "persons": [
+        { "id": "1", "name": "Newton, Dave R.", "age": 26, "dob": "2000-03-20", "city": "Pueblo", "state": "AK" },
+        { "id": "2", "name": "Adams, Grace M.", "age": 41, "dob": "1985-07-14", "city": "Denver", "state": "CO" },
+        { "id": "3", "name": "Perera, Nimal S.", "age": 33, "dob": "1993-01-09", "city": "Austin", "state": "TX" },
+        { "id": "4", "name": "Lopez, Maria T.", "age": 58, "dob": "1968-11-02", "city": "Portland", "state": "OR" },
+        { "id": "5", "name": "Chen, Wei L.", "age": 29, "dob": "1997-05-27", "city": "Seattle", "state": "WA" }
+    ]
+}
