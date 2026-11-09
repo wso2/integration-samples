@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <sequence name="PersonRecordSeq" onError="PersonLookupErrorSeq" trace="disable" xmlns="http://ws.apache.org/ns/synapse">
+    <variable name="personId" type="STRING" expression="${exists(configs.personId) ? configs.personId : &quot;1&quot;}" description="Use the configured person ID, or 1 if it is not set"/>
     <log category="INFO" description="Log the lookup start">
-        <message>Looking up person record for ID: ${configs.personId}</message>
+        <message>Looking up person record for ID: ${vars.personId}</message>
     </log>
-    <variable name="matches" type="JSON" expression="${registry(&quot;gov:/mi-resources/json/persons.json&quot;).persons[?(@.id == configs.personId)]}" description="Find the person records whose ID matches the configured ID"/>
+    <variable name="matches" type="JSON" expression="${registry(&quot;gov:/mi-resources/json/persons.json&quot;).persons[?(@.id == vars.personId)]}" description="Find the person records whose ID matches the person ID"/>
     <filter description="Check whether a person record was found" xpath="${length(vars.matches) &gt; 0}">
         <then>
             <log category="INFO" description="Log a summary of the person record">
@@ -12,7 +13,7 @@
         </then>
         <else>
             <log category="WARN" description="Log when no person matches the ID">
-                <message>No person record found for ID: ${configs.personId}</message>
+                <message>No person record found for ID: ${vars.personId}</message>
             </log>
         </else>
     </filter>
