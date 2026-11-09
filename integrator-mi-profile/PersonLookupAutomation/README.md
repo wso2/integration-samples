@@ -30,6 +30,12 @@ With the default `personId` (`1`):
 ./bin/micro-integrator.sh --car PersonLookupAutomation
 ```
 
+When `personId` is not set, MI logs the following message at startup. This is expected: the integration falls back to ID `1` and the lookup still succeeds.
+
+```
+ERROR {ConfigDeployer} - The value of the key:[personId] is not found.
+```
+
 With `personId` set as an environment variable:
 
 ```bash
