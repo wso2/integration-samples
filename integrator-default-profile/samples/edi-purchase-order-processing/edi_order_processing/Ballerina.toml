@@ -2,8 +2,8 @@
 org = "wso2"
 name = "edi_order_processing"
 version = "0.1.0"
+title = "edi-order-processing"
 distribution = "2201.14.1"
-title = "Edi Order Processing"
 
 [build-options]
 sticky = true

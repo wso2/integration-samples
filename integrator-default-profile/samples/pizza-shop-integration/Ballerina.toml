@@ -2,4 +2,5 @@
 org = "wso2"
 name = "pizza_shop_integration"
 version = "0.1.0"
+title = "pizza-shop-integration"
 distribution = "2201.12.9"

@@ -2,4 +2,5 @@
 org = "wso2"
 name = "daily_email_notifier"
 version = "0.1.0"
+title = "daily-email-notifier"
 distribution = "2201.12.0"

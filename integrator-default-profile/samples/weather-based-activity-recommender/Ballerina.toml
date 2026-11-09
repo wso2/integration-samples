@@ -2,4 +2,5 @@
 org = "wso2"
 name = "weather_based_activity_recommender"
 version = "0.1.0"
+title = "weather-based-activity-recommender"
 distribution = "2201.12.0"

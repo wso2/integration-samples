@@ -2,4 +2,5 @@
 org = "wso2"
 name = "currency_converter"
 version = "0.1.0"
+title = "currency-converter"
 distribution = "2201.12.0"

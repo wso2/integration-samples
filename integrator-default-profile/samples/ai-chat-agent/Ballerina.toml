@@ -2,8 +2,8 @@
 org = "wso2"
 name = "ai_chat_agent"
 version = "0.1.0"
+title = "ai-chat-agent"
 distribution = "2201.13.4"
-title = "ai_chat_agent"
 
 [build-options]
 sticky = true
