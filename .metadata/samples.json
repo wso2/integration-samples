@@ -74,8 +74,7 @@
       "repositoryUrl": "https://github.com/wso2/integration-samples/",
       "componentPath": "/integrator-default-profile/samples/math-tutor",
       "thumbnailPath": "https://devant-cdn.wso2.com/console/sample-icons/AIAgent.svg",
-      "tags": ["AzureOpenAi", "Integration"],
-      "imageUrl": "wso2integrations.azurecr.io/math_tutor:0.1.0"
+      "tags": ["AzureOpenAi", "Integration"]
     },
     {
       "displayName": "Pizza Order Management Agent",
@@ -85,8 +84,7 @@
       "repositoryUrl": "https://github.com/wso2/integration-samples/",
       "componentPath": "/integrator-default-profile/samples/pizza-shop-integration",
       "thumbnailPath": "https://devant-cdn.wso2.com/console/sample-icons/AIAgent.svg",
-      "tags": ["OpenAI", "Integration"],
-      "imageUrl": "wso2integrations.azurecr.io/pizza_shop_integration:0.1.0"
+      "tags": ["OpenAI", "Integration"]
     },
     {
       "displayName": "HR Assistant",
@@ -96,8 +94,7 @@
       "repositoryUrl": "https://github.com/wso2/integration-samples/",
       "componentPath": "/integrator-default-profile/samples/hr-ai-chat-agent",
       "thumbnailPath": "https://devant-cdn.wso2.com/console/sample-icons/AIAgent.svg",
-      "tags": ["RAG", "OpenAI", "Pinecone", "Integration"],
-      "imageUrl": "wso2integrations.azurecr.io/hr_ai_chat_agent:0.1.0"
+      "tags": ["RAG", "OpenAI", "Pinecone", "Integration"]
     },
     {
       "displayName": "Weather Based Activity Recommender",
@@ -140,8 +137,7 @@
       "repositoryUrl": "https://github.com/wso2/integration-samples/",
       "componentPath": "/integrator-default-profile/samples/ai-chat-agent",
       "thumbnailPath": "https://devant-cdn.wso2.com/console/sample-icons/AIAgent.svg",
-      "tags": ["HTTP", "AI", "Agent"],
-      "imageUrl": "wso2integrations.azurecr.io/ai_chat_agent:0.1.0"
+      "tags": ["HTTP", "AI", "Agent"]
     },
     {
       "displayName": "Customer Support Voice Agent",
