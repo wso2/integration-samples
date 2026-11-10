@@ -183,8 +183,7 @@
       "repositoryUrl": "https://github.com/wso2/integration-samples/",
       "componentPath": "/integrator-mi-profile/APITesting",
       "thumbnailPath": "https://mi-connectors.wso2.com/samples/icons/Testing_Templates.png",
-      "tags": ["Integration", "HTTP", "REST"],
-      "imageUrl": "choreoanonymouspullable.azurecr.io/samples/reading-list-rest-service-in-go:1.0.0"
+      "tags": ["Integration", "HTTP", "REST"]
     },
     {
       "displayName": "Content Based Routing",
@@ -194,8 +193,7 @@
       "repositoryUrl": "https://github.com/wso2/integration-samples/",
       "componentPath": "/integrator-mi-profile/ContentBasedRouting",
       "thumbnailPath": "https://mi-connectors.wso2.com/samples/icons/Routing_Templates.png",
-      "tags": ["Integration", "HTTP", "REST"],
-      "imageUrl": "choreoanonymouspullable.azurecr.io/samples/reading-list-rest-service-in-go:1.0.0"
+      "tags": ["Integration", "HTTP", "REST"]
     },
     {
       "displayName": "Database Polling",
@@ -205,8 +203,7 @@
       "repositoryUrl": "https://github.com/wso2/integration-samples/",
       "componentPath": "/integrator-mi-profile/DatabasePolling",
       "thumbnailPath": "https://mi-connectors.wso2.com/samples/icons/DataIntegration_Templates.png",
-      "tags": ["Integration", "Database", "SQL"],
-      "imageUrl": "choreoanonymouspullable.azurecr.io/samples/reading-list-rest-service-in-go:1.0.0"
+      "tags": ["Integration", "Database", "SQL"]
     },
     {
       "displayName": "Email Service",
@@ -216,8 +213,7 @@
       "repositoryUrl": "https://github.com/wso2/integration-samples/",
       "componentPath": "/integrator-mi-profile/EmailService",
       "thumbnailPath": "https://choreo-shared-choreo-samples-cdne.azureedge.net/icons/weather-to-email-integration.svg",
-      "tags": ["Integration", "SMTP", "EMAIL", "IMAP"],
-      "imageUrl": "choreoanonymouspullable.azurecr.io/samples/reading-list-rest-service-in-go:1.0.0"
+      "tags": ["Integration", "SMTP", "EMAIL", "IMAP"]
     },
     {
       "displayName": "Exception Handling",
@@ -227,8 +223,7 @@
       "repositoryUrl": "https://github.com/wso2/integration-samples/",
       "componentPath": "/integrator-mi-profile/ExceptionHandling",
       "thumbnailPath": "https://mi-connectors.wso2.com/samples/icons/ErrorHandling_Templates.png",
-      "tags": ["Integration"],
-      "imageUrl": "choreoanonymouspullable.azurecr.io/samples/reading-list-rest-service-in-go:1.0.0"
+      "tags": ["Integration"]
     },
     {
       "displayName": "Fetch SalesForce Accounts",
@@ -238,8 +233,7 @@
       "repositoryUrl": "https://github.com/wso2/integration-samples/",
       "componentPath": "/integrator-mi-profile/FetchSalesForceAccounts",
       "thumbnailPath": "https://mi-connectors.wso2.com/samples/icons/SaaS_Templates.png",
-      "tags": ["Integration", "salesforce"],
-      "imageUrl": "choreoanonymouspullable.azurecr.io/samples/reading-list-rest-service-in-go:1.0.0"
+      "tags": ["Integration", "salesforce"]
     },
     {
       "displayName": "File Transfer",
@@ -249,8 +243,7 @@
       "repositoryUrl": "https://github.com/wso2/integration-samples/",
       "componentPath": "/integrator-mi-profile/FileTransfer",
       "thumbnailPath": "https://devant-cdn.wso2.com/console/sample-icons/file.svg",
-      "tags": ["Integration", "File", "FTP"],
-      "imageUrl": "choreoanonymouspullable.azurecr.io/samples/reading-list-rest-service-in-go:1.0.0"
+      "tags": ["Integration", "File", "FTP"]
     },
     {
       "displayName": "Guaranteed Delivery",
@@ -260,8 +253,7 @@
       "repositoryUrl": "https://github.com/wso2/integration-samples/",
       "componentPath": "/integrator-mi-profile/GuaranteedDelivery",
       "thumbnailPath": "https://mi-connectors.wso2.com/samples/icons/Messaging_Templates.png",
-      "tags": ["Integration"],
-      "imageUrl": "choreoanonymouspullable.azurecr.io/samples/reading-list-rest-service-in-go:1.0.0"
+      "tags": ["Integration"]
     },
     {
       "displayName": "Header Based Routing",
@@ -271,8 +263,7 @@
       "repositoryUrl": "https://github.com/wso2/integration-samples/",
       "componentPath": "/integrator-mi-profile/HeaderBasedRouting",
       "thumbnailPath": "https://mi-connectors.wso2.com/samples/icons/Routing_Templates.png",
-      "tags": ["Integration", "HTTP", "REST"],
-      "imageUrl": "choreoanonymouspullable.azurecr.io/samples/reading-list-rest-service-in-go:1.0.0"
+      "tags": ["Integration", "HTTP", "REST"]
     },
     {
       "displayName": "Hello Docker",
@@ -282,8 +273,7 @@
       "repositoryUrl": "https://github.com/wso2/integration-samples/",
       "componentPath": "/integrator-mi-profile/HelloDocker",
       "thumbnailPath": "https://mi-connectors.wso2.com/samples/icons/Container_Templates.png",
-      "tags": ["Integration", "DOCKER"],
-      "imageUrl": "choreoanonymouspullable.azurecr.io/samples/reading-list-rest-service-in-go:1.0.0"
+      "tags": ["Integration", "DOCKER"]
     },
     {
       "displayName": "JMS Integration",
@@ -293,8 +283,7 @@
       "repositoryUrl": "https://github.com/wso2/integration-samples/",
       "componentPath": "/integrator-mi-profile/JMSIntegration",
       "thumbnailPath": "https://mi-connectors.wso2.com/samples/icons/Messaging_Templates.png",
-      "tags": ["Integration", "JMS"],
-      "imageUrl": "choreoanonymouspullable.azurecr.io/samples/reading-list-rest-service-in-go:1.0.0"
+      "tags": ["Integration", "JMS"]
     },
     {
       "displayName": "Kafka Consumer and Producer",
@@ -304,8 +293,7 @@
       "repositoryUrl": "https://github.com/wso2/integration-samples/",
       "componentPath": "/integrator-mi-profile/KafkaConsumerAndProducer",
       "thumbnailPath": "https://mi-connectors.wso2.com/samples/icons/Messaging_Templates.png",
-      "tags": ["Integration", "Kafka"],
-      "imageUrl": "choreoanonymouspullable.azurecr.io/samples/reading-list-rest-service-in-go:1.0.0"
+      "tags": ["Integration", "Kafka"]
     },
     {
       "displayName": "Message Filtering",
@@ -315,8 +303,7 @@
       "repositoryUrl": "https://github.com/wso2/integration-samples/",
       "componentPath": "/integrator-mi-profile/MessageFiltering",
       "thumbnailPath": "https://mi-connectors.wso2.com/samples/icons/Routing_Templates.png",
-      "tags": ["Integration", "REST", "HTTP"],
-      "imageUrl": "choreoanonymouspullable.azurecr.io/samples/reading-list-rest-service-in-go:1.0.0"
+      "tags": ["Integration", "REST", "HTTP"]
     },
     {
       "displayName": "Periodical Scheduled Tasks",
@@ -326,8 +313,7 @@
       "repositoryUrl": "https://github.com/wso2/integration-samples/",
       "componentPath": "/integrator-mi-profile/PeriodicalScheduledTasks",
       "thumbnailPath": "https://mi-connectors.wso2.com/samples/icons/Task_Templates.png",
-      "tags": ["Integration"],
-      "imageUrl": "choreoanonymouspullable.azurecr.io/samples/reading-list-rest-service-in-go:1.0.0"
+      "tags": ["Integration"]
     },
     {
       "displayName": "Person Lookup Automation",
@@ -337,8 +323,7 @@
       "repositoryUrl": "https://github.com/wso2/integration-samples/",
       "componentPath": "/integrator-mi-profile/PersonLookupAutomation",
       "thumbnailPath": "https://mi-connectors.wso2.com/samples/icons/Task_Templates.png",
-      "tags": ["Integration", "Automation", "SOAP"],
-      "imageUrl": "choreoanonymouspullable.azurecr.io/samples/reading-list-rest-service-in-go:1.0.0"
+      "tags": ["Integration", "Automation", "SOAP"]
     },
     {
       "displayName": "Protocol Switching",
@@ -348,8 +333,7 @@
       "repositoryUrl": "https://github.com/wso2/integration-samples/",
       "componentPath": "/integrator-mi-profile/ProtocolSwitching",
       "thumbnailPath": "https://mi-connectors.wso2.com/samples/icons/Routing_Templates.png",
-      "tags": ["Integration", "REST"],
-      "imageUrl": "choreoanonymouspullable.azurecr.io/samples/reading-list-rest-service-in-go:1.0.0"
+      "tags": ["Integration", "REST"]
     },
     {
       "displayName": "REST Data Service",
@@ -359,8 +343,7 @@
       "repositoryUrl": "https://github.com/wso2/integration-samples/",
       "componentPath": "/integrator-mi-profile/RESTDataService",
       "thumbnailPath": "https://mi-connectors.wso2.com/samples/icons/DataIntegration_Templates.png",
-      "tags": ["Integration", "REST"],
-      "imageUrl": "choreoanonymouspullable.azurecr.io/samples/reading-list-rest-service-in-go:1.0.0"
+      "tags": ["Integration", "REST"]
     },
     {
       "displayName": "RabbitMQ Integration",
@@ -370,8 +353,7 @@
       "repositoryUrl": "https://github.com/wso2/integration-samples/",
       "componentPath": "/integrator-mi-profile/RabbitMQIntegration",
       "thumbnailPath": "https://choreo-shared-choreo-samples-cdne.azureedge.net/icons/mi-rabbitmq-listener.svg",
-      "tags": ["Integration", "RabbitMQ"],
-      "imageUrl": "choreoanonymouspullable.azurecr.io/samples/reading-list-rest-service-in-go:1.0.0"
+      "tags": ["Integration", "RabbitMQ"]
     },
     {
       "displayName": "XML to JSON Mapping",
@@ -381,8 +363,7 @@
       "repositoryUrl": "https://github.com/wso2/integration-samples/",
       "componentPath": "/integrator-mi-profile/XMLtoJSONMapping",
       "thumbnailPath": "https://mi-connectors.wso2.com/samples/icons/Transformation_Templates.png",
-      "tags": ["Integration", "HTTP", "REST"],
-      "imageUrl": "choreoanonymouspullable.azurecr.io/samples/reading-list-rest-service-in-go:1.0.0"
+      "tags": ["Integration", "HTTP", "REST"]
     },
     {
       "displayName": "XML To JSON Transformation",
@@ -392,8 +373,7 @@
       "repositoryUrl": "https://github.com/wso2/integration-samples/",
       "componentPath": "/integrator-mi-profile/XMLToJSONTransformation",
       "thumbnailPath": "https://mi-connectors.wso2.com/samples/icons/Transformation_Templates.png",
-      "tags": ["Integration", "HTTP", "REST"],
-      "imageUrl": "choreoanonymouspullable.azurecr.io/samples/reading-list-rest-service-in-go:1.0.0"
+      "tags": ["Integration", "HTTP", "REST"]
     },
     {
       "displayName": "Hello World Service",
@@ -403,8 +383,7 @@
       "repositoryUrl": "https://github.com/wso2/integration-samples/",
       "componentPath": "/integrator-mi-profile/HelloWorldService",
       "thumbnailPath": "https://mi-connectors.wso2.com/samples/icons/Hello_World.png",
-      "tags": ["Integration", "HTTP", "REST"],
-      "imageUrl": "choreoanonymouspullable.azurecr.io/samples/reading-list-rest-service-in-go:1.0.0"
+      "tags": ["Integration", "HTTP", "REST"]
     },
     {
       "displayName": "Proxying a REST Service",
@@ -414,8 +393,7 @@
       "repositoryUrl": "https://github.com/wso2/integration-samples/",
       "componentPath": "/integrator-mi-profile/ProxyingaRESTService",
       "thumbnailPath": "https://mi-connectors.wso2.com/samples/icons/Routing_Templates.png",
-      "tags": ["Integration", "HTTP", "REST"],
-      "imageUrl": "choreoanonymouspullable.azurecr.io/samples/reading-list-rest-service-in-go:1.0.0"
+      "tags": ["Integration", "HTTP", "REST"]
     },
     {
       "displayName": "Proxying a SOAP Service",
@@ -425,8 +403,7 @@
       "repositoryUrl": "https://github.com/wso2/integration-samples/",
       "componentPath": "/integrator-mi-profile/ProxyingaSOAPService",
       "thumbnailPath": "https://mi-connectors.wso2.com/samples/icons/Routing_Templates.png",
-      "tags": ["Integration", "SOAP"],
-      "imageUrl": "choreoanonymouspullable.azurecr.io/samples/reading-list-rest-service-in-go:1.0.0"
+      "tags": ["Integration", "SOAP"]
     },
     {
       "displayName": "REST to SOAP Conversion",
@@ -436,8 +413,7 @@
       "repositoryUrl": "https://github.com/wso2/integration-samples/",
       "componentPath": "/integrator-mi-profile/RESTtoSOAPConversion",
       "thumbnailPath": "https://mi-connectors.wso2.com/samples/icons/Transformation_Templates.png",
-      "tags": ["Integration", "REST", "SOAP"],
-      "imageUrl": "choreoanonymouspullable.azurecr.io/samples/reading-list-rest-service-in-go:1.0.0"
+      "tags": ["Integration", "REST", "SOAP"]
     },
     {
       "displayName": "Scatter Gather Integration Pattern",
@@ -447,8 +423,7 @@
       "repositoryUrl": "https://github.com/wso2/integration-samples/",
       "componentPath": "/integrator-mi-profile/ScatterGatherIntegrationPattern",
       "thumbnailPath": "https://mi-connectors.wso2.com/samples/icons/Routing_Templates.png",
-      "tags": ["Integration", "HTTP", "REST"],
-      "imageUrl": "choreoanonymouspullable.azurecr.io/samples/reading-list-rest-service-in-go:1.0.0"
+      "tags": ["Integration", "HTTP", "REST"]
     },
     {
       "displayName": "Students Data Service",
@@ -458,8 +433,7 @@
       "repositoryUrl": "https://github.com/wso2/integration-samples/",
       "componentPath": "/integrator-mi-profile/StudentsDataService",
       "thumbnailPath": "https://mi-connectors.wso2.com/samples/icons/DataIntegration_Templates.png",
-      "tags": ["Integration", "SOAP", "Database"],
-      "imageUrl": "choreoanonymouspullable.azurecr.io/samples/reading-list-rest-service-in-go:1.0.0"
+      "tags": ["Integration", "SOAP", "Database"]
     },
     {
       "displayName": "Synapse Expressions",
@@ -469,8 +443,7 @@
       "repositoryUrl": "https://github.com/wso2/integration-samples/",
       "componentPath": "/integrator-mi-profile/SynapseExpressions",
       "thumbnailPath": "https://mi-connectors.wso2.com/samples/icons/Hello_World.png",
-      "tags": ["Integration", "HTTP", "REST"],
-      "imageUrl": "choreoanonymouspullable.azurecr.io/samples/reading-list-rest-service-in-go:1.0.0"
+      "tags": ["Integration", "HTTP", "REST"]
     },
     {
       "displayName": "Unit Test Tutorial",
@@ -480,8 +453,7 @@
       "repositoryUrl": "https://github.com/wso2/integration-samples/",
       "componentPath": "/integrator-mi-profile/UnitTestTutorial",
       "thumbnailPath": "https://mi-connectors.wso2.com/samples/icons/Testing_Templates.png",
-      "tags": ["Integration", "HTTP", "REST"],
-      "imageUrl": "choreoanonymouspullable.azurecr.io/samples/reading-list-rest-service-in-go:1.0.0"
+      "tags": ["Integration", "HTTP", "REST"]
     }
   ]
 }
