@@ -1,0 +1,9 @@
+[package]
+org = "wso2"
+name = "closewon_contract_automation"
+version = "0.1.0"
+distribution = "2201.13.1"
+title = "CloseWon Contract Automation"
+
+[build-options]
+sticky = true
