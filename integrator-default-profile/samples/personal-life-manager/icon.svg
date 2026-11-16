@@ -1,0 +1,57 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 240" width="300" height="240">
+  <title>Personal Life Manager - AI Agent</title>
+  <defs>
+    <linearGradient id="agentGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#06B6D4"/>
+      <stop offset="100%" stop-color="#06B6D4"/>
+    </linearGradient>
+    <clipPath id="cp-in"> <circle cx="38"  cy="120" r="22"/></clipPath>
+    <clipPath id="cp-o0"> <circle cx="252" cy="52"  r="22"/></clipPath>
+    <clipPath id="cp-o1"> <circle cx="252" cy="120" r="22"/></clipPath>
+    <clipPath id="cp-o2"> <circle cx="252" cy="188" r="22"/></clipPath>
+  </defs>
+
+  <!-- Connectors — pre-computed from skill table (agent r=26) -->
+  <line x1="114" y1="120" x2="62"  y2="120" stroke="#06B6D4" stroke-width="1.5" stroke-dasharray="5,3" opacity="0.6"/>
+  <line x1="162" y1="107" x2="231" y2="72"  stroke="#06B6D4" stroke-width="1.5" stroke-dasharray="5,3" opacity="0.6"/>
+  <line x1="166" y1="120" x2="228" y2="120" stroke="#06B6D4" stroke-width="1.5" stroke-dasharray="5,3" opacity="0.6"/>
+  <line x1="162" y1="133" x2="231" y2="168" stroke="#06B6D4" stroke-width="1.5" stroke-dasharray="5,3" opacity="0.6"/>
+
+  <!-- Agent: white circle r=26 + cyan bi-ai-agent icon from GitHub (y=99, lifted 3px) -->
+  <circle cx="140" cy="120" r="26" fill="white" stroke="#E8EAED" stroke-width="0.5"/>
+  <svg x="122" y="99" width="36" height="36" viewBox="0 0 24 24">
+    <path fill="#06B6D4" fill-rule="evenodd" opacity="0.95" d="M7.695 3.057a1.04 1.04 0 0 0-.567.459c-.091.156-.108.23-.108.484 0 .256.016.328.111.489.061.103.173.236.25.294.273.208.319.213 2.029.215L11 5v1.996l-2.77.013-2.77.013-.321.1A3.107 3.107 0 0 0 3.116 9.14c-.09.273-.093.327-.107 2.07L2.995 13h-.551c-.796 0-1.078.111-1.316.516-.091.156-.108.23-.108.484 0 .256.016.328.111.489.125.213.318.375.539.454.098.035.352.054.737.055l.588.002.014 1.79c.014 1.743.017 1.797.107 2.07a3.106 3.106 0 0 0 2.044 2.026l.3.094h13.08l.3-.094a3.106 3.106 0 0 0 2.044-2.026c.09-.273.093-.327.107-2.07l.014-1.79.588-.002c.385-.001.639-.02.737-.055.221-.079.414-.241.539-.454.095-.161.111-.233.111-.489 0-.254-.017-.328-.108-.484-.238-.405-.52-.516-1.316-.516h-.551l-.014-1.79c-.014-1.743-.017-1.797-.107-2.07a3.107 3.107 0 0 0-2.023-2.018l-.321-.1-2.768-.013-2.769-.013-.011-1.648L12.98 3.7l-.108-.184a1.02 1.02 0 0 0-.582-.461c-.257-.077-4.347-.076-4.595.002M18.31 9.061c.279.083.546.35.629.629.053.177.061.751.061 4.311 0 4.457.007 4.318-.221 4.617-.061.08-.194.195-.295.254l-.184.108H5.7l-.184-.108a1.051 1.051 0 0 1-.458-.556c-.089-.254-.087-8.324.003-8.626.079-.269.351-.547.612-.627.29-.089 12.337-.091 12.637-.002m-9.615 2.996a1.04 1.04 0 0 0-.567.459l-.108.184v2.606l.121.197a.998.998 0 0 0 1.718 0l.121-.197V12.7l-.108-.184a1.005 1.005 0 0 0-1.177-.459m6 0a1.04 1.04 0 0 0-.567.459l-.108.184v2.606l.121.197a.998.998 0 0 0 1.718 0l.121-.197V12.7l-.108-.184a1.005 1.005 0 0 0-1.177-.459"/>
+  </svg>
+
+  <!-- Telegram (left input) -->
+  <circle cx="38" cy="120" r="24" fill="#2CA5E0"/>
+  <g clip-path="url(#cp-in)">
+    <svg x="16" y="98" width="44" height="44" viewBox="0 0 256 256" overflow="visible">
+      <defs><linearGradient id="in-a" x1="50%" x2="50%" y1="0%" y2="100%"><stop offset="0%" stop-color="#2AABEE"/><stop offset="100%" stop-color="#229ED9"/></linearGradient></defs><path fill="url(#in-a)" d="M128 0C94.06 0 61.48 13.494 37.5 37.49A128.038 128.038 0 0 0 0 128c0 33.934 13.5 66.514 37.5 90.51C61.48 242.506 94.06 256 128 256s66.52-13.494 90.5-37.49c24-23.996 37.5-56.576 37.5-90.51 0-33.934-13.5-66.514-37.5-90.51C194.52 13.494 161.94 0 128 0Z"/><path fill="#FFF" d="M57.94 126.648c37.32-16.256 62.2-26.974 74.64-32.152 35.56-14.786 42.94-17.354 47.76-17.441 1.06-.017 3.42.245 4.96 1.49 1.28 1.05 1.64 2.47 1.82 3.467.16.996.38 3.266.2 5.038-1.92 20.24-10.26 69.356-14.5 92.026-1.78 9.592-5.32 12.808-8.74 13.122-7.44.684-13.08-4.912-20.28-9.63-11.26-7.386-17.62-11.982-28.56-19.188-12.64-8.328-4.44-12.906 2.76-20.386 1.88-1.958 34.64-31.748 35.26-34.45.08-.338.16-1.598-.6-2.262-.74-.666-1.84-.438-2.64-.258-1.14.256-19.12 12.152-54 35.686-5.1 3.508-9.72 5.218-13.88 5.128-4.56-.098-13.36-2.584-19.9-4.708-8-2.606-14.38-3.984-13.82-8.41.28-2.304 3.46-4.662 9.52-7.072Z"/>
+    </svg>
+  </g>
+
+  <!-- Gmail (top-right) — Iconify CDN with padded viewBox -->
+  <circle cx="252" cy="52" r="24" fill="white" stroke="#E8EAED" stroke-width="0.5"/>
+  <g clip-path="url(#cp-o0)">
+    <svg x="230" y="30" width="44" height="44" viewBox="-20 -20 296 244" overflow="visible">
+      <defs><linearGradient id="o0-SVGHzDbHcwG" x1="165" x2="165" y1="44" y2="166" gradientUnits="userSpaceOnUse"><stop stop-color="#60d673"/><stop offset=".17" stop-color="#42c868"/><stop offset=".39" stop-color="#0ebc5f"/><stop offset=".62" stop-color="#00a9bb"/><stop offset=".86" stop-color="#3c90ff"/><stop offset="1" stop-color="#3186ff"/></linearGradient><linearGradient id="o0-SVG41ATXboZ" x1="8" x2="184" y1="46.13" y2="46.13" gradientUnits="userSpaceOnUse"><stop offset=".08" stop-color="#ff63a0"/><stop offset=".3" stop-color="#fc413d"/><stop offset=".5" stop-color="#fc413d"/><stop offset=".65" stop-color="#fc413d"/><stop offset=".72" stop-color="#fc5c30"/><stop offset=".86" stop-color="#feb10c"/><stop offset=".91" stop-color="#fec700"/><stop offset=".96" stop-color="#ffdb0f"/></linearGradient></defs><path fill="url(#o0-SVGHzDbHcwG)" d="M146 44h38v110c0 6.627-5.373 12-12 12h-20a6 6 0 0 1-6-6z" transform="translate(-11.636 -37.818)scale(1.45454)"/><path fill="#fc413d" d="M55.273 26.182H0v160c0 9.638 7.816 17.454 17.455 17.454h29.09a8.727 8.727 0 0 0 8.728-8.728z"/><path fill="url(#o0-SVG41ATXboZ)" d="M39.226 30.456c-8.033-6.752-20.018-5.714-26.77 2.319c-6.752 8.032-5.714 20.017 2.319 26.77l76.078 63.949a8 8 0 0 0 10.295 0l76.078-63.95c8.032-6.752 9.07-18.737 2.318-26.77c-6.752-8.032-18.737-9.07-26.769-2.318L96 78.18z" transform="translate(-11.636 -37.818)scale(1.45454)"/>
+    </svg>
+  </g>
+
+  <!-- Google Calendar (mid-right) -->
+  <circle cx="252" cy="120" r="24" fill="white" stroke="#E8EAED" stroke-width="0.5"/>
+  <g clip-path="url(#cp-o1)">
+    <svg x="230" y="98" width="44" height="44" viewBox="0 0 192 192" overflow="visible">
+      <path fill="#bbe2ff" d="M32 36.8C32 20.894 44.894 8 60.8 8h70.4C147.106 8 160 20.894 160 36.8v30.4c0 15.906-12.894 28.8-28.8 28.8H60.8C44.894 96 32 83.106 32 67.2z"/><path fill="#3c90ff" d="M19.867 49.392C17.818 33.82 29.94 20 45.645 20h100.71c15.706 0 27.827 13.82 25.778 29.392L166 96l6.133 46.608C174.182 158.18 162.061 172 146.355 172H45.645c-15.706 0-27.827-13.82-25.778-29.392L26 96z"/><mask id="o1-a" width="154" height="152" x="19" y="20" maskUnits="userSpaceOnUse" style="mask-type:alpha"><path fill="#3c90ff" d="M19.867 49.392C17.818 33.82 29.94 20 45.645 20h100.71c15.706 0 27.827 13.82 25.778 29.392L166 96l6.133 46.608C174.182 158.18 162.061 172 146.355 172H45.645c-15.706 0-27.827-13.82-25.778-29.392L26 96z"/></mask><g mask="url(#o1-a)"><path fill="url(#o1-b)" d="M0 0h166v76H0z" transform="matrix(1 0 0 -1 13 172)"/></g><mask id="o1-c" width="154" height="152" x="19" y="20" maskUnits="userSpaceOnUse" style="mask-type:alpha"><path fill="#3186ff" d="M19.867 49.392C17.818 33.82 29.94 20 45.645 20h100.71c15.706 0 27.827 13.82 25.778 29.392L166 96l6.133 46.608C174.182 158.18 162.061 172 146.355 172H45.645c-15.706 0-27.827-13.82-25.778-29.392L26 96z"/></mask><g mask="url(#o1-c)"><path fill="url(#o1-d)" d="M32 27.2C32 16.596 40.596 8 51.2 8h89.6c10.604 0 19.2 8.596 19.2 19.2V96H32z" filter="url(#o1-e)"/></g><path fill="#fff" d="M75.353 133.336q-6.282 0-10.777-2.043t-7.61-5.465q-3.065-3.474-4.342-6.793T51.603 115a2.07 2.07 0 0 1 1.021-1.124l5.67-2.247q.714-.357 1.43-.102.714.204 1.685 2.349 1.022 2.145 2.86 4.546a14.3 14.3 0 0 0 4.495 3.728q2.606 1.328 6.435 1.328 6.18 0 9.807-3.575 3.677-3.575 3.677-9.091 0-5.976-3.882-9.194-3.881-3.269-10.266-3.269h-5.362a1.9 1.9 0 0 1-1.328-.51q-.51-.562-.511-1.277v-5.465q0-.767.51-1.277a1.82 1.82 0 0 1 1.329-.562h4.647q5.721 0 9.194-3.116t3.473-8.07q0-4.902-3.116-7.916t-8.58-3.014q-3.065 0-5.312 1.022a11.5 11.5 0 0 0-3.882 2.86 22.7 22.7 0 0 0-2.809 3.78q-1.174 1.941-1.89 2.145-.714.153-1.379-.255l-5.363-2.605q-.664-.358-.868-1.124t1.226-3.575q1.481-2.86 4.494-5.823a21 21 0 0 1 7.049-4.597q4.035-1.635 9.398-1.634 9.96 0 15.782 5.26 5.823 5.21 5.823 13.791 0 5.925-2.86 10.266-2.81 4.34-7.968 6.13v.204q6.231 1.838 9.806 6.741 3.627 4.853 3.626 11.594 0 9.654-6.742 15.834-6.74 6.18-17.57 6.18zm51.25-1.175q-.868 0-1.533-.664a2.25 2.25 0 0 1-.612-1.583V73.118l-11.492 8.274q-.614.46-1.431.307a1.96 1.96 0 0 1-1.225-.766l-3.32-4.7a1.98 1.98 0 0 1-.358-1.43q.153-.816.817-1.276l20.379-14.557q.256-.204.562-.306.307-.153.715-.153h4.291q.868 0 1.379.613.562.56.562 1.43v69.36q0 .92-.664 1.583a2 2 0 0 1-1.533.664z"/><defs><linearGradient id="o1-b" x1="83" x2="83" y1="76" gradientUnits="userSpaceOnUse"><stop stop-color="#4fa0ff"/><stop offset="1" stop-color="#3186ff"/></linearGradient><linearGradient id="o1-d" x1="89.06" x2="89.06" y1="21.75" y2="96.39" gradientUnits="userSpaceOnUse"><stop stop-color="#a9a8ff"/><stop offset=".8" stop-color="#3c90ff"/></linearGradient><filter id="o1-e" width="152" height="112" x="20" y="-4" color-interpolation-filters="sRGB" filterUnits="userSpaceOnUse"><feFlood flood-opacity="0" result="BackgroundImageFix"/><feBlend in="SourceGraphic" in2="BackgroundImageFix" result="shape"/><feGaussianBlur result="effect1_foregroundBlur_37330_7673" stdDeviation="6"/></filter></defs>
+    </svg>
+  </g>
+
+  <!-- Google Tasks (bot-right) -->
+  <circle cx="252" cy="188" r="24" fill="white" stroke="#E8EAED" stroke-width="0.5"/>
+  <g clip-path="url(#cp-o2)">
+    <svg x="230" y="166" width="44" height="44" viewBox="0 0 192 192" overflow="visible">
+      <g clip-path="url(#o2-a)"><rect width="152" height="130" x="20" y="52" fill="#bbe2ff" rx="65"/><rect width="172" height="152" x="10" y="14" fill="#3186ff" rx="74"/><mask id="o2-d" width="172" height="152" x="10" y="14" maskUnits="userSpaceOnUse" style="mask-type:alpha"><rect width="172" height="152" x="10" y="14" fill="#3c90ff" rx="74"/></mask><g filter="url(#o2-b)" mask="url(#o2-d)"><rect width="152" height="130" x="20" y="52" fill="url(#o2-e)" rx="65"/></g><g clip-path="url(#o2-f)"><path stroke="#fff" stroke-linecap="round" stroke-linejoin="round" stroke-width="12" d="m61 90 22.172 22.172a4 4 0 0 0 5.656 0L138 63"/></g></g><defs><clipPath id="o2-a"><path fill="#fff" d="M0 0h192v192H0z"/></clipPath><clipPath id="o2-f"><path fill="#fff" d="M44 38h104v104H44z"/></clipPath><linearGradient id="o2-e" x1="96" x2="100.64" y1="166.9" y2="67.25" gradientUnits="userSpaceOnUse"><stop offset=".01" stop-color="#a9a8ff"/><stop offset=".79" stop-color="#a9a8ff" stop-opacity="0"/></linearGradient><filter id="o2-b" width="176" height="154" x="8" y="40" color-interpolation-filters="sRGB" filterUnits="userSpaceOnUse"><feFlood flood-opacity="0" result="BackgroundImageFix"/><feBlend in="SourceGraphic" in2="BackgroundImageFix" result="shape"/><feGaussianBlur result="effect1_foregroundBlur_37601_9976" stdDeviation="6"/></filter></defs>
+    </svg>
+  </g>
+</svg>
