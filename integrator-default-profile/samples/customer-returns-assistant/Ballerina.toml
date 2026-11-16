@@ -1,0 +1,9 @@
+[package]
+org = "wso2"
+name = "customer_returns_assistant"
+version = "0.1.0"
+distribution = "2201.14.1"
+title = "Customer returns assistant"
+
+[build-options]
+sticky = true
