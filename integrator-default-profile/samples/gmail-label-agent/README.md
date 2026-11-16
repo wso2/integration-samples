@@ -36,7 +36,7 @@ gmailRefreshToken = "<GMAIL_REFRESH_TOKEN>"
 
 ## How It Works
 
-- A task listener runs the poll every five minutes. Each poll lists the inbox emails that arrived after the previous poll (`in:inbox after:<time>`), across all result pages.
+- A task listener runs the poll every five minutes. Each poll lists the inbox emails that arrived between the start of the previous poll and the start of this one (`in:inbox after:<time> before:<time>`), across all result pages. If a poll is still running when the next one is due, the next one is skipped, and the following poll covers its emails.
 - For each email, the integration gives the agent the message ID, sender, subject and snippet.
 - The agent uses OpenAI `gpt-6-luna` through the Responses API. It has no memory, so each email is labeled on its own.
 - It implements four agent tools:
