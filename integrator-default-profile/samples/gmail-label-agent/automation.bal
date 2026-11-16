@@ -14,7 +14,10 @@ isolated function pollNewEmails() returns error? {
         sinceSeconds = lastPollSeconds;
     }
     int pollStartSeconds = time:utcNow()[0];
-    string query = string `in:inbox after:${sinceSeconds}`;
+    // Each poll covers a fixed window that ends where the next one starts, so an email that arrives
+    // during this poll waits for the next one. The window starts one second early so an email received
+    // exactly on the boundary is never missed.
+    string query = string `in:inbox after:${sinceSeconds - 1} before:${pollStartSeconds}`;
 
     string? pageToken = ();
     gmail:Message[] pending = [];
