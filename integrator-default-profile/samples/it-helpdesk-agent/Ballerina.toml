@@ -1,0 +1,9 @@
+[package]
+org = "wso2"
+name = "it_helpdesk_agent"
+version = "0.1.0"
+distribution = "2201.14.1"
+title = "IT Helpdesk Agent"
+
+[build-options]
+sticky = true
