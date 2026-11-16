@@ -1,0 +1,29 @@
+[package]
+org = "wso2org"
+name = "personal_life_manager"
+version = "0.1.0"
+distribution = "2201.14.1"
+title = "Personal_life_manager"
+
+[build-options]
+sticky = true
+
+[[dependency]]
+org = "ballerinax"
+name = "googleapis.gmail"
+version = "4.2.1"
+
+[[dependency]]
+org = "ballerinax"
+name = "googleapis.calendar"
+version = "3.2.1"
+
+[[dependency]]
+org = "ballerinax"
+name = "openai.audio"
+version = "3.0.0"
+
+[[dependency]]
+org = "ballerinax"
+name = "googleapis.tasks"
+version = "1.5.2"

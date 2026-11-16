@@ -454,6 +454,16 @@
       "componentPath": "/integrator-mi-profile/UnitTestTutorial",
       "thumbnailPath": "https://mi-connectors.wso2.com/samples/icons/Testing_Templates.png",
       "tags": ["Integration", "HTTP", "REST"]
+    },
+    {
+      "displayName": "Personal Life Manager",
+      "description": "A personal life manager that connects Telegram to Gmail, Google Calendar, and Google Tasks via an AI agent named Aria. It reads unread emails, fetches calendar events, lists pending tasks, and creates new tasks — all through text or voice messages.",
+      "componentType": "ai-agent",
+      "buildPack": "ballerina",
+      "repositoryUrl": "https://github.com/wso2/integration-samples/",
+      "componentPath": "/integrator-default-profile/samples/personal-life-manager",
+      "thumbnailPath": "https://devant-cdn.wso2.com/console/sample-icons/AIAgent.svg",
+      "tags": ["Telegram", "Gmail", "Google Calendar", "Google Tasks", "Voice", "AI", "Agent"]
     }
   ]
 }
