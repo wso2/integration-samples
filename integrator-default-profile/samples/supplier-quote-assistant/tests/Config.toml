@@ -1,0 +1,4 @@
+# Test-only placeholders initialize the providers without contacting a live service.
+[ballerina.ai.wso2ProviderConfig]
+serviceUrl = "http://127.0.0.1:1"
+accessToken = "unused-test-token"
