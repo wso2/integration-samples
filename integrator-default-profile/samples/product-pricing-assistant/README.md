@@ -53,6 +53,34 @@ Run `bal test --offline` from this directory. The tests cover price lookup, quot
 
 `tests/Config.toml` contains a loopback URL and an unused placeholder token. The tests initialize providers but do not call model or embedding services. They do not test catalog retrieval, delegation, or chat recommendations.
 
+## Agents
+
+### `productPricingCoordinatorAgent`
+
+Answers product-and-price questions by delegating to the two specialists below and combining their results into one answer. It never states product facts or prices itself. This is the agent the HTTP service calls.
+
+- **Query:** a feature question, optionally with a plan and user count to price, for example `We need cloud meeting recording for 25 users. Which is the lowest-tier suitable plan, and what is the total monthly price?`.
+- **Response:** a `string` with the recommended plan, the supporting catalog evidence, and the calculated price when one was requested.
+- **Tools:** `productSpecialistAgentTool`, `pricingSpecialistAgentTool`.
+
+### `productSpecialistAgent`
+
+Finds which plans support a requested feature and recommends the lowest-tier plan that does, quoting the catalog passage as evidence. It reports a gap when no plan supports the feature.
+
+- **Query:** a product or feature question.
+- **Response:** a `string` with the recommended plan and the supporting evidence.
+- **Tools:** `retrieveProductCatalog`.
+
+### `pricingSpecialistAgent`
+
+Calculates a monthly quote from the sample price list. It never invents a price and reports unknown plans clearly.
+
+- **Query:** a plan name and a user count.
+- **Response:** a `string` with the price per user per month and the total monthly price.
+- **Tools:** `lookupPlanPrice`, `calculatePlanQuote`.
+
+All three agents take a `model` initialization parameter, the model provider the agent uses.
+
 ## How it works
 
 - `productPricingCoordinatorAgent` delegates feature questions to `productSpecialistAgentTool` and quote requests to `pricingSpecialistAgentTool`.

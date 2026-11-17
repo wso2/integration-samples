@@ -53,6 +53,17 @@ Run `bal test --offline` from this directory. The tests cover decimal totals, bu
 
 `tests/Config.toml` contains a loopback URL and an unused placeholder token. The tests initialize providers but do not call model services. They do not test quotation extraction or chat recommendations.
 
+## Agents
+
+### `supplierQuoteAgent`
+
+Compares supplier quotations pasted into chat and recommends the lowest-cost supplier that covers the full quantity, stays within budget, and meets the delivery deadline. It explains why each cheaper supplier does not qualify.
+
+- **Query:** the quantity, budget, deadline, and one quotation per supplier (unit price, shipping charge, delivery date). The service adds today's date (UTC) to every request so relative dates such as "Friday" resolve correctly.
+- **Response:** a `string` with the recommended supplier and the reason each other supplier was excluded. The agent asks for missing shipping charges, delivery dates, or full-quantity quotations before ranking a supplier.
+- **Tools:** `calculateQuotationTotal`, `checkBudget`, `checkDeadline`.
+- **Initialization parameters:** `model`, the model provider the agent uses.
+
 ## How it works
 
 - `agents.bal` defines the comparison instructions and three tools.
