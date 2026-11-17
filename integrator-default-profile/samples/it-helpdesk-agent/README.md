@@ -7,14 +7,20 @@ An IT helpdesk agent that employees chat with in Google Chat or through the HTTP
 ## Prerequisites
 
 - WSO2 Integrator, with the default WSO2 model provider configured. In WSO2 Integrator, run the **Configure default WSO2 model provider** command. It adds the provider's settings to `Config.toml`.
-- A Google Cloud project with the Google Chat API enabled.
-- A Google Chat app configured with an HTTP endpoint URL, and with Project Number as the authentication audience.
-- A service account JSON key for the Chat app.
-- A public HTTPS URL that forwards to port 8000, for example with ngrok.
+
+## Google Chat setup
+
+1. Create a Google Cloud project and enable the Google Chat API.
+2. On the Chat API's **Configuration** page, clear **Build this Chat app as a Workspace add-on**. Give the app a name and a description. Keep **Enable interactive features** on, and leave **Join spaces and group conversations** off.
+3. Set the **HTTP endpoint URL** to your public HTTPS URL for port 8000, with no path. For example, run `ngrok http 8000` and use the URL it shows. Set the **Authentication audience** to **Project Number**.
+4. Under **Visibility**, add your own email.
+5. In the same project, create a service account and download its JSON key.
+
+`googleChatProjectNumber` is the project number, not the project ID.
 
 ## Configuration
 
-Provide the configuration through a `Config.toml` file in the project root:
+Provide the configuration through a `Config.toml` file in the project root. Add the two Google Chat lines above the `[ballerina.ai.wso2ProviderConfig]` table, because keys after a table belong to that table:
 
 ```toml
 googleChatProjectNumber = "<PROJECT_NUMBER>"
