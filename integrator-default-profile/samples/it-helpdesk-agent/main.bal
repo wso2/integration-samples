@@ -56,10 +56,14 @@ isolated service chat:ChatService on chatListener {
     private isolated function replyToChatMessage(chat:MessageEvent event, chat:MessageCaller caller) {
         string replyText;
         string? text = event.message.text;
-        if text is () {
+        boolean? isDirectMessage = event.space?.singleUserBotDm;
+        string? spaceName = event.space?.name;
+        if isDirectMessage != true || spaceName is () {
+            replyText = "Please send me a direct message.";
+        } else if text is () {
             replyText = "Sorry, I can only handle text messages right now.";
         } else {
-            string|error result = helpdeskAgent.run(text, sessionId = "googlechat:" + (event.space?.name ?: "unknown"));
+            string|error result = helpdeskAgent.run(text, sessionId = "googlechat:" + spaceName);
             if result is error {
                 log:printError("Agent run failed", result);
                 replyText = "Sorry, something went wrong. Please try again.";
@@ -68,10 +72,6 @@ isolated service chat:ChatService on chatListener {
             }
         }
         chat:CreateMessageRequest reply = {text: replyText};
-        chat:ChatThread? thread = event.message.thread;
-        if thread is chat:ChatThread {
-            reply.thread = thread;
-        }
         chat:Message|error sent = caller->sendMessage(reply);
         if sent is error {
             log:printError("Google Chat send failed", sent);

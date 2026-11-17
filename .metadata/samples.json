@@ -205,7 +205,7 @@
     },
     {
       "displayName": "IT Helpdesk Agent",
-      "description": "An IT helpdesk agent that employees chat with in Google Chat. It answers how-to questions from a knowledge base, unlocks accounts after an employee ID check, grants app access with manager approval for sensitive apps, and raises incident tickets.",
+      "description": "An IT helpdesk agent that employees chat with in Google Chat or over HTTP. It answers how-to questions from a knowledge base, unlocks accounts after an employee ID check, grants app access with manager approval for sensitive apps, and raises incident tickets.",
       "componentType": "ai-agent",
       "buildPack": "ballerina",
       "repositoryUrl": "https://github.com/wso2/integration-samples/",
