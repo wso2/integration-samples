@@ -211,7 +211,7 @@
       "repositoryUrl": "https://github.com/wso2/integration-samples/",
       "componentPath": "/integrator-default-profile/samples/it-helpdesk-agent",
       "thumbnailPath": "https://devant-cdn.wso2.com/console/sample-icons/AIAgent.svg",
-      "tags": ["IT Helpdesk", "RAG", "AI", "Agent", "Google Chat"]
+      "tags": ["IT Helpdesk", "Google Chat", "RAG", "AI", "Agent"]
     },
     {
       "displayName": "S3 File Event Listener",
