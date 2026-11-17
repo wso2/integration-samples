@@ -36,9 +36,6 @@ service /approvals on approvalListener {
     }
 }
 
-configurable string googleChatProjectNumber = ?;
-configurable string serviceAccountKeyPath = ?;
-
 listener chat:Listener chatListener = new (8000, auth = {
     path: serviceAccountKeyPath
 });
