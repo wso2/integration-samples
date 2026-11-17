@@ -53,6 +53,17 @@ Run `bal test --offline` from this directory. The tests cover order lookup, stoc
 
 `tests/Config.toml` contains a loopback URL and an unused placeholder token. The tests initialize providers but do not call model or embedding services. They do not test policy retrieval or chat recommendations.
 
+## Agents
+
+### `customerReturnsAgent`
+
+Recommends an exchange, a refund, or manual review for a faulty or defective item, and cites the return policy passage that supports the recommendation. It never creates a return or moves money.
+
+- **Query:** a return request that includes an order reference, for example `My Wireless Headset from order ORD-1042 is faulty. What can I do?`. The agent asks for the reference if it is missing.
+- **Response:** a `string` with the recommendation, the reason, and the policy passage.
+- **Tools:** `lookupOrder`, `retrieveReturnPolicy`, `checkReturnWindowEligibility`, `checkReplacementStock`.
+- **Initialization parameters:** `model`, the model provider the agent uses.
+
 ## How it works
 
 - `agents.bal` defines the agent's instructions and four tools.
