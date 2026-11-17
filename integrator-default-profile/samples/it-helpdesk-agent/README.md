@@ -133,6 +133,7 @@ Keep the service account key file outside the project.
 - Requests reach the integration through two services on the default listener:
   - **Chat service** (`/helpdesk/chat`): the agent's HTTP chat endpoint
   - **Approval service** (`/approvals`): managers decide access requests here. Only the employee's manager can decide a request, and only once.
+- Approval here is a plain HTTP call. For an approval that waits for a person, with the approver's role taken from a verified token, see the [Claim Approval Agent](../claim-approval-agent/) sample, which uses a durable agent and a human task.
 - The Google Chat trigger listens on port 8000. It checks that each request comes from Google, acknowledges each message at once, and then posts the agent's reply. It is for direct messages only, because the conversation memory is kept per Google Chat space.
 - Employees can see only their own tickets and access requests.
 - In this sample, the employee directory (five employees, in `functions.bal`), access requests and tickets are kept in memory, so replace them with your own systems, such as Microsoft Entra ID and ServiceNow.
