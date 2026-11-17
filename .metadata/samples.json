@@ -176,6 +176,17 @@
       "imageUrl": "wso2integrations.azurecr.io/azure_files_change_tracker:0.1.0"
     },
     {
+      "displayName": "Corporate Travel Planner",
+      "description": "A multi-agent travel desk for business trips. A planner agent works with destination, logistics and policy agents to research the destination, find flights and hotels through Duffel, and check them against the company travel policy. Bookings are made only after the traveler's manager approves them.",
+      "componentType": "ai-agent",
+      "buildPack": "ballerina",
+      "repositoryUrl": "https://github.com/wso2/integration-samples/",
+      "componentPath": "/integrator-default-profile/samples/corporate-travel-planner",
+      "thumbnailPath": "https://devant-cdn.wso2.com/console/sample-icons/AIAgent.svg",
+      "tags": ["OpenAI", "Duffel", "AI", "Agent"],
+      "imageUrl": "wso2integrations.azurecr.io/travel_planner:0.1.0"
+    },
+    {
       "displayName": "API Testing",
       "description": "An API that handles standard HTTP methods (GET, POST, PUT, DELETE) with predefined responses. Ideal for testing request handling and API interactions.",
       "componentType": "service",
