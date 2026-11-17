@@ -2,22 +2,31 @@
 
 ## Description
 
-An IT helpdesk agent that employees chat with. It answers how-to questions from an IT knowledge base, unlocks locked accounts, grants app access, and raises incident tickets. Standard apps are granted straight away, and sensitive apps wait for the employee's manager to approve them. This sample shows how to build an AI agent in WSO2 Integrator that takes actions, not only answers questions.
+An IT helpdesk agent that employees chat with in Google Chat or through the HTTP chat endpoint. It answers how-to questions from an IT knowledge base, unlocks locked accounts, grants app access, and raises incident tickets. Standard apps are granted straight away, and sensitive apps wait for the employee's manager to approve them. This sample shows how to build an AI agent in WSO2 Integrator that takes actions, not only answers questions.
 
 ## Prerequisites
 
 - WSO2 Integrator, with the default WSO2 model provider configured. In WSO2 Integrator, run the **Configure default WSO2 model provider** command. It adds the provider's settings to `Config.toml`.
+- A Google Cloud project with the Google Chat API enabled.
+- A Google Chat app configured with an HTTP endpoint URL, and with Project Number as the authentication audience.
+- A service account JSON key for the Chat app.
+- A public HTTPS URL that forwards to port 8000, for example with ngrok.
 
 ## Configuration
 
 Provide the configuration through a `Config.toml` file in the project root:
 
 ```toml
+googleChatProjectNumber = "<PROJECT_NUMBER>"
+serviceAccountKeyPath = "<PATH_TO_SERVICE_ACCOUNT_KEY_JSON>"
+
 # Added by the "Configure default WSO2 model provider" command.
 [ballerina.ai.wso2ProviderConfig]
 serviceUrl = "<SERVICE_URL>"
 accessToken = "<ACCESS_TOKEN>"
 ```
+
+Keep the service account key file outside the project.
 
 ## Usage Instructions
 
@@ -100,6 +109,8 @@ accessToken = "<ACCESS_TOKEN>"
 
    The agent raises an incident ticket and replies with its ID. Ask "Show me all my tickets" in the same session to list them.
 
+10. To use Google Chat, send the same messages as direct messages to the Chat app. Approving a request stays a curl call, as in step 7.
+
 ## How It Works
 
 - The agent uses the default WSO2 model provider, with an in-memory short-term memory that keeps the last 20 messages for each session.
@@ -114,8 +125,9 @@ accessToken = "<ACCESS_TOKEN>"
   - **listEmployeeTickets**: Lists the employee's tickets
 - The unlock tool checks the employee ID itself, so the model never sees the ID on record. After three wrong IDs within 15 minutes, it blocks the check for that employee for 15 minutes.
 - Requests reach the integration through two services on the default listener:
-  - **Chat service** (`/helpdesk/chat`): the agent's chat endpoint
+  - **Chat service** (`/helpdesk/chat`): the agent's HTTP chat endpoint
   - **Approval service** (`/approvals`): managers decide access requests here. Only the employee's manager can decide a request, and only once.
+- The Google Chat trigger listens on port 8000. It checks that each request comes from Google, acknowledges each message at once, and then posts the agent's reply. It is for direct messages only, because the conversation memory is kept per Google Chat space.
 - Employees can see only their own tickets and access requests.
 - In this sample, the employee directory (five employees, in `functions.bal`), access requests and tickets are kept in memory, so replace them with your own systems, such as Microsoft Entra ID and ServiceNow.
-- The agent trusts the email that the employee gives, and the employee ID stands in for real identity verification. The approval service trusts the `managerEmail` in the request. Anyone who knows an email can also trigger that employee's 15-minute block. In production, take both identities from a verified sign-in, and put authentication in front of both services.
+- The agent trusts the email that the employee gives, and the employee ID stands in for real identity verification. The approval service trusts the `managerEmail` in the request. Anyone who knows an email can also trigger that employee's 15-minute block. In production, take both identities from a verified sign-in, and put authentication in front of both services. Expose only port 8000 publicly, because port 9090 serves the HTTP chat and the approval service without authentication. A real deployment would take the employee from the Google Chat sender instead of asking for an email.
