@@ -1,0 +1,9 @@
+[package]
+org = "wso2"
+name = "email_spoofing_detection_agent"
+version = "0.1.0"
+distribution = "2201.14.1"
+title = "Email Spoofing Detection Agent"
+
+[build-options]
+sticky = true
