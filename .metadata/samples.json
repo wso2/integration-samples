@@ -154,6 +154,16 @@
       "tags": ["Voice", "OpenAI", "AI", "Agent"]
     },
     {
+      "displayName": "Contract Review Assistant",
+      "description": "An AI agent that reviews NDAs and vendor agreements against the company's contract playbook. It flags each clause that deviates from the playbook with a risk level and replacement wording, finds missing protections, and recommends whether to approve the agreement or send it to legal.",
+      "componentType": "ai-agent",
+      "buildPack": "ballerina",
+      "repositoryUrl": "https://github.com/wso2/integration-samples/",
+      "componentPath": "/integrator-default-profile/samples/contract-review-assistant",
+      "thumbnailPath": "https://devant-cdn.wso2.com/console/sample-icons/AIAgent.svg",
+      "tags": ["Legal", "RAG", "OpenAI", "AI", "Agent"]
+    },
+    {
       "displayName": "S3 File Event Listener",
       "description": "An event-driven integration that reacts to S3 file uploads by consuming object-created notifications from an SQS queue using the aws.sqs listener.",
       "componentType": "event-handler",
