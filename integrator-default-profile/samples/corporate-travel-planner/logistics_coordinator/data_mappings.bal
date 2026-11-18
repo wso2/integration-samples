@@ -103,9 +103,14 @@ isolated function toHotelRate(StaysSearchResult result, StaysRoom room, StaysRat
     checkInDate: result.check_in_date,
     checkOutDate: result.check_out_date,
     nights,
+    dueAtAccommodationAmount: check optionalDecimal(rate?.due_at_accommodation_amount),
+    dueAtAccommodationCurrency: rate?.due_at_accommodation_currency,
     refundable: hasRefund(rate?.cancellation_timeline),
     isTestInventory: useDuffelTestHotels
 };
+
+isolated function optionalDecimal(string? amount) returns decimal?|error =>
+    amount is string ? check decimal:fromString(amount) : ();
 
 isolated function hasRefund(CancellationStep[]? timeline) returns boolean {
     if timeline is () {

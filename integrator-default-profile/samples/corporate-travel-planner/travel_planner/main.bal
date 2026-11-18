@@ -88,7 +88,7 @@ service /travel on travelListener {
         if decision.outcome == "APPROVE" {
             addAuditEvent(pending.proposalId, approverId, "APPROVED", decision.reason ?: "");
         } else {
-            markRejected(pending.proposalId, approverId, reason);
+            markRejected(pending.proposalId, pending.employeeId, approverId, reason);
         }
         log:printInfo("approval decided", approvalId = approvalId, proposalId = pending.proposalId,
             outcome = decision.outcome, approverId = approverId);
@@ -143,10 +143,17 @@ isolated function toChatResponse(string sessionId, string sessionKey, Employee t
         return {sessionId, status: "COMPLETED", message: result, pendingApprovals: []};
     }
     if result is ai:ApprovalRequiredError {
+        ai:ApprovalRequest[] requests = result.detail().requests;
+        string[] foreignProposals = from ai:ApprovalRequest request in requests
+            let string proposalId = proposalIdOf(request)
+            where !isOwnProposal(proposalId, traveler)
+            select proposalId;
+        if foreignProposals.length() > 0 {
+            return rejectForeignProposals(sessionId, sessionKey, traveler, requests, foreignProposals);
+        }
         string requestedAt = nowIso();
-        foreach ai:ApprovalRequest request in result.detail().requests {
-            BookTripArgs|error args = request.arguments.cloneWithType();
-            string proposalId = args is BookTripArgs ? args.proposalId : "";
+        foreach ai:ApprovalRequest request in requests {
+            string proposalId = proposalIdOf(request);
             addPendingApproval({
                 approvalId: request.id,
                 sessionKey,
@@ -169,4 +176,35 @@ isolated function toChatResponse(string sessionId, string sessionKey, Employee t
     }
     log:printError("trip planner run failed", 'error = result, sessionKey = sessionKey);
     return <http:InternalServerError>{body: <ErrorBody>{message: "The trip planner could not complete the request"}};
+}
+
+isolated function proposalIdOf(ai:ApprovalRequest request) returns string {
+    BookTripArgs|error args = request.arguments.cloneWithType();
+    return args is BookTripArgs ? args.proposalId : "";
+}
+
+// The model chose which proposal to submit, so check it before any manager sees it. A request for a proposal
+// that is not the traveler's is rejected at once, with the rest of its batch, so the conversation does not stay
+// paused and no other traveler's proposal reaches this manager.
+isolated function rejectForeignProposals(string sessionId, string sessionKey, Employee traveler,
+        ai:ApprovalRequest[] requests, string[] foreignProposals) returns ChatResponse|http:InternalServerError {
+    log:printWarn("refused to submit proposals that are not the traveler's", employeeId = traveler.employeeId,
+        proposalIds = foreignProposals);
+    map<ai:HumanDecision> decisions = {};
+    foreach ai:ApprovalRequest request in requests {
+        string proposalId = proposalIdOf(request);
+        decisions[request.id] = {
+            outcome: ai:REJECT,
+            reason: foreignProposals.indexOf(proposalId) is int
+                ? string `Proposal '${proposalId}' is not one of this traveler's proposals, so it cannot be submitted.`
+                : "Submitted together with a proposal that is not this traveler's. Submit it again on its own."
+        };
+    }
+    ai:Context context = new;
+    context.set(CTX_EMPLOYEE_ID, traveler.employeeId);
+    context.set(CTX_SESSION_KEY, sessionKey);
+    context.set(CTX_TRAVELER_GRADE, traveler.grade);
+    ai:Resume resume = {decisions: decisions.cloneReadOnly()};
+    string|ai:Error next = tripPlanner.run(query = resume, sessionId = sessionKey, context = context);
+    return toChatResponse(sessionId = sessionId, sessionKey = sessionKey, traveler = traveler, result = next);
 }

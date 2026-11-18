@@ -155,14 +155,30 @@ isolated function bookTrip(ai:Context context, string proposalId) returns TripPr
     }
     Employee traveler = check getEmployee(employeeId);
     BookingResult result = {};
+    logistics_coordinator:FlightOffer? flight = proposal.flight;
+    logistics_coordinator:HotelRate? hotel = proposal.hotel;
+
+    // Check both prices first, so a price rise on one books neither.
+    logistics_coordinator:CurrentFare|BookingIssue? fare = flight is () ? () : checkFlightPrice(flight);
+    logistics_coordinator:HotelQuote|BookingIssue? quote = hotel is () ? () : checkHotelPrice(hotel);
+    if fare is BookingIssue || quote is BookingIssue {
+        if fare is BookingIssue {
+            result.issues.push(fare.message);
+        }
+        if quote is BookingIssue {
+            result.issues.push(quote.message);
+        }
+        result.issues.push("Nothing was booked.");
+        log:printInfo("trip booking stopped before payment", proposalId = proposalId, approverId = approverId);
+        return finishBooking(proposalId, "FAILED", result);
+    }
+
     int attempted = 0;
     int succeeded = 0;
     boolean outcomeUnknown = false;
-
-    logistics_coordinator:FlightOffer? flight = proposal.flight;
-    if flight is logistics_coordinator:FlightOffer {
+    if flight is logistics_coordinator:FlightOffer && fare is logistics_coordinator:CurrentFare {
         attempted += 1;
-        logistics_coordinator:FlightOrder|BookingIssue flightOrder = bookFlight(flight, traveler);
+        logistics_coordinator:FlightOrder|BookingIssue flightOrder = orderFlight(flight, fare, traveler);
         if flightOrder is logistics_coordinator:FlightOrder {
             succeeded += 1;
             result.flightOrderId = flightOrder.orderId;
@@ -172,11 +188,9 @@ isolated function bookTrip(ai:Context context, string proposalId) returns TripPr
             outcomeUnknown = outcomeUnknown || flightOrder.outcomeUnknown;
         }
     }
-
-    logistics_coordinator:HotelRate? hotel = proposal.hotel;
-    if hotel is logistics_coordinator:HotelRate {
+    if hotel is logistics_coordinator:HotelRate && quote is logistics_coordinator:HotelQuote {
         attempted += 1;
-        logistics_coordinator:HotelBooking|BookingIssue booking = bookHotel(hotel, traveler);
+        logistics_coordinator:HotelBooking|BookingIssue booking = bookQuotedHotel(hotel, quote, traveler);
         if booking is logistics_coordinator:HotelBooking {
             succeeded += 1;
             result.hotelBookingId = booking.bookingId;

@@ -129,10 +129,18 @@ isolated function finishBooking(string proposalId, ProposalStatus status, Bookin
     }
 }
 
-isolated function markRejected(string proposalId, string approverId, string reason) {
+# Whether a proposal exists and belongs to the traveler and their manager.
+isolated function isOwnProposal(string proposalId, Employee traveler) returns boolean {
+    TripProposal? proposal = getProposal(proposalId);
+    return proposal is TripProposal && proposal.employeeId == traveler.employeeId
+        && proposal.approverId == traveler.managerId;
+}
+
+isolated function markRejected(string proposalId, string employeeId, string approverId, string reason) {
     lock {
         TripProposal? proposal = proposals[proposalId];
-        if proposal is TripProposal && proposal.status == "PROPOSED" {
+        if proposal is TripProposal && proposal.employeeId == employeeId && proposal.approverId == approverId
+                && proposal.status == "PROPOSED" {
             proposal.status = "REJECTED";
             proposal.auditTrail.push({at: nowIso(), actor: approverId, action: "REJECTED", detail: reason});
         }
@@ -199,10 +207,13 @@ isolated function releaseSession(string sessionKey) {
 
 // ---- Booking ----
 
-// Re-checks the fare before paying: offers expire (typically within 30 minutes) and prices can move between
-// the employee's request and the manager's approval.
-isolated function bookFlight(logistics_coordinator:FlightOffer flight, Employee traveler)
-        returns logistics_coordinator:FlightOrder|BookingIssue {
+// Prices are re-checked before paying: offers expire (typically within 30 minutes) and prices can move between
+// the employee's request and the manager's approval. Both are checked before either is booked, so a price rise
+// on one never leaves the other booked on its own.
+
+# Re-checks a flight offer's fare against the approved price.
+isolated function checkFlightPrice(logistics_coordinator:FlightOffer flight)
+        returns logistics_coordinator:CurrentFare|BookingIssue {
     logistics_coordinator:CurrentFare|error fare = logistics_coordinator:currentFare(flight.offerId);
     if fare is error {
         return {message: "Flight not booked: the offer could not be re-checked and may have expired. " +
@@ -213,6 +224,28 @@ isolated function bookFlight(logistics_coordinator:FlightOffer flight, Employee 
         return {message: string `Flight not booked: the fare changed from ${flight.currency} ${flight.totalAmount} ` +
             string `to ${fare.currency} ${fare.amount}, which needs re-approval`};
     }
+    return fare;
+}
+
+# Quotes a hotel rate and checks the quote against the approved price. A quote reserves nothing and costs
+# nothing, so a failed quote is always a plain failure.
+isolated function checkHotelPrice(logistics_coordinator:HotelRate hotel)
+        returns logistics_coordinator:HotelQuote|BookingIssue {
+    logistics_coordinator:HotelQuote|error quote = logistics_coordinator:createHotelQuote(hotel.rateId);
+    if quote is error {
+        return {message: "Hotel not booked: the rate is no longer available. " +
+            logistics_coordinator:describeError(quote)};
+    }
+    decimal ceiling = hotel.totalAmount * (1d + priceTolerancePercent / 100d);
+    if quote.currency != hotel.currency || quote.amount > ceiling {
+        return {message: string `Hotel not booked: the price changed from ${hotel.currency} ${hotel.totalAmount} ` +
+            string `to ${quote.currency} ${quote.amount}, which needs re-approval`};
+    }
+    return quote;
+}
+
+isolated function orderFlight(logistics_coordinator:FlightOffer flight, logistics_coordinator:CurrentFare fare,
+        Employee traveler) returns logistics_coordinator:FlightOrder|BookingIssue {
     logistics_coordinator:FlightOrder|error flightOrder = logistics_coordinator:createFlightOrder(
         offerId = flight.offerId, passengerId = flight.passengerId, traveler = toPassengerDetails(traveler),
         fare = fare);
@@ -232,19 +265,8 @@ isolated function bookFlight(logistics_coordinator:FlightOffer flight, Employee 
     return flightOrder;
 }
 
-isolated function bookHotel(logistics_coordinator:HotelRate hotel, Employee traveler)
-        returns logistics_coordinator:HotelBooking|BookingIssue {
-    // A quote reserves nothing and costs nothing, so a failed quote is always a plain failure.
-    logistics_coordinator:HotelQuote|error quote = logistics_coordinator:createHotelQuote(hotel.rateId);
-    if quote is error {
-        return {message: "Hotel not booked: the rate is no longer available. " +
-            logistics_coordinator:describeError(quote)};
-    }
-    decimal ceiling = hotel.totalAmount * (1d + priceTolerancePercent / 100d);
-    if quote.currency != hotel.currency || quote.amount > ceiling {
-        return {message: string `Hotel not booked: the price changed from ${hotel.currency} ${hotel.totalAmount} ` +
-            string `to ${quote.currency} ${quote.amount}, which needs re-approval`};
-    }
+isolated function bookQuotedHotel(logistics_coordinator:HotelRate hotel, logistics_coordinator:HotelQuote quote,
+        Employee traveler) returns logistics_coordinator:HotelBooking|BookingIssue {
     logistics_coordinator:HotelBooking|error booking = logistics_coordinator:createHotelBooking(
         quoteId = quote.quoteId, guest = toPassengerDetails(traveler));
     if booking is error {

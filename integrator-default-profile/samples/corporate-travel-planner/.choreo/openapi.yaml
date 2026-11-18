@@ -344,6 +344,8 @@ components:
       - checkInDate
       - checkOutDate
       - currency
+      - dueAtAccommodationAmount
+      - dueAtAccommodationCurrency
       - hotelName
       - isTestInventory
       - nights
@@ -373,6 +375,15 @@ components:
         nights:
           type: integer
           format: int64
+        dueAtAccommodationAmount:
+          type: number
+          description: "Mandatory fees paid at the hotel on top of `totalAmount`,\
+            \ or nil when Duffel does not know them"
+          format: double
+          nullable: true
+        dueAtAccommodationCurrency:
+          type: string
+          nullable: true
         refundable:
           type: boolean
         isTestInventory:

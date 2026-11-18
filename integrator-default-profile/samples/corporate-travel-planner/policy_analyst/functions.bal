@@ -71,6 +71,13 @@ public isolated function evaluateTrip(string grade, logistics_coordinator:Flight
 
     if hotel is logistics_coordinator:HotelRate {
         decimal hotelUsd = check toUsd(amount = hotel.totalAmount, currency = hotel.currency);
+        // Fees paid at the hotel are not in the booking total but are still part of the nightly cost.
+        decimal? dueAtHotel = hotel.dueAtAccommodationAmount;
+        if dueAtHotel is decimal && dueAtHotel > 0d {
+            hotelUsd += check toUsd(amount = dueAtHotel, currency = hotel.dueAtAccommodationCurrency ?: hotel.currency);
+        } else if dueAtHotel is () {
+            warnings.push("Fees payable at the hotel are unknown and are not included in the hotel cost");
+        }
         totalUsd += hotelUsd;
         decimal nightlyUsd = hotel.nights > 0 ? hotelUsd / <decimal>hotel.nights : hotelUsd;
         if nightlyUsd > policy.hotelNightlyCapUsd {
