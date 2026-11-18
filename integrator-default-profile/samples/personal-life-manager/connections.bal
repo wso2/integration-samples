@@ -5,18 +5,18 @@ import ballerinax/googleapis.tasks as gtasks;
 
 final gmail:Client gmailClient = check new ({
     auth: {
-        refreshToken: gmailRefreshToken,
-        clientId: gmailClientId,
-        clientSecret: gmailClientSecret
+        refreshToken: googleRefreshToken,
+        clientId: googleClientId,
+        clientSecret: googleClientSecret
     }
 });
 
 final calendar:Client calendarClient = check new (config = {
     auth: {
         refreshUrl: "https://oauth2.googleapis.com/token",
-        clientId: calendarClientId,
-        clientSecret: calendarClientSecret,
-        refreshToken: calendarRefreshToken
+        clientId: googleClientId,
+        clientSecret: googleClientSecret,
+        refreshToken: googleRefreshToken
     }
 });
 
@@ -26,9 +26,9 @@ final http:Client groqAudioClient = check new ("https://api.groq.com", {
 
 final gtasks:Client tasksClient = check new ({
     auth: {
-        clientId: tasksClientId,
-        clientSecret: tasksClientSecret,
+        clientId: googleClientId,
+        clientSecret: googleClientSecret,
         refreshUrl: "https://oauth2.googleapis.com/token",
-        refreshToken: tasksRefreshToken
+        refreshToken: googleRefreshToken
     }
 });

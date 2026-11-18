@@ -1,20 +1,16 @@
 #!/bin/bash
 set -e
 
-PACKAGE_DIR="$(dirname "$0")/personal_life_manager"
-CONFIG="$PACKAGE_DIR/Config.toml"
+SAMPLE_DIR="$(cd "$(dirname "$0")" && pwd)"
+CONFIG="$SAMPLE_DIR/Config.toml"
 
-# Kill any leftover processes on our ports
+# Kill any leftover process on the Telegram webhook port
 lsof -ti :8090 | xargs kill -9 2>/dev/null || true
-lsof -ti :8080 | xargs kill -9 2>/dev/null || true
 
-# Kill any existing ngrok
-pkill -f "ngrok http" 2>/dev/null || true
-sleep 1
-
-# Start ngrok
+# Start ngrok on the webhook port and remember its PID
 echo "Starting ngrok..."
 ngrok http 8090 --log=stdout > /tmp/ngrok.log 2>&1 &
+NGROK_PID=$!
 
 # Wait for ngrok tunnel to be ready
 echo "Waiting for ngrok tunnel..."
@@ -28,7 +24,7 @@ NGROK_URL=$(curl -s http://localhost:4040/api/tunnels | \
 
 echo "ngrok URL: $NGROK_URL"
 
-# Update telegramCallbackUrl in Config.toml (cross-platform)
+# Update telegramCallbackUrl in Config.toml
 python3 -c "
 import re, sys
 path = sys.argv[1]
@@ -42,6 +38,6 @@ with open(path, 'w') as f:
 " "$CONFIG" "$NGROK_URL"
 echo "Updated Config.toml"
 
-# Run the app
-cd "$PACKAGE_DIR"
+# Run the app from the sample root
+cd "$SAMPLE_DIR"
 bal run

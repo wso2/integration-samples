@@ -85,36 +85,46 @@ flowchart LR
 2. Enable **Gmail API**, **Google Calendar API**, and **Google Tasks API**
 3. Create OAuth 2.0 credentials (Desktop app type)
 4. Use the OAuth Playground and include these scopes when authorizing:
-   - `https://mail.google.com/`
-   - `https://www.googleapis.com/auth/calendar`
+   - `https://www.googleapis.com/auth/gmail.readonly`
+   - `https://www.googleapis.com/auth/calendar.readonly`
    - `https://www.googleapis.com/auth/tasks`
-5. Exchange for a refresh token and use it for `gmailRefreshToken`, `calendarRefreshToken`, and `tasksRefreshToken`
+5. Exchange for a refresh token and use it for `googleRefreshToken` (one token covers Gmail, Calendar, and Tasks)
+
+### Finding your Telegram chat ID
+
+**Option 1 — getUpdates API**
+
+1. Start your bot in Telegram and send it any message (e.g. "hello")
+2. Open this URL in a browser (replace `<BOT_TOKEN>` with your bot token):
+   ```
+   https://api.telegram.org/bot<BOT_TOKEN>/getUpdates
+   ```
+3. Find `"chat":{"id":XXXXXXXXX}` in the response — that number is your `allowedChatId`
+
+**Option 2 — @userinfobot**
+
+1. Open Telegram and search for [@userinfobot](https://t.me/userinfobot)
+2. Send it `/start`
+3. It replies with your user ID — that's also your private chat ID with any bot
 
 ## Configuration
 
-Provide the configuration through a `Config.toml` file in `personal_life_manager/`:
+Provide the configuration through a `Config.toml` file in the sample root:
 
 ```toml
 # Telegram
 telegramBotToken = "<your bot token from BotFather>"
 telegramCallbackUrl = "https://<your-ngrok-subdomain>.ngrok-free.app"
 
-# Gmail OAuth2
-gmailClientId     = "<Google Cloud client ID>"
-gmailClientSecret = "<Google Cloud client secret>"
-gmailRefreshToken = "<OAuth2 refresh token>"
+# Google OAuth2 — single set of credentials for Gmail, Calendar, and Tasks
+googleClientId     = "<Google Cloud client ID>"
+googleClientSecret = "<Google Cloud client secret>"
+googleRefreshToken = "<OAuth2 refresh token>"
+calendarId         = "primary"
+tasksListId        = "@default"
 
-# Google Calendar OAuth2
-calendarClientId     = "<Google Cloud client ID>"
-calendarClientSecret = "<Google Cloud client secret>"
-calendarRefreshToken = "<OAuth2 refresh token>"
-calendarId           = "primary"
-
-# Google Tasks OAuth2
-tasksClientId     = "<Google Cloud client ID>"
-tasksClientSecret = "<Google Cloud client secret>"
-tasksRefreshToken = "<OAuth2 refresh token>"
-tasksListId       = "@default"
+# Allowed Telegram chat ID (your personal chat ID — prevents unauthorized access)
+allowedChatId = <your_chat_id>
 
 # Groq API (free tier — voice transcription via Whisper)
 groqApiKey = "<your Groq API key>"
@@ -144,7 +154,7 @@ chmod +x start.sh   # only needed the first time
    ngrok http 8090
    ```
 
-2. Copy the `https://xxxx.ngrok-free.app` URL shown by ngrok. Open `personal_life_manager/Config.toml` and update:
+2. Copy the `https://xxxx.ngrok-free.app` URL shown by ngrok. Open `Config.toml` in the sample root and update:
 
    ```toml
    telegramCallbackUrl = "https://xxxx.ngrok-free.app"
@@ -153,7 +163,7 @@ chmod +x start.sh   # only needed the first time
 3. Start the agent in a second terminal:
 
    ```bash
-   cd personal_life_manager/personal_life_manager
+   cd <sample-root>
    bal run
    ```
 

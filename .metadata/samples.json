@@ -457,12 +457,12 @@
     },
     {
       "displayName": "Personal Life Manager",
-      "description": "A personal life manager connecting Telegram to Gmail, Google Calendar, and Google Tasks via an AI agent. Read unread emails, check calendar events, and manage tasks using text or voice messages.",
+      "description": "A personal life manager connecting Telegram to Gmail, Google Calendar, and Google Tasks via an AI agent. Uses Groq Whisper for voice transcription. Read unread emails, check calendar events, and manage tasks using text or voice messages.",
       "componentType": "ai-agent",
       "buildPack": "ballerina",
       "repositoryUrl": "https://github.com/wso2/integration-samples/",
       "componentPath": "/integrator-default-profile/samples/personal-life-manager",
-      "thumbnailPath": "https://github.com/wso2/integrator-default-profile/samples/personal-life-manager/icon.svg",
+      "thumbnailPath": "https://devant-cdn.wso2.com/console/sample-icons/personal_life_manager.svg",
       "tags": ["Telegram", "Gmail", "Google Calendar", "Google Tasks", "Voice", "AI", "Agent"]
     }
   ]

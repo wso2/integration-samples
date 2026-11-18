@@ -1,19 +1,13 @@
-configurable int voiceListenerPort = 8080;
 configurable string telegramBotToken = ?;
 configurable string telegramCallbackUrl = ?;
+configurable int allowedChatId = ?;
 
-configurable string gmailClientId = ?;
-configurable string gmailClientSecret = ?;
-configurable string gmailRefreshToken = ?;
+// Single set of Google OAuth credentials shared across Gmail, Calendar, and Tasks
+configurable string googleClientId = ?;
+configurable string googleClientSecret = ?;
+configurable string googleRefreshToken = ?;
 
-configurable string calendarClientId = ?;
-configurable string calendarClientSecret = ?;
-configurable string calendarRefreshToken = ?;
 configurable string calendarId = "primary";
+configurable string tasksListId = "@default";
 
 configurable string groqApiKey = ?;
-
-configurable string tasksClientId = ?;
-configurable string tasksClientSecret = ?;
-configurable string tasksRefreshToken = ?;
-configurable string tasksListId = "@default";

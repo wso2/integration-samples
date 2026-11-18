@@ -11,7 +11,7 @@
     <clipPath id="cp-o2"> <circle cx="252" cy="188" r="22"/></clipPath>
   </defs>
 
-  <!-- Connectors — pre-computed from skill table (agent r=26) -->
+  <!-- Connectors -->
   <line x1="114" y1="120" x2="62"  y2="120" stroke="#06B6D4" stroke-width="1.5" stroke-dasharray="5,3" opacity="0.6"/>
   <line x1="162" y1="107" x2="231" y2="72"  stroke="#06B6D4" stroke-width="1.5" stroke-dasharray="5,3" opacity="0.6"/>
   <line x1="166" y1="120" x2="228" y2="120" stroke="#06B6D4" stroke-width="1.5" stroke-dasharray="5,3" opacity="0.6"/>
@@ -31,7 +31,7 @@
     </svg>
   </g>
 
-  <!-- Gmail (top-right) — Iconify CDN with padded viewBox -->
+  <!-- Gmail -->
   <circle cx="252" cy="52" r="24" fill="white" stroke="#E8EAED" stroke-width="0.5"/>
   <g clip-path="url(#cp-o0)">
     <svg x="230" y="30" width="44" height="44" viewBox="-20 -20 296 244" overflow="visible">

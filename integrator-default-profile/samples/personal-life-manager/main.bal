@@ -16,6 +16,10 @@ service telegram:TelegramService on telegramListener {
     }
 
     remote function onMessage(telegram:Message message) returns error? {
+        // Ignore messages from chats other than the configured allowed chat
+        if message.chat.id != allowedChatId {
+            return;
+        }
         _ = start self.replyToTelegramMessage(message);
     }
 
@@ -71,10 +75,15 @@ service telegram:TelegramService on telegramListener {
             audioReq.setBodyParts([filePart, modelPart], mime:MULTIPART_FORM_DATA);
 
             http:Response audioResp = check groqAudioClient->post("/openai/v1/audio/transcriptions", audioReq);
+            if audioResp.statusCode != 200 {
+                string errBody = check audioResp.getTextPayload();
+                log:printError("Groq transcription failed", statusCode = audioResp.statusCode, body = errBody);
+                return error("Voice transcription failed. Please try again.");
+            }
             json respJson = check audioResp.getJsonPayload();
             return (check respJson.text).toString();
         }
 
-        return "Sorry, I can only handle text and voice messages.";
+        return error("Unsupported message type. Please send text or a voice message.");
     }
 }
