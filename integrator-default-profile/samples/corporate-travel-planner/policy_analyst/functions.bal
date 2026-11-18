@@ -70,12 +70,20 @@ public isolated function evaluateTrip(string grade, logistics_coordinator:Flight
     }
 
     if hotel is logistics_coordinator:HotelRate {
-        decimal hotelUsd = check toUsd(amount = hotel.totalAmount, currency = hotel.currency);
-        // Fees paid at the hotel are not in the booking total but are still part of the nightly cost.
+        // Fees paid at the hotel are not in the booking total but are still part of the nightly cost. Charges in
+        // the same currency are added before converting, so they use one exchange rate.
         decimal? dueAtHotel = hotel.dueAtAccommodationAmount;
-        if dueAtHotel is decimal && dueAtHotel > 0d {
-            hotelUsd += check toUsd(amount = dueAtHotel, currency = hotel.dueAtAccommodationCurrency ?: hotel.currency);
-        } else if dueAtHotel is () {
+        string feeCurrency = hotel.dueAtAccommodationCurrency ?: hotel.currency;
+        decimal hotelUsd;
+        if dueAtHotel is decimal && feeCurrency == hotel.currency {
+            hotelUsd = check toUsd(amount = hotel.totalAmount + dueAtHotel, currency = hotel.currency);
+        } else {
+            hotelUsd = check toUsd(amount = hotel.totalAmount, currency = hotel.currency);
+            if dueAtHotel is decimal && dueAtHotel > 0d {
+                hotelUsd += check toUsd(amount = dueAtHotel, currency = feeCurrency);
+            }
+        }
+        if dueAtHotel is () {
             warnings.push("Fees payable at the hotel are unknown and are not included in the hotel cost");
         }
         totalUsd += hotelUsd;

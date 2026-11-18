@@ -82,12 +82,24 @@ service /travel on travelListener {
         }
 
         string reason = decision.reason ?: "Rejected by manager";
-        readonly & ai:HumanDecision humanDecision = decision.outcome == "APPROVE"
-            ? {outcome: ai:APPROVE}
-            : {outcome: ai:REJECT, reason};
-        if decision.outcome == "APPROVE" {
+        readonly & ai:HumanDecision humanDecision;
+        TripProposal? current = getProposal(pending.proposalId);
+        if current is () || current.status != "PROPOSED" {
+            // The proposal changed since it was submitted, so the request is out of date. Close it without
+            // recording a decision on the proposal.
+            string state = current is () ? "gone" : current.status;
+            humanDecision = {
+                outcome: ai:REJECT,
+                reason: string `Proposal '${pending.proposalId}' is already ${state}, so this approval request ` +
+                    "is out of date. Nothing was changed."
+            };
+            log:printWarn("approval request is out of date", approvalId = approvalId,
+                proposalId = pending.proposalId, status = state);
+        } else if decision.outcome == "APPROVE" {
+            humanDecision = {outcome: ai:APPROVE};
             addAuditEvent(pending.proposalId, approverId, "APPROVED", decision.reason ?: "");
         } else {
+            humanDecision = {outcome: ai:REJECT, reason};
             markRejected(pending.proposalId, pending.employeeId, approverId, reason);
         }
         log:printInfo("approval decided", approvalId = approvalId, proposalId = pending.proposalId,
@@ -107,17 +119,12 @@ service /travel on travelListener {
             log:printError("resuming after the approval decision failed", 'error = result,
                 approvalId = approvalId, proposalId = pending.proposalId);
             releaseSession(pending.sessionKey);
-            return <http:InternalServerError>{
-                body: <ErrorBody>{
-                    message: string `The decision was recorded, but the planner failed afterwards. Check ` +
-                        string `GET /travel/proposals/${pending.proposalId} for the booking status.`
-                }
-            };
+            return failedAfterDecision(pending.proposalId);
         }
         ChatResponse|http:InternalServerError response = toChatResponse(sessionId = sessionId,
             sessionKey = pending.sessionKey, traveler = traveler, result = result);
         releaseSession(pending.sessionKey);
-        return response;
+        return response is http:InternalServerError ? failedAfterDecision(pending.proposalId) : response;
     }
 
     # Returns a trip proposal with its policy result, booking status and audit trail.
@@ -143,18 +150,30 @@ isolated function toChatResponse(string sessionId, string sessionKey, Employee t
         return {sessionId, status: "COMPLETED", message: result, pendingApprovals: []};
     }
     if result is ai:ApprovalRequiredError {
-        ai:ApprovalRequest[] requests = result.detail().requests;
-        string[] foreignProposals = from ai:ApprovalRequest request in requests
-            let string proposalId = proposalIdOf(request)
-            where !isOwnProposal(proposalId, traveler)
-            select proposalId;
-        if foreignProposals.length() > 0 {
-            return rejectForeignProposals(sessionId, sessionKey, traveler, requests, foreignProposals);
+        // Requests already pending were checked when they were first submitted; the agent returns them again,
+        // undecided, after a decision on another request in the same batch.
+        ai:ApprovalRequest[] newRequests = from ai:ApprovalRequest request in result.detail().requests
+            where !isPendingApproval(request.id)
+            select request;
+        map<string> problems = {};
+        string[] submitted = [];
+        foreach ai:ApprovalRequest request in newRequests {
+            string proposalId = proposalIdOf(request);
+            string? problem = submitted.indexOf(proposalId) is int
+                ? string `Proposal '${proposalId}' was submitted twice in one request.`
+                : submissionProblem(proposalId, traveler);
+            submitted.push(proposalId);
+            if problem is string {
+                problems[request.id] = problem;
+            }
+        }
+        if problems.length() > 0 {
+            return rejectSubmissions(sessionId, sessionKey, traveler, newRequests, problems);
         }
         string requestedAt = nowIso();
-        foreach ai:ApprovalRequest request in requests {
+        foreach ai:ApprovalRequest request in newRequests {
             string proposalId = proposalIdOf(request);
-            addPendingApproval({
+            boolean added = addPendingApproval({
                 approvalId: request.id,
                 sessionKey,
                 proposalId,
@@ -162,7 +181,9 @@ isolated function toChatResponse(string sessionId, string sessionKey, Employee t
                 approverId: traveler.managerId,
                 requestedAt
             });
-            addAuditEvent(proposalId, traveler.employeeId, "SUBMITTED_FOR_APPROVAL", traveler.managerId);
+            if added {
+                addAuditEvent(proposalId, traveler.employeeId, "SUBMITTED_FOR_APPROVAL", traveler.managerId);
+            }
         }
         ApprovalView[] views = from PendingApproval approval in pendingApprovalsInSession(sessionKey)
             select toApprovalView(approval);
@@ -183,21 +204,19 @@ isolated function proposalIdOf(ai:ApprovalRequest request) returns string {
     return args is BookTripArgs ? args.proposalId : "";
 }
 
-// The model chose which proposal to submit, so check it before any manager sees it. A request for a proposal
-// that is not the traveler's is rejected at once, with the rest of its batch, so the conversation does not stay
-// paused and no other traveler's proposal reaches this manager.
-isolated function rejectForeignProposals(string sessionId, string sessionKey, Employee traveler,
-        ai:ApprovalRequest[] requests, string[] foreignProposals) returns ChatResponse|http:InternalServerError {
-    log:printWarn("refused to submit proposals that are not the traveler's", employeeId = traveler.employeeId,
-        proposalIds = foreignProposals);
+// The model chose which proposal to submit, so check it before any manager sees it. A request that cannot be
+// submitted (another traveler's proposal, or one already booked, rejected or waiting for a decision) is rejected
+// at once, with the rest of its batch, so the conversation does not stay paused and the manager never sees it.
+isolated function rejectSubmissions(string sessionId, string sessionKey, Employee traveler,
+        ai:ApprovalRequest[] requests, map<string> problems) returns ChatResponse|http:InternalServerError {
+    log:printWarn("refused to submit proposals for approval", employeeId = traveler.employeeId,
+        problems = problems.toArray());
     map<ai:HumanDecision> decisions = {};
     foreach ai:ApprovalRequest request in requests {
-        string proposalId = proposalIdOf(request);
         decisions[request.id] = {
             outcome: ai:REJECT,
-            reason: foreignProposals.indexOf(proposalId) is int
-                ? string `Proposal '${proposalId}' is not one of this traveler's proposals, so it cannot be submitted.`
-                : "Submitted together with a proposal that is not this traveler's. Submit it again on its own."
+            reason: problems[request.id]
+                ?: "Submitted together with a proposal that could not be submitted. Submit it again on its own."
         };
     }
     ai:Context context = new;
@@ -208,3 +227,11 @@ isolated function rejectForeignProposals(string sessionId, string sessionKey, Em
     string|ai:Error next = tripPlanner.run(query = resume, sessionId = sessionKey, context = context);
     return toChatResponse(sessionId = sessionId, sessionKey = sessionKey, traveler = traveler, result = next);
 }
+
+// Points the manager at the proposal when the planner fails after a decision, since the booking may have run.
+isolated function failedAfterDecision(string proposalId) returns http:InternalServerError => {
+    body: <ErrorBody>{
+        message: string `The decision was recorded, but the planner failed afterwards. Check ` +
+            string `GET /travel/proposals/${proposalId} for the booking status.`
+    }
+};

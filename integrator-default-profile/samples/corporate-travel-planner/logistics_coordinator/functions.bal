@@ -160,7 +160,8 @@ public isolated function searchHotelOptions(decimal latitude, decimal longitude,
 # Returns bookable rates for a hotel from a search, remembering them for later lookup. Rates that cannot be
 # paid from the Duffel balance are left out.
 # + searchResultId - The hotel's search result ID
-# + return - Up to six rates, cheapest first, counting fees paid at the hotel when they are in the same currency
+# + return - Up to six rates, cheapest booking total first. Fees paid at the hotel are not in that total, and can
+# be in another currency, so they are returned with each rate for the policy check to convert and count.
 public isolated function fetchHotelRates(string searchResultId) returns HotelRate[]|error {
     StaysRatesResponse response = check duffelSearchClient->/stays/search_results/[searchResultId]/actions/fetch_all_rates
         .post(message = (), headers = duffelHeaders);
@@ -178,7 +179,7 @@ public isolated function fetchHotelRates(string searchResultId) returns HotelRat
         }
     }
     HotelRate[] cheapest = from HotelRate rate in rates
-        order by payableAmount(rate) ascending
+        order by rate.totalAmount ascending
         limit MAX_RATE_OPTIONS
         select rate;
     foreach HotelRate rate in cheapest {
@@ -187,13 +188,6 @@ public isolated function fetchHotelRates(string searchResultId) returns HotelRat
         }
     }
     return cheapest;
-}
-
-# The rate's total plus any fees paid at the hotel, when those are in the same currency.
-isolated function payableAmount(HotelRate rate) returns decimal {
-    decimal? due = rate.dueAtAccommodationAmount;
-    return due is decimal && (rate.dueAtAccommodationCurrency ?: rate.currency) == rate.currency
-        ? rate.totalAmount + due : rate.totalAmount;
 }
 
 # Looks up a hotel rate that getHotelRates returned.
@@ -211,18 +205,26 @@ public isolated function findHotelRate(string rateId) returns HotelRate|error {
 
 # Creates a quote for a rate, which confirms availability and the current price. Never retried automatically.
 # + rateId - The rate to quote
-# + return - The quote
+# + return - The quote, with the fees payable at the hotel
 public isolated function createHotelQuote(string rateId) returns HotelQuote|error {
     QuoteBody body = {data: {rate_id: rateId}};
     QuoteResponse response = check duffelBookingClient->/stays/quotes.post(message = body, headers = duffelHeaders);
     StaysQuote quote = response.data;
-    return {quoteId: quote.id, amount: check decimal:fromString(quote.total_amount), currency: quote.total_currency};
+    return {
+        quoteId: quote.id,
+        amount: check decimal:fromString(quote.total_amount),
+        currency: quote.total_currency,
+        dueAtAccommodationAmount: check optionalDecimal(quote?.due_at_accommodation_amount),
+        dueAtAccommodationCurrency: quote?.due_at_accommodation_currency
+    };
 }
 
 # Books a quoted hotel rate, paid from the Duffel balance. Never retried automatically.
 # + quoteId - The quote to book
 # + guest - The lead guest's details
-# + return - The booking ID, hotel reference (which Duffel may leave empty) and status
+# + return - The booking ID, hotel reference (which Duffel may leave empty) and status. When Duffel confirms the
+# booking before its record exists (HTTP 200), the booking ID is nil. When Duffel has not confirmed the outcome
+# yet (HTTP 202), a `BookingNotConfirmedError`.
 public isolated function createHotelBooking(string quoteId, PassengerDetails guest) returns HotelBooking|error {
     StaysBookingBody body = {
         data: {
@@ -232,20 +234,62 @@ public isolated function createHotelBooking(string quoteId, PassengerDetails gue
             phone_number: guest.phoneNumber
         }
     };
-    StaysBookingResponse response = check duffelBookingClient->/stays/bookings.post(message = body,
-        headers = duffelHeaders);
-    StaysBooking booking = response.data;
+    // Read the status first: Duffel answers 201 with the booking, 200 when the booking is confirmed but its
+    // record comes later, and 202 when the outcome is not confirmed yet.
+    http:Response response = check duffelBookingClient->/stays/bookings.post(message = body, headers = duffelHeaders);
+    int statusCode = response.statusCode;
+    json|http:ClientError payload = response.getJsonPayload();
+    if statusCode == http:STATUS_CREATED || statusCode == http:STATUS_OK {
+        HotelBooking|error booking = toHotelBooking(statusCode, payload);
+        if booking is error {
+            return error BookingNotConfirmedError(
+                "Duffel answered the booking request, but the answer could not be read", booking);
+        }
+        return booking;
+    }
+    if statusCode == http:STATUS_ACCEPTED {
+        return error BookingNotConfirmedError("Duffel accepted the booking request but has not confirmed it yet");
+    }
+    map<string[]> headers = {};
+    foreach string name in response.getHeaderNames() {
+        string[]|http:HeaderNotFoundError values = response.getHeaders(name);
+        if values is string[] {
+            headers[name] = values;
+        }
+    }
+    anydata errorBody = payload is json ? payload : ();
+    return statusCode >= 500
+        ? error http:RemoteServerError("Duffel booking request failed", statusCode = statusCode, headers = headers,
+            body = errorBody)
+        : error http:ClientRequestError("Duffel booking request failed", statusCode = statusCode, headers = headers,
+            body = errorBody);
+}
+
+isolated function toHotelBooking(int statusCode, json|http:ClientError payload) returns HotelBooking|error {
+    json body = check payload;
+    if statusCode == http:STATUS_OK {
+        // Confirmed by the supplier; Duffel creates the booking record later.
+        StaysBookingConfirmation _ = check body.cloneWithType();
+        return {bookingId: (), reference: (), status: "confirmed"};
+    }
+    StaysBookingResponse created = check body.cloneWithType();
+    StaysBooking booking = created.data;
     return {bookingId: booking.id, reference: booking.reference, status: booking.status};
 }
 
 # Whether a failed order or booking call may still have created the order or booking: no response arrived,
-# Duffel returned a server error, or the success response could not be read. Such a booking must be checked
-# in Duffel before anyone tries again.
+# Duffel returned a server error other than 503 (which Duffel documents as "nothing was booked"), Duffel
+# accepted the request without confirming it, or the success response could not be read. Such a booking must
+# be checked in Duffel before anyone tries again.
 # + err - The error from `createFlightOrder` or `createHotelBooking`
 # + return - `true` when the outcome is unknown
 public isolated function isOutcomeUnknown(error err) returns boolean {
+    if err is BookingNotConfirmedError {
+        return true;
+    }
     if err is http:ApplicationResponseError {
-        return err.detail().statusCode >= 500;
+        int statusCode = err.detail().statusCode;
+        return statusCode >= 500 && statusCode != http:STATUS_SERVICE_UNAVAILABLE;
     }
     return err is http:ClientError;
 }

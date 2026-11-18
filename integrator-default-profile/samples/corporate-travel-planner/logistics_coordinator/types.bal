@@ -85,13 +85,22 @@ public type HotelQuote record {|
     string quoteId;
     decimal amount;
     string currency;
+    # Mandatory fees paid at the hotel on top of `amount`, or nil when Duffel does not know them
+    decimal? dueAtAccommodationAmount;
+    string? dueAtAccommodationCurrency;
 |};
 
 public type HotelBooking record {|
-    string bookingId;
+    # Nil when Duffel confirmed the booking but has not created its record yet, which can take a few hours
+    string? bookingId;
     string? reference;
     string status;
 |};
+
+# Duffel answered a booking request without confirming the outcome: it accepted the request but has not
+# confirmed it yet (HTTP 202), or its success response could not be read. The booking may exist or still be
+# made, so it must not be requested again.
+public type BookingNotConfirmedError distinct error;
 
 // ---- Duffel wire types (field names match Duffel's JSON) ----
 
@@ -324,6 +333,8 @@ type StaysQuote record {
     string id;
     string total_amount;
     string total_currency;
+    string? due_at_accommodation_amount?;
+    string? due_at_accommodation_currency?;
 };
 
 type QuoteResponse record {
@@ -354,4 +365,11 @@ type StaysBooking record {
 
 type StaysBookingResponse record {
     StaysBooking data;
+};
+
+// The HTTP 200 answer to a booking request: the supplier confirmed it, but Duffel has no booking record yet.
+type StaysBookingConfirmation record {
+    record {
+        string message;
+    } data;
 };

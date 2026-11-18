@@ -50,10 +50,15 @@ public isolated function weatherOutlook(decimal latitude, decimal longitude, str
         string pastStart = check shiftYear(isoDate = startDate, years = -yearsBack);
         WeatherResponse history = check archiveClient->/archive(latitude = latitude, longitude = longitude,
             daily = DAILY_FIELDS, timezone = "auto", start_date = pastStart, end_date = pastEnd);
-        return toOutlook(response = history,
-            basis = yearsBack == 1 ? "same dates last year" : string `same dates ${yearsBack} years ago`);
+        string basis = yearsBack == 1 ? "same dates last year" : string `same dates ${yearsBack} years ago`;
+        // shiftYear moves 29 February to 28 February in a year without it; say so.
+        if isLeapDay(startDate) || isLeapDay(endDate) {
+            basis += ", with 28 February standing in for 29 February";
+        }
+        return toOutlook(response = history, basis = basis);
     }
-    return error(string `The trip is more than ${MAX_YEARS_BACK} years away; no weather outlook is available`);
+    return error(string `No weather outlook is available: the dates are beyond the forecast, and the archive does ` +
+        string `not have them yet in any of the last ${MAX_YEARS_BACK} years`);
 }
 
 # The UK FCDO travel advice for a country (GOV.UK Content API).
@@ -93,13 +98,10 @@ isolated function findAdviceCountry(string countryName) returns AdviceCountry|er
 isolated function todayIso() returns string => time:utcToString(time:utcNow()).substring(0, 10);
 
 isolated function toUtcDate(string isoDate) returns time:Utc|error {
-    if isoDate.length() < 10 {
+    if !re `[0-9]{4}-[0-9]{2}-[0-9]{2}`.isFullMatch(isoDate) {
         return error(string `Invalid date '${isoDate}', expected YYYY-MM-DD`);
     }
-    string[] parts = re `-`.split(isoDate.substring(0, 10));
-    if parts.length() != 3 {
-        return error(string `Invalid date '${isoDate}', expected YYYY-MM-DD`);
-    }
+    string[] parts = re `-`.split(isoDate);
     int year = check int:fromString(parts[0]);
     int month = check int:fromString(parts[1]);
     int day = check int:fromString(parts[2]);
@@ -112,6 +114,8 @@ isolated function daysBetween(string fromDate, string toDate) returns int|error 
     time:Utc toUtc = check toUtcDate(toDate);
     return <int>(time:utcDiffSeconds(toUtc, fromUtc) / 86400d);
 }
+
+isolated function isLeapDay(string isoDate) returns boolean => isoDate.substring(4) == "-02-29";
 
 isolated function shiftYear(string isoDate, int years) returns string|error {
     time:Civil civil = time:utcToCivil(check toUtcDate(isoDate));
