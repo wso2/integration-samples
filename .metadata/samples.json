@@ -154,6 +154,16 @@
       "tags": ["Voice", "OpenAI", "AI", "Agent"]
     },
     {
+      "displayName": "GitHub Monthly Report Agent",
+      "description": "An AI agent that reads the open issues and pull requests of a GitHub repository, writes a monthly report with a summary, recommended actions, issues by severity, unattended issues and the oldest pull requests, and emails it as a PDF through Gmail.",
+      "componentType": "ai-agent",
+      "buildPack": "ballerina",
+      "repositoryUrl": "https://github.com/wso2/integration-samples/",
+      "componentPath": "/integrator-default-profile/samples/github-monthly-report-agent",
+      "thumbnailPath": "https://devant-cdn.wso2.com/console/sample-icons/AIAgent.svg",
+      "tags": ["GitHub", "Gmail", "PDF", "AI", "Agent"]
+    },
+    {
       "displayName": "S3 File Event Listener",
       "description": "An event-driven integration that reacts to S3 file uploads by consuming object-created notifications from an SQS queue using the aws.sqs listener.",
       "componentType": "event-handler",
