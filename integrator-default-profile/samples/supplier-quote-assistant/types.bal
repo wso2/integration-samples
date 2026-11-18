@@ -47,3 +47,12 @@ public type DeadlineCheckResult record {|
     string deliveryDate;
     string deadline;
 |};
+
+# An approved budget for a requester or department, read from the budget tracking sheet.
+#
+# + requesterOrDepartment - the requester or department name the budget row was found for
+# + approvedBudget - the approved budget amount for that requester or department
+public type ApprovedBudget record {|
+    string requesterOrDepartment;
+    decimal approvedBudget;
+|};

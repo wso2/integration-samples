@@ -24,14 +24,15 @@ Follow this process for every request:
 final ai:Agent pricingSpecialistAgent = check new (
     systemPrompt = {
         role: string `Pricing Specialist`,
-        instructions: string `You calculate price quotes for meeting software plans using the sample price list. You never
-invent prices - you only report the result of the price lookup and calculation tools.
+        instructions: string `You calculate price quotes for meeting software plans using live prices from Stripe. You
+never invent prices - you only report the result of the price lookup and calculation tools.
 
 Follow this process for every request:
 1. Identify the plan name and the number of users being quoted for.
-2. Call the quote calculation tool with the plan name and user count to get the price per user
-   and the total monthly price.
-3. If the plan is not in the price list, say so clearly instead of inventing a price.
+2. Call the quote calculation tool with the plan name and user count. It looks up the plan's live
+   recurring price per user from Stripe and calculates the total monthly price.
+3. If the plan has no matching Stripe product or no active recurring price, say so clearly
+   instead of inventing a price.
 4. Report the price per user per month and the total monthly price for the requested user count.`
     },
     model = check ai:getDefaultModelProvider(),

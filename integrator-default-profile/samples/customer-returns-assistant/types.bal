@@ -1,11 +1,14 @@
-# Sample customer order used for return eligibility checks.
+# A customer order looked up from Shopify, with the delivery date and item resolved for return
+# eligibility checks.
 #
-# + orderReference - the unique order reference, e.g. "ORD-1042"
+# + orderReference - the order reference, e.g. "#1042"
 # + itemName - the name of the item in the order
-# + deliveredDaysAgo - number of days since the order was delivered
+# + variantId - the Shopify product variant id, used to check replacement stock
+# + deliveredDaysAgo - number of days since the order was delivered (fulfilled)
 public type Order record {|
     string orderReference;
     string itemName;
+    int variantId;
     int deliveredDaysAgo;
 |};
 

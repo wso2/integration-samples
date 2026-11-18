@@ -1,7 +1,6 @@
 target/
 generated/
 Config.toml
-!tests/Config.toml
 trace_enabled.bal
 Ballerina.lock
 .env
