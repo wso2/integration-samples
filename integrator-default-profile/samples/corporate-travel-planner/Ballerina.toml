@@ -1,3 +1,0 @@
-[workspace]
-title = "corporate-travel-planner"
-packages = ["travel_planner", "destination_researcher", "logistics_coordinator", "policy_analyst"]

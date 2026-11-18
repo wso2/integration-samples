@@ -176,15 +176,15 @@
       "imageUrl": "wso2integrations.azurecr.io/azure_files_change_tracker:0.1.0"
     },
     {
-      "displayName": "Corporate Travel Planner",
-      "description": "A multi-agent travel desk for business trips. A planner agent works with destination, logistics and policy agents to research the destination, find flights and hotels through Duffel, and check them against the company travel policy. Bookings are made only after the traveler's manager approves them.",
+      "displayName": "Business Trip Approval",
+      "description": "A multi-agent travel desk for business trip approvals. A planner agent works with destination, travel advice and policy agents to check the weather, public holidays, UK FCDO travel advice and the company travel policy. Each trip goes to the traveler's manager, and to the manager's manager when the policy asks for it. When all approve, it issues a travel authorization.",
       "componentType": "ai-agent",
       "buildPack": "ballerina",
       "repositoryUrl": "https://github.com/wso2/integration-samples/",
-      "componentPath": "/integrator-default-profile/samples/corporate-travel-planner",
-      "thumbnailPath": "https://raw.githubusercontent.com/wso2/integration-samples/main/integrator-default-profile/samples/corporate-travel-planner/icon.svg",
-      "tags": ["OpenAI", "Duffel", "AI", "Agent"],
-      "imageUrl": "wso2integrations.azurecr.io/travel_planner:0.1.0"
+      "componentPath": "/integrator-default-profile/samples/business-trip-approval",
+      "thumbnailPath": "https://raw.githubusercontent.com/wso2/integration-samples/main/integrator-default-profile/samples/business-trip-approval/icon.svg",
+      "tags": ["OpenAI", "AI", "Agent"],
+      "imageUrl": "wso2integrations.azurecr.io/trip_approval:0.1.0"
     },
     {
       "displayName": "API Testing",

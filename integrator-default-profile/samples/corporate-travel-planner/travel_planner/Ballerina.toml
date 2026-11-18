@@ -1,9 +1,0 @@
-[package]
-org = "wso2"
-name = "travel_planner"
-version = "0.1.0"
-distribution = "2201.14.1"
-title = "travel-planner"
-
-[build-options]
-sticky = true
