@@ -1,11 +1,5 @@
 import ballerina/ai;
-
-final readonly & map<decimal> samplePriceList = {
-    "Starter": 5.00,
-    "Pro": 9.00,
-    "Business": 12.00,
-    "Enterprise": 20.00
-};
+import ballerinax/stripe;
 
 # Retrieves the most relevant passages from the product catalog for a query.
 #
@@ -21,20 +15,38 @@ isolated function retrieveProductCatalog(string query) returns string|error {
     return string:'join("\n---\n", ...excerpts);
 }
 
-# Looks up the list price per user per month for a plan from the sample price list.
+# Looks up the live monthly recurring price per user for a plan from Stripe, by resolving the
+# plan name to a Stripe product and reading its active recurring price.
 #
 # + planName - the name of the plan, e.g. "Business"
-# + return - the price per user per month, or an error if the plan is unknown
+# + return - the price per user per month, or an error if the plan or its price was not found
 @ai:AgentTool
+@display {label: "", iconPath: "https://bcentral-packageicons.azureedge.net/images/ballerinax_stripe_1.0.0.png"}
 isolated function lookupPlanPrice(string planName) returns decimal|error {
-    decimal? price = samplePriceList[planName];
-    if price is decimal {
-        return price;
+    string escapedPlanName = re `'`.replaceAll(planName, "\\'");
+    stripe:SearchResult_5 productResult = check stripeClient->/products/search(
+        query = string `name:'${escapedPlanName}'`
+    );
+    stripe:Product[] products = productResult.data;
+    if products.length() == 0 {
+        return error("No product found for plan " + planName);
     }
-    return error("No price found for plan " + planName);
+    stripe:Product product = products[0];
+    stripe:PriceList priceList = check stripeClient->/prices(product = product.id, 'type = "recurring", active = true);
+    stripe:Price[] prices = priceList.data;
+    if prices.length() == 0 {
+        return error("No active recurring price found for plan " + planName);
+    }
+    stripe:Price price = prices[0];
+    int? unitAmount = price["unit_amount"];
+    if unitAmount is () {
+        return error("Plan " + planName + " does not have a per-unit price");
+    }
+    return <decimal>unitAmount / 100;
 }
 
-# Calculates the total monthly price for a plan at a given number of users.
+# Calculates the total monthly price for a plan at a given number of users, using the live price
+# from Stripe.
 #
 # + planName - the name of the plan being quoted
 # + userCount - the number of users to quote for

@@ -1,5 +1,6 @@
 import ballerina/ai;
 import ballerina/time;
+import ballerinax/googleapis.sheets;
 
 # Calculates the total cost of a quotation (unit price * quantity + shipping charge).
 #
@@ -59,4 +60,41 @@ isolated function checkDeadline(string supplierName, string deliveryDate, string
         deadline: deadline
     };
     return result;
+}
+
+# Looks up the approved budget for a requester or department from the budget tracking Google
+# Sheet, instead of trusting a budget figure typed into chat.
+#
+# + requesterOrDepartment - the requester name or department to look up the approved budget for
+# + return - the approved budget found for that requester or department, or an error if no
+# matching row was found
+@ai:AgentTool
+@display {label: "", iconPath: "https://bcentral-packageicons.azureedge.net/images/ballerinax_googleapis.sheets_3.0.0.png"}
+isolated function lookupApprovedBudget(string requesterOrDepartment) returns ApprovedBudget|error {
+    sheets:Range range = check budgetSheetsClient->getRange(budgetSpreadsheetId, budgetSheetName, "A1:B1000",
+            "UNFORMATTED_VALUE");
+    (int|string|decimal)[][] rows = range.values;
+    foreach (int|string|decimal)[] row in rows {
+        if row.length() < 2 {
+            continue;
+        }
+        (int|string|decimal) nameCell = row[0];
+        if nameCell is string && nameCell.toLowerAscii() == requesterOrDepartment.toLowerAscii() {
+            (int|string|decimal) budgetCell = row[1];
+            decimal approvedBudget;
+            if budgetCell is decimal {
+                approvedBudget = budgetCell;
+            } else if budgetCell is int {
+                approvedBudget = <decimal>budgetCell;
+            } else {
+                approvedBudget = check decimal:fromString(budgetCell);
+            }
+            ApprovedBudget result = {
+                requesterOrDepartment: requesterOrDepartment,
+                approvedBudget: approvedBudget
+            };
+            return result;
+        }
+    }
+    return error("No approved budget found for " + requesterOrDepartment);
 }

@@ -1,29 +1,61 @@
 import ballerina/ai;
-
-final readonly & Order[] sampleOrders = [
-    {orderReference: "ORD-1042", itemName: "Wireless Headset", deliveredDaysAgo: 12},
-    {orderReference: "ORD-2087", itemName: "Bluetooth Speaker", deliveredDaysAgo: 45}
-];
-
-final readonly & map<int> sampleReplacementStock = {
-    "Wireless Headset": 5,
-    "Bluetooth Speaker": 0
-};
+import ballerina/time;
+import ballerinax/shopify.admin;
 
 final int returnWindowDays = 30;
 
-# Looks up a sample customer order by its order reference.
+# Looks up a customer order from Shopify by its order reference and resolves its delivery date
+# from the order's fulfillment.
 #
-# + orderReference - the order reference to look up, e.g. "ORD-1042"
-# + return - the matching order, or an error if no order was found
+# + orderReference - the order reference to look up, e.g. "#1042"
+# + return - the matching order with its delivered-days-ago value, or an error if no order was
+# found or the order has not been fulfilled yet
 @ai:AgentTool
+@display {label: "", iconPath: "https://bcentral-packageicons.azureedge.net/images/ballerinax_shopify.admin_1.0.0.png"}
 isolated function lookupOrder(string orderReference) returns Order|error {
-    foreach Order 'order in sampleOrders {
-        if 'order.orderReference == orderReference {
-            return 'order;
-        }
+    admin:OrdersList ordersList = check shopifyClient->retrieveAListOfOrders(name = orderReference, status = "any");
+    admin:OrdersListOrders[]? orders = ordersList.orders;
+    if orders is () || orders.length() == 0 {
+        return error("No order found for reference " + orderReference);
     }
-    return error("No order found for reference " + orderReference);
+    admin:OrdersListOrders orderSummary = orders[0];
+    int? orderId = orderSummary.id;
+    if orderId is () {
+        return error("Order " + orderReference + " has no id");
+    }
+    admin:SingleOrderResponse orderResponse = check shopifyClient->retrieveASpecificOrder(orderId.toString());
+    admin:SingleOrderResponseOrder? 'order = orderResponse.'order;
+    if 'order is () {
+        return error("Order " + orderReference + " could not be retrieved");
+    }
+    admin:ReopenCloseOrderOrderFulfillments[]? fulfillments = 'order.fulfillments;
+    if fulfillments is () || fulfillments.length() == 0 {
+        return error("Order " + orderReference + " has not been fulfilled yet");
+    }
+    admin:ReopenCloseOrderOrderFulfillments fulfillment = fulfillments[0];
+    admin:ReopenCloseOrderOrderLineItems[]? lineItems = fulfillment.lineItems;
+    if lineItems is () || lineItems.length() == 0 {
+        return error("Order " + orderReference + " has no line items");
+    }
+    admin:ReopenCloseOrderOrderLineItems lineItem = lineItems[0];
+    int? variantId = lineItem["variantId"];
+    if variantId is () {
+        return error("Order " + orderReference + " line item has no variant");
+    }
+    string? fulfillmentCreatedAt = fulfillment.createdAt;
+    if fulfillmentCreatedAt is () {
+        return error("Order " + orderReference + " fulfillment has no delivery timestamp");
+    }
+    int deliveredDaysAgo = check daysSince(fulfillmentCreatedAt);
+    string? lineItemTitle = lineItem.title;
+    string? lineItemName = lineItem["name"];
+    Order result = {
+        orderReference: orderReference,
+        itemName: lineItemTitle ?: (lineItemName ?: "Unknown item"),
+        variantId: variantId,
+        deliveredDaysAgo: deliveredDaysAgo
+    };
+    return result;
 }
 
 # Checks whether an order was delivered within the policy return window.
@@ -44,17 +76,23 @@ isolated function checkReturnWindowEligibility(int deliveredDaysAgo) returns Eli
     return result;
 }
 
-# Checks how many replacement units of an item are available in sample stock.
+# Checks how many replacement units of a product variant are available in Shopify inventory.
 #
-# + itemName - the name of the item to check stock for
-# + return - the number of replacement units available, 0 if the item is unknown
+# + variantId - the Shopify product variant id to check stock for
+# + return - the number of replacement units available, or an error if the variant was not found
 @ai:AgentTool
-isolated function checkReplacementStock(string itemName) returns int {
-    int? stock = sampleReplacementStock[itemName];
-    if stock is int {
-        return stock;
+@display {label: "", iconPath: "https://bcentral-packageicons.azureedge.net/images/ballerinax_shopify.admin_1.0.0.png"}
+isolated function checkReplacementStock(int variantId) returns int|error {
+    admin:ProductVariantResponse variantResponse = check shopifyClient->receiveASingleProductVariant(variantId.toString());
+    admin:ProductVariantResponseVariant? variant = variantResponse.variant;
+    if variant is () {
+        return error("No product variant found for id " + variantId.toString());
     }
-    return 0;
+    int? inventoryQuantity = variant.inventoryQuantity;
+    if inventoryQuantity is () {
+        return 0;
+    }
+    return inventoryQuantity;
 }
 
 # Retrieves the most relevant passages from the return policy document for a query.
@@ -69,4 +107,16 @@ isolated function retrieveReturnPolicy(string query) returns string|error {
         excerpts.push('match.chunk.content.toString());
     }
     return string:'join("\n---\n", ...excerpts);
+}
+
+# Computes the number of whole days between a past timestamp and now.
+#
+# + pastTimestamp - an RFC 3339 timestamp, e.g. a Shopify fulfillment "created_at" value
+# + return - the number of whole days that have elapsed since pastTimestamp, or an error if the
+# timestamp could not be parsed
+isolated function daysSince(string pastTimestamp) returns int|error {
+    time:Utc pastUtc = check time:utcFromString(pastTimestamp);
+    time:Utc nowUtc = time:utcNow();
+    time:Seconds diffSeconds = time:utcDiffSeconds(nowUtc, pastUtc);
+    return <int>(diffSeconds / 86400).floor();
 }
