@@ -1,7 +1,10 @@
 import ballerina/time;
 
-// Open-Meteo forecasts up to 16 days ahead; beyond that, last year's weather on the same dates is used.
+// Open-Meteo forecasts up to 16 days ahead; beyond that, past weather on the same dates is used.
 const FORECAST_WINDOW_DAYS = 15;
+// The historical archive is a few days behind today.
+const ARCHIVE_DELAY_DAYS = 6;
+const MAX_YEARS_BACK = 3;
 const DAILY_FIELDS = "temperature_2m_max,temperature_2m_min,precipitation_sum";
 
 # Finds a city or place and returns its coordinates, country and time zone (Open-Meteo geocoding).
@@ -16,7 +19,8 @@ public isolated function geocode(string placeName) returns GeoLocation|error {
     return toGeoLocation(matches[0]);
 }
 
-# Daily weather for the given dates: a forecast within about two weeks, otherwise the same dates last year.
+# Daily weather for the given dates: a forecast within about two weeks, otherwise the same dates in the most
+# recent year the historical archive covers.
 # + latitude - Latitude of the place
 # + longitude - Longitude of the place
 # + startDate - First day (YYYY-MM-DD)
@@ -37,11 +41,19 @@ public isolated function weatherOutlook(decimal latitude, decimal longitude, str
             daily = DAILY_FIELDS, timezone = "auto", start_date = startDate, end_date = endDate);
         return toOutlook(response = forecast, basis = "forecast");
     }
-    string lastYearStart = check shiftYear(isoDate = startDate, years = -1);
-    string lastYearEnd = check shiftYear(isoDate = endDate, years = -1);
-    WeatherResponse history = check archiveClient->/archive(latitude = latitude, longitude = longitude,
-        daily = DAILY_FIELDS, timezone = "auto", start_date = lastYearStart, end_date = lastYearEnd);
-    return toOutlook(response = history, basis = "same dates last year");
+    // Step back whole years until the dates are in the archive, which a trip over a year away needs.
+    foreach int yearsBack in 1 ... MAX_YEARS_BACK {
+        string pastEnd = check shiftYear(isoDate = endDate, years = -yearsBack);
+        if check daysBetween(pastEnd, todayIso()) < ARCHIVE_DELAY_DAYS {
+            continue;
+        }
+        string pastStart = check shiftYear(isoDate = startDate, years = -yearsBack);
+        WeatherResponse history = check archiveClient->/archive(latitude = latitude, longitude = longitude,
+            daily = DAILY_FIELDS, timezone = "auto", start_date = pastStart, end_date = pastEnd);
+        return toOutlook(response = history,
+            basis = yearsBack == 1 ? "same dates last year" : string `same dates ${yearsBack} years ago`);
+    }
+    return error(string `The trip is more than ${MAX_YEARS_BACK} years away; no weather outlook is available`);
 }
 
 # The UK FCDO travel advice for a country (GOV.UK Content API).

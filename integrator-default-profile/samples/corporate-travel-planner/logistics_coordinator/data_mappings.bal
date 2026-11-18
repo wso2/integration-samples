@@ -4,6 +4,7 @@ isolated function toFlightOffer(DuffelOffer offer, string passengerId, CabinClas
     decimal longestLeg = 0;
     string departureDate = "";
     CabinClass cabinClass = requestedCabin;
+    boolean cabinFound = false;
     foreach DuffelSlice slice in offer.slices {
         DuffelSegment[] segments = slice.segments;
         if segments.length() == 0 {
@@ -11,18 +12,28 @@ isolated function toFlightOffer(DuffelOffer offer, string passengerId, CabinClas
         }
         DuffelSegment first = segments[0];
         DuffelSegment last = segments[segments.length() - 1];
-        string? duration = slice?.duration;
-        decimal hours = duration is string ? durationHours(duration).round(1) : 0;
-        if hours > longestLeg {
-            longestLeg = hours;
+        string? sliceDuration = slice?.duration;
+        decimal sliceHours = sliceDuration is string ? durationHours(sliceDuration) : 0;
+        foreach DuffelSegment segment in segments {
+            // The policy compares single flights, so connection time does not count. A slice without
+            // segment durations falls back to its own duration only when it is one flight.
+            string? segmentDuration = segment?.duration;
+            decimal flightHours = segmentDuration is string ? durationHours(segmentDuration)
+                : segments.length() == 1 ? sliceHours : 0;
+            if flightHours > longestLeg {
+                longestLeg = flightHours;
+            }
+            // Report the highest cabin in the offer, so the policy check sees every segment.
+            CabinClass? segmentCabin = segmentCabinClass(segment);
+            if segmentCabin is CabinClass && (!cabinFound || cabinRank(segmentCabin) > cabinRank(cabinClass)) {
+                cabinClass = segmentCabin;
+                cabinFound = true;
+            }
         }
         if departureDate == "" {
             departureDate = first.departing_at.substring(0, 10);
-            CabinClass? segmentCabin = segmentCabinClass(first);
-            if segmentCabin is CabinClass {
-                cabinClass = segmentCabin;
-            }
         }
+        decimal hours = sliceHours.round(1);
         string flightNumbers = string:'join(", ", ...from DuffelSegment segment in segments
             select string `${segment.marketing_carrier?.iata_code ?: ""}${segment.marketing_carrier_flight_number}`);
         legs.push(string `${first.origin.iata_code ?: "?"} ${first.departing_at} -> ${last.destination.iata_code ?: "?"} ` +
@@ -36,7 +47,8 @@ isolated function toFlightOffer(DuffelOffer offer, string passengerId, CabinClas
         cabinClass,
         totalAmount: check decimal:fromString(offer.total_amount),
         currency: offer.total_currency,
-        longestLegHours: longestLeg,
+        // Truncated, not rounded, so a 7h58m flight stays below an 8-hour threshold.
+        longestLegHours: decimal:floor(longestLeg * 100) / 100,
         departureDate,
         legs,
         refundable: isAllowed(conditions is () ? () : conditions?.refund_before_departure),

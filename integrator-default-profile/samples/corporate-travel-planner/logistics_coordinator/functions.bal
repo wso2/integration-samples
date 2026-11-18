@@ -32,6 +32,7 @@ public isolated function findAirports(string query) returns AirportOption[]|erro
 // ---- Flights ----
 
 # Searches flights for one adult and returns the cheapest offers, remembering them for later lookup.
+# Offers that need passport details are left out, because this sample does not collect them.
 # + origin - Origin IATA airport or city code
 # + destination - Destination IATA airport or city code
 # + departureDate - Outbound date (YYYY-MM-DD)
@@ -56,6 +57,9 @@ public isolated function searchFlightOffers(string origin, string destination, s
     string passengerId = offerRequest.passengers[0].id;
     FlightOffer[] offers = [];
     foreach DuffelOffer offer in offerRequest.offers {
+        if offer.passenger_identity_documents_required == true {
+            continue;
+        }
         offers.push(check toFlightOffer(offer = offer, passengerId = passengerId, requestedCabin = cabinClass));
     }
     FlightOffer[] cheapest = from FlightOffer offer in offers
@@ -220,6 +224,36 @@ public isolated function createHotelBooking(string quoteId, PassengerDetails gue
         headers = duffelHeaders);
     StaysBooking booking = response.data;
     return {bookingId: booking.id, reference: booking.reference, status: booking.status};
+}
+
+# Whether a failed order or booking call may still have created the order or booking: no response arrived,
+# Duffel returned a server error, or the success response could not be read. Such a booking must be checked
+# in Duffel before anyone tries again.
+# + err - The error from `createFlightOrder` or `createHotelBooking`
+# + return - `true` when the outcome is unknown
+public isolated function isOutcomeUnknown(error err) returns boolean {
+    if err is http:ApplicationResponseError {
+        return err.detail().statusCode >= 500;
+    }
+    return err is http:ClientError;
+}
+
+# Orders cabins from lowest to highest.
+# + cabin - The cabin
+# + return - 0 for economy, rising to 3 for first
+public isolated function cabinRank(CabinClass cabin) returns int {
+    match cabin {
+        "economy" => {
+            return 0;
+        }
+        "premium_economy" => {
+            return 1;
+        }
+        "business" => {
+            return 2;
+        }
+    }
+    return 3;
 }
 
 # A short, log-safe description of a failed Duffel call, including Duffel's error body.
