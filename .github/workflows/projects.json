@@ -84,6 +84,6 @@
     "path": "integrator-default-profile/samples/customer-support-voice-agent"
   },
   {
-    "path": "integrator-default-profile/samples/corporate-travel-planner/travel_planner"
+    "path": "integrator-default-profile/samples/business-trip-approval/trip_approval"
   }
 ]
