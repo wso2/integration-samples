@@ -8,7 +8,7 @@ A multi-agent travel desk for business trips, built with WSO2 Integrator. An emp
 - the **logistics coordinator** finds flights and a hotel through the [Duffel](https://duffel.com) Flights and Stays APIs;
 - the **policy analyst** checks the options against the company travel policy and converts the total to USD.
 
-When the employee confirms, the booking goes to their manager for approval. The planner pauses until the manager decides, and books the flight and hotel only after approval. Before paying, it checks the price again and stops if it rose by more than an allowed margin.
+When the employee confirms, the booking goes to their manager for approval. The planner pauses until the manager decides, and books the flight and hotel only after approval. Before paying, it checks the flight and hotel prices again, and books neither if either rose by more than an allowed margin.
 
 ## Project layout
 
@@ -97,7 +97,7 @@ The sample has two employees: `E1001`, a staff-grade traveler, and `M2001`, thei
 ## How It Works
 
 - The planner and its specialists are separate agents. The specialists are agent definitions in library packages, which the planner calls as tools.
-- The policy checks are ordinary code in `policy_analyst`. The agents explain the result, but never decide it. The planner creates a proposal only from flight offers and hotel rates that a search actually returned, so a model cannot invent one.
+- The policy checks are ordinary code in `policy_analyst`. The agents explain the result, but never decide it. The planner creates a proposal only from flight offers and hotel rates that a search actually returned, so a model cannot invent one. The model also chooses which proposal to submit, so the integration checks that the proposal belongs to the traveler before their manager sees it.
 - Booking is the planner's `bookTrip` tool, marked `@ai:AgentTool {requiresApproval: true}`. When the planner calls it, the run pauses and the HTTP API returns the pending approval. The manager's decision resumes the run.
 - A booking runs once. Deciding an approval a second time returns `404 Not Found`, and the planner refuses to book a proposal that is already booked. Orders and bookings are never retried automatically, so a network retry cannot book twice. If Duffel's answer to an order or booking is lost, for example after a timeout, the proposal is marked `NEEDS_REVIEW`: check the Duffel dashboard before booking again.
 - The employee directory and the travel policy are stand-ins for an HR system and a policy service. Proposals, approvals and conversation history are kept in memory, so they last only while the integration runs.

@@ -157,9 +157,10 @@ public isolated function searchHotelOptions(decimal latitude, decimal longitude,
         select option;
 }
 
-# Returns bookable rates for a hotel from a search, remembering them for later lookup.
+# Returns bookable rates for a hotel from a search, remembering them for later lookup. Rates that cannot be
+# paid from the Duffel balance are left out.
 # + searchResultId - The hotel's search result ID
-# + return - Up to six rates, cheapest first
+# + return - Up to six rates, cheapest first, counting fees paid at the hotel when they are in the same currency
 public isolated function fetchHotelRates(string searchResultId) returns HotelRate[]|error {
     StaysRatesResponse response = check duffelSearchClient->/stays/search_results/[searchResultId]/actions/fetch_all_rates
         .post(message = (), headers = duffelHeaders);
@@ -169,11 +170,15 @@ public isolated function fetchHotelRates(string searchResultId) returns HotelRat
     HotelRate[] rates = [];
     foreach StaysRoom room in rooms {
         foreach StaysRate rate in room.rates {
+            string[]? methods = rate?.available_payment_methods;
+            if methods is string[] && methods.indexOf("balance") is () {
+                continue;
+            }
             rates.push(check toHotelRate(result, room, rate, nights));
         }
     }
     HotelRate[] cheapest = from HotelRate rate in rates
-        order by rate.totalAmount ascending
+        order by payableAmount(rate) ascending
         limit MAX_RATE_OPTIONS
         select rate;
     foreach HotelRate rate in cheapest {
@@ -182,6 +187,13 @@ public isolated function fetchHotelRates(string searchResultId) returns HotelRat
         }
     }
     return cheapest;
+}
+
+# The rate's total plus any fees paid at the hotel, when those are in the same currency.
+isolated function payableAmount(HotelRate rate) returns decimal {
+    decimal? due = rate.dueAtAccommodationAmount;
+    return due is decimal && (rate.dueAtAccommodationCurrency ?: rate.currency) == rate.currency
+        ? rate.totalAmount + due : rate.totalAmount;
 }
 
 # Looks up a hotel rate that getHotelRates returned.

@@ -47,6 +47,9 @@ public type HotelRate record {|
     string checkInDate;
     string checkOutDate;
     int nights;
+    # Mandatory fees paid at the hotel on top of `totalAmount`, or nil when Duffel does not know them
+    decimal? dueAtAccommodationAmount;
+    string? dueAtAccommodationCurrency;
     boolean refundable;
     # True in Duffel test mode: the rate is for a test property standing in for one at the destination
     boolean isTestInventory;
@@ -270,6 +273,11 @@ type StaysRate record {
     string id;
     string total_amount;
     string total_currency;
+    # Mandatory fees paid at the hotel, not part of `total_amount`; null when Duffel does not know them
+    string? due_at_accommodation_amount?;
+    string? due_at_accommodation_currency?;
+    # `balance` and/or `card`; this sample pays only from the Duffel balance
+    string[] available_payment_methods?;
     string? board_type?;
     CancellationStep[]? cancellation_timeline?;
 };
