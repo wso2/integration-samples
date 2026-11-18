@@ -24,6 +24,16 @@ service telegram:TelegramService on telegramListener {
     }
 
     function replyToTelegramMessage(telegram:Message message) {
+        // Reply directly for unsupported message types (stickers, photos, etc.) — not an error condition
+        if message.text is () && message.voice is () {
+            telegram:Message|error sent = self.telegramClient->sendMessage(
+                message.chat.id, "Sorry, I only understand text and voice messages.");
+            if sent is error {
+                log:printError("Telegram sendMessage failed", sent);
+            }
+            return;
+        }
+
         string sessionId = "telegram:" + message.chat.id.toString();
         string|error input = self.extractMessageText(message);
         string replyText;

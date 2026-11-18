@@ -7,20 +7,33 @@ CONFIG="$SAMPLE_DIR/Config.toml"
 # Kill any leftover process on the Telegram webhook port
 lsof -ti :8090 | xargs kill -9 2>/dev/null || true
 
-# Start ngrok on the webhook port and remember its PID
+# Start ngrok on the webhook port with JSON logging so we can read the URL from this instance
 echo "Starting ngrok..."
-ngrok http 8090 --log=stdout > /tmp/ngrok.log 2>&1 &
+ngrok http 8090 --log=stdout --log-format=json > /tmp/ngrok.log 2>&1 &
 NGROK_PID=$!
 
-# Wait for ngrok tunnel to be ready
+# Stop this ngrok instance when the script exits
+trap 'kill "$NGROK_PID" 2>/dev/null' EXIT
+
+# Wait for the tunnel URL to appear in this instance's log
 echo "Waiting for ngrok tunnel..."
-until curl -s http://localhost:4040/api/tunnels 2>/dev/null | grep -q '"public_url"'; do
+until grep -q '"url":"https://' /tmp/ngrok.log 2>/dev/null; do
   sleep 1
 done
 
-# Extract the https URL
-NGROK_URL=$(curl -s http://localhost:4040/api/tunnels | \
-  python3 -c "import sys,json; ts=json.load(sys.stdin)['tunnels']; print(next(t['public_url'] for t in ts if t['proto']=='https'))")
+# Extract the https URL from this instance's log (not the API, which may return another session's URL)
+NGROK_URL=$(python3 -c "
+import json
+with open('/tmp/ngrok.log') as f:
+    for line in f:
+        try:
+            d = json.loads(line)
+            if 'url' in d and d['url'].startswith('https://'):
+                print(d['url'])
+                break
+        except Exception:
+            pass
+")
 
 echo "ngrok URL: $NGROK_URL"
 

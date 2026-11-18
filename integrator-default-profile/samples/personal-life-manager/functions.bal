@@ -27,21 +27,27 @@ isolated function getUnreadEmails() returns string|error {
 }
 
 @ai:AgentTool
-isolated function getCalendarEvents(string date = "", string timeZone = "UTC") returns string|error {
-    time:Civil now = time:utcToCivil(time:utcNow());
-    string month = now.month < 10 ? string `0${now.month}` : now.month.toString();
-    string day = now.day < 10 ? string `0${now.day}` : now.day.toString();
-    string targetDate = date.length() > 0 ? date : string `${now.year}-${month}-${day}`;
+isolated function getCalendarEvents(string date = "") returns string|error {
+    // Shift UTC time by the configured offset to get the user's local date
+    time:Civil local = time:utcToCivil(time:utcAddSeconds(time:utcNow(), <decimal>(calendarTimeZone * 60)));
+    string month = local.month < 10 ? string `0${local.month}` : local.month.toString();
+    string day = local.day < 10 ? string `0${local.day}` : local.day.toString();
+    string targetDate = date.length() > 0 ? date : string `${local.year}-${month}-${day}`;
 
-    string timeMin = string `${targetDate}T00:00:00Z`;
-    string timeMax = string `${targetDate}T23:59:59Z`;
+    int absOffset = calendarTimeZone < 0 ? -calendarTimeZone : calendarTimeZone;
+    string sign = calendarTimeZone >= 0 ? "+" : "-";
+    string offsetH = (absOffset / 60 < 10 ? "0" : "") + (absOffset / 60).toString();
+    string offsetM = (absOffset % 60 < 10 ? "0" : "") + (absOffset % 60).toString();
+    string offsetStr = sign + offsetH + ":" + offsetM;
+
+    string timeMin = string `${targetDate}T00:00:00${offsetStr}`;
+    string timeMax = string `${targetDate}T23:59:59${offsetStr}`;
 
     calendar:EventFilterCriteria filter = {
         timeMin: timeMin,
         timeMax: timeMax,
         singleEvents: true,
-        orderBy: "startTime",
-        timeZone: timeZone
+        orderBy: "startTime"
     };
 
     stream<calendar:Event, error?> eventStream = check calendarClient->getEvents(calendarId, filter = filter);
