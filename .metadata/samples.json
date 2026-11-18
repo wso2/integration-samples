@@ -182,7 +182,7 @@
       "buildPack": "ballerina",
       "repositoryUrl": "https://github.com/wso2/integration-samples/",
       "componentPath": "/integrator-default-profile/samples/corporate-travel-planner",
-      "thumbnailPath": "https://devant-cdn.wso2.com/console/sample-icons/AIAgent.svg",
+      "thumbnailPath": "https://raw.githubusercontent.com/wso2/integration-samples/main/integrator-default-profile/samples/corporate-travel-planner/icon.svg",
       "tags": ["OpenAI", "Duffel", "AI", "Agent"],
       "imageUrl": "wso2integrations.azurecr.io/travel_planner:0.1.0"
     },
