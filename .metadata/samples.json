@@ -154,6 +154,16 @@
       "tags": ["Voice", "OpenAI", "AI", "Agent"]
     },
     {
+      "displayName": "Email Spoofing Detection Agent",
+      "description": "An AI agent that watches a Gmail inbox for spoofed and phishing emails. It checks SPF, DKIM, and DMARC, finds the IP address each email was sent from, and looks up its location and reputation. It then rates each email's spoofing risk as low, medium, or high and explains why.",
+      "componentType": "ai-agent",
+      "buildPack": "ballerina",
+      "repositoryUrl": "https://github.com/wso2/integration-samples/",
+      "componentPath": "/integrator-default-profile/samples/email-spoofing-detection-agent",
+      "thumbnailPath": "https://devant-cdn.wso2.com/console/sample-icons/AIAgent.svg",
+      "tags": ["Gmail", "Security", "AI", "Agent"]
+    },
+    {
       "displayName": "S3 File Event Listener",
       "description": "An event-driven integration that reacts to S3 file uploads by consuming object-created notifications from an SQS queue using the aws.sqs listener.",
       "componentType": "event-handler",
