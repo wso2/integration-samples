@@ -29,4 +29,6 @@ Set these in the `Config.toml` of the package that runs the agent, under `[wso2.
 
 ## Shared functions
 
-Booking is deliberately not an agent tool. The package that runs the agent books an approved option with `currentFare`, `createFlightOrder`, `createHotelQuote` and `createHotelBooking`, and validates IDs with `findFlightOffer` and `findHotelRate`. Orders, quotes and bookings are never retried automatically, so a network retry cannot book twice.
+Booking is deliberately not an agent tool. The package that runs the agent books an approved option with `currentFare`, `createFlightOrder`, `createHotelQuote` and `createHotelBooking`, and validates IDs with `findFlightOffer` and `findHotelRate`. Orders, quotes and bookings are never retried automatically, so a network retry cannot book twice. When an order or booking call fails, `isOutcomeUnknown` says whether Duffel may have booked it anyway (no response, a server error, or an unreadable success response), so the caller can ask for a check instead of reporting a failure.
+
+Flight searches leave out offers that need passport details, which this sample does not collect. Each offer reports its highest cabin across all segments, and `longestLegHours` is the longest single flight, without connection time. `cabinRank` orders cabins for policy checks.

@@ -16,6 +16,7 @@ public type FlightOffer record {|
     CabinClass cabinClass;
     decimal totalAmount;
     string currency;
+    # The longest single flight in the offer, in hours, excluding connection time
     decimal longestLegHours;
     string departureDate;
     string[] legs;
@@ -143,6 +144,8 @@ type DuffelSegment record {
     DuffelAirport destination;
     DuffelCarrier marketing_carrier;
     string marketing_carrier_flight_number;
+    # Flight time of this segment, as an ISO 8601 duration such as `PT7H45M`
+    string? duration?;
     SegmentPassenger[] passengers?;
 };
 
@@ -168,6 +171,8 @@ type DuffelOffer record {
     DuffelCarrier owner;
     DuffelSlice[] slices;
     DuffelConditions? conditions?;
+    # True when the airline needs passport details to book, which this sample does not collect
+    boolean passenger_identity_documents_required?;
 };
 
 type DuffelPassenger record {

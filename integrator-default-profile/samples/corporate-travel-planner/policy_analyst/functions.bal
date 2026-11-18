@@ -54,7 +54,8 @@ public isolated function evaluateTrip(string grade, logistics_coordinator:Flight
     if flight is logistics_coordinator:FlightOffer {
         highestAllowedCabin = flight.longestLegHours >= policy.upgradeAfterHours
             ? policy.longHaulCabin : policy.defaultCabin;
-        if cabinRank(flight.cabinClass) > cabinRank(highestAllowedCabin) {
+        int flownRank = logistics_coordinator:cabinRank(flight.cabinClass);
+        if flownRank > logistics_coordinator:cabinRank(highestAllowedCabin) {
             violations.push(string `Cabin '${flight.cabinClass}' exceeds the highest allowed '${highestAllowedCabin}' ` +
                 string `for a ${flight.longestLegHours}h longest leg`);
         }
@@ -129,21 +130,6 @@ public isolated function convertCurrency(decimal amount, string fromCurrency, st
 isolated function toUsd(decimal amount, string currency) returns decimal|error {
     CurrencyConversion conversion = check convertCurrency(amount = amount, fromCurrency = currency, toCurrency = "USD");
     return conversion.converted;
-}
-
-isolated function cabinRank(logistics_coordinator:CabinClass cabin) returns int {
-    match cabin {
-        "economy" => {
-            return 0;
-        }
-        "premium_economy" => {
-            return 1;
-        }
-        "business" => {
-            return 2;
-        }
-    }
-    return 3;
 }
 
 isolated function daysFromToday(string isoDate) returns int|error {

@@ -2,7 +2,7 @@
 
 An agent definition that checks candidate flights and hotel rates against the company travel policy and recommends the cheapest combination that complies. The checks themselves are ordinary code (`evaluateTrip`): the agent explains the result but never decides it.
 
-The policy covers the allowed cabin (with an upgrade for long-haul legs), a nightly hotel cap, a trip cap, advance booking, refundability, and the UK FCDO travel advice for the destination. Amounts are converted to USD at the latest European Central Bank reference rate (Frankfurter API, no key needed). The policy table in `functions.bal` stands in for a real travel-policy service.
+The policy covers the allowed cabin (with an upgrade when the longest single flight, without connection time, is long enough), a nightly hotel cap, a trip cap, advance booking, refundability, and the UK FCDO travel advice for the destination. Amounts are converted to USD at the latest European Central Bank reference rate (Frankfurter API, no key needed). The policy table in `functions.bal` stands in for a real travel-policy service.
 
 ## Query
 

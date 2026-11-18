@@ -319,6 +319,8 @@ components:
           type: string
         longestLegHours:
           type: number
+          description: "The longest single flight in the offer, in hours, excluding\
+            \ connection time"
           format: double
         departureDate:
           type: string
@@ -343,6 +345,7 @@ components:
       - checkOutDate
       - currency
       - hotelName
+      - isTestInventory
       - nights
       - rateId
       - refundable
@@ -372,13 +375,17 @@ components:
           format: int64
         refundable:
           type: boolean
+        isTestInventory:
+          type: boolean
+          description: "True in Duffel test mode: the rate is for a test property\
+            \ standing in for one at the destination"
       additionalProperties: false
       description: A bookable hotel rate the agent has seen. Only rates returned by
         getHotelRates can be looked up later.
     PolicyEvaluation:
       required:
-      - allowedCabin
       - compliant
+      - highestAllowedCabin
       - totalUsd
       - violations
       - warnings
@@ -389,7 +396,7 @@ components:
         totalUsd:
           type: number
           format: double
-        allowedCabin:
+        highestAllowedCabin:
           $ref: "#/components/schemas/CabinClass"
         violations:
           type: array
@@ -402,12 +409,16 @@ components:
       additionalProperties: false
     ProposalStatus:
       type: string
+      description: |-
+        NEEDS_REVIEW: an order or booking call failed in a way that may still have booked, so check Duffel
+        before trying again.
       enum:
       - PROPOSED
       - BOOKING
       - BOOKED
       - PARTIALLY_BOOKED
       - FAILED
+      - NEEDS_REVIEW
       - REJECTED
     TripProposal:
       required:

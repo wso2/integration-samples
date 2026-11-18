@@ -21,22 +21,26 @@ service /travel on travelListener {
             return <http:Forbidden>{body: <ErrorBody>{message: "Unknown employee"}};
         }
         string sessionKey = string `${employeeId}/${request.sessionId}`;
+        // Hold the session from the approval check until any new approvals are stored, so an overlapping
+        // request cannot slip in between.
+        if !tryAcquireSession(sessionKey) {
+            return <http:Conflict>{body: <ErrorBody>{message: "A request for this conversation is still running"}};
+        }
         if pendingApprovalsInSession(sessionKey).length() > 0 {
+            releaseSession(sessionKey);
             return <http:Conflict>{
                 body: <ErrorBody>{message: "This conversation is waiting for manager approval. Start a new session."}
             };
-        }
-        if !tryAcquireSession(sessionKey) {
-            return <http:Conflict>{body: <ErrorBody>{message: "A request for this conversation is still running"}};
         }
         ai:Context context = new;
         context.set(CTX_EMPLOYEE_ID, employeeId);
         context.set(CTX_SESSION_KEY, sessionKey);
         context.set(CTX_TRAVELER_GRADE, employee.grade);
         string|ai:Error result = tripPlanner.run(query = request.message, sessionId = sessionKey, context = context);
+        ChatResponse|http:InternalServerError response = toChatResponse(sessionId = request.sessionId,
+            sessionKey = sessionKey, traveler = employee, result = result);
         releaseSession(sessionKey);
-        return toChatResponse(sessionId = request.sessionId, sessionKey = sessionKey, traveler = employee,
-            result = result);
+        return response;
     }
 
     # Lists the bookings waiting for the calling manager's decision.
@@ -95,15 +99,25 @@ service /travel on travelListener {
         context.set(CTX_TRAVELER_GRADE, traveler.grade);
         context.set(CTX_APPROVER_ID, approverId);
         ai:Resume resume = {decisions: {[approvalId]: humanDecision}};
+        // The runtime claims the paused run before acting on the decision, so the approval is never put back:
+        // if this run fails, the booking may already have happened. The proposal shows what was booked.
         string|ai:Error result = tripPlanner.run(query = resume, sessionId = pending.sessionKey, context = context);
-        if result is ai:Error && result !is ai:ApprovalRequiredError {
-            // The decision was not applied; put the approval back so it can be retried.
-            addPendingApproval(pending);
-        }
-        releaseSession(pending.sessionKey);
         string sessionId = pending.sessionKey.substring(pending.employeeId.length() + 1);
-        return toChatResponse(sessionId = sessionId, sessionKey = pending.sessionKey, traveler = traveler,
-            result = result);
+        if result is ai:Error && result !is ai:ApprovalRequiredError {
+            log:printError("resuming after the approval decision failed", 'error = result,
+                approvalId = approvalId, proposalId = pending.proposalId);
+            releaseSession(pending.sessionKey);
+            return <http:InternalServerError>{
+                body: <ErrorBody>{
+                    message: string `The decision was recorded, but the planner failed afterwards. Check ` +
+                        string `GET /travel/proposals/${pending.proposalId} for the booking status.`
+                }
+            };
+        }
+        ChatResponse|http:InternalServerError response = toChatResponse(sessionId = sessionId,
+            sessionKey = pending.sessionKey, traveler = traveler, result = result);
+        releaseSession(pending.sessionKey);
+        return response;
     }
 
     # Returns a trip proposal with its policy result, booking status and audit trail.

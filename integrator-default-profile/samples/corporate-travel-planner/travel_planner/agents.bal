@@ -32,8 +32,10 @@ final ai:Agent tripPlanner = check new (
    approval; the booking happens only once they approve.
 
 Rules: use only facts that tools return. Never invent prices, IDs or booking references. Never say a trip is
-booked unless bookTrip returned status BOOKED. If a proposal breaks policy, say so plainly; it can still be
-submitted, and the manager decides. If an offer has expired, search again and create a new proposal.
+booked unless bookTrip returned status BOOKED. If bookTrip returns NEEDS_REVIEW, say the booking may or may not
+have gone through, give its issues, and say it must be checked with Duffel before anyone tries again.
+If a proposal breaks policy, say so plainly; it can still be submitted, and the manager decides.
+If an offer has expired, search again and create a new proposal.
 If the manager rejects a booking, tell the employee it was submitted and rejected, and give the manager's reason.
 Hotels marked isTestInventory are Duffel test-mode stand-ins for hotels at the destination: use them, and tell the
 employee they are test inventory.`
@@ -155,34 +157,38 @@ isolated function bookTrip(ai:Context context, string proposalId) returns TripPr
     BookingResult result = {};
     int attempted = 0;
     int succeeded = 0;
+    boolean outcomeUnknown = false;
 
     logistics_coordinator:FlightOffer? flight = proposal.flight;
     if flight is logistics_coordinator:FlightOffer {
         attempted += 1;
-        logistics_coordinator:FlightOrder|string flightOrder = bookFlight(flight, traveler);
+        logistics_coordinator:FlightOrder|BookingIssue flightOrder = bookFlight(flight, traveler);
         if flightOrder is logistics_coordinator:FlightOrder {
             succeeded += 1;
             result.flightOrderId = flightOrder.orderId;
             result.flightBookingReference = flightOrder.bookingReference;
         } else {
-            result.issues.push(flightOrder);
+            result.issues.push(flightOrder.message);
+            outcomeUnknown = outcomeUnknown || flightOrder.outcomeUnknown;
         }
     }
 
     logistics_coordinator:HotelRate? hotel = proposal.hotel;
     if hotel is logistics_coordinator:HotelRate {
         attempted += 1;
-        logistics_coordinator:HotelBooking|string booking = bookHotel(hotel, traveler);
+        logistics_coordinator:HotelBooking|BookingIssue booking = bookHotel(hotel, traveler);
         if booking is logistics_coordinator:HotelBooking {
             succeeded += 1;
             result.hotelBookingId = booking.bookingId;
             result.hotelBookingReference = booking.reference;
         } else {
-            result.issues.push(booking);
+            result.issues.push(booking.message);
+            outcomeUnknown = outcomeUnknown || booking.outcomeUnknown;
         }
     }
 
-    ProposalStatus status = succeeded == attempted ? "BOOKED" : succeeded == 0 ? "FAILED" : "PARTIALLY_BOOKED";
+    ProposalStatus status = outcomeUnknown ? "NEEDS_REVIEW"
+        : succeeded == attempted ? "BOOKED" : succeeded == 0 ? "FAILED" : "PARTIALLY_BOOKED";
     log:printInfo("trip booking finished", proposalId = proposalId, status = status, approverId = approverId);
     return finishBooking(proposalId, status, result);
 }

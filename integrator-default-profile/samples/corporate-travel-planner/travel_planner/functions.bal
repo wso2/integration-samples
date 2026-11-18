@@ -202,45 +202,63 @@ isolated function releaseSession(string sessionKey) {
 // Re-checks the fare before paying: offers expire (typically within 30 minutes) and prices can move between
 // the employee's request and the manager's approval.
 isolated function bookFlight(logistics_coordinator:FlightOffer flight, Employee traveler)
-        returns logistics_coordinator:FlightOrder|string {
+        returns logistics_coordinator:FlightOrder|BookingIssue {
     logistics_coordinator:CurrentFare|error fare = logistics_coordinator:currentFare(flight.offerId);
     if fare is error {
-        return "Flight not booked: the offer could not be re-checked and may have expired. " +
-            logistics_coordinator:describeError(fare);
+        return {message: "Flight not booked: the offer could not be re-checked and may have expired. " +
+            logistics_coordinator:describeError(fare)};
     }
     decimal ceiling = flight.totalAmount * (1d + priceTolerancePercent / 100d);
     if fare.currency != flight.currency || fare.amount > ceiling {
-        return string `Flight not booked: the fare changed from ${flight.currency} ${flight.totalAmount} to ` +
-            string `${fare.currency} ${fare.amount}, which needs re-approval`;
+        return {message: string `Flight not booked: the fare changed from ${flight.currency} ${flight.totalAmount} ` +
+            string `to ${fare.currency} ${fare.amount}, which needs re-approval`};
     }
     logistics_coordinator:FlightOrder|error flightOrder = logistics_coordinator:createFlightOrder(
         offerId = flight.offerId, passengerId = flight.passengerId, traveler = toPassengerDetails(traveler),
         fare = fare);
     if flightOrder is error {
         string reason = logistics_coordinator:describeError(flightOrder);
+        if logistics_coordinator:isOutcomeUnknown(flightOrder) {
+            log:printError("flight order outcome unknown", offerId = flight.offerId, reason = reason);
+            return {
+                message: string `Flight booking outcome unknown: Duffel may have created the order for offer ` +
+                    string `${flight.offerId}. Check the Duffel dashboard before trying again. ${reason}`,
+                outcomeUnknown: true
+            };
+        }
         log:printError("flight order failed", offerId = flight.offerId, reason = reason);
-        return "Flight not booked: " + reason;
+        return {message: "Flight not booked: " + reason};
     }
     return flightOrder;
 }
 
 isolated function bookHotel(logistics_coordinator:HotelRate hotel, Employee traveler)
-        returns logistics_coordinator:HotelBooking|string {
+        returns logistics_coordinator:HotelBooking|BookingIssue {
+    // A quote reserves nothing and costs nothing, so a failed quote is always a plain failure.
     logistics_coordinator:HotelQuote|error quote = logistics_coordinator:createHotelQuote(hotel.rateId);
     if quote is error {
-        return "Hotel not booked: the rate is no longer available. " + logistics_coordinator:describeError(quote);
+        return {message: "Hotel not booked: the rate is no longer available. " +
+            logistics_coordinator:describeError(quote)};
     }
     decimal ceiling = hotel.totalAmount * (1d + priceTolerancePercent / 100d);
     if quote.currency != hotel.currency || quote.amount > ceiling {
-        return string `Hotel not booked: the price changed from ${hotel.currency} ${hotel.totalAmount} to ` +
-            string `${quote.currency} ${quote.amount}, which needs re-approval`;
+        return {message: string `Hotel not booked: the price changed from ${hotel.currency} ${hotel.totalAmount} ` +
+            string `to ${quote.currency} ${quote.amount}, which needs re-approval`};
     }
     logistics_coordinator:HotelBooking|error booking = logistics_coordinator:createHotelBooking(
         quoteId = quote.quoteId, guest = toPassengerDetails(traveler));
     if booking is error {
         string reason = logistics_coordinator:describeError(booking);
+        if logistics_coordinator:isOutcomeUnknown(booking) {
+            log:printError("hotel booking outcome unknown", quoteId = quote.quoteId, reason = reason);
+            return {
+                message: string `Hotel booking outcome unknown: Duffel may have booked quote ${quote.quoteId}. ` +
+                    string `Check the Duffel dashboard before trying again. ${reason}`,
+                outcomeUnknown: true
+            };
+        }
         log:printError("hotel booking failed", rateId = hotel.rateId, reason = reason);
-        return "Hotel not booked: " + reason;
+        return {message: "Hotel not booked: " + reason};
     }
     return booking;
 }

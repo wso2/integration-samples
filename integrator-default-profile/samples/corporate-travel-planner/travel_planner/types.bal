@@ -28,7 +28,17 @@ type TravelerProfile record {|
     string costCenter;
 |};
 
-type ProposalStatus "PROPOSED"|"BOOKING"|"BOOKED"|"PARTIALLY_BOOKED"|"FAILED"|"REJECTED";
+# NEEDS_REVIEW: an order or booking call failed in a way that may still have booked, so check Duffel
+# before trying again.
+type ProposalStatus "PROPOSED"|"BOOKING"|"BOOKED"|"PARTIALLY_BOOKED"|"FAILED"|"NEEDS_REVIEW"|"REJECTED";
+
+# Why a flight or hotel was not booked, or may not have been.
+type BookingIssue record {|
+    # What happened, for the traveler and the audit trail
+    string message;
+    # True when Duffel may have booked it anyway, for example after a timeout
+    boolean outcomeUnknown = false;
+|};
 
 type AuditEvent record {|
     string at;
