@@ -32,8 +32,9 @@ final ai:Agent tripPlanner = check new (
    approval; the booking happens only once they approve.
 
 Rules: use only facts that tools return. Never invent prices, IDs or booking references. Never say a trip is
-booked unless bookTrip returned status BOOKED. If bookTrip returns NEEDS_REVIEW, say the booking may or may not
-have gone through, give its issues, and say it must be checked with Duffel before anyone tries again.
+booked unless bookTrip returned status BOOKED, and give any issues it lists. If bookTrip returns NEEDS_REVIEW,
+say the booking may or may not have gone through, give its issues, and say it must be checked with Duffel
+before anyone tries again.
 If a proposal breaks policy, say so plainly; it can still be submitted, and the manager decides.
 If an offer has expired, search again and create a new proposal.
 If the manager rejects a booking, tell the employee it was submitted and rejected, and give the manager's reason.
@@ -173,36 +174,39 @@ isolated function bookTrip(ai:Context context, string proposalId) returns TripPr
         return finishBooking(proposalId, "FAILED", result);
     }
 
-    int attempted = 0;
-    int succeeded = 0;
-    boolean outcomeUnknown = false;
+    // Book the flight first. If it fails, the hotel is not booked, so a hotel is never left without its flight.
     if flight is logistics_coordinator:FlightOffer && fare is logistics_coordinator:CurrentFare {
-        attempted += 1;
         logistics_coordinator:FlightOrder|BookingIssue flightOrder = orderFlight(flight, fare, traveler);
-        if flightOrder is logistics_coordinator:FlightOrder {
-            succeeded += 1;
-            result.flightOrderId = flightOrder.orderId;
-            result.flightBookingReference = flightOrder.bookingReference;
-        } else {
+        if flightOrder is BookingIssue {
             result.issues.push(flightOrder.message);
-            outcomeUnknown = outcomeUnknown || flightOrder.outcomeUnknown;
+            if hotel is logistics_coordinator:HotelRate {
+                result.issues.push("Hotel not booked, because the flight was not booked.");
+            }
+            return endBooking(proposalId, approverId, flightOrder.outcomeUnknown ? "NEEDS_REVIEW" : "FAILED", result);
         }
+        result.flightOrderId = flightOrder.orderId;
+        result.flightBookingReference = flightOrder.bookingReference;
     }
     if hotel is logistics_coordinator:HotelRate && quote is logistics_coordinator:HotelQuote {
-        attempted += 1;
         logistics_coordinator:HotelBooking|BookingIssue booking = bookQuotedHotel(hotel, quote, traveler);
-        if booking is logistics_coordinator:HotelBooking {
-            succeeded += 1;
-            result.hotelBookingId = booking.bookingId;
-            result.hotelBookingReference = booking.reference;
-        } else {
+        if booking is BookingIssue {
             result.issues.push(booking.message);
-            outcomeUnknown = outcomeUnknown || booking.outcomeUnknown;
+            ProposalStatus status = booking.outcomeUnknown ? "NEEDS_REVIEW"
+                : flight is () ? "FAILED" : "PARTIALLY_BOOKED";
+            return endBooking(proposalId, approverId, status, result);
+        }
+        result.hotelBookingId = booking.bookingId;
+        result.hotelBookingReference = booking.reference;
+        if booking.bookingId is () {
+            result.issues.push("Duffel confirmed the hotel booking, but its record can take a few hours to appear. " +
+                "The booking ID and reference will be in the Duffel dashboard then. Do not book the hotel again.");
         }
     }
+    return endBooking(proposalId, approverId, "BOOKED", result);
+}
 
-    ProposalStatus status = outcomeUnknown ? "NEEDS_REVIEW"
-        : succeeded == attempted ? "BOOKED" : succeeded == 0 ? "FAILED" : "PARTIALLY_BOOKED";
+isolated function endBooking(string proposalId, string approverId, ProposalStatus status, BookingResult result)
+        returns TripProposal|error {
     log:printInfo("trip booking finished", proposalId = proposalId, status = status, approverId = approverId);
     return finishBooking(proposalId, status, result);
 }

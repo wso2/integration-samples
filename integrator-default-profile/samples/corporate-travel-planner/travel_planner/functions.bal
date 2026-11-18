@@ -129,11 +129,20 @@ isolated function finishBooking(string proposalId, ProposalStatus status, Bookin
     }
 }
 
-# Whether a proposal exists and belongs to the traveler and their manager.
-isolated function isOwnProposal(string proposalId, Employee traveler) returns boolean {
+# Why a proposal cannot be submitted for approval, or nil when it can: it must be the traveler's, still
+# PROPOSED, and not already waiting for a decision.
+isolated function submissionProblem(string proposalId, Employee traveler) returns string? {
     TripProposal? proposal = getProposal(proposalId);
-    return proposal is TripProposal && proposal.employeeId == traveler.employeeId
-        && proposal.approverId == traveler.managerId;
+    if proposal is () || proposal.employeeId != traveler.employeeId || proposal.approverId != traveler.managerId {
+        return string `Proposal '${proposalId}' is not one of this traveler's proposals, so it cannot be submitted.`;
+    }
+    if proposal.status != "PROPOSED" {
+        return string `Proposal '${proposalId}' is already ${proposal.status}, so it cannot be submitted again.`;
+    }
+    if isAwaitingDecision(proposalId) {
+        return string `Proposal '${proposalId}' is already waiting for the manager's decision.`;
+    }
+    return ();
 }
 
 isolated function markRejected(string proposalId, string employeeId, string approverId, string reason) {
@@ -147,9 +156,33 @@ isolated function markRejected(string proposalId, string employeeId, string appr
     }
 }
 
-isolated function addPendingApproval(PendingApproval approval) {
+# Stores an approval request unless it is already pending. The agent returns undecided requests again after
+# a decision on another request in the same batch, and those keep their original time.
+# + return - `true` when the request is new
+isolated function addPendingApproval(PendingApproval approval) returns boolean {
     lock {
+        if pendingApprovals.hasKey(approval.approvalId) {
+            return false;
+        }
         pendingApprovals[approval.approvalId] = approval.clone();
+        return true;
+    }
+}
+
+isolated function isPendingApproval(string approvalId) returns boolean {
+    lock {
+        return pendingApprovals.hasKey(approvalId);
+    }
+}
+
+isolated function isAwaitingDecision(string proposalId) returns boolean {
+    lock {
+        foreach PendingApproval approval in pendingApprovals {
+            if approval.proposalId == proposalId {
+                return true;
+            }
+        }
+        return false;
     }
 }
 
@@ -209,7 +242,7 @@ isolated function releaseSession(string sessionKey) {
 
 // Prices are re-checked before paying: offers expire (typically within 30 minutes) and prices can move between
 // the employee's request and the manager's approval. Both are checked before either is booked, so a price rise
-// on one never leaves the other booked on its own.
+// on one never leaves the other booked on its own. The hotel is booked only after the flight order succeeds.
 
 # Re-checks a flight offer's fare against the approved price.
 isolated function checkFlightPrice(logistics_coordinator:FlightOffer flight)
@@ -227,8 +260,9 @@ isolated function checkFlightPrice(logistics_coordinator:FlightOffer flight)
     return fare;
 }
 
-# Quotes a hotel rate and checks the quote against the approved price. A quote reserves nothing and costs
-# nothing, so a failed quote is always a plain failure.
+# Quotes a hotel rate and checks the quote against the approved price, including the fees paid at the hotel,
+# which the policy check counted. A quote reserves nothing and costs nothing, so a failed quote is always a plain
+# failure.
 isolated function checkHotelPrice(logistics_coordinator:HotelRate hotel)
         returns logistics_coordinator:HotelQuote|BookingIssue {
     logistics_coordinator:HotelQuote|error quote = logistics_coordinator:createHotelQuote(hotel.rateId);
@@ -240,6 +274,20 @@ isolated function checkHotelPrice(logistics_coordinator:HotelRate hotel)
     if quote.currency != hotel.currency || quote.amount > ceiling {
         return {message: string `Hotel not booked: the price changed from ${hotel.currency} ${hotel.totalAmount} ` +
             string `to ${quote.currency} ${quote.amount}, which needs re-approval`};
+    }
+    // When the fees were unknown at approval, the manager approved with a warning about them, so only known
+    // fees are compared.
+    decimal? approvedFee = hotel.dueAtAccommodationAmount;
+    if approvedFee is decimal {
+        decimal? quotedFee = quote.dueAtAccommodationAmount;
+        string approvedFeeCurrency = hotel.dueAtAccommodationCurrency ?: hotel.currency;
+        string quotedFeeCurrency = quote.dueAtAccommodationCurrency ?: quote.currency;
+        if quotedFee is () || quotedFeeCurrency != approvedFeeCurrency
+                || quotedFee > approvedFee * (1d + priceTolerancePercent / 100d) {
+            string quotedText = quotedFee is () ? "unknown" : string `${quotedFeeCurrency} ${quotedFee}`;
+            return {message: string `Hotel not booked: the fees payable at the hotel changed from ` +
+                string `${approvedFeeCurrency} ${approvedFee} to ${quotedText}, which needs re-approval`};
+        }
     }
     return quote;
 }
@@ -281,6 +329,9 @@ isolated function bookQuotedHotel(logistics_coordinator:HotelRate hotel, logisti
         }
         log:printError("hotel booking failed", rateId = hotel.rateId, reason = reason);
         return {message: "Hotel not booked: " + reason};
+    }
+    if booking.bookingId is () {
+        log:printInfo("hotel booking confirmed without a booking record yet", quoteId = quote.quoteId);
     }
     return booking;
 }

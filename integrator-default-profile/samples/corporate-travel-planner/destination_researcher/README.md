@@ -1,6 +1,6 @@
 # DestinationResearcher
 
-An agent definition that briefs a business traveler on a destination for specific dates: the time zone, the weather (a forecast when the trip is within about two weeks, otherwise the weather on the same dates in the most recent year the historical archive covers), and the UK FCDO travel advice level with current warnings.
+An agent definition that briefs a business traveler on a destination for specific dates: the time zone, the weather (a forecast when the trip is within about two weeks, otherwise the weather on the same dates in the most recent of the last three years that the historical archive covers, with 28 February standing in for 29 February), and the UK FCDO travel advice level with current warnings.
 
 It uses the Open-Meteo geocoding, forecast and archive APIs and the GOV.UK Content API. None of them need an API key.
 

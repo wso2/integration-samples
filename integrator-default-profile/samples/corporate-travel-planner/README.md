@@ -8,7 +8,7 @@ A multi-agent travel desk for business trips, built with WSO2 Integrator. An emp
 - the **logistics coordinator** finds flights and a hotel through the [Duffel](https://duffel.com) Flights and Stays APIs;
 - the **policy analyst** checks the options against the company travel policy and converts the total to USD.
 
-When the employee confirms, the booking goes to their manager for approval. The planner pauses until the manager decides, and books the flight and hotel only after approval. Before paying, it checks the flight and hotel prices again, and books neither if either rose by more than an allowed margin.
+When the employee confirms, the booking goes to their manager for approval. The planner pauses until the manager decides, and books the flight and hotel only after approval. Before paying, it checks the flight and hotel prices again, including the fees payable at the hotel, and books neither if either rose by more than an allowed margin. It books the hotel only after the flight is booked.
 
 ## Project layout
 
@@ -78,26 +78,30 @@ The sample has two employees: `E1001`, a staff-grade traveler, and `M2001`, thei
    curl http://localhost:9090/travel/approvals -H "x-employee-id: M2001"
    ```
 
-5. Approve the booking:
+5. Set `APPROVAL_ID` to the `approvalId` from that list, and approve the booking:
 
    ```bash
-   curl -X POST http://localhost:9090/travel/approvals/<approvalId> \
+   APPROVAL_ID="paste-the-approvalId-here"
+   curl -X POST "http://localhost:9090/travel/approvals/${APPROVAL_ID}" \
      -H "Content-Type: application/json" -H "x-employee-id: M2001" \
      -d '{"outcome": "APPROVE"}'
    ```
 
    The planner resumes, books the flight and hotel, and replies with the booking references. To reject instead, send `{"outcome": "REJECT", "reason": "..."}`; the planner tells the employee why, and nothing is booked. Only the traveler's manager can decide: any other caller gets `403 Forbidden`.
 
-6. Read the proposal, its booking status and its audit trail, as the traveler or the manager:
+6. Read the proposal, its booking status and its audit trail, as the traveler or the manager. Set `PROPOSAL_ID` to the proposal ID from step 2:
 
    ```bash
-   curl http://localhost:9090/travel/proposals/<proposalId> -H "x-employee-id: E1001"
+   PROPOSAL_ID="paste-the-proposalId-here"
+   curl "http://localhost:9090/travel/proposals/${PROPOSAL_ID}" -H "x-employee-id: E1001"
    ```
 
 ## How It Works
 
 - The planner and its specialists are separate agents. The specialists are agent definitions in library packages, which the planner calls as tools.
-- The policy checks are ordinary code in `policy_analyst`. The agents explain the result, but never decide it. The planner creates a proposal only from flight offers and hotel rates that a search actually returned, so a model cannot invent one. The model also chooses which proposal to submit, so the integration checks that the proposal belongs to the traveler before their manager sees it.
+- The policy checks are ordinary code in `policy_analyst`. The agents explain the result, but never decide it. The planner creates a proposal only from flight offers and hotel rates that a search actually returned, so a model cannot invent one. The model also chooses which proposal to submit, so before their manager sees it, the integration checks that the proposal belongs to the traveler and has not already been booked, rejected or submitted.
 - Booking is the planner's `bookTrip` tool, marked `@ai:AgentTool {requiresApproval: true}`. When the planner calls it, the run pauses and the HTTP API returns the pending approval. The manager's decision resumes the run.
-- A booking runs once. Deciding an approval a second time returns `404 Not Found`, and the planner refuses to book a proposal that is already booked. Orders and bookings are never retried automatically, so a network retry cannot book twice. If Duffel's answer to an order or booking is lost, for example after a timeout, the proposal is marked `NEEDS_REVIEW`: check the Duffel dashboard before booking again.
+- A booking runs once. Deciding an approval a second time returns `404 Not Found`, and the planner refuses to book a proposal that is already booked. Orders and bookings are never retried automatically, so a network retry cannot book twice. The hotel is booked only after the flight order succeeds.
+- If Duffel's answer to an order or booking is lost, for example after a timeout, the proposal is marked `NEEDS_REVIEW`. Repeating the approval is not a way to recover: the approval is used once. Check the Duffel dashboard first. Do not book again anything Duffel shows as booked, and if the result is unclear, resolve it with Duffel before booking anything. Once Duffel confirms what was not booked, ask the planner for a new proposal for just those items and submit it for approval.
+- Duffel can confirm a hotel booking before its record exists. The trip is then booked, and the hotel's booking reference appears in the Duffel dashboard within a few hours.
 - The employee directory and the travel policy are stand-ins for an HR system and a policy service. Proposals, approvals and conversation history are kept in memory, so they last only while the integration runs.
