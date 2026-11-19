@@ -154,6 +154,46 @@
       "tags": ["Voice", "OpenAI", "AI", "Agent"]
     },
     {
+      "displayName": "Customer Returns Assistant",
+      "description": "A returns assistant that retrieves return policy passages, reads orders and replacement stock from Shopify, and recommends an exchange, refund, or manual review without processing a return.",
+      "componentType": "ai-agent",
+      "buildPack": "ballerina",
+      "repositoryUrl": "https://github.com/wso2/integration-samples/",
+      "componentPath": "/integrator-default-profile/samples/customer-returns-assistant",
+      "thumbnailPath": "https://devant-cdn.wso2.com/console/sample-icons/AIAgent.svg",
+      "tags": ["Customer Returns", "Shopify", "RAG", "AI", "Agent"]
+    },
+    {
+      "displayName": "Supplier Quote Comparison Assistant",
+      "description": "An assistant that compares supplier quotations from chat against the approved budget in a Google Sheet and the delivery deadline, then recommends the lowest-cost eligible offer without placing an order.",
+      "componentType": "ai-agent",
+      "buildPack": "ballerina",
+      "repositoryUrl": "https://github.com/wso2/integration-samples/",
+      "componentPath": "/integrator-default-profile/samples/supplier-quote-assistant",
+      "thumbnailPath": "https://devant-cdn.wso2.com/console/sample-icons/AIAgent.svg",
+      "tags": ["Procurement", "Google Sheets", "AI", "Agent"]
+    },
+    {
+      "displayName": "Product and Pricing Assistant",
+      "description": "A multi-agent assistant that delegates product catalog retrieval and Stripe price calculations to specialists, then combines the recommended plan, supporting evidence, and monthly quote.",
+      "componentType": "ai-agent",
+      "buildPack": "ballerina",
+      "repositoryUrl": "https://github.com/wso2/integration-samples/",
+      "componentPath": "/integrator-default-profile/samples/product-pricing-assistant",
+      "thumbnailPath": "https://devant-cdn.wso2.com/console/sample-icons/AIAgent.svg",
+      "tags": ["Product Catalog", "Stripe", "RAG", "Multi-Agent", "AI", "Agent"]
+    },
+    {
+      "displayName": "Meeting Scheduling Assistant",
+      "description": "An assistant that finds free work-hour slots on a colleague's Google Calendar and books the meeting after the requester confirms a slot.",
+      "componentType": "ai-agent",
+      "buildPack": "ballerina",
+      "repositoryUrl": "https://github.com/wso2/integration-samples/",
+      "componentPath": "/integrator-default-profile/samples/meeting-scheduling-assistant",
+      "thumbnailPath": "https://devant-cdn.wso2.com/console/sample-icons/AIAgent.svg",
+      "tags": ["Scheduling", "Google Calendar", "AI", "Agent"]
+    },
+    {
       "displayName": "S3 File Event Listener",
       "description": "An event-driven integration that reacts to S3 file uploads by consuming object-created notifications from an SQS queue using the aws.sqs listener.",
       "componentType": "event-handler",
