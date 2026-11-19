@@ -154,6 +154,16 @@
       "tags": ["Voice", "OpenAI", "AI", "Agent"]
     },
     {
+      "displayName": "IT Helpdesk Agent",
+      "description": "An IT helpdesk agent that employees chat with in Google Chat or over HTTP. It answers how-to questions from a knowledge base, unlocks accounts after an employee ID check, grants app access with manager approval for sensitive apps, and raises incident tickets.",
+      "componentType": "ai-agent",
+      "buildPack": "ballerina",
+      "repositoryUrl": "https://github.com/wso2/integration-samples/",
+      "componentPath": "/integrator-default-profile/samples/it-helpdesk-agent",
+      "thumbnailPath": "https://devant-cdn.wso2.com/console/sample-icons/AIAgent.svg",
+      "tags": ["IT Helpdesk", "Google Chat", "RAG", "AI", "Agent"]
+    },
+    {
       "displayName": "S3 File Event Listener",
       "description": "An event-driven integration that reacts to S3 file uploads by consuming object-created notifications from an SQS queue using the aws.sqs listener.",
       "componentType": "event-handler",
