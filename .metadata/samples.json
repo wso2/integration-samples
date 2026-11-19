@@ -210,7 +210,7 @@
       "buildPack": "ballerina",
       "repositoryUrl": "https://github.com/wso2/integration-samples/",
       "componentPath": "/integrator-default-profile/samples/it-helpdesk-agent",
-      "thumbnailPath": "https://devant-cdn.wso2.com/console/sample-icons/AIAgent.svg",
+      "thumbnailPath": "https://devant-cdn.wso2.com/console/sample-icons/it_helpdesk_agent.svg",
       "tags": ["IT Helpdesk", "Google Chat", "RAG", "AI", "Agent"]
     },
     {
