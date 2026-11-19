@@ -3,6 +3,7 @@ import wso2/travel_advisor;
 
 # The travel rules for an employee grade.
 public type TravelPolicy record {|
+    # The employee grade the rules apply to: "staff", "director" or "vp"
     string grade;
     # Trips requested with less notice than this get a warning
     int minNoticeDays;

@@ -54,6 +54,9 @@ isolated function currentTraveler(ai:Context context) returns Employee|error {
 
 # Who must approve a trip, in order: the traveler's manager, then that manager's manager when the policy asks for
 # a second approval and there is one. Empty when the traveler has no manager.
+# + traveler - The employee who is traveling
+# + needsSecondApproval - Whether the policy asks for a second approval
+# + return - The approvers' employee IDs, in the order they decide
 isolated function approvalChainFor(Employee traveler, boolean needsSecondApproval) returns string[] {
     string? managerId = traveler.managerId;
     if managerId is () {
@@ -72,8 +75,11 @@ isolated function approvalChainFor(Employee traveler, boolean needsSecondApprova
 // and the agents' memory must survive restarts and be shared across instances.
 
 // Requests and approvals share one lock, so a submission can be checked and reserved in one step.
+# The in-memory store of trip requests and the approvals waiting for a decision.
 type TripStore record {|
+    # Trip requests by request ID
     map<TripRequest> requests = {};
+    # Pending approvals by approval ID
     map<PendingApproval> approvals = {};
 |};
 
@@ -107,11 +113,16 @@ isolated function addAuditEvent(string requestId, string actor, string action, s
 }
 
 # Whether an employee may read a request: the traveler, or one of its approvers.
+# + request - The trip request
+# + employeeId - The employee asking to read it
+# + return - True for the traveler and the request's approvers
 isolated function canView(TripRequest request, string employeeId) returns boolean =>
     request.employeeId == employeeId || request.approvalChain.indexOf(employeeId) is int;
 
 # Checks a batch of new submissions and stores them as pending approvals, in one step, so two conversations
 # cannot both submit the same request. Nothing is stored unless every submission passes.
+# + submissions - The new pending approvals, one per submitted request
+# + traveler - The employee submitting them
 # + return - The reason each failed submission cannot be submitted, by approval ID; empty when all were stored
 isolated function reserveSubmissions(PendingApproval[] submissions, Employee traveler) returns map<string> {
     readonly & PendingApproval[] incoming = submissions.cloneReadOnly();
@@ -183,6 +194,8 @@ isolated function findPendingApproval(string approvalId) returns PendingApproval
 }
 
 # Pending approvals waiting for an approver's decision.
+# + approverId - The approver's employee ID
+# + return - The approvals where this approver decides next and no decision is in progress
 isolated function pendingApprovalsFor(string approverId) returns PendingApproval[] {
     lock {
         PendingApproval[] matches = from PendingApproval approval in store.approvals
@@ -203,6 +216,7 @@ isolated function pendingApprovalsInSession(string sessionKey) returns PendingAp
 
 # Claims a pending approval for a decision. The approval stays stored, marked as being decided, until
 # `completeApproval` or `advanceApproval`, so its request stays reserved meanwhile.
+# + approvalId - The approval to claim
 # + return - The approval, or nil when it is gone or another decision is in progress
 isolated function claimApproval(string approvalId) returns PendingApproval? {
     lock {
@@ -216,6 +230,8 @@ isolated function claimApproval(string approvalId) returns PendingApproval? {
 }
 
 # Hands a claimed approval to the next approver in its chain.
+# + approvalId - The claimed approval
+# + return - The approval, now waiting for the next approver, or nil when it is gone
 isolated function advanceApproval(string approvalId) returns PendingApproval? {
     lock {
         PendingApproval? approval = store.approvals[approvalId];
@@ -249,6 +265,9 @@ isolated function markRejected(string requestId, string approverId, string reaso
 # Issues the travel authorization once the last approver has approved. The FCDO advice is checked again first:
 # if it now advises against all travel, or newly advises against non-essential travel (which the approvers did
 # not see), the request is stopped instead.
+# + requestId - The approved trip request
+# + employeeId - The traveler's employee ID
+# + approverId - The last approver
 # + return - The request in its final state, or an error when it cannot be authorized by this approver
 isolated function authorizeRequest(string requestId, string employeeId, string approverId)
         returns TripRequest|error {
