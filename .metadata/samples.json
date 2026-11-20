@@ -144,6 +144,16 @@
       "imageUrl": "wso2integrations.azurecr.io/ai_chat_agent:0.1.0"
     },
     {
+      "displayName": "Gmail Label Agent",
+      "description": "An agent that checks a Gmail inbox every five minutes, labels each new email with the best matching label or a new one under AI/, and moves promotional emails out of the inbox.",
+      "componentType": "ai-agent",
+      "buildPack": "ballerina",
+      "repositoryUrl": "https://github.com/wso2/integration-samples/",
+      "componentPath": "/integrator-default-profile/samples/gmail-label-agent",
+      "thumbnailPath": "https://devant-cdn.wso2.com/console/sample-icons/gmail-label-agent.svg",
+      "tags": ["Gmail", "OpenAI", "AI", "Agent"]
+    },
+    {
       "displayName": "Customer Support Voice Agent",
       "description": "A customer support agent for an online store that customers can talk to by voice or chat with over HTTP. It checks order status, explains the return policy, and creates support tickets, keeping its replies short so they sound natural when spoken.",
       "componentType": "ai-agent",
