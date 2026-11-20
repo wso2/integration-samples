@@ -182,7 +182,7 @@
       "buildPack": "ballerina",
       "repositoryUrl": "https://github.com/wso2/integration-samples/",
       "componentPath": "/integrator-default-profile/samples/business-trip-approval",
-      "thumbnailPath": "https://raw.githubusercontent.com/wso2/integration-samples/main/integrator-default-profile/samples/business-trip-approval/icon.svg",
+      "thumbnailPath": "https://devant-cdn.wso2.com/console/sample-icons/business-trip-approval.svg",
       "tags": ["OpenAI", "AI", "Agent"],
       "imageUrl": "wso2integrations.azurecr.io/trip_approval:0.1.0"
     },
