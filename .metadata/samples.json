@@ -154,6 +154,16 @@
       "tags": ["Voice", "OpenAI", "AI", "Agent"]
     },
     {
+      "displayName": "Candidate Screening Agent",
+      "description": "A voice agent that runs first-round phone screens for job applicants. It checks the candidate against the must-haves of an open role from Google Sheets, scores them and records the screening in Google Sheets, then books an interview in Google Calendar for strong candidates and confirms it by Gmail.",
+      "componentType": "ai-agent",
+      "buildPack": "ballerina",
+      "repositoryUrl": "https://github.com/wso2/integration-samples/",
+      "componentPath": "/integrator-default-profile/samples/candidate-screening-agent",
+      "thumbnailPath": "https://devant-cdn.wso2.com/console/sample-icons/VoiceAgent.svg",
+      "tags": ["Voice", "Google Sheets", "Google Calendar", "Gmail", "OpenAI", "AI", "Agent"]
+    },
+    {
       "displayName": "S3 File Event Listener",
       "description": "An event-driven integration that reacts to S3 file uploads by consuming object-created notifications from an SQS queue using the aws.sqs listener.",
       "componentType": "event-handler",
