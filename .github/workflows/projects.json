@@ -79,5 +79,8 @@
   },
   {
     "path": "integrator-default-profile/samples/azure-files-change-tracker"
+  },
+  {
+    "path": "integrator-default-profile/samples/business-trip-approval/trip_approval"
   }
 ]
