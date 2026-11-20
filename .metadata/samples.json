@@ -150,7 +150,7 @@
       "buildPack": "ballerina",
       "repositoryUrl": "https://github.com/wso2/integration-samples/",
       "componentPath": "/integrator-default-profile/samples/gmail-label-agent",
-      "thumbnailPath": "https://raw.githubusercontent.com/wso2/integration-samples/main/integrator-default-profile/samples/gmail-label-agent/icon.svg",
+      "thumbnailPath": "https://devant-cdn.wso2.com/console/sample-icons/gmail-label-agent.svg",
       "tags": ["Gmail", "OpenAI", "AI", "Agent"]
     },
     {
