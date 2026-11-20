@@ -154,6 +154,16 @@
       "tags": ["Voice", "OpenAI", "AI", "Agent"]
     },
     {
+      "displayName": "Clinic Appointment Agent",
+      "description": "An appointment desk for a medical clinic. Patients book, reschedule and cancel appointments on WhatsApp, Telegram or web chat. Reception staff see the day's schedule and manage bookings in Google Chat, where every booking and cancellation is posted. Appointments are kept in Google Calendar, patients in Google Sheets, and Gmail sends confirmations.",
+      "componentType": "ai-agent",
+      "buildPack": "ballerina",
+      "repositoryUrl": "https://github.com/wso2/integration-samples/",
+      "componentPath": "/integrator-default-profile/samples/clinic-appointment-agent",
+      "thumbnailPath": "https://devant-cdn.wso2.com/console/sample-icons/HealthAgent.svg",
+      "tags": ["WhatsApp", "Telegram", "Google Chat", "Google Calendar", "Google Sheets", "Gmail", "OpenAI", "AI", "Agent"]
+    },
+    {
       "displayName": "S3 File Event Listener",
       "description": "An event-driven integration that reacts to S3 file uploads by consuming object-created notifications from an SQS queue using the aws.sqs listener.",
       "componentType": "event-handler",
