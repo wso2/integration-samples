@@ -16,7 +16,7 @@ function createFedexShipment(OrderResponse response) returns FedexResponse|error
     return targetType;
 }
 
-function creeateDhlShipment(OrderResponse response) returns DHLResponse|error {
+function createDhlShipment(OrderResponse response) returns DHLResponse|error {
     ShipmentRequest dhlReq = {
         amount: response.total,
         currency: response.currency,

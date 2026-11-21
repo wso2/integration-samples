@@ -6,8 +6,7 @@ service /payroll on httpListener {
 
     resource function post employees/[string id]/paytemplate/reimbursements(DetailedReimbursementTemplate[] templates)
             returns Reimbursement|error {
-        ReimbursementTemplate[] reimbursementRequests = from var {reimbursementTypeID, fixedAmount} in templates
-            select {reimbursementTypeID, fixedAmount};
+        ReimbursementTemplate[] reimbursementRequests = filterReimbursements(templates);
         Reimbursement result = check xero->/payrollxro/employees/[id]/paytemplate/reimbursements.post(reimbursementRequests);
         return result;
     }
