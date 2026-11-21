@@ -2,44 +2,59 @@
 
 ## Description
 
-A customer support assistant for an online store that customers can talk to by voice or text. This sample demonstrates how to build an AI agent in WSO2 Integrator and expose it through both a chat endpoint and a cloud voice listener. The agent helps customers check their order status, understand the return policy, and raise support tickets.
+A customer support assistant for an online store that customers can talk to by voice or chat with over HTTP. The agent checks order status, explains the return policy, and creates support tickets, keeping its replies short so they sound natural when spoken.
+
+### What it does
+
+- Looks up an order by its ID and reports its status and estimated delivery (sample orders: `ORD-1001`, `ORD-1002`, `ORD-1003`).
+- Explains the store's return policy.
+- Creates a support ticket for an issue the customer reports.
+- Reaches the same agent through two entry points:
+  - **Chat service** (`/customer-support-agent/chat`): an HTTP chat endpoint on port 9090.
+  - **Voice service**: a `CloudVoiceListener` on port 8080 that receives transcribed speech from the voice agent and returns the agent's reply.
 
 ## Prerequisites
 
-- An OpenAI API key.
-- To talk to the agent by voice, a **WSO2 Cloud** organization where you can deploy AI agents and enable voice agents.
+Before running this integration, you need:
+
+### OpenAI Setup
+
+1. Sign in to the [OpenAI platform](https://platform.openai.com/).
+2. Go to **API keys** and click **Create new secret key**.
+3. Copy the key.
+
+### Voice Setup
+
+To talk to the agent by voice, you need a **WSO2 Cloud** organization where you can deploy AI agents and enable voice agents.
 
 ## Configuration
 
-Provide the OpenAI API key through a `Config.toml` file in the project root:
+The following configurations are required for the integration:
+
+### OpenAI Configuration
+- `apiKey`: The OpenAI API key obtained from the OpenAI setup.
+
+To run the integration locally, provide the configuration in a `Config.toml` file in the project root:
 
 ```toml
+[openAIConfig]
 apiKey = "<OPENAI_API_KEY>"
 ```
 
-## Usage Instructions
+Then send a chat request to the chat endpoint:
 
-1. Run the integration to start the chat service and the voice listener.
-2. Send a chat request to the chat endpoint:
+```bash
+curl -X POST http://localhost:9090/customer-support-agent/chat \
+  -H "Content-Type: application/json" \
+  -d '{"sessionId": "session-1", "message": "Where is my order ORD-1001?"}'
+```
 
-   ```bash
-   curl -X POST http://localhost:9090/customer-support-agent/chat \
-     -H "Content-Type: application/json" \
-     -d '{"sessionId": "session-1", "message": "Where is my order ORD-1001?"}'
-   ```
+## Deploying on **WSO2 Cloud**
 
-3. To talk to the agent by voice:
-   1. Deploy this integration as an AI agent in **WSO2 Cloud**.
-   2. On the agent's overview page, select **Enable Voice Agent**. This creates a voice agent that connects to the integration's voice listener.
-
-## How It Works
-
-- The agent uses OpenAI's `gpt-4o-mini` model with an in-memory short-term memory that keeps the last 20 messages for each session.
-- It implements three agent tools:
-  - **getOrderStatus**: Looks up an order by its ID (sample orders: `ORD-1001`, `ORD-1002`, `ORD-1003`)
-  - **getReturnPolicy**: Returns the store's return policy
-  - **createSupportTicket**: Creates a support ticket for a reported issue
-- Requests reach the same agent from two entry points:
-  - **Chat service** (`/customer-support-agent/chat`): an HTTP chat endpoint on the default listener
-  - **Voice service**: a `CloudVoiceListener` on port 8080 that receives transcribed speech from the voice agent and returns the agent's reply
-- The agent keeps every reply short and conversational, with no Markdown, lists, or code, so replies read naturally when spoken aloud.
+1. Sign in to your WSO2 Cloud account.
+2. Create a new Integration and follow instructions in [WSO2 Cloud Documentation](https://wso2.com/devant/docs/references/import-a-repository/) to import this repository.
+3. Select the **Technology** as `WSO2 Integrator: BI`.
+4. Choose the **Integration** Type as `AI Agent` and click **Create**.
+5. Once the build is successful, click **Configure to Continue** and set the required configurations.
+6. On the integration's **Overview** page, click **Enable voice agent** to create a voice agent that connects to the voice listener.
+7. Once tested, you may promote the integration to production. Make sure to set the relevant configurations in the production environment as well.

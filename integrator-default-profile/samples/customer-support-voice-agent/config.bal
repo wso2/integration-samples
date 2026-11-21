@@ -1,1 +1,2 @@
-configurable string apiKey = ?;
+
+configurable record {|string apiKey;|} openAIConfig = ?;
