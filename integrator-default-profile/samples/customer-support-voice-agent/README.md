@@ -30,7 +30,7 @@ Before running this integration, you need:
 
 ### Voice Setup
 
-To talk to the agent by voice, you need a **WSO2 Cloud** organization whose plan includes voice agents, and the credentials of a LiveKit server plus speech-to-text and text-to-speech providers for the voice agent wizard.
+To talk to the agent by voice, you need permission in your **WSO2 Cloud** organization to create and deploy integrations and to manage configuration. The voice agent wizard also asks for the credentials of a LiveKit server and the API keys of a speech-to-text and a text-to-speech provider.
 
 ## Configuration
 

@@ -19,14 +19,14 @@
 
 <summary>Voice Setup Guide</summary>
 
-Voice agents must be included in your organization's plan. The following should be done after deploying the integration.
+To enable a voice agent, you need permission to create and deploy integrations and to manage configuration. The following should be done after deploying the integration.
 
 1. Go to the integration's **Overview** page and click **Enable voice agent**. The button is enabled once the integration is deployed, because the voice agent connects to its WebSocket endpoint on port 8080.
 2. Complete the voice agent wizard. The voice agent is created only when you finish it:
     - **Configure agent**: this integration is selected as the agent the voice agent talks to.
     - **Configure LiveKit**: enter the LiveKit server credentials that host the voice sessions.
-    - **Configure speech to text**: choose the provider and model that transcribe the caller's speech.
-    - **Configure text to speech**: choose the provider, model and voice for the spoken replies.
+    - **Configure speech to text**: choose the provider and model that transcribe the caller's speech, and enter its API key.
+    - **Configure text to speech**: choose the provider, model and voice for the spoken replies, and enter its API key.
     - **Tune and deploy**: adjust timing and turn detection, then deploy the voice agent.
 3. Talk to the voice agent, for example by asking "Where is my order ORD-1001?".
 
