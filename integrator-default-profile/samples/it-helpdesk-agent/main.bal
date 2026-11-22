@@ -7,7 +7,7 @@ listener ai:Listener helpdeskListener = new (listenOn = check http:getDefaultLis
 
 service /helpdesk on helpdeskListener {
     resource function post chat(@http:Payload ai:ChatReqMessage request) returns ai:ChatRespMessage|error {
-        string stringResult = check helpdeskAgent.run(request.message, request.sessionId);
+        string stringResult = check helpdeskAgent.run(request.message, sessionId = request.sessionId);
         return {message: stringResult};
     }
 }

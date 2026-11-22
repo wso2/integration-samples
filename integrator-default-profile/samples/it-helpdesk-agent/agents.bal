@@ -86,15 +86,15 @@ isolated function unlockAccountAndSendReset(string email, string employeeId) ret
     if employee is () {
         return string `No employee was found with the email ${email}.`;
     }
+    if employee.status == "Disabled" {
+        return "This account is disabled, not locked, so it cannot be unlocked here. Create an incident ticket instead.";
+    }
     IdCheckResult idResult = verifyEmployeeId(employee.email, employee.employeeId, employeeId);
     if idResult == "LOCKED_OUT" {
         return "There were too many failed employee ID checks, so the account was not unlocked and no reset link was sent. Employee ID checks for this employee are blocked for 15 minutes. Tell the employee to try again in 15 minutes or raise an incident ticket.";
     }
     if idResult == "MISMATCH" {
         return "The employee ID does not match our records. The account was not unlocked and no reset link was sent.";
-    }
-    if employee.status == "Disabled" {
-        return "This account is disabled, not locked, so it cannot be unlocked here. Create an incident ticket instead.";
     }
     boolean wasLocked = employee.status == "Locked";
     if wasLocked {

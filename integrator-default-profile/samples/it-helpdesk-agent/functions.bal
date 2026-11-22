@@ -350,7 +350,7 @@ isolated function findTicketsByEmployee(string email) returns Ticket[] {
     lock {
         Ticket[] found = from Ticket ticket in tickets
             where ticket.employeeEmail == key
-            select ticket.clone();
+            select ticket;
         return found.clone();
     }
 }
