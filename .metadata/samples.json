@@ -575,6 +575,16 @@
       "componentPath": "/integrator-default-profile/samples/personal-life-manager",
       "thumbnailPath": "https://devant-cdn.wso2.com/console/sample-icons/personal_life_manager.svg",
       "tags": ["Telegram", "Gmail", "Google Calendar", "Google Tasks", "Voice", "AI", "Agent"]
+    },
+    {
+      "displayName": "Employee Onboarding Automation",
+      "description": "An employee onboarding automation that sends personalized PDF offer letters via Gmail, tracks candidate responses in Google Sheets, and automatically provisions workspace accounts in Asgardeo when a candidate accepts.",
+      "componentType": "ai-agent",
+      "buildPack": "ballerina",
+      "repositoryUrl": "https://github.com/wso2/integration-samples/",
+      "componentPath": "/integrator-default-profile/samples/employee-onboarding-automation",
+      "thumbnailPath": "https://devant-cdn.wso2.com/console/sample-icons/employee_onboarding_automation.svg",
+      "tags": ["Gmail", "Google Sheets", "Asgardeo", "WSO2 Identity Server", "AI", "Agent", "HR", "Onboarding"]
     }
   ]
 }
