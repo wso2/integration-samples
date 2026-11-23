@@ -1,0 +1,16 @@
+# Copy to Config.toml and fill in every value. In Agent Builder you can also set these from the
+# Configurations view.
+
+# OpenAI, for the model the agent uses (gpt-4o-mini)
+openAiApiKey = "<sk-...>"
+
+# Google Sheets, Calendar and Gmail: an OAuth client and a refresh token with the spreadsheets,
+# calendar and gmail.send scopes
+googleClientId = "<client-id>.apps.googleusercontent.com"
+googleClientSecret = "<client-secret>"
+googleRefreshToken = "<refresh-token>"
+
+# The spreadsheet with the Roles and Screenings worksheets
+screeningSpreadsheetId = "<spreadsheet-id>"
+# The calendar interviews are booked on
+interviewCalendarId = "<calendar-id>@group.calendar.google.com"

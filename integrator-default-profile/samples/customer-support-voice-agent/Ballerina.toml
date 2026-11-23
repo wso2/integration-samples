@@ -2,8 +2,8 @@
 org = "wso2"
 name = "customer_support_voice_agent"
 version = "0.1.0"
-distribution = "2201.14.1"
-title = "Customer Support Voice Agent"
+title = "customer-support-voice-agent"
+distribution = "2201.14.2"
 
 [build-options]
 sticky = true
