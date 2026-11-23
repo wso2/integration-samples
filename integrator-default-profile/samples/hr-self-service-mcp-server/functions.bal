@@ -238,7 +238,17 @@ isolated function submitLeave(string employeeId, LeaveType leaveType, string sta
         if days > available {
             return error(string `Insufficient ${leaveType} leave balance: ${days} working day(s) requested, ${available} available.`);
         }
-        string newId = string `L-${1001 + dataStore.leaveRequests.length()}`;
+        // Continue from the highest existing request number, so edited sample data cannot produce duplicates
+        int highestNumber = 1000;
+        foreach LeaveRequest existing in dataStore.leaveRequests {
+            if existing.id.startsWith("L-") {
+                int|error number = int:fromString(existing.id.substring(2));
+                if number is int && number > highestNumber {
+                    highestNumber = number;
+                }
+            }
+        }
+        string newId = string `L-${highestNumber + 1}`;
         LeaveRequest created = {
             id: newId,
             employeeId: employeeId,
@@ -249,8 +259,8 @@ isolated function submitLeave(string employeeId, LeaveType leaveType, string sta
             status: PENDING,
             submittedAt: submittedAt
         };
-        if reason is string {
-            created.reason = reason;
+        if reason is string && reason.trim() != "" {
+            created.reason = reason.trim();
         }
         dataStore.leaveRequests.push(created);
         return created.clone();
