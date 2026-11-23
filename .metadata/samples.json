@@ -164,6 +164,16 @@
       "tags": ["Voice", "OpenAI", "AI", "Agent"]
     },
     {
+      "displayName": "Clinic Appointment Agent",
+      "description": "An appointment desk for a medical clinic. Patients book, reschedule and cancel appointments on WhatsApp, Telegram or web chat. Reception staff see the day's schedule and manage bookings in Google Chat, where every booking and cancellation is posted. Appointments are kept in Google Calendar, patients in Google Sheets, and Gmail sends confirmations.",
+      "componentType": "ai-agent",
+      "buildPack": "ballerina",
+      "repositoryUrl": "https://github.com/wso2/integration-samples/",
+      "componentPath": "/integrator-default-profile/samples/clinic-appointment-agent",
+      "thumbnailPath": "https://devant-cdn.wso2.com/console/sample-icons/HealthAgent.svg",
+      "tags": ["WhatsApp", "Telegram", "Google Chat", "Google Calendar", "Google Sheets", "Gmail", "OpenAI", "AI", "Agent"]
+    },
+    {
       "displayName": "Inbound Sales Agent",
       "description": "An AI agent that handles sales inquiry emails. It answers product questions from product docs (RAG), creates or updates leads in Salesforce, and leaves pricing, legal, and meeting requests as follow-up tasks for a sales rep.",
       "componentType": "ai-agent",
