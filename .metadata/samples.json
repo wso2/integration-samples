@@ -174,7 +174,7 @@
       "tags": ["Gmail", "Salesforce", "RAG", "AI", "Agent"]
     },
     {
-      "displayName": "GitHub Monthly Report Agent",
+      "displayName": "GitHub Report Agent",
       "description": "An AI agent that reads the open issues and pull requests of a GitHub repository, writes a monthly report with a summary, recommended actions, issues by severity, unattended issues and the oldest pull requests, and emails it as a PDF through Gmail.",
       "componentType": "ai-agent",
       "buildPack": "ballerina",
