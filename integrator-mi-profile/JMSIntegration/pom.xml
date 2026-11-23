@@ -65,6 +65,27 @@
       <url>https://maven.wso2.org/nexus/content/groups/wso2-public/</url>
     </pluginRepository>
   </pluginRepositories>
+  <!-- ActiveMQ Classic client libraries. The dependency plugin copies these jars to deployment/libs,
+       from where they are added to MI_HOME/lib (Docker image or local runtime). Without them MI cannot
+       create the JMS connection factory ("Connection cannot be establish to the broker. Please check the
+       broker libs provided."). -->
+  <dependencies>
+    <dependency>
+      <groupId>org.apache.activemq</groupId>
+      <artifactId>activemq-client</artifactId>
+      <version>${activemq.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.fusesource.hawtbuf</groupId>
+      <artifactId>hawtbuf</artifactId>
+      <version>1.11</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.geronimo.specs</groupId>
+      <artifactId>geronimo-j2ee-management_1.1_spec</artifactId>
+      <version>1.0.1</version>
+    </dependency>
+  </dependencies>
   <profiles>
     <profile>
       <id>default</id>
@@ -231,14 +252,16 @@
               </execution>
             </executions>
           </plugin>
-          <!-- Download dependency jars to the deployment/libs folder -->
+          <!-- Download dependency jars to the deployment/libs folder. Bound to generate-sources so the
+               jars exist before mi-container-config-mapper (generate-resources) copies deployment/libs
+               into the Docker build context; otherwise a clean build ships an image without them. -->
           <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-dependency-plugin</artifactId>
             <version>3.5.0</version>
             <executions>
               <execution>
-                <phase>process-resources</phase>
+                <phase>generate-sources</phase>
                 <goals>
                   <goal>copy-dependencies</goal>
                 </goals>
@@ -394,6 +417,7 @@
     <maven.compiler.target>1.8</maven.compiler.target>
     <project.scm.id>integration-project</project.scm.id>
     <project.runtime.version>4.6.0</project.runtime.version>
+    <activemq.version>5.18.6</activemq.version>
     <dockerfile.base.image>wso2/wso2mi:${project.runtime.version}</dockerfile.base.image>
     <car.plugin.version>5.4.16</car.plugin.version>
     <test.server.type>local</test.server.type>
