@@ -99,13 +99,13 @@ accessToken = "<ACCESS_TOKEN>"
 
 - The integration has two triggers that call the same agent:
   - **Inbox poller** (`task:Service`): Checks Gmail every `pollIntervalSeconds` for emails that match `pollQuery` and arrived since the last check. It skips emails that it has already analyzed and logs the verdict for each new one.
-  - **HTTP service** (`POST /email-header-analyzer/analyze`): Analyzes the emails that the request describes, and returns the report.
+  - **HTTP service** (`POST /email-header-analyzer/analyze`): Analyzes the emails that the request selects, and returns the report. A request has either `messageIds` or a Gmail search `query`, and any other field is rejected. Only these validated values reach the agent, so a request can't add its own instructions to the prompt.
 - The agent uses the default WSO2 model provider. It has these tools:
   - **listRecentEmails**: Finds the message IDs of up to 10 emails that match a Gmail search query.
   - **analyzeEmailHeadersTool**: Reads an email's headers through the Gmail API and returns the facts as fixed values. It wraps the `analyzeEmailHeaders` function in `functions.bal`, and works as follows:
     - It reads the SPF, DKIM, and DMARC results from the `Authentication-Results` header. If that header is missing, it falls back to the `Received-SPF`, `DKIM-Signature`, and DMARC headers.
-    - It takes the originating IP address from the oldest `Received` header, ignoring loopback and private addresses. If that header records only a hop inside the sender's own network, it moves up to the next `Received` header.
-    - It looks up the IP address's owner and location with [ip-api.com](https://ip-api.com/), and its fraud score with IPQualityScore. It maps the fraud score to a reputation: `Good` below 11, `OK` from 11, `Suspicious` from 50, `Poor` from 75, and `Bad` from 85.
+    - It takes the originating IP address from the oldest `Received` header, ignoring loopback, private, and link-local addresses. If that header records only a hop inside the sender's own network, it moves up to the next `Received` header.
+    - It looks up the IP address's owner and location with [ipwho.is](https://ipwho.is/), over HTTPS, and its fraud score with IPQualityScore. It maps the fraud score to a reputation: `Good` below 11, `OK` from 11, `Suspicious` from 50, `Poor` from 75, and `Bad` from 85.
 - Code produces the facts, so the agent cannot invent them. The agent copies them into its answer unchanged and only decides `spoofingRisk` and `reasons`. It looks for these warning signs:
   - failing authentication;
   - a `Reply-To` or `Return-Path` domain that differs from the sender's;

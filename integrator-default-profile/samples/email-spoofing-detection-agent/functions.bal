@@ -62,9 +62,12 @@ isolated function analyzeEmailHeaders(string messageId) returns EmailHeaderFacts
     string recentSpamActivity = "Not associated with recent spam";
 
     if initialIP != IP_NOT_FOUND {
-        json|error location = ipApiClient->get(string `/${initialIP}`);
-        if location is map<json> {
-            organization = textOrDefault(location["org"], organization);
+        json|error location = ipWhoIsClient->get(string `/${initialIP}`);
+        if location is map<json> && location["success"] == true {
+            json connection = location["connection"];
+            if connection is map<json> {
+                organization = textOrDefault(connection["org"], organization);
+            }
             country = textOrDefault(location["country"], country);
             city = textOrDefault(location["city"], city);
         }
@@ -77,7 +80,8 @@ isolated function analyzeEmailHeaders(string messageId) returns EmailHeaderFacts
                 ipSenderReputation = fraudScore >= 85.0 ? "Bad" : (fraudScore >= 75.0 ? "Poor"
                     : (fraudScore >= 50.0 ? "Suspicious" : (fraudScore >= 11.0 ? "OK" : "Good")));
                 recentSpamActivity = fraudScore >= 85.0 ? "Identified spam in the last 48 hours"
-                    : (fraudScore >= 75.0 ? "Identified spam in the last month" : "Not associated with recent spam");
+                    : (fraudScore >= 75.0 ? "Identified spam in the last month"
+                    : (fraudScore >= 50.0 ? "Associated with suspicious activity" : "Not associated with recent spam"));
             }
         }
     }
@@ -102,7 +106,7 @@ isolated function analyzeEmailHeaders(string messageId) returns EmailHeaderFacts
 }
 
 # Finds the IP address that the email came from. It reads the oldest (bottom-most) Received header, ignores
-# loopback and private IPv4 addresses, and takes the first IPv6 or IPv4 address left. If that header has no such
+# loopback, private, and link-local IPv4 addresses, and takes the first IPv6 or IPv4 address left. If that header has no such
 # address, for example because it records a hop inside the sender's own mail server, it moves up to the next header.
 #
 # + receivedHeaders - The Received headers, from the newest hop to the oldest hop
@@ -126,7 +130,7 @@ isolated function isPublicIpv4(string candidate) returns boolean {
     if !re `((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)`.isFullMatch(candidate) {
         return false;
     }
-    return !re `(127|10|192\.168|172\.(1[6-9]|2[0-9]|3[01]))\..*`.isFullMatch(candidate);
+    return !re `(127|10|192\.168|172\.(1[6-9]|2[0-9]|3[01])|169\.254)\..*`.isFullMatch(candidate);
 }
 
 isolated function isIpv6(string candidate) returns boolean {

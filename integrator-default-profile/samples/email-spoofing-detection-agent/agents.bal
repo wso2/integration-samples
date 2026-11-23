@@ -33,6 +33,7 @@ Return a JSON object of the form {"emails": [...]} with one entry per analyzed e
 
 # Reads the headers of a Gmail message and returns the facts needed to judge whether it is spoofed: the sender, Reply-To and Return-Path, the SPF, DKIM, and DMARC results, the full Authentication-Results header, the originating IP address with its organization and location, and the reputation of that IP address.
 # + messageId - The ID of the Gmail message to analyze, as returned by listRecentEmails
+# + return - The header facts of the message, or an error if the message cannot be read
 @ai:AgentTool
 @display {label: "", iconPath: ""}
 isolated function analyzeEmailHeadersTool(string messageId) returns EmailHeaderFacts|error {

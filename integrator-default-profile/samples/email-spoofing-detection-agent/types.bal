@@ -73,3 +73,14 @@ type GmailMessageHeaders record {
         GmailHeader[] headers = [];
     } payload;
 };
+
+# A request to the analyze endpoint. Give either Gmail message IDs or a Gmail search query.
+public type AnalyzeRequest record {|
+    # Gmail search query that selects the emails to analyze. Defaults to "in:inbox newer_than:1d".
+    string query?;
+    # IDs of the Gmail messages to analyze
+    string[] messageIds?;
+|};
+
+// The search query used when a request gives neither message IDs nor a query.
+const string DEFAULT_QUERY = "in:inbox newer_than:1d";

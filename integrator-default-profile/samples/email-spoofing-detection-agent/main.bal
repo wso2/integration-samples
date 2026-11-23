@@ -7,7 +7,7 @@ import ballerinax/googleapis.gmail;
 listener http:Listener httpDefaultListener = http:getDefaultListener();
 
 service /email\-header\-analyzer on httpDefaultListener {
-    resource function post analyze(@http:Payload json payload) returns record {|
+    resource function post analyze(@http:Payload AnalyzeRequest request) returns record {|
         *http:Ok;
         EmailSecurityReport body;
         "application/json" mediaType = "application/json";
@@ -16,10 +16,24 @@ service /email\-header\-analyzer on httpDefaultListener {
         |} headers?;
     |}|error {
         do {
-            json result = check emailSecurityAgent.run(`Analyze the emails described in this request and return a list with one analysis per email.
-
-Request:
-${payload.toJsonString()}`);
+            // Only the validated message IDs or search query reach the agent, never the raw request body.
+            string[]? messageIds = request.messageIds;
+            string prompt;
+            if messageIds is string[] && messageIds.length() > 0 {
+                foreach string id in messageIds {
+                    if !re `[0-9A-Za-z]{1,64}`.isFullMatch(id) {
+                        return error(string `Invalid Gmail message ID: ${id}`);
+                    }
+                }
+                prompt = string `Analyze the emails with these Gmail message IDs: ${string:'join(", ", ...messageIds)}`;
+            } else {
+                string query = request.query ?: DEFAULT_QUERY;
+                if query.length() > 200 || query.includes("\n") {
+                    return error("The query must be a single-line Gmail search query of at most 200 characters");
+                }
+                prompt = string `Analyze the emails that match this Gmail search query: ${query}`;
+            }
+            json result = check emailSecurityAgent.run(prompt);
             return {body: check result.cloneWithType(EmailSecurityReport)};
         } on fail error err {
             // handle error
@@ -50,10 +64,23 @@ service on inboxPoller {
             since = lastPollTime;
             lastPollTime = now;
         }
-        // Look back two extra minutes, because Gmail can index an email a little after it arrives.
-        gmail:ListMessagesResponse response = check gmailClient->/users/["me"]/messages.get(q = string `${pollQuery} after:${since - 120}`);
-        readonly & string[] foundIds = from gmail:Message message in response.messages ?: []
-            select message.id;
+        // Look back two extra minutes, because Gmail can index an email a little after it arrives. Read every page,
+        // so that no email is skipped after an outage or a burst of email.
+        string query = string `${pollQuery} after:${since - 120}`;
+        string[] ids = [];
+        string? pageToken = ();
+        while true {
+            gmail:ListMessagesResponse response = check gmailClient->/users/["me"]/messages.get(q = query,
+                pageToken = pageToken);
+            foreach gmail:Message message in response.messages ?: [] {
+                ids.push(message.id);
+            }
+            pageToken = response.nextPageToken;
+            if pageToken is () {
+                break;
+            }
+        }
+        readonly & string[] foundIds = ids.cloneReadOnly();
 
         readonly & string[] newIds;
         lock {
