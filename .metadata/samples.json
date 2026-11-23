@@ -160,7 +160,7 @@
       "buildPack": "ballerina",
       "repositoryUrl": "https://github.com/wso2/integration-samples/",
       "componentPath": "/integrator-default-profile/samples/inbound-sales-agent",
-      "thumbnailPath": "https://devant-cdn.wso2.com/console/sample-icons/AIAgent.svg",
+      "thumbnailPath": "https://devant-cdn.wso2.com/console/sample-icons/inbound_sales_agent.svg",
       "tags": ["Gmail", "Salesforce", "RAG", "AI", "Agent"]
     },
     {
