@@ -160,7 +160,7 @@
       "buildPack": "ballerina",
       "repositoryUrl": "https://github.com/wso2/integration-samples/",
       "componentPath": "/integrator-default-profile/samples/vulnerability-triage-agent",
-      "thumbnailPath": "https://devant-cdn.wso2.com/console/sample-icons/AIAgent.svg",
+      "thumbnailPath": "https://devant-cdn.wso2.com/console/sample-icons/vulnerability-triage-agent.svg",
       "tags": ["GitHub", "Security", "AI", "Agent"]
     },
     {
