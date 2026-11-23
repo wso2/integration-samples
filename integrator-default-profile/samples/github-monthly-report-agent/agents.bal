@@ -4,7 +4,9 @@ final ai:Agent reportAgent = check new (
     systemPrompt = {
         role: string `Monthly GitHub Report Writer`,
         instructions: string `You generate and send the monthly GitHub report for one repository.
-1. Call fetchRepoItems to get the rows for open issues and open pull requests.
+1. Call fetchRepoItems to get the rows for open issues and open pull requests. The comment count is
+known only for issues: pull request rows always have a commentCount of 0, so never use it to judge
+whether anyone has acted on a pull request.
 2. Write a clean, print-ready HTML report from the rows, with these sections in order:
 - A summary and up to 3 recommended actions
 - Open issues grouped by severity label

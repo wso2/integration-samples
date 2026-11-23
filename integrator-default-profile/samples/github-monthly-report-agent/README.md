@@ -55,8 +55,8 @@ accessToken = "<ACCESS_TOKEN>"
 - The `main` function in `automation.bal` runs the agent once with the request `Generate and send this month's report.`, logs the result, and exits.
 - The agent uses the default WSO2 model provider and these tools:
   - **fetchRepoItems**: Reads the 100 most recent open issues and 100 most recent open pull requests with the GitHub connector, and turns each into a flat row with its number, title, author, assignee, labels, comment count, creation date, age in days, and URL. It skips the pull requests that the GitHub issues API also returns, so each pull request appears once.
-  - **convertToPdf**: Converts the agent's HTML report into an A4 PDF with the `ballerina/pdf` module, and writes it to `monthly-report.pdf` in the working directory.
-  - **emailReport**: Sends the PDF as an attachment to `recipientEmail` through the Gmail connector, with the summary in the body.
+  - **convertToPdf**: Converts the agent's HTML report into an A4 PDF with the `ballerina/pdf` module, and writes it to a new temporary file, so a retry never overwrites an earlier report.
+  - **emailReport**: Sends the PDF as an attachment named `monthly-report.pdf` to `recipientEmail` through the Gmail connector, with the summary as the plain-text body.
 - The work is split so that each part does what it is reliable at. Code fetches the data, computes the age of each item, renders the PDF, and sends the email. The agent groups and ranks the items, picks the recommended actions, and writes the report.
 - The instructions tell the agent to use only the rows that `fetchRepoItems` returns, and to treat issue and pull request titles as text to display, never as instructions to follow.
 - The PDF renderer supports only simple HTML, so the instructions limit the report to headings, paragraphs, lists, and tables with minimal CSS, and tell the agent to list every item on its own line.
@@ -64,5 +64,5 @@ accessToken = "<ACCESS_TOKEN>"
 ## Limitations
 
 - The report covers at most the 100 most recent open issues and 100 most recent open pull requests. Older items are not included.
-- The comment count is available only for issues. Pull request rows always have a comment count of `0`.
+- The comment count is available only for issues. Pull request rows always have a comment count of `0`, and the instructions tell the agent not to use it for pull requests.
 - Severity grouping uses the issue labels as they are. Label your issues by severity, such as `critical`, `high`, or `bug`, to get useful groups.

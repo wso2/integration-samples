@@ -1,4 +1,5 @@
 import ballerina/ai;
+import ballerina/file;
 import ballerina/io;
 import ballerina/pdf;
 import ballerina/time;
@@ -120,17 +121,17 @@ isolated function computeAgeDays(string createdAt) returns int {
     }
     time:Utc now = time:utcNow();
     decimal diffSeconds = time:utcDiffSeconds(now, createdUtc);
-    int ageDays = <int>(diffSeconds / 86400);
-    return ageDays;
+    return <int>decimal:floor(diffSeconds / 86400d);
 }
 
-# Converts a print-ready HTML report into a PDF file and returns its local file path.
+# Converts a print-ready HTML report into a PDF file and returns its local file path. Each call writes a new
+# temporary file, so a retry never overwrites an earlier report.
 # + html - the print-ready HTML report content
 # + return - the local file path of the generated PDF, or an error
 @ai:AgentTool
 isolated function convertToPdf(string html) returns string|error {
     byte[] pdfBytes = check pdf:parseHtml(html, pageSize = pdf:A4);
-    string pdfPath = "./monthly-report.pdf";
+    string pdfPath = check file:createTemp(suffix = ".pdf", prefix = "monthly-report-");
     check io:fileWriteBytes(pdfPath, pdfBytes);
     return pdfPath;
 }
@@ -146,7 +147,7 @@ isolated function emailReport(string pdfPath, string summary) returns string|err
     gmail:MessageRequest message = {
         to: [recipientEmail],
         subject: emailSubject,
-        bodyInHtml: string `<p>${summary}</p>`,
+        bodyInText: summary,
         attachments: [
             {mimeType: "application/pdf", name: "monthly-report.pdf", path: pdfPath}
         ]

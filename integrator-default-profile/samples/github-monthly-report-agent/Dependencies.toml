@@ -119,6 +119,9 @@ dependencies = [
 	{org = "ballerina", name = "os"},
 	{org = "ballerina", name = "time"}
 ]
+modules = [
+	{org = "ballerina", packageName = "file", moduleName = "file"}
+]
 
 [[package]]
 org = "ballerina"
@@ -446,6 +449,7 @@ name = "github_monthly_report_agent"
 version = "0.1.0"
 dependencies = [
 	{org = "ballerina", name = "ai"},
+	{org = "ballerina", name = "file"},
 	{org = "ballerina", name = "io"},
 	{org = "ballerina", name = "log"},
 	{org = "ballerina", name = "pdf"},
