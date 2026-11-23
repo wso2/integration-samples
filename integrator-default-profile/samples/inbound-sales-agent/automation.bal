@@ -33,9 +33,10 @@ service "sales-inquiry-poll-job" on gmailPollListener {
 
 # Lists messages matching the configured Gmail search query and processes each of them.
 # Messages already labeled "sales-processed" are always excluded, so a message is handled only once.
+# Messages sent from this mailbox, including the agent's own replies, are always excluded too.
 # + return - an error if listing messages failed
 isolated function processUnreadSalesInquiries() returns error? {
-    string query = string `${gmailSearchQuery} -label:sales-processed`;
+    string query = string `${gmailSearchQuery} -label:sales-processed -from:me`;
     log:printInfo("Polling Gmail for sales inquiries", query = query);
     gmail:Message[] messages = [];
     string? pageToken = ();

@@ -10,7 +10,8 @@ Salesforce Task for a sales rep.
 1. **Automation** (`automation.bal`): every `pollingIntervalSeconds` (default 120 seconds), a
    scheduled job searches Gmail for messages matching `gmailSearchQuery` (default
    `label:Inquiry is:unread`), across all result pages. Messages already labeled `sales-processed`
-   are always excluded, so each message is handled only once. If a poll is still running when the
+   are always excluded, so each message is handled only once. Messages sent from the mailbox
+   itself, including the agent's own replies, are also excluded. If a poll is still running when the
    next one is due, the next one is skipped, and the following poll picks up any remaining
    messages.
 2. For each match, it loads the **full Gmail thread** (so earlier messages in the conversation are
