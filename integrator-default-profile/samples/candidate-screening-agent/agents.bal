@@ -13,13 +13,20 @@ isolated function listOpenRoles() returns sheets:Range|error {
     return sheetsRange;
 }
 
-# Saves the screening result as a new row in the Screenings sheet. values must be, in order: current local date and time, candidate full name, phone, email, role ID, a two-sentence summary, score from 1 to 5, outcome (Advance or Not a fit).
-# + values - Array of values of the row to be added
+# Saves the screening result as a new row in the Screenings sheet. 
+# + loggedAt - Current local date and time
+# + candidate - Candidate full name
+# + phone - Candidate phone number
+# + email - Candidate email address
+# + roleId - ID of the role the candidate applied for
+# + summary - Two-sentence summary of the candidate's answers
+# + score - Score from 1 to 5
+# + outcome - Advance or Not a fit
 # + return - The range the screening row was added to
 @ai:AgentTool
 @display {label: "", iconPath: "https://bcentral-packageicons.azureedge.net/images/ballerinax_googleapis.sheets_4.0.0.png"}
-isolated function recordScreening((int|string|decimal|boolean|float)[] values) returns sheets:ValueRange|error {
-    sheets:ValueRange sheetsValuerange = check sheetsClient->appendValue(screeningSpreadsheetId, values, {sheetName: "Screenings"});
+isolated function recordScreening(string loggedAt, string candidate, string phone, string email, string roleId, string summary, int score, string outcome) returns sheets:ValueRange|error {
+    sheets:ValueRange sheetsValuerange = check sheetsClient->appendValue(screeningSpreadsheetId, [loggedAt, candidate, phone, email, roleId, summary, score, outcome], {sheetName: "Screenings"});
     return sheetsValuerange;
 }
 
@@ -44,13 +51,15 @@ isolated function bookInterview(calendar:InputEvent event) returns calendar:Even
     return calendarEvent;
 }
 
-# Emails a candidate, for example the interview confirmation. payload: to (list with the candidate email address), subject, and bodyInText (plain text signed Riverside Tech Recruiting).
-# + payload - The message to be sent.
+# Emails a candidate, for example the interview confirmation.
+# + to - The candidate's email address
+# + subject - Subject of the email
+# + bodyInText - Plain text body of the email, signed Riverside Tech Recruiting
 # + return - The sent email message
 @ai:AgentTool
 @display {label: "", iconPath: "https://bcentral-packageicons.azureedge.net/images/ballerinax_googleapis.gmail_4.2.0.png"}
-isolated function emailCandidate(gmail:MessageRequest payload) returns gmail:Message|error {
-    gmail:Message gmailMessage = check gmailClient->/users/["me"]/messages/send.post(payload);
+isolated function emailCandidate(string to, string subject, string bodyInText) returns gmail:Message|error {
+    gmail:Message gmailMessage = check gmailClient->/users/["me"]/messages/send.post({to: [to], subject: subject, bodyInText: bodyInText});
     return gmailMessage;
 }
 

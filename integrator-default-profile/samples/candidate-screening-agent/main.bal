@@ -1,12 +1,17 @@
 import ballerina/ai;
 import ballerina/http;
+import ballerina/log;
 import ballerinax/ai.wso2.integration;
 
 listener integration:CloudVoiceListener voiceListener = new (8080);
 
 isolated service integration:VoiceService on voiceListener {
     isolated remote function onChatMessage(integration:ChatMessage message) returns string|error {
-        string response = check screeningAgent.run(message.message, sessionId = message.sessionId);
+        string|error response = screeningAgent.run(message.message, sessionId = message.sessionId);
+        if response is error {
+            log:printError("Agent run failed", response);
+            return "Sorry, something went wrong. Please try again.";
+        }
         return response;
     }
 }

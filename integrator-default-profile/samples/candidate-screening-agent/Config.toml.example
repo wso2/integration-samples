@@ -9,8 +9,6 @@ openAiApiKey = "<sk-...>"
 googleClientId = "<client-id>.apps.googleusercontent.com"
 googleClientSecret = "<client-secret>"
 googleRefreshToken = "<refresh-token>"
-calendarClientAuthRefreshUrl = "https://oauth2.googleapis.com/token"
-gmailClientAuthRefreshUrl = "https://oauth2.googleapis.com/token"
 
 # The spreadsheet with the Roles and Screenings worksheets
 screeningSpreadsheetId = "<spreadsheet-id>"
