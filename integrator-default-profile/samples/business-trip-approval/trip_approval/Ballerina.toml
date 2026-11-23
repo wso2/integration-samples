@@ -1,0 +1,9 @@
+[package]
+org = "wso2"
+name = "trip_approval"
+version = "0.1.0"
+distribution = "2201.14.1"
+title = "trip-approval"
+
+[build-options]
+sticky = true

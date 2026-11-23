@@ -144,7 +144,17 @@
       "imageUrl": "wso2integrations.azurecr.io/ai_chat_agent:0.1.0"
     },
     {
-      "displayName": "Customer Support Voice Agent",
+      "displayName": "Gmail Label Agent",
+      "description": "An agent that checks a Gmail inbox every five minutes, labels each new email with the best matching label or a new one under AI/, and moves promotional emails out of the inbox.",
+      "componentType": "ai-agent",
+      "buildPack": "ballerina",
+      "repositoryUrl": "https://github.com/wso2/integration-samples/",
+      "componentPath": "/integrator-default-profile/samples/gmail-label-agent",
+      "thumbnailPath": "https://devant-cdn.wso2.com/console/sample-icons/gmail-label-agent.svg",
+      "tags": ["Gmail", "OpenAI", "AI", "Agent"]
+    },
+    {
+      "displayName": "Support Voice Agent",
       "description": "A customer support agent for an online store that customers can talk to by voice or chat with over HTTP. It checks order status, explains the return policy, and creates support tickets, keeping its replies short so they sound natural when spoken.",
       "componentType": "ai-agent",
       "buildPack": "ballerina",
@@ -162,6 +172,26 @@
       "componentPath": "/integrator-default-profile/samples/candidate-screening-agent",
       "thumbnailPath": "https://devant-cdn.wso2.com/console/sample-icons/CandidateScreeningAgent.svg",
       "tags": ["Voice", "Google Sheets", "Google Calendar", "Gmail", "OpenAI", "AI", "Agent"]
+    },
+    {
+      "displayName": "Clinic Appointment Agent",
+      "description": "An appointment desk for a medical clinic. Patients book, reschedule and cancel appointments on WhatsApp, Telegram or web chat. Reception staff see the day's schedule and manage bookings in Google Chat, where every booking and cancellation is posted. Appointments are kept in Google Calendar, patients in Google Sheets, and Gmail sends confirmations.",
+      "componentType": "ai-agent",
+      "buildPack": "ballerina",
+      "repositoryUrl": "https://github.com/wso2/integration-samples/",
+      "componentPath": "/integrator-default-profile/samples/clinic-appointment-agent",
+      "thumbnailPath": "https://devant-cdn.wso2.com/console/sample-icons/HealthAgent.svg",
+      "tags": ["WhatsApp", "Telegram", "Google Chat", "Google Calendar", "Google Sheets", "Gmail", "OpenAI", "AI", "Agent"]
+    },
+    {
+      "displayName": "Inbound Sales Agent",
+      "description": "An AI agent that handles sales inquiry emails. It answers product questions from product docs (RAG), creates or updates leads in Salesforce, and leaves pricing, legal, and meeting requests as follow-up tasks for a sales rep.",
+      "componentType": "ai-agent",
+      "buildPack": "ballerina",
+      "repositoryUrl": "https://github.com/wso2/integration-samples/",
+      "componentPath": "/integrator-default-profile/samples/inbound-sales-agent",
+      "thumbnailPath": "https://devant-cdn.wso2.com/console/sample-icons/inbound_sales_agent.svg",
+      "tags": ["Gmail", "Salesforce", "RAG", "AI", "Agent"]
     },
     {
       "displayName": "S3 File Event Listener",
@@ -184,6 +214,27 @@
       "thumbnailPath": "https://mi-connectors.wso2.com/samples/icons/Transformation_Templates.png",
       "tags": ["Azure Files", "Automation", "Integration"],
       "imageUrl": "wso2integrations.azurecr.io/azure_files_change_tracker:0.1.0"
+    },
+    {
+      "displayName": "Business Trip Approval",
+      "description": "A multi-agent travel desk for business trip approvals. A planner agent works with destination, travel advice and policy agents to check the weather, public holidays, UK FCDO travel advice and the company travel policy. Each trip goes to the traveler's manager, and to the manager's manager when the policy asks for it. When all approve, it issues a travel authorization.",
+      "componentType": "ai-agent",
+      "buildPack": "ballerina",
+      "repositoryUrl": "https://github.com/wso2/integration-samples/",
+      "componentPath": "/integrator-default-profile/samples/business-trip-approval",
+      "thumbnailPath": "https://devant-cdn.wso2.com/console/sample-icons/business-trip-approval.svg",
+      "tags": ["OpenAI", "AI", "Agent"],
+      "imageUrl": "wso2integrations.azurecr.io/trip_approval:0.1.0"
+    },
+    {
+      "displayName": "HR Self-Service MCP Server",
+      "description": "An MCP server for employee leave management, secured with OAuth. Employees check their leave balances and apply for or cancel leave, and managers approve or reject requests from their direct reports. Scopes control access: employees can only see their own data, and reading other employees' data requires an HR admin scope. Works with any OAuth 2.0 / OIDC identity provider.",
+      "componentType": "service",
+      "buildPack": "ballerina",
+      "repositoryUrl": "https://github.com/wso2/integration-samples/",
+      "componentPath": "/integrator-default-profile/samples/hr-self-service-mcp-server",
+      "thumbnailPath": "https://devant-cdn.wso2.com/console/sample-icons/hr_self_service_mcp_server.svg",
+      "tags": ["MCP", "OAuth", "HR", "AI", "Integration"]
     },
     {
       "displayName": "API Testing",
