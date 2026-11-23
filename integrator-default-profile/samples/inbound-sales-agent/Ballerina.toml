@@ -1,0 +1,9 @@
+[package]
+org = "wso2"
+name = "inbound_sales_agent"
+version = "0.1.0"
+distribution = "2201.14.2"
+title = "Inbound Sales Agent"
+
+[build-options]
+sticky = true
