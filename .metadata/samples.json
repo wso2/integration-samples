@@ -204,6 +204,16 @@
       "tags": ["GitHub", "Gmail", "PDF", "AI", "Agent"]
     },
     {
+      "displayName": "Vulnerability Triage Agent",
+      "description": "An AI agent that triages known vulnerabilities in the dependencies of GitHub repositories. It ranks them by how likely they are to be exploited and how exposed each repository is, and opens a GitHub issue for each package that needs an upgrade now.",
+      "componentType": "ai-agent",
+      "buildPack": "ballerina",
+      "repositoryUrl": "https://github.com/wso2/integration-samples/",
+      "componentPath": "/integrator-default-profile/samples/vulnerability-triage-agent",
+      "thumbnailPath": "https://devant-cdn.wso2.com/console/sample-icons/vulnerability-triage-agent.svg",
+      "tags": ["GitHub", "Security", "AI", "Agent"]
+    },
+    {
       "displayName": "Contract Review Assistant",
       "description": "An AI agent that reviews NDAs and vendor agreements against the company's contract playbook. It flags each clause that deviates from the playbook with a risk level and replacement wording, finds missing protections, and recommends whether to approve the agreement or send it to legal.",
       "componentType": "ai-agent",
