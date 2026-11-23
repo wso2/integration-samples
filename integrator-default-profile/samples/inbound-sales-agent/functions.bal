@@ -25,7 +25,8 @@ isolated function searchProductDocs(string query) returns string|error {
 @display {label: "", iconPath: "https://bcentral-packageicons.azureedge.net/images/ballerinax_salesforce_8.7.0.png"}
 isolated function findLeadOrContact(string email) returns LeadOrContact?|error {
     string escapedEmail = escapeSoqlLiteral(email);
-    string leadQuery = string `SELECT Id, Name, Company, Status FROM Lead WHERE Email = '${escapedEmail}' LIMIT 1`;
+    // Converted leads can't be updated, so skip them and fall through to the contact they became
+    string leadQuery = string `SELECT Id, Name, Company, Status FROM Lead WHERE Email = '${escapedEmail}' AND IsConverted = false LIMIT 1`;
     stream<LeadQueryResult, error?> leadResults = check salesforceClient->query(leadQuery);
     record {|LeadQueryResult value;|}|error? leadNext = leadResults.next();
     check leadResults.close();
@@ -72,20 +73,24 @@ isolated function createLead(string firstName, string lastName, string email, st
     return response.id;
 }
 
-# Appends a dated conversation summary to an existing lead's Description.
-# + leadId - the Salesforce Id of the lead to update
+# Appends a dated conversation summary to an existing lead's or contact's Description.
+# + recordId - the Salesforce Id returned by findLeadOrContact
+# + recordType - the recordType returned by findLeadOrContact, either "Lead" or "Contact"
 # + description - the new conversation summary to append
 # + return - an error if the update failed
 @ai:AgentTool
 @display {label: "", iconPath: "https://bcentral-packageicons.azureedge.net/images/ballerinax_salesforce_8.7.0.png"}
-isolated function updateLead(string leadId, string description) returns error? {
-    LeadQueryResult existingLead = check salesforceClient->getById("Lead", leadId);
-    string currentDescription = existingLead.Description ?: "";
+isolated function updateLeadOrContact(string recordId, string recordType, string description) returns error? {
+    if recordType != "Lead" && recordType != "Contact" {
+        return error(string `Unsupported record type: ${recordType}. Use "Lead" or "Contact".`);
+    }
+    DescriptionRecord existingRecord = check salesforceClient->getById(recordType, recordId);
+    string currentDescription = existingRecord.Description ?: "";
     string today = getTodayDateString();
     string updatedDescription = currentDescription == "" ?
         string `[${today}] ${description}` :
         string `${currentDescription}` + "\n" + string `[${today}] ${description}`;
-    check salesforceClient->update("Lead", leadId, {"Description": updatedDescription});
+    check salesforceClient->update(recordType, recordId, {"Description": updatedDescription});
 }
 
 # Creates a Salesforce Task to flag a prospect for sales rep follow-up.

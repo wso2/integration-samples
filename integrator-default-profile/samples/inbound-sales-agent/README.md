@@ -19,8 +19,8 @@ Salesforce Task for a sales rep.
    memory between runs, so each email is handled on its own with its full thread as context.
 3. The agent answers product questions using only the `searchProductDocs` tool (backed by an
    in-memory vector knowledge base ingested from `docs/` on startup), looks up the sender in
-   Salesforce via `findLeadOrContact`, and creates/updates a Lead or creates a follow-up Task as
-   needed.
+   Salesforce via `findLeadOrContact` (open Leads first, then Contacts), and creates a Lead,
+   updates the existing Lead or Contact, or creates a follow-up Task as needed.
 4. **The agent itself decides whether to reply.** When a reply is warranted, it composes a
    plain-text email and sends it by calling the `sendEmailReply` tool, which replies in the
    **same Gmail thread** (correct `threadId`, `In-Reply-To`/`References` headers, `Re: <subject>`).
@@ -109,8 +109,9 @@ Markdown, and HTML files.
 4. Check that:
    - A reply appears in the same thread answering the pull request, EU data residency, and SSO
      questions from the docs.
-   - A new Lead appears in Salesforce for the sender (or the lead is updated if one already
-     existed), with a dated conversation summary in its Description.
+   - A new Lead appears in Salesforce for the sender, with a dated conversation summary in its
+     Description. If the sender already exists as an open Lead or a Contact, that record's
+     Description gets the summary instead and no duplicate Lead is created.
    - The original email is marked read and labeled `sales-processed`.
 5. To test the follow-up/escalation path, send a message asking about pricing or requesting a
    call — the reply should say a sales rep will follow up, and a high-priority Salesforce Task

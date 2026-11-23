@@ -38,3 +38,10 @@ public type ContactQueryResult record {
     string Id;
     string Name?;
 };
+
+// The Description field shared by Leads and Contacts
+
+public type DescriptionRecord record {
+    string Id;
+    string Description?;
+};
