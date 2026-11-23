@@ -176,6 +176,16 @@
       "imageUrl": "wso2integrations.azurecr.io/azure_files_change_tracker:0.1.0"
     },
     {
+      "displayName": "HR Self-Service MCP Server",
+      "description": "An MCP server for employee leave management, secured with OAuth. Employees check their leave balances and apply for or cancel leave, and managers approve or reject requests from their direct reports. Scopes control access: employees can only see their own data, and reading other employees' data requires an HR admin scope. Works with any OAuth 2.0 / OIDC identity provider.",
+      "componentType": "service",
+      "buildPack": "ballerina",
+      "repositoryUrl": "https://github.com/wso2/integration-samples/",
+      "componentPath": "/integrator-default-profile/samples/hr-self-service-mcp-server",
+      "thumbnailPath": "https://devant-cdn.wso2.com/console/sample-icons/hr_self_service_mcp_server.svg",
+      "tags": ["MCP", "OAuth", "HR", "AI", "Integration"]
+    },
+    {
       "displayName": "API Testing",
       "description": "An API that handles standard HTTP methods (GET, POST, PUT, DELETE) with predefined responses. Ideal for testing request handling and API interactions.",
       "componentType": "service",
