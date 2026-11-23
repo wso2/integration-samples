@@ -72,11 +72,13 @@ playbookPath = "contract-playbook.md"
   - the fallback is MEDIUM risk;
   - anything else is HIGH risk.
 
+  A clause matches the standard position only if every sentence and every detail of it does, such as the number of years or the governing law.
+
   It also checks for the protections that every NDA must give: mutuality, exclusions, and compelled disclosure. It recommends:
   - "Send to legal" if any risk is HIGH or a protection is missing;
   - "Approve with the suggested changes" if any risk is MEDIUM;
   - "Approve as is" otherwise.
-- **searchPlaybook tool**: retrieves the playbook sections that match a clause topic from the knowledge base.
+- **searchPlaybook tool**: retrieves the five playbook sections that best match a clause topic from the knowledge base, and returns their text, so the agent reads only the rules and not the search scores or metadata.
 - **Knowledge base**: a vector knowledge base with an in-memory vector store and OpenAI embeddings. When the integration starts, `loadPlaybook` loads the playbook file and indexes it. Markdown is split at its headings, so each clause's rules are retrieved together. To keep the playbook between restarts or share it across instances, use a persistent vector store, such as pgvector, Pinecone, or Weaviate.
 - **Memory**: short-term memory that keeps up to 100 messages per session. When a session grows longer, older messages are summarized instead of dropped, so long reviews keep their context.
 - The sample playbook (`contract-playbook.md`) covers 16 NDA topics, including confidentiality, term, residuals, liability, non-solicitation, governing law, and assignment. It is an example for this sample, not legal advice.
