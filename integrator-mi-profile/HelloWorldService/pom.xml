@@ -392,7 +392,7 @@
     <maven.compiler.source>1.8</maven.compiler.source>
     <maven.compiler.target>1.8</maven.compiler.target>
     <project.scm.id>integration-project</project.scm.id>
-    <project.runtime.version>4.6.0</project.runtime.version>
+    <project.runtime.version>4.7.0</project.runtime.version>
     <dockerfile.base.image>wso2/wso2mi:${project.runtime.version}</dockerfile.base.image>
     <car.plugin.version>5.4.16</car.plugin.version>
     <test.server.type>local</test.server.type>
