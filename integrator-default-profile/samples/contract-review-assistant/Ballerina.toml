@@ -1,0 +1,9 @@
+[package]
+org = "wso2"
+name = "contract_review_assistant"
+version = "0.1.0"
+distribution = "2201.14.1"
+title = "Contract Review Assistant"
+
+[build-options]
+sticky = true
