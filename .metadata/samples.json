@@ -144,7 +144,7 @@
       "imageUrl": "wso2integrations.azurecr.io/ai_chat_agent:0.1.0"
     },
     {
-      "displayName": "Customer Support Voice Agent",
+      "displayName": "Support Voice Agent",
       "description": "A customer support agent for an online store that customers can talk to by voice or chat with over HTTP. It checks order status, explains the return policy, and creates support tickets, keeping its replies short so they sound natural when spoken.",
       "componentType": "ai-agent",
       "buildPack": "ballerina",
