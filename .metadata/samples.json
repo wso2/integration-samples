@@ -180,7 +180,7 @@
       "buildPack": "ballerina",
       "repositoryUrl": "https://github.com/wso2/integration-samples/",
       "componentPath": "/integrator-default-profile/samples/github-monthly-report-agent",
-      "thumbnailPath": "https://devant-cdn.wso2.com/console/sample-icons/AIAgent.svg",
+      "thumbnailPath": "https://devant-cdn.wso2.com/console/sample-icons/github-report-agent.svg",
       "tags": ["GitHub", "Gmail", "PDF", "AI", "Agent"]
     },
     {
