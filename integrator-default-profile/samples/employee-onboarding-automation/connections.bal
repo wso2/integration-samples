@@ -4,18 +4,18 @@ import ballerinax/googleapis.sheets;
 
 final gmail:Client gmailClient = check new ({
     auth: {
-        refreshToken: gmailRefreshToken,
-        clientId: gmailClientId,
-        clientSecret: gmailClientSecret
+        refreshToken: googleRefreshToken,
+        clientId: googleClientId,
+        clientSecret: googleClientSecret
     }
 });
 
 final sheets:Client sheetsClient = check new ({
     auth: {
         refreshUrl: "https://oauth2.googleapis.com/token",
-        clientId: sheetsClientId,
-        clientSecret: sheetsClientSecret,
-        refreshToken: sheetsRefreshToken
+        clientId: googleClientId,
+        clientSecret: googleClientSecret,
+        refreshToken: googleRefreshToken
     }
 });
 

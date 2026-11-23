@@ -2,7 +2,7 @@
 
 ## Description
 
-This sample automates the employee onboarding lifecycle. When HR submits a new candidate's details, the service generates a personalized PDF offer letter via PDF API Hub, records the candidate in Google Sheets, and emails the letter to the candidate through Gmail. A background agent then polls Gmail every 60 seconds for acceptance replies — once a candidate accepts, it creates a workspace account in Asgardeo via SCIM 2.0, emails the work credentials back to the candidate, and marks the record as provisioned in Google Sheets. The acceptance check can also be triggered manually via a REST endpoint at any time.
+This sample automates the employee onboarding lifecycle. When HR submits a new candidate's details, the service saves the record in Google Sheets and generates a personalized PDF offer letter via PDF API Hub, then emails it to the candidate through Gmail. A background poller checks Gmail every 60 seconds for acceptance replies — once a candidate accepts, it creates a workspace account in Asgardeo via SCIM 2.0 (Asgardeo emails the candidate a password-set link), sends the candidate a welcome email with their work address, and marks the record as provisioned in Google Sheets. The acceptance check can also be triggered manually via a REST endpoint at any time.
 
 ## How It Works
 
@@ -22,22 +22,21 @@ flowchart LR
         A3["📧 sendOfferLetterEmail"]
     end
 
-    subgraph Phase2["Phase 2 — Acceptance Agent"]
+    subgraph Phase2["Phase 2 — Ballerina Orchestration + LLM Classifier"]
         B1["📬 fetchUnreadEmails"]
         B2["🔍 lookupCandidateByEmail"]
-        B3["🏷️ classifyEmailAcceptance\n(keyword matching)"]
-        B4["🔑 generateTempPassword"]
-        B5["👤 createWorkspaceAccount"]
-        B6["✉️ sendCredentialsEmail"]
-        B7["✅ markCandidateProvisioned"]
+        B3["🏷️ classifyEmailAcceptance\n(LLM)"]
+        B4["👤 createWorkspaceAccount"]
+        B5["✉️ sendCredentialsEmail"]
+        B6["✅ markCandidateProvisioned"]
     end
 
     subgraph External["External Services"]
         Sheets["📊 Google Sheets"]
         Gmail["📧 Gmail API"]
         PDF["📄 PDF API Hub"]
-        IS["🔐 WSO2 Identity Server\n(Asgardeo SCIM 2.0)"]
-        AI["🧠 WSO2 AI Model\n(agent orchestration)"]
+        IS["🔐 Asgardeo\n(SCIM 2.0)"]
+        AI["🧠 WSO2 AI Model\n(offer letter + classifier)"]
     end
 
     HR -- "candidate details" --> EP1
@@ -48,11 +47,10 @@ flowchart LR
 
     EP2 --> B1 --> Gmail
     B1 --> B2 --> Sheets
-    B2 --> B3
-    B3 --> B4 --> B5 --> IS
-    B5 --> B6 --> Gmail
-    B6 --> B7 --> Sheets
-    EP2 -. "agent loop" .-> AI
+    B2 --> B3 -. "LLM call" .-> AI
+    B3 --> B4 --> IS
+    B4 --> B5 --> Gmail
+    B5 --> B6 --> Sheets
 
     classDef hrNode fill:#D6EAF8,stroke:#2AABEE,stroke-width:3px,color:#1A5276
     classDef apiNode fill:#EDE7F6,stroke:#7E57C2,stroke-width:2px,color:#4A235A
@@ -63,7 +61,7 @@ flowchart LR
     class HR hrNode
     class EP1,EP2 apiNode
     class A1,A2,A3 phase1Node
-    class B1,B2,B3,B4,B5,B6,B7 phase2Node
+    class B1,B2,B3,B4,B5,B6 phase2Node
     class Sheets,Gmail,PDF,IS,AI extNode
 
     style API fill:#F4ECF7,stroke:#7E57C2,stroke-width:2px
@@ -76,24 +74,27 @@ flowchart LR
 
 - **Ballerina** 2201.14 or later — [download](https://ballerina.io/downloads/)
 - **WSO2 Agent Builder** with the default WSO2 model provider configured. Run the **Configure default WSO2 model provider** command to populate `[ballerina.ai.wso2ProviderConfig]` in `Config.toml`.
-- A **Google Cloud project** with the following APIs enabled and an OAuth 2.0 client (Desktop app type) created:
+- A **Google Cloud project** with the following APIs enabled and a **single** OAuth 2.0 client (Desktop app type) created:
   - Gmail API
   - Google Sheets API
 - A **PDF API Hub** account and API key — [sign up at pdfapihub.com](https://pdfapihub.com) (free tier: 10 PDFs)
+
+  > **Note:** PDF API Hub stores generated PDFs at the returned URL. Do not include confidential information in offer letters if third-party storage is a concern.
+
 - A **WSO2 Identity Server / Asgardeo** organization with an M2M application authorized for the `internal_user_mgt_create` scope
 
-### Getting OAuth2 refresh tokens for Google APIs
+### Getting an OAuth2 refresh token for Google APIs
 
 1. Create a project in [Google Cloud Console](https://console.cloud.google.com)
 2. Enable **Gmail API** and **Google Sheets API**
 3. Create an OAuth 2.0 credential (Desktop app type) and note the client ID and secret
 4. Go to [Google OAuth Playground](https://developers.google.com/oauthplayground), click the settings gear → **Use your own OAuth credentials** → enter your client ID and secret
-5. Authorize with these scopes:
+5. Authorize with **both** scopes together:
    - `https://mail.google.com/` — for reading and sending Gmail
    - `https://www.googleapis.com/auth/spreadsheets` — for reading and writing Sheets
 6. Click **Exchange authorization code for tokens** and copy the **Refresh token**
 
-> **Note:** Use the same OAuth client for both Gmail and Sheets; a single refresh token covers both scopes if authorized together.
+> **Note:** A single OAuth client and refresh token covers both Gmail and Sheets when both scopes are authorized together in step 5.
 
 ### Setting up the Candidates spreadsheet
 
@@ -108,14 +109,15 @@ Create a Google Sheet and note its ID from the URL (`https://docs.google.com/spr
 | E | department | Department |
 | F | salary | Annual salary |
 | G | bankingInfo | Banking details |
-| H | status | `no` = pending, `yes` = provisioned |
+| H | status | `no` = pending, `in_progress` = provisioning, `yes` = provisioned |
 
 ### Setting up Asgardeo for SCIM 2.0 user provisioning
 
 1. Log in to [console.asgardeo.io](https://console.asgardeo.io)
 2. Create an **M2M application**
 3. Under **API Authorization**, grant access to **SCIM2 Users API** with the `internal_user_mgt_create` scope
-4. Note the **Client ID**, **Client Secret**, and your **organization name**
+4. Enable **Email OTP** or **Email Link** as the account verification method so Asgardeo can email candidates a password-set link
+5. Note the **Client ID**, **Client Secret**, and your **organization name**
 
 ## Configuration
 
@@ -126,17 +128,14 @@ Create or update `Config.toml` in the package root with the following values:
 serviceUrl  = "<WSO2 AI service URL>"
 accessToken = "<WSO2 AI access token>"
 
-[wso2org.employee_onboarding]
+[wso2.employee_onboarding]
 
-# Gmail OAuth2 (scope: https://mail.google.com/)
-gmailClientId     = "<google-oauth-client-id>"
-gmailClientSecret = "<google-oauth-client-secret>"
-gmailRefreshToken = "<gmail-refresh-token>"
+# Google OAuth2 — covers both Gmail and Google Sheets
+googleClientId     = "<google-oauth-client-id>"
+googleClientSecret = "<google-oauth-client-secret>"
+googleRefreshToken = "<google-refresh-token>"   # single token covering both scopes
 
-# Google Sheets OAuth2 (scope: https://www.googleapis.com/auth/spreadsheets)
-sheetsClientId      = "<google-oauth-client-id>"
-sheetsClientSecret  = "<google-oauth-client-secret>"
-sheetsRefreshToken  = "<sheets-refresh-token>"
+# Google Sheets
 sheetsSpreadsheetId = "<spreadsheet-id>"   # from the Sheets URL: .../d/<ID>/edit
 sheetsTabName       = "Candidates"          # worksheet tab name
 
@@ -148,10 +147,9 @@ asgardeoOrg          = "<your-org-name>"    # from console.asgardeo.io/t/<org>
 asgardeoClientId     = "<m2m-client-id>"
 asgardeoClientSecret = "<m2m-client-secret>"
 workspaceDomain      = "yourcompany.com"    # domain used for new work emails
-
-# Sender identity (the Gmail account that owns the OAuth token)
-senderEmail = "hr@yourcompany.com"
 ```
+
+> **Security notice:** The HTTP listener has no built-in authentication. Run this service locally only, or place it behind a reverse proxy with authentication before exposing it on a network.
 
 ## Running
 
@@ -185,8 +183,13 @@ curl -X POST http://localhost:9090/onboarding/candidates \
 { "status": "success", "message": "Offer letter sent to jane@personal.com." }
 ```
 
+**Duplicate candidate (409):**
+```json
+{ "error": "Candidate with email jane@personal.com already exists." }
+```
+
 What happens:
-1. Candidate row is appended to Google Sheets with status `no`
+1. Candidate row is appended to Google Sheets with status `no` (banking info is saved to Sheets only — not sent to the LLM)
 2. Personalised PDF offer letter is generated via PDF API Hub
 3. PDF is emailed to the candidate as an attachment
 
@@ -200,19 +203,23 @@ curl -X POST http://localhost:9090/onboarding/check-acceptance
 
 **Success response:**
 ```json
-{ "status": "success", "message": "Provisioned: Jane Smith. Credentials emailed to jane@personal.com." }
+{ "status": "success", "message": "Acceptance check completed." }
+```
+
+**Already running (503):**
+```json
+{ "error": "Acceptance check already in progress. Try again shortly." }
 ```
 
 What happens:
 1. Gmail inbox is scanned for unread replies to the offer letter
 2. Each reply is matched against the Sheets candidate list by sender email
-3. Keyword matching determines whether the reply is a clear acceptance (e.g. "i accept", "happy to join")
-4. A random 16-character temporary password is generated
-5. A SCIM 2.0 user account is created in WSO2 Identity Server
-6. Work credentials are emailed to the candidate
-7. The Sheets row status is set to `yes`
+3. An LLM call determines whether the reply is a genuine acceptance (negations like "I cannot accept" are correctly handled as rejections)
+4. A SCIM 2.0 user account is created in Asgardeo using `askPassword`, which triggers Asgardeo to email the candidate a secure link to set their own password
+5. A welcome email is sent to the candidate with their new work email address
+6. The Sheets row status is set to `yes`
 
-> The acceptance check also runs **automatically every 60 seconds** in the background.
+> The acceptance check also runs **automatically every 60 seconds** in the background. Concurrent runs are prevented by a lock — the timer skips a cycle if a run is already in progress.
 
 ### Health check
 

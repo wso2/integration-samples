@@ -1,7 +1,6 @@
 [package]
-org = "wso2org"
+org = "wso2"
 name = "employee_onboarding"
 version = "0.1.0"
 distribution = "2201.14.1"
 title = "Employee Onboarding Automation"
-
