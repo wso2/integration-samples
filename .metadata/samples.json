@@ -204,6 +204,16 @@
       "tags": ["GitHub", "Gmail", "PDF", "AI", "Agent"]
     },
     {
+      "displayName": "Contract Review Assistant",
+      "description": "An AI agent that reviews NDAs and vendor agreements against the company's contract playbook. It flags each clause that deviates from the playbook with a risk level and replacement wording, finds missing protections, and recommends whether to approve the agreement or send it to legal.",
+      "componentType": "ai-agent",
+      "buildPack": "ballerina",
+      "repositoryUrl": "https://github.com/wso2/integration-samples/",
+      "componentPath": "/integrator-default-profile/samples/contract-review-assistant",
+      "thumbnailPath": "https://devant-cdn.wso2.com/console/sample-icons/contract-review-assistant.svg",
+      "tags": ["Legal", "RAG", "OpenAI", "AI", "Agent"]
+    },
+    {
       "displayName": "Email Spoofing Detection Agent",
       "description": "An AI agent that watches a Gmail inbox for spoofed and phishing emails. It checks SPF, DKIM, and DMARC, finds the IP address each email was sent from, and looks up its location and reputation. It then rates each email's spoofing risk as low, medium, or high and explains why.",
       "componentType": "ai-agent",
