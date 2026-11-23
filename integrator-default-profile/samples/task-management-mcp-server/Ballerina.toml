@@ -1,0 +1,6 @@
+[package]
+org = "wso2"
+name = "task_management_mcp_server"
+version = "0.1.0"
+title = "task-management-mcp-server"
+distribution = "2201.14.1"
