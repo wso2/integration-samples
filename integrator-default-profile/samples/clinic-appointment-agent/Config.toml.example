@@ -1,0 +1,30 @@
+# Copy to Config.toml and fill in every value. In Agent Builder you can also set these from the
+# Configurations view.
+
+# OpenAI, for the model both agents use (gpt-4o-mini)
+openAiApiKey = "<sk-...>"
+
+# Google Calendar, Sheets and Gmail: an OAuth client and a refresh token with the calendar,
+# spreadsheets and gmail.send scopes
+googleClientId = "<client-id>.apps.googleusercontent.com"
+googleClientSecret = "<client-secret>"
+googleRefreshToken = "<refresh-token>"
+clinicCalendarId = "<calendar-id>@group.calendar.google.com"
+clinicSpreadsheetId = "<spreadsheet-id>"
+
+# Google Chat front desk (listener on port 8000): the service account key of the project that hosts
+# the Chat app, and the HTTP endpoint URL set in the Chat app configuration
+googleServiceAccountFile = "/path/to/service-account.json"
+googleChatEndpointUrl = "https://<public-host-for-port-8000>/"
+# The front desk's Google Chat space: the ID after spaces/ in its URL. The front desk agent answers only
+# here, and booking alerts are posted here.
+frontDeskSpaceId = "<space-id>"
+
+# WhatsApp Business Cloud API (listener on port 8090)
+whatsappAccessToken = "<access-token>"
+whatsappVerifyToken = "<any-string-you-also-enter-in-the-webhook-settings>"
+whatsappAppSecret = "<app-secret>"
+
+# Telegram bot from @BotFather (listener on port 8091). The webhook is registered at this URL on startup.
+telegramBotToken = "<bot-token>"
+telegramCallbackUrl = "https://<public-host-for-port-8091>/"

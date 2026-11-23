@@ -1,0 +1,11 @@
+[package]
+keywords = ["Type/Agent"]
+org = "wso2"
+name = "travel_advisor"
+version = "0.1.0"
+distribution = "2201.14.1"
+title = "TravelAdvisor"
+visibility = "private"
+
+[build-options]
+sticky = true
