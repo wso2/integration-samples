@@ -1,0 +1,459 @@
+openapi: 3.0.1
+info:
+  title: Travel
+  version: 0.1.0
+servers:
+- url: "{server}:{port}/travel"
+  variables:
+    server:
+      default: http://localhost
+    port:
+      default: "9090"
+paths:
+  /chat:
+    post:
+      summary: Chat with the trip planner. The conversation is scoped to the calling
+        employee.
+      operationId: postChat
+      parameters:
+      - name: x-employee-id
+        in: header
+        description: The calling employee
+        required: true
+        schema:
+          type: string
+      requestBody:
+        description: Session ID and message
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ChatRequest"
+        required: true
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ChatResponse"
+        "500":
+          description: InternalServerError
+        "403":
+          description: Forbidden
+        "409":
+          description: Conflict
+        "400":
+          description: BadRequest
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorPayload"
+  /approvals:
+    get:
+      summary: Lists the trip requests waiting for the caller's decision.
+      operationId: getApprovals
+      parameters:
+      - name: x-employee-id
+        in: header
+        description: The calling approver
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: Ok
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ApprovalView"
+        "400":
+          description: BadRequest
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorPayload"
+  /approvals/{approvalId}:
+    post:
+      summary: |-
+        Approves or rejects a pending trip request. When a second approval is needed, an approval hands the request
+        to the next approver; the last decision resumes the paused conversation.
+      operationId: postApprovalsApprovalid
+      parameters:
+      - name: approvalId
+        in: path
+        description: The approval to decide
+        required: true
+        schema:
+          type: string
+      - name: x-employee-id
+        in: header
+        description: The calling approver
+        required: true
+        schema:
+          type: string
+      requestBody:
+        description: "APPROVE or REJECT, with an optional reason"
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ApprovalDecision"
+        required: true
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ChatResponse"
+        "500":
+          description: InternalServerError
+        "403":
+          description: Forbidden
+        "404":
+          description: NotFound
+        "409":
+          description: Conflict
+        "400":
+          description: BadRequest
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorPayload"
+  /requests/{requestId}:
+    get:
+      summary: "Returns a trip request with its policy result, approval chain, authorization\
+        \ and audit trail."
+      operationId: getRequestsRequestid
+      parameters:
+      - name: requestId
+        in: path
+        description: The request to read
+        required: true
+        schema:
+          type: string
+      - name: x-employee-id
+        in: header
+        description: The traveler or one of the request's approvers
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TripRequest"
+        "403":
+          description: Forbidden
+        "404":
+          description: NotFound
+        "400":
+          description: BadRequest
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorPayload"
+components:
+  schemas:
+    AdviceLevel:
+      type: string
+      description: UK FCDO advice level for a country.
+      enum:
+      - AVOID_ALL_TRAVEL
+      - ESSENTIAL_TRAVEL_ONLY
+      - AVOID_PARTS
+      - NO_FCDO_WARNING
+    ApprovalDecision:
+      required:
+      - outcome
+      type: object
+      properties:
+        outcome:
+          type: string
+          enum:
+          - APPROVE
+          - REJECT
+        reason:
+          type: string
+      additionalProperties: false
+    ApprovalView:
+      required:
+      - approvalId
+      - approverId
+      - request
+      - requestedAt
+      - stage
+      - stages
+      type: object
+      properties:
+        approvalId:
+          type: string
+        requestedAt:
+          type: string
+        approverId:
+          type: string
+          description: The approver who decides next
+        stage:
+          type: integer
+          description: "1 for the first approval, 2 for the second"
+          format: int64
+        stages:
+          type: integer
+          format: int64
+        request:
+          nullable: true
+          allOf:
+          - $ref: "#/components/schemas/TripRequest"
+      additionalProperties: false
+    AuditEvent:
+      required:
+      - action
+      - actor
+      - at
+      - detail
+      type: object
+      properties:
+        at:
+          type: string
+        actor:
+          type: string
+        action:
+          type: string
+        detail:
+          type: string
+      additionalProperties: false
+    ChatRequest:
+      required:
+      - message
+      - sessionId
+      type: object
+      properties:
+        sessionId:
+          type: string
+        message:
+          type: string
+      additionalProperties: false
+    ChatResponse:
+      required:
+      - message
+      - pendingApprovals
+      - sessionId
+      - status
+      type: object
+      properties:
+        sessionId:
+          type: string
+        status:
+          $ref: "#/components/schemas/ChatStatus"
+        message:
+          type: string
+        pendingApprovals:
+          type: array
+          items:
+            $ref: "#/components/schemas/ApprovalView"
+      additionalProperties: false
+    ChatStatus:
+      type: string
+      enum:
+      - COMPLETED
+      - AWAITING_APPROVAL
+    ErrorPayload:
+      required:
+      - message
+      - method
+      - path
+      - reason
+      - status
+      - timestamp
+      type: object
+      properties:
+        timestamp:
+          type: string
+        status:
+          type: integer
+          format: int64
+        reason:
+          type: string
+        message:
+          type: string
+        path:
+          type: string
+        method:
+          type: string
+    PolicyEvaluation:
+      required:
+      - adviceLevel
+      - blockers
+      - noticeDays
+      - publicHolidays
+      - secondApprovalReasons
+      - submittable
+      - tripDays
+      - warnings
+      type: object
+      properties:
+        submittable:
+          type: boolean
+          description: False when a blocker stops the request from being submitted
+        blockers:
+          type: array
+          description: Reasons the request cannot be submitted as it is
+          items:
+            type: string
+        secondApprovalReasons:
+          type: array
+          description: Reasons the request also needs approval from the manager's
+            manager
+          items:
+            type: string
+        warnings:
+          type: array
+          description: Things the traveler and approvers should know
+          items:
+            type: string
+        noticeDays:
+          type: integer
+          description: Days between today and the first day of the trip
+          format: int64
+        tripDays:
+          type: integer
+          description: "Days away, counting the first and last day"
+          format: int64
+        adviceLevel:
+          description: "The FCDO advice level, or nil when it could not be checked"
+          nullable: true
+          allOf:
+          - $ref: "#/components/schemas/AdviceLevel"
+        publicHolidays:
+          type: array
+          description: "Public holidays at the destination during the trip, or nil\
+            \ when they could not be checked"
+          nullable: true
+          items:
+            $ref: "#/components/schemas/PublicHoliday"
+      additionalProperties: false
+      description: The result of checking a trip against the travel policy.
+    PublicHoliday:
+      required:
+      - date
+      - localName
+      - name
+      - regional
+      - regions
+      type: object
+      properties:
+        date:
+          type: string
+        name:
+          type: string
+          description: The holiday's English name
+        localName:
+          type: string
+        regional:
+          type: boolean
+          description: True when the holiday applies to only some regions of the country
+        regions:
+          type: array
+          description: "ISO 3166-2 codes of the regions it applies to, when regional"
+          items:
+            type: string
+      additionalProperties: false
+      description: A public holiday at the destination.
+    RequestStatus:
+      type: string
+      description: |-
+        PREPARED: created, and not yet decided. STOPPED: approved, but the FCDO advice changed before the
+        authorization was issued, so it needs a new request.
+      enum:
+      - PREPARED
+      - AUTHORIZED
+      - REJECTED
+      - STOPPED
+    TravelAuthorization:
+      required:
+      - approvedBy
+      - authorizationId
+      - conditions
+      - issuedAt
+      type: object
+      properties:
+        authorizationId:
+          type: string
+        issuedAt:
+          type: string
+        approvedBy:
+          type: array
+          description: "The approvers, in the order they approved"
+          items:
+            type: string
+        conditions:
+          type: array
+          description: "Conditions of travel, from the policy warnings and the FCDO\
+            \ advice at the time of issue"
+          items:
+            type: string
+      additionalProperties: false
+      description: The document the traveler takes to the travel desk to book the
+        trip.
+    TripRequest:
+      required:
+      - approvalChain
+      - auditTrail
+      - authorization
+      - countryCode
+      - countryName
+      - createdAt
+      - destination
+      - employeeId
+      - endDate
+      - justification
+      - policy
+      - purpose
+      - requestId
+      - startDate
+      - status
+      type: object
+      properties:
+        requestId:
+          type: string
+        employeeId:
+          type: string
+        purpose:
+          type: string
+        destination:
+          type: string
+        countryName:
+          type: string
+        countryCode:
+          type: string
+        startDate:
+          type: string
+        endDate:
+          type: string
+        justification:
+          type: string
+          nullable: true
+        policy:
+          $ref: "#/components/schemas/PolicyEvaluation"
+        approvalChain:
+          type: array
+          description: "Who must approve, in order: the traveler's manager, then their\
+            \ manager when a second approval is needed"
+          items:
+            type: string
+        status:
+          $ref: "#/components/schemas/RequestStatus"
+        createdAt:
+          type: string
+        authorization:
+          nullable: true
+          allOf:
+          - $ref: "#/components/schemas/TravelAuthorization"
+        auditTrail:
+          type: array
+          items:
+            $ref: "#/components/schemas/AuditEvent"
+      additionalProperties: false
