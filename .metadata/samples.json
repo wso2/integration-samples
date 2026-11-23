@@ -160,7 +160,7 @@
       "buildPack": "ballerina",
       "repositoryUrl": "https://github.com/wso2/integration-samples/",
       "componentPath": "/integrator-default-profile/samples/candidate-screening-agent",
-      "thumbnailPath": "https://devant-cdn.wso2.com/console/sample-icons/VoiceAgent.svg",
+      "thumbnailPath": "https://devant-cdn.wso2.com/console/sample-icons/CandidateScreeningAgent.svg",
       "tags": ["Voice", "Google Sheets", "Google Calendar", "Gmail", "OpenAI", "AI", "Agent"]
     },
     {
