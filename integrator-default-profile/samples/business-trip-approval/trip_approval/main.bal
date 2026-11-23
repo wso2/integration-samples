@@ -170,8 +170,12 @@ service /travel on travelListener {
     }
 }
 
-isolated function toChatResponse(string sessionId, string sessionKey, Employee traveler, string|ai:Error result)
-        returns ChatResponse|http:InternalServerError {
+// How many times in a row a batch of submissions can be rejected and the planner resumed. Each round is another
+// model call, so a planner that keeps submitting requests that cannot be submitted is stopped here.
+const MAX_REJECTION_ROUNDS = 2;
+
+isolated function toChatResponse(string sessionId, string sessionKey, Employee traveler, string|ai:Error result,
+        int rejectionRound = 0) returns ChatResponse|http:InternalServerError {
     if result is string {
         return {sessionId, status: "COMPLETED", message: result, pendingApprovals: []};
     }
@@ -194,7 +198,17 @@ isolated function toChatResponse(string sessionId, string sessionKey, Employee t
             };
         map<string> problems = reserveSubmissions(submissions, traveler);
         if problems.length() > 0 {
-            return rejectSubmissions(sessionId, sessionKey, traveler, submissions, problems);
+            if rejectionRound >= MAX_REJECTION_ROUNDS {
+                log:printError("trip planner kept submitting requests that cannot be submitted",
+                    sessionKey = sessionKey, problems = problems.toArray());
+                return <http:InternalServerError>{
+                    body: <ErrorBody>{
+                        message: "The trip planner kept submitting requests that cannot be submitted. " +
+                            "Start a new session."
+                    }
+                };
+            }
+            return rejectSubmissions(sessionId, sessionKey, traveler, submissions, problems, rejectionRound + 1);
         }
         ApprovalView[] views = from PendingApproval approval in pendingApprovalsInSession(sessionKey)
             select toApprovalView(approval);
@@ -221,7 +235,8 @@ isolated function requestIdOf(ai:ApprovalRequest request) returns string {
 // made (another traveler's request, one already decided or waiting, or one the policy blocks) is rejected at
 // once, with the rest of its batch, so the conversation does not stay paused and no approver sees it.
 isolated function rejectSubmissions(string sessionId, string sessionKey, Employee traveler,
-        PendingApproval[] submissions, map<string> problems) returns ChatResponse|http:InternalServerError {
+        PendingApproval[] submissions, map<string> problems, int rejectionRound)
+        returns ChatResponse|http:InternalServerError {
     log:printWarn("refused to submit trip requests", employeeId = traveler.employeeId,
         problems = problems.toArray());
     map<ai:HumanDecision> decisions = {};
@@ -238,7 +253,8 @@ isolated function rejectSubmissions(string sessionId, string sessionKey, Employe
     context.set(CTX_TRAVELER_GRADE, traveler.grade);
     ai:Resume resume = {decisions: decisions.cloneReadOnly()};
     string|ai:Error next = tripPlanner.run(query = resume, sessionId = sessionKey, context = context);
-    return toChatResponse(sessionId = sessionId, sessionKey = sessionKey, traveler = traveler, result = next);
+    return toChatResponse(sessionId = sessionId, sessionKey = sessionKey, traveler = traveler, result = next,
+        rejectionRound = rejectionRound);
 }
 
 // Points the approver at the request when the planner fails after a decision.
