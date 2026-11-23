@@ -5,6 +5,9 @@ import ballerinax/googleapis.chat;
 import ballerinax/googleapis.gmail;
 import ballerinax/googleapis.sheets;
 
+// Clinic time zone offset from UTC, UTC+05:30. Keep in sync with the time zone stated in the agent instructions below.
+const time:Seconds CLINIC_TZ_OFFSET_SECONDS = 19800;
+
 # Reads every row of the Patients sheet: mobile number, name, email and date of birth.
 # + return - Rows of the Patients sheet: mobile number, name, email and date of birth
 @ai:AgentTool
@@ -14,13 +17,16 @@ isolated function readPatientRegister() returns sheets:Range|error {
     return sheetsRange;
 }
 
-# Registers a new patient by adding a row to the Patients sheet. values must be [mobile number in international format, full name, email or empty string, date of birth YYYY-MM-DD].
-# + values - Array of values of the row to be added
+# Registers a new patient by adding a row to the Patients sheet.
+# + mobile - Mobile number in international format
+# + name - Full name of the patient
+# + email - Email address of the patient, or an empty string if none
+# + dob - Date of birth in YYYY-MM-DD format
 # + return - The range the new patient row was added to
 @ai:AgentTool
 @display {label: "", iconPath: "https://bcentral-packageicons.azureedge.net/images/ballerinax_googleapis.sheets_4.0.0.png"}
-isolated function registerPatient((int|string|decimal|boolean|float)[] values) returns sheets:ValueRange|error {
-    sheets:ValueRange sheetsValuerange = check sheetsClient->appendValue(clinicSpreadsheetId, values, {sheetName: "Patients"});
+isolated function registerPatient(string mobile, string name, string email, string dob) returns sheets:ValueRange|error {
+    sheets:ValueRange sheetsValuerange = check sheetsClient->appendValue(clinicSpreadsheetId, [mobile, name, email, dob], {sheetName: "Patients"});
     return sheetsValuerange;
 }
 
@@ -54,33 +60,24 @@ isolated function cancelAppointmentEvent(string eventId) returns error? {
     check calendarClient->deleteEvent(clinicCalendarId, eventId);
 }
 
-# Emails a patient, for example a booking confirmation. payload: to (list with the patient email address), subject, and bodyInText (plain text signed with the clinic name).
-# + payload - The message to be sent.
+# Emails a patient, for example a booking confirmation.
+# + to - The patient's email address
+# + subject - Subject of the email
+# + bodyInText - Plain text body of the email, signed with the clinic name
 # + return - The sent Gmail message
 @ai:AgentTool
 @display {label: "", iconPath: "https://bcentral-packageicons.azureedge.net/images/ballerinax_googleapis.gmail_4.2.0.png"}
-isolated function emailPatient(gmail:MessageRequest payload) returns gmail:Message|error {
-    gmail:Message gmailMessage = check gmailClient->/users/["me"]/messages/send.post(payload);
+isolated function emailPatient(string to, string subject, string bodyInText) returns gmail:Message|error {
+    gmail:Message gmailMessage = check gmailClient->/users/["me"]/messages/send.post({to: [to], subject: subject, bodyInText: bodyInText});
     return gmailMessage;
 }
 
-# Gets the current time as UTC seconds since the epoch. Pass the result to toCalendarDate to get the date, time and day of the week. The clinic is at UTC+05:30.
-# + return - The current time in UTC
-@ai:AgentTool
-@display {label: "", iconPath: "https://bcentral-packageicons.azureedge.net/images/ballerina_time_2.8.4.png"}
-isolated function getCurrentTime() returns time:Utc {
-    time:Utc result = time:utcNow();
-    return result;
-}
-
-# Turns a UTC time from getCurrentTime into the clinic local date and time (UTC+05:30), with the day of the week.
-# + utc - The UTC time as a tuple
+# Gets the current date and time in the clinic's local time (UTC+05:30), with the day of the week.
 # + return - The clinic local date, time and day of the week
 @ai:AgentTool
 @display {label: "", iconPath: "https://bcentral-packageicons.azureedge.net/images/ballerina_time_2.8.4.png"}
-isolated function toCalendarDate(time:Utc utc) returns time:Civil {
-    time:Civil result = time:utcToCivil(time:utcAddSeconds(utc, 19800));
-    return result;
+isolated function getCurrentLocalTime() returns time:Civil {
+    return time:utcToCivil(time:utcAddSeconds(time:utcNow(), CLINIC_TZ_OFFSET_SECONDS));
 }
 
 # Posts a short alert to the front desk Google Chat space. Call it after every booking and cancellation, for example: New booking APT-1A2B3C: Nadeesha Wijesinghe with Dr. Maya Silva on 2026-11-20 15:00.
@@ -124,15 +121,15 @@ Rules:
 - You don't give medical advice. For an emergency, tell the patient to call emergency services right away.
 - Keep replies short and friendly, plain text, no tables. Reply in the patient's language.
 - After every booking or cancellation, call notifyFrontDesk with one line: New booking or Cancelled, the reference, the patient name, the doctor and the time.
-- Never book until the patient has picked one of the free slots you offered. Call getCurrentTime and toCalendarDate first, and never offer or book a date in the past.`
-    }, memory = patientMemory, model = openaiModelprovider, tools = [readPatientRegister, registerPatient, listClinicEvents, bookAppointmentEvent, cancelAppointmentEvent, emailPatient, getCurrentTime, toCalendarDate, notifyFrontDesk]
+- Never book until the patient has picked one of the free slots you offered. Call getCurrentLocalTime first, and never offer or book a date in the past.`
+    }, memory = patientMemory, model = openaiModelprovider, tools = [readPatientRegister, registerPatient, listClinicEvents, bookAppointmentEvent, cancelAppointmentEvent, emailPatient, getCurrentLocalTime, notifyFrontDesk]
 );
 final ai:InMemoryShortTermMemoryStore patientMemoryStore = check new (100);
 final ai:ShortTermMemory patientMemory = check new (patientMemoryStore);
 final ai:Agent frontDeskAgent = check new (
     systemPrompt = {
         role: string `Riverside Family Clinic Front Desk Assistant`,
-        instructions: string `You assist the front desk staff of Riverside Family Clinic in Google Chat. Times are in the clinic's local time (UTC+05:30). Use getCurrentTime and toCalendarDate to turn words like today or tomorrow into dates.
+        instructions: string `You assist the front desk staff of Riverside Family Clinic in Google Chat. Times are in the clinic's local time (UTC+05:30). Use getCurrentLocalTime to turn words like today or tomorrow into dates.
 
 Doctors (30-minute appointments):
 - dr-perera: Dr. Anjali Perera, General practice, Monday to Friday 09:00-17:00
@@ -146,7 +143,7 @@ You can:
 
 Remember what the staff member already told you and ask for missing details in one message. Be concise. When listing a schedule, show one line per appointment: time, patient, doctor, reason and reference.
 After you book or cancel for a patient, call notifyFrontDesk with one line: New booking or Cancelled, the reference, the patient name, the doctor and the time.`
-    }, memory = frontDeskMemory, model = openaiModelprovider, tools = [readPatientRegister, listClinicEvents, cancelAppointmentEvent, getCurrentTime, notifyFrontDesk, registerPatient, bookAppointmentEvent, emailPatient, toCalendarDate]
+    }, memory = frontDeskMemory, model = openaiModelprovider, tools = [readPatientRegister, listClinicEvents, cancelAppointmentEvent, getCurrentLocalTime, notifyFrontDesk, registerPatient, bookAppointmentEvent, emailPatient]
 );
 final ai:InMemoryShortTermMemoryStore frontDeskMemoryStore = check new (100);
 final ai:ShortTermMemory frontDeskMemory = check new (frontDeskMemoryStore);

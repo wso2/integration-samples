@@ -31,8 +31,7 @@ patient, and how to book.
 | `bookAppointmentEvent` | Google Calendar → Create event | Books an appointment as a calendar event |
 | `cancelAppointmentEvent` | Google Calendar → Delete event | Cancels an appointment |
 | `emailPatient` | Gmail → Send message | Emails a patient |
-| `getCurrentTime` | time → utcNow | Gets the current time |
-| `toCalendarDate` | time → utcToCivil | Turns a time into a calendar date and day of the week |
+| `getCurrentLocalTime` | time → utcNow, utcToCivil | Gets the current clinic-local date, time and day of the week |
 | `notifyFrontDesk` | Google Chat → Create a message | Posts a booking or cancellation alert to the front desk space |
 
 Both agents' instructions tell them to call `notifyFrontDesk` after every booking and cancellation. Every tool's
