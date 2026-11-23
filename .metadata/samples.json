@@ -144,7 +144,17 @@
       "imageUrl": "wso2integrations.azurecr.io/ai_chat_agent:0.1.0"
     },
     {
-      "displayName": "Customer Support Voice Agent",
+      "displayName": "Gmail Label Agent",
+      "description": "An agent that checks a Gmail inbox every five minutes, labels each new email with the best matching label or a new one under AI/, and moves promotional emails out of the inbox.",
+      "componentType": "ai-agent",
+      "buildPack": "ballerina",
+      "repositoryUrl": "https://github.com/wso2/integration-samples/",
+      "componentPath": "/integrator-default-profile/samples/gmail-label-agent",
+      "thumbnailPath": "https://devant-cdn.wso2.com/console/sample-icons/gmail-label-agent.svg",
+      "tags": ["Gmail", "OpenAI", "AI", "Agent"]
+    },
+    {
+      "displayName": "Support Voice Agent",
       "description": "A customer support agent for an online store that customers can talk to by voice or chat with over HTTP. It checks order status, explains the return policy, and creates support tickets, keeping its replies short so they sound natural when spoken.",
       "componentType": "ai-agent",
       "buildPack": "ballerina",
@@ -174,6 +184,17 @@
       "thumbnailPath": "https://mi-connectors.wso2.com/samples/icons/Transformation_Templates.png",
       "tags": ["Azure Files", "Automation", "Integration"],
       "imageUrl": "wso2integrations.azurecr.io/azure_files_change_tracker:0.1.0"
+    },
+    {
+      "displayName": "Business Trip Approval",
+      "description": "A multi-agent travel desk for business trip approvals. A planner agent works with destination, travel advice and policy agents to check the weather, public holidays, UK FCDO travel advice and the company travel policy. Each trip goes to the traveler's manager, and to the manager's manager when the policy asks for it. When all approve, it issues a travel authorization.",
+      "componentType": "ai-agent",
+      "buildPack": "ballerina",
+      "repositoryUrl": "https://github.com/wso2/integration-samples/",
+      "componentPath": "/integrator-default-profile/samples/business-trip-approval",
+      "thumbnailPath": "https://devant-cdn.wso2.com/console/sample-icons/business-trip-approval.svg",
+      "tags": ["OpenAI", "AI", "Agent"],
+      "imageUrl": "wso2integrations.azurecr.io/trip_approval:0.1.0"
     },
     {
       "displayName": "HR Self-Service MCP Server",
@@ -464,6 +485,16 @@
       "componentPath": "/integrator-mi-profile/UnitTestTutorial",
       "thumbnailPath": "https://mi-connectors.wso2.com/samples/icons/Testing_Templates.png",
       "tags": ["Integration", "HTTP", "REST"]
+    },
+    {
+      "displayName": "Personal Life Manager",
+      "description": "A personal life manager connecting Telegram to Gmail, Google Calendar, and Google Tasks via an AI agent. Uses Groq Whisper for voice transcription. Read unread emails, check calendar events, and manage tasks using text or voice messages.",
+      "componentType": "ai-agent",
+      "buildPack": "ballerina",
+      "repositoryUrl": "https://github.com/wso2/integration-samples/",
+      "componentPath": "/integrator-default-profile/samples/personal-life-manager",
+      "thumbnailPath": "https://devant-cdn.wso2.com/console/sample-icons/personal_life_manager.svg",
+      "tags": ["Telegram", "Gmail", "Google Calendar", "Google Tasks", "Voice", "AI", "Agent"]
     }
   ]
 }

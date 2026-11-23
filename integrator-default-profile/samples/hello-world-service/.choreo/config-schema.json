@@ -8,6 +8,10 @@
         "http": {
           "type": "object",
           "properties": {
+            "maxBackPressureStallTime": {
+              "type": "number",
+              "description": ""
+            },
             "maxActiveConnections": {
               "type": "integer",
               "description": ""
@@ -44,60 +48,6 @@
               "type": "integer",
               "description": ""
             },
-            "traceLogConsole": {
-              "type": "boolean",
-              "description": ""
-            },
-            "traceLogAdvancedConfig": {
-              "type": "object",
-              "properties": {
-                "console": {
-                  "type": "boolean"
-                },
-                "path": {
-                  "type": "string"
-                },
-                "host": {
-                  "type": "string"
-                },
-                "port": {
-                  "type": "integer"
-                }
-              },
-              "additionalProperties": false,
-              "required": [
-                "console"
-              ],
-              "name": "ballerina/http:2.14.13:TraceLogAdvancedConfiguration",
-              "description": ""
-            },
-            "accessLogConfig": {
-              "type": "object",
-              "properties": {
-                "console": {
-                  "type": "boolean"
-                },
-                "format": {
-                  "type": "string"
-                },
-                "attributes": {
-                  "type": "array",
-                  "items": {
-                    "type": "string"
-                  }
-                },
-                "path": {
-                  "type": "string"
-                }
-              },
-              "additionalProperties": false,
-              "required": [
-                "console",
-                "format"
-              ],
-              "name": "ballerina/http:2.14.13:AccessLogConfiguration",
-              "description": ""
-            },
             "defaultListenerConfig": {
               "type": "object",
               "properties": {
@@ -123,7 +73,7 @@
                     "keepAlive",
                     "maxPipelinedRequests"
                   ],
-                  "name": "ballerina/http:2.14.13:ListenerHttp1Settings"
+                  "name": "ballerina/http:2.18.2:ListenerHttp1Settings"
                 },
                 "secureSocket": {
                   "anyOf": [
@@ -147,7 +97,7 @@
                                 "path",
                                 "password"
                               ],
-                              "name": "ballerina/crypto:2.12.2:KeyStore"
+                              "name": "ballerina/crypto:2.13.0:KeyStore"
                             },
                             {
                               "type": "object",
@@ -167,7 +117,7 @@
                                 "certFile",
                                 "keyFile"
                               ],
-                              "name": "ballerina/http:2.14.13:CertKey"
+                              "name": "ballerina/http:2.18.2:CertKey"
                             }
                           ]
                         },
@@ -197,7 +147,7 @@
                                     "path",
                                     "password"
                                   ],
-                                  "name": "ballerina/crypto:2.12.2:TrustStore"
+                                  "name": "ballerina/crypto:2.13.0:TrustStore"
                                 },
                                 {
                                   "type": "string"
@@ -279,7 +229,7 @@
                         "ciphers",
                         "shareSession"
                       ],
-                      "name": "ballerina/http:2.14.13:ListenerSecureSocket"
+                      "name": "ballerina/http:2.18.2:ListenerSecureSocket"
                     },
                     {
                       "type": ""
@@ -325,7 +275,7 @@
                     "maxHeaderSize",
                     "maxEntityBodySize"
                   ],
-                  "name": "ballerina/http:2.14.13:RequestLimitConfigs"
+                  "name": "ballerina/http:2.18.2:RequestLimitConfigs"
                 },
                 "gracefulStopTimeout": {
                   "type": "number"
@@ -365,9 +315,12 @@
                     "socketReuse",
                     "keepAlive"
                   ],
-                  "name": "ballerina/http:2.14.13:ServerSocketConfig"
+                  "name": "ballerina/http:2.18.2:ServerSocketConfig"
                 },
                 "http2InitialWindowSize": {
+                  "type": "integer"
+                },
+                "http2MaxActiveStreams": {
                   "type": "integer"
                 },
                 "minIdleTimeInStaleState": {
@@ -389,10 +342,149 @@
                 "gracefulStopTimeout",
                 "socketConfig",
                 "http2InitialWindowSize",
+                "http2MaxActiveStreams",
                 "minIdleTimeInStaleState",
                 "timeBetweenStaleEviction"
               ],
-              "name": "ballerina/http:2.14.13:ListenerConfiguration",
+              "name": "ballerina/http:2.18.2:ListenerConfiguration",
+              "description": ""
+            },
+            "traceLogConsole": {
+              "type": "boolean",
+              "description": ""
+            },
+            "traceLogAdvancedConfig": {
+              "type": "object",
+              "properties": {
+                "console": {
+                  "type": "boolean"
+                },
+                "path": {
+                  "type": "string"
+                },
+                "host": {
+                  "type": "string"
+                },
+                "port": {
+                  "type": "integer"
+                },
+                "file": {
+                  "type": "object",
+                  "properties": {
+                    "path": {
+                      "type": "string"
+                    },
+                    "rotation": {
+                      "type": "object",
+                      "properties": {
+                        "policy": {
+                          "enum": [
+                            "BOTH",
+                            "TIME_BASED",
+                            "SIZE_BASED"
+                          ]
+                        },
+                        "maxFileSize": {
+                          "type": "integer"
+                        },
+                        "maxAge": {
+                          "type": "integer"
+                        },
+                        "maxBackupFiles": {
+                          "type": "integer"
+                        }
+                      },
+                      "additionalProperties": false,
+                      "required": [
+                        "policy",
+                        "maxFileSize",
+                        "maxAge",
+                        "maxBackupFiles"
+                      ],
+                      "name": "ballerina/log:2.17.2:RotationConfig"
+                    }
+                  },
+                  "additionalProperties": false,
+                  "required": [
+                    "path"
+                  ],
+                  "name": "ballerina/http:2.18.2:LogFileConfig"
+                }
+              },
+              "additionalProperties": false,
+              "required": [
+                "console"
+              ],
+              "name": "ballerina/http:2.18.2:TraceLogAdvancedConfiguration",
+              "description": ""
+            },
+            "accessLogConfig": {
+              "type": "object",
+              "properties": {
+                "console": {
+                  "type": "boolean"
+                },
+                "format": {
+                  "type": "string"
+                },
+                "attributes": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "path": {
+                  "type": "string"
+                },
+                "file": {
+                  "type": "object",
+                  "properties": {
+                    "path": {
+                      "type": "string"
+                    },
+                    "rotation": {
+                      "type": "object",
+                      "properties": {
+                        "policy": {
+                          "enum": [
+                            "BOTH",
+                            "TIME_BASED",
+                            "SIZE_BASED"
+                          ]
+                        },
+                        "maxFileSize": {
+                          "type": "integer"
+                        },
+                        "maxAge": {
+                          "type": "integer"
+                        },
+                        "maxBackupFiles": {
+                          "type": "integer"
+                        }
+                      },
+                      "additionalProperties": false,
+                      "required": [
+                        "policy",
+                        "maxFileSize",
+                        "maxAge",
+                        "maxBackupFiles"
+                      ],
+                      "name": "ballerina/log:2.17.2:RotationConfig"
+                    }
+                  },
+                  "additionalProperties": false,
+                  "required": [
+                    "path"
+                  ],
+                  "name": "ballerina/http:2.18.2:LogFileConfig"
+                }
+              },
+              "additionalProperties": false,
+              "required": [
+                "console",
+                "format"
+              ],
+              "name": "ballerina/http:2.18.2:AccessLogConfiguration",
               "description": ""
             }
           },
