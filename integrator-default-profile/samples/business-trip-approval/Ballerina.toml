@@ -1,0 +1,3 @@
+[workspace]
+title = "business-trip-approval"
+packages = ["trip_approval", "destination_researcher", "travel_advisor", "policy_analyst"]

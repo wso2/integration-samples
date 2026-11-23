@@ -176,6 +176,17 @@
       "imageUrl": "wso2integrations.azurecr.io/azure_files_change_tracker:0.1.0"
     },
     {
+      "displayName": "Business Trip Approval",
+      "description": "A multi-agent travel desk for business trip approvals. A planner agent works with destination, travel advice and policy agents to check the weather, public holidays, UK FCDO travel advice and the company travel policy. Each trip goes to the traveler's manager, and to the manager's manager when the policy asks for it. When all approve, it issues a travel authorization.",
+      "componentType": "ai-agent",
+      "buildPack": "ballerina",
+      "repositoryUrl": "https://github.com/wso2/integration-samples/",
+      "componentPath": "/integrator-default-profile/samples/business-trip-approval",
+      "thumbnailPath": "https://devant-cdn.wso2.com/console/sample-icons/business-trip-approval.svg",
+      "tags": ["OpenAI", "AI", "Agent"],
+      "imageUrl": "wso2integrations.azurecr.io/trip_approval:0.1.0"
+    },
+    {
       "displayName": "API Testing",
       "description": "An API that handles standard HTTP methods (GET, POST, PUT, DELETE) with predefined responses. Ideal for testing request handling and API interactions.",
       "componentType": "service",
