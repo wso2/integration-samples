@@ -1,0 +1,193 @@
+{
+  "employees": [
+    {
+      "id": "E001",
+      "name": "Maya Lindqvist",
+      "email": "hr.admin@example.com",
+      "title": "HR Director",
+      "department": "People Operations",
+      "managerId": null,
+      "leaveBalances": {
+        "annual": {"entitled": 25, "used": 0},
+        "sick": {"entitled": 10, "used": 0},
+        "personal": {"entitled": 3, "used": 0}
+      }
+    },
+    {
+      "id": "E002",
+      "name": "Daniel Okafor",
+      "email": "eng.manager@example.com",
+      "title": "Engineering Manager",
+      "department": "Engineering",
+      "managerId": "E001",
+      "leaveBalances": {
+        "annual": {"entitled": 22, "used": 0},
+        "sick": {"entitled": 10, "used": 0},
+        "personal": {"entitled": 3, "used": 0}
+      }
+    },
+    {
+      "id": "E003",
+      "name": "Sofia Marchetti",
+      "email": "sales.manager@example.com",
+      "title": "Sales Manager",
+      "department": "Sales",
+      "managerId": "E001",
+      "leaveBalances": {
+        "annual": {"entitled": 22, "used": 0},
+        "sick": {"entitled": 10, "used": 0},
+        "personal": {"entitled": 3, "used": 1}
+      }
+    },
+    {
+      "id": "E004",
+      "name": "Kenji Watanabe",
+      "email": "engineer1@example.com",
+      "title": "Software Engineer",
+      "department": "Engineering",
+      "managerId": "E002",
+      "leaveBalances": {
+        "annual": {"entitled": 20, "used": 5},
+        "sick": {"entitled": 10, "used": 0},
+        "personal": {"entitled": 3, "used": 0}
+      }
+    },
+    {
+      "id": "E005",
+      "name": "Amara Nwosu",
+      "email": "engineer2@example.com",
+      "title": "QA Engineer",
+      "department": "Engineering",
+      "managerId": "E002",
+      "leaveBalances": {
+        "annual": {"entitled": 20, "used": 0},
+        "sick": {"entitled": 10, "used": 2},
+        "personal": {"entitled": 3, "used": 0}
+      }
+    },
+    {
+      "id": "E006",
+      "name": "Lucas Fernandes",
+      "email": "sales.rep@example.com",
+      "title": "Sales Executive",
+      "department": "Sales",
+      "managerId": "E003",
+      "leaveBalances": {
+        "annual": {"entitled": 18, "used": 0},
+        "sick": {"entitled": 10, "used": 0},
+        "personal": {"entitled": 3, "used": 0}
+      }
+    }
+  ],
+  "leaveRequests": [
+    {
+      "id": "L-1001",
+      "employeeId": "E004",
+      "leaveType": "annual",
+      "startDate": "2026-03-09",
+      "endDate": "2026-03-13",
+      "days": 5,
+      "reason": "Family trip",
+      "status": "approved",
+      "submittedAt": "2026-02-10T09:15:00Z",
+      "decidedBy": "E002",
+      "decidedAt": "2026-02-11T14:00:00Z",
+      "decisionComment": "Enjoy!"
+    },
+    {
+      "id": "L-1002",
+      "employeeId": "E004",
+      "leaveType": "annual",
+      "startDate": "2026-12-21",
+      "endDate": "2026-12-24",
+      "days": 4,
+      "reason": "Year-end break",
+      "status": "pending",
+      "submittedAt": "2026-11-02T10:30:00Z"
+    },
+    {
+      "id": "L-1003",
+      "employeeId": "E005",
+      "leaveType": "sick",
+      "startDate": "2026-09-14",
+      "endDate": "2026-09-15",
+      "days": 2,
+      "reason": "Flu",
+      "status": "approved",
+      "submittedAt": "2026-09-14T07:45:00Z",
+      "decidedBy": "E002",
+      "decidedAt": "2026-09-14T08:30:00Z"
+    },
+    {
+      "id": "L-1004",
+      "employeeId": "E005",
+      "leaveType": "annual",
+      "startDate": "2026-12-07",
+      "endDate": "2026-12-11",
+      "days": 5,
+      "reason": "Personal travel",
+      "status": "pending",
+      "submittedAt": "2026-11-10T13:20:00Z"
+    },
+    {
+      "id": "L-1005",
+      "employeeId": "E006",
+      "leaveType": "personal",
+      "startDate": "2026-10-02",
+      "endDate": "2026-10-02",
+      "days": 1,
+      "reason": "Moving house",
+      "status": "rejected",
+      "submittedAt": "2026-09-28T11:00:00Z",
+      "decidedBy": "E003",
+      "decidedAt": "2026-09-29T09:10:00Z",
+      "decisionComment": "Quarter-end close, please pick another day."
+    },
+    {
+      "id": "L-1006",
+      "employeeId": "E006",
+      "leaveType": "annual",
+      "startDate": "2027-01-11",
+      "endDate": "2027-01-15",
+      "days": 5,
+      "reason": "Winter holiday",
+      "status": "pending",
+      "submittedAt": "2026-11-12T16:05:00Z"
+    },
+    {
+      "id": "L-1007",
+      "employeeId": "E002",
+      "leaveType": "annual",
+      "startDate": "2026-12-28",
+      "endDate": "2026-12-31",
+      "days": 4,
+      "reason": "Year-end break",
+      "status": "pending",
+      "submittedAt": "2026-11-05T08:50:00Z"
+    },
+    {
+      "id": "L-1008",
+      "employeeId": "E003",
+      "leaveType": "personal",
+      "startDate": "2026-08-03",
+      "endDate": "2026-08-03",
+      "days": 1,
+      "reason": "Appointment",
+      "status": "approved",
+      "submittedAt": "2026-07-27T12:00:00Z",
+      "decidedBy": "E001",
+      "decidedAt": "2026-07-28T10:00:00Z"
+    },
+    {
+      "id": "L-1009",
+      "employeeId": "E004",
+      "leaveType": "personal",
+      "startDate": "2026-06-19",
+      "endDate": "2026-06-19",
+      "days": 1,
+      "reason": "Plans changed",
+      "status": "cancelled",
+      "submittedAt": "2026-06-01T09:00:00Z"
+    }
+  ]
+}

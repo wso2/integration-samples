@@ -1,0 +1,9 @@
+[package]
+org = "wso2"
+name = "github_monthly_report_agent"
+version = "0.1.0"
+distribution = "2201.14.1"
+title = "GitHub Monthly Report Agent"
+
+[build-options]
+sticky = true
