@@ -160,7 +160,7 @@
       "buildPack": "ballerina",
       "repositoryUrl": "https://github.com/wso2/integration-samples/",
       "componentPath": "/integrator-default-profile/samples/contract-review-assistant",
-      "thumbnailPath": "https://devant-cdn.wso2.com/console/sample-icons/AIAgent.svg",
+      "thumbnailPath": "https://devant-cdn.wso2.com/console/sample-icons/contract-review-assistant.svg",
       "tags": ["Legal", "RAG", "OpenAI", "AI", "Agent"]
     },
     {
