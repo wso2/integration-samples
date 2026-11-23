@@ -38,7 +38,7 @@ service mcpv2:StreamableHttpService /mcp on taskListener {
     # Add a task to the board. It starts out open, and unassigned unless an assignee is given.
     # + title - What the task is
     # + priority - How much it matters: low, medium or high. Defaults to medium.
-    # + assignee - Who the task belongs to. Left unassigned when omitted.
+    # + assignee - Who the task belongs to. Left unassigned when omitted or blank.
     # + return - The task as it was created
     @mcpv2:Tool
     remote isolated function createTask(string title, Priority priority = MEDIUM, string? assignee = ())
@@ -46,7 +46,13 @@ service mcpv2:StreamableHttpService /mcp on taskListener {
         if title.trim() == "" {
             return error("A task needs a title.");
         }
-        return addTask(title.trim(), priority, assignee);
+        // A blank assignee leaves the task unassigned, the same as omitting it: a caller
+        // that has nobody in mind sends "" as readily as it leaves the argument out.
+        string? holder = ();
+        if assignee is string && assignee.trim() != "" {
+            holder = assignee.trim();
+        }
+        return addTask(title.trim(), priority, holder);
     }
 
     # Move a task to a different status, for example to start or finish it.
