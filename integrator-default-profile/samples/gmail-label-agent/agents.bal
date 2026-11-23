@@ -7,34 +7,51 @@ final openai:ModelProvider emailLabelModel = check new (openAiApiKey, modelType 
 final ai:Agent emailLabelAgent = check new (
     systemPrompt = {
         role: string `Gmail Email Labeler`,
-        instructions: string `You organize a Gmail inbox by labeling each new email you are given (message id, sender, subject and snippet).
+        instructions: string `You organize a Gmail inbox by labeling each new email you are given (message id, sender, subject and snippet), along with the existing user labels and their ids.
 For every email, follow these steps in order:
-1. Call listLabels to read the existing labels.
-2. Pick the existing user label that best matches the email and call applyLabel with the message id and that label's id. Never apply system labels such as INBOX, UNREAD or CATEGORY_*.
-3. If no existing label fits, call createLabel with a short, descriptive name that starts with 'AI/' (for example 'AI/Invoices'), then call applyLabel with the new label's id. Prefer reusing an existing 'AI/' label over creating a near-duplicate.
-4. If the email is promotional (marketing, newsletters, discounts, sales offers, advertisements), call removeFromInbox with the message id so it leaves the inbox. Do not remove personal, transactional, security or work emails from the inbox.
+1. Pick the existing user label that best matches the email and call applyLabel with the message id and that label's id. Never apply system labels such as INBOX, UNREAD or CATEGORY_*.
+2. If no existing label fits, call createLabel with a short, descriptive name that starts with 'AI/' (for example 'AI/Invoices'), then call applyLabel with the new label's id. Prefer reusing an existing 'AI/' label over creating a near-duplicate.
+3. If the email is promotional (marketing, newsletters, discounts, sales offers, advertisements), call removeFromInbox with the message id so it leaves the inbox. Do not remove personal, transactional, security or work emails from the inbox.
 Finish with one short sentence stating which label was applied and whether the email was removed from the inbox.`
     },
     model = emailLabelModel,
-    tools = [listLabels, applyLabel, createLabel, removeFromInbox],
+    tools = [applyLabel, createLabel, removeFromInbox],
     memory = ()
 );
 
-# Lists the labels that exist in the mailbox.
-# + return - the labels, each with its id, name and type (system or user)
-@ai:AgentTool
-isolated function listLabels() returns LabelInfo[]|error {
+// The user labels in the mailbox, read once per poll and given to the agent with each email
+isolated LabelInfo[] knownLabels = [];
+
+# Reads the user labels in the mailbox into knownLabels.
+# + return - an error if Gmail cannot list the labels
+isolated function loadLabels() returns error? {
     gmail:ListLabelsResponse response = check gmailClient->/users/me/labels;
     gmail:Label[] labels = response.labels ?: [];
     LabelInfo[] result = [];
     foreach gmail:Label item in labels {
         string? labelId = item.id;
         string? labelName = item.name;
-        if labelId is string && labelName is string {
-            result.push({id: labelId, name: labelName, 'type: item.'type ?: "user"});
+        string labelType = item.'type ?: "user";
+        if labelId is string && labelName is string && labelType == "user" {
+            result.push({id: labelId, name: labelName, 'type: labelType});
         }
     }
-    return result;
+    readonly & LabelInfo[] snapshot = result.cloneReadOnly();
+    lock {
+        knownLabels = snapshot.clone();
+    }
+}
+
+# Lists the known user labels for the agent's prompt, one per line.
+# + return - the labels with their ids
+isolated function describeLabels() returns string {
+    LabelInfo[] snapshot = [];
+    lock {
+        snapshot = knownLabels.clone();
+    }
+    string[] lines = from LabelInfo label in snapshot
+        select string `- ${label.name} (id: ${label.id})`;
+    return lines.length() == 0 ? "(none)" : string:'join("\n", ...lines);
 }
 
 # Applies an existing label to an email.
@@ -59,6 +76,10 @@ isolated function createLabel(string name) returns string|error {
     string? createdId = created.id;
     if createdId is () {
         return error("Gmail did not return an id for the new label");
+    }
+    // Later emails in this poll can reuse the new label
+    lock {
+        knownLabels.push({id: createdId, name: name, 'type: "user"});
     }
     return createdId;
 }

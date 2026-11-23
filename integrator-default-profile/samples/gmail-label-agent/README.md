@@ -36,14 +36,13 @@ gmailRefreshToken = "<GMAIL_REFRESH_TOKEN>"
 
 ## How It Works
 
-- A task listener runs the poll every five minutes. Each poll lists the inbox emails that arrived between the start of the previous poll and the start of this one (`in:inbox after:<time> before:<time>`), across all result pages. If a poll is still running when the next one is due, the next one is skipped, and the following poll covers its emails.
-- For each email, the integration gives the agent the message ID, sender, subject and snippet.
+- A task listener runs the poll every five minutes. Each poll lists the inbox emails that arrived between the start of the previous poll and the start of this one (`in:inbox after:<time> before:<time>`), up to 100 emails. If more arrived, it labels the newest 100 and logs a warning that the older ones were skipped. If a poll is still running when the next one is due, the next one is skipped, and the following poll covers its emails.
+- Each poll reads the mailbox's user labels once. For each email, the integration fetches only the sender and subject headers, not the body, and gives the agent the message ID, sender, subject, snippet and the list of user labels with their IDs.
 - The agent uses OpenAI `gpt-6-luna` through the Responses API. It has no memory, so each email is labeled on its own.
-- It implements four agent tools:
-  - **listLabels**: Lists the labels in the mailbox, with their IDs, names and types
+- It implements three agent tools:
   - **applyLabel**: Applies a label to an email
-  - **createLabel**: Creates a label. It rejects names that do not start with `AI/`, so the agent's labels stay in one place.
+  - **createLabel**: Creates a label. It rejects names that do not start with `AI/`, so the agent's labels stay in one place. The new label is added to the poll's label list, so later emails in the same poll can reuse it.
   - **removeFromInbox**: Removes the `INBOX` label from an email, which archives it without deleting it. The agent uses it only for promotional emails.
 - The agent's instructions tell it to pick only user labels, and never to apply system labels such as `INBOX`, `UNREAD` or `CATEGORY_*`.
-- If a poll cannot list the inbox, the next poll covers the same time window again. If the agent fails on an email, the integration logs the error and skips that email.
+- If a poll cannot list the inbox or read the labels, the next poll covers the same time window again. If the agent fails on an email, the integration logs the error and skips that email.
 - The integration keeps the time of the last poll in memory, so emails that arrive while it is stopped are not labeled.
