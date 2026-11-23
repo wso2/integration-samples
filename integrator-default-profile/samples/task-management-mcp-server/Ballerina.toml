@@ -1,0 +1,9 @@
+[package]
+org = "wso2"
+name = "task_management_mcp_server"
+version = "0.1.0"
+distribution = "2201.14.1"
+title = "Task Management MCP Server"
+
+[build-options]
+sticky = true

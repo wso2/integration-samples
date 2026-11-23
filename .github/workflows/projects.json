@@ -45,6 +45,9 @@
     "path": "integrator-default-profile/samples/json-to-xml-converter"
   },
   {
+    "path": "integrator-default-profile/samples/task-management-mcp-server"
+  },
+  {
     "path": "integrator-default-profile/samples/daily-email-notifier"
   },
   {

@@ -23,6 +23,16 @@
       "imageUrl": "wso2integrations.azurecr.io/scheduled_logger:0.1.0"
     },
     {
+      "displayName": "Task Management MCP Server",
+      "description": "An MCP server over a small task board. Lists tasks, adds them, moves them between open, in-progress and done, and assigns them to people. Holds the board in memory, so it needs no database and no configuration: deploy it, then secure its endpoint from the integration's settings.",
+      "componentType": "mcp-server",
+      "buildPack": "ballerina",
+      "repositoryUrl": "https://github.com/wso2/integration-samples/",
+      "componentPath": "/integrator-default-profile/samples/task-management-mcp-server",
+      "thumbnailPath": "https://devant-cdn.wso2.com/console/sample-icons/task_management_mcp_server.svg",
+      "tags": ["MCP", "AI", "Tasks", "Integration"]
+    },
+    {
       "displayName": "JSON to XML Converter",
       "description": "A REST API that converts incoming JSON payloads into XML format and returns the transformed response.",
       "componentType": "service",
@@ -275,16 +285,6 @@
       "thumbnailPath": "https://devant-cdn.wso2.com/console/sample-icons/business-trip-approval.svg",
       "tags": ["OpenAI", "AI", "Agent"],
       "imageUrl": "wso2integrations.azurecr.io/trip_approval:0.1.0"
-    },
-    {
-      "displayName": "HR Self-Service MCP Server",
-      "description": "An MCP server for employee leave management, secured with OAuth. Employees check their leave balances and apply for or cancel leave, and managers approve or reject requests from their direct reports. Scopes control access: employees can only see their own data, and reading other employees' data requires an HR admin scope. Works with any OAuth 2.0 / OIDC identity provider.",
-      "componentType": "service",
-      "buildPack": "ballerina",
-      "repositoryUrl": "https://github.com/wso2/integration-samples/",
-      "componentPath": "/integrator-default-profile/samples/hr-self-service-mcp-server",
-      "thumbnailPath": "https://devant-cdn.wso2.com/console/sample-icons/hr_self_service_mcp_server.svg",
-      "tags": ["MCP", "OAuth", "HR", "AI", "Integration"]
     },
     {
       "displayName": "API Testing",
