@@ -29,7 +29,7 @@
       "buildPack": "ballerina",
       "repositoryUrl": "https://github.com/wso2/integration-samples/",
       "componentPath": "/integrator-default-profile/samples/task-management-mcp-server",
-      "imageUrl": "wso2integrations.azurecr.io/task_management_mcp_server:0.1.0",
+      "imageUrl": "wso2integrations.azurecr.io/task_management_mcp_server:0.2.0",
       "thumbnailPath": "https://devant-cdn.wso2.com/console/sample-icons/task_management_mcp_server.svg",
       "tags": ["MCP", "AI", "Tasks", "Integration"]
     },
