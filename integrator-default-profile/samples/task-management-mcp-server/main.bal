@@ -23,7 +23,8 @@ listener mcpv2:StreamableHttpListener taskListener = new (SERVER_PORT);
 // The service carries no authentication of its own: the platform secures the endpoint it is
 // published on, so the same server runs unchanged whichever scheme the endpoint is given.
 @mcpv2:StreamableHttpServiceConfig {
-    info: {name: "task-management", version: "1.0.0"}
+    info: {name: "task-management", version: "1.0.0"},
+    protocolMode: "legacy"
 }
 service mcpv2:StreamableHttpService /mcp on taskListener {
 
