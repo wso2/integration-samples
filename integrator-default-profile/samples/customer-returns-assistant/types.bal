@@ -1,24 +1,31 @@
-# A customer order looked up from Shopify, with the delivery date and item resolved for return
-# eligibility checks.
+# A customer order looked up from Shopify, with its shipped items resolved for return eligibility
+# checks.
 #
 # + orderReference - the order reference, e.g. "#1042"
-# + itemName - the name of the item in the order
-# + variantId - the Shopify product variant id, used to check replacement stock
-# + deliveredDaysAgo - number of days since the order was delivered (fulfilled)
+# + items - every shipped item in the order
 public type Order record {|
     string orderReference;
-    string itemName;
-    int variantId;
-    int deliveredDaysAgo;
+    OrderItem[] items;
 |};
 
-# Result of a return-window eligibility check for an order.
+# A shipped item in a customer order.
 #
-# + withinReturnWindow - true when the order was delivered within the policy return window
-# + deliveredDaysAgo - number of days since delivery that was used for the check
+# + itemName - the name of the item
+# + variantId - the Shopify product variant id, used to check replacement stock
+# + daysSinceShipment - number of days since the item was shipped (its fulfillment was created)
+public type OrderItem record {|
+    string itemName;
+    int variantId;
+    int daysSinceShipment;
+|};
+
+# Result of a return-window eligibility check for an item.
+#
+# + withinReturnWindow - true when the item was shipped within the policy return window
+# + daysSinceShipment - number of days since shipment that was used for the check
 # + returnWindowDays - the return window, in days, used for the check
 public type EligibilityResult record {|
     boolean withinReturnWindow;
-    int deliveredDaysAgo;
+    int daysSinceShipment;
     int returnWindowDays;
 |};

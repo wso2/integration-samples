@@ -2,7 +2,7 @@
 
 This sample books meetings on Google Calendar. The agent reads a colleague's events for a requested day, computes free slots within work hours, and creates the event after the requester confirms a slot.
 
-The agent writes to Google Calendar only after an explicit confirmation. It doesn't reschedule or cancel events.
+The event creation tool requires approval, so the agent writes to Google Calendar only after the requester approves the booking. It doesn't reschedule or cancel events.
 
 ## Prerequisites
 
@@ -55,7 +55,23 @@ The client requests an access token at startup, so the integration doesn't start
      -d '{"sessionId":"meeting-1","message":"Book the first slot and call it Project sync."}'
    ```
 
-   The agent creates the event with the colleague as an attendee and returns the booked time and the event link. Google Calendar doesn't email the invitation because the tool doesn't request notifications.
+   The run pauses before the event is created. The service responds with HTTP `403` and a body that lists the pending approval request, for example:
+
+   ```json
+   {"requests":[{"id":"APPROVAL_ID","sessionId":"meeting-1","toolName":"createMeetingEvent","arguments":{"summary":"Project sync"}}]}
+   ```
+
+   The real response carries all the tool arguments and a few more fields.
+
+5. Approve the booking with the `id` from that response:
+
+   ```bash
+   curl -X POST http://localhost:9090/meeting-scheduling-assistant/decision \
+     -H "Content-Type: application/json" \
+     -d '{"sessionId":"meeting-1","decisions":{"APPROVAL_ID":{"outcome":"APPROVE"}}}'
+   ```
+
+   The agent creates the event with the colleague as an attendee and returns the booked time and the event link. To decline, send `"outcome":"REJECT"` with an optional `"reason"`. Google Calendar doesn't email the invitation because the tool doesn't request notifications.
 
 A response contains a `message` field; its wording depends on the model. Run one sample at a time because the samples use port `9090`.
 
@@ -63,27 +79,28 @@ A response contains a `message` field; its wording depends on the model. Run one
 
 ### `meetingSchedulingAgent`
 
-Finds free slots on a colleague's Google Calendar within 9 AM to 5 PM and books the slot that the requester confirms. It never books an overlapping slot or books without confirmation.
+Finds free slots on a colleague's Google Calendar within 9 AM to 5 PM and books the slot that the requester confirms and approves. It never proposes an overlapping slot.
 
-- **Query:** the colleague's email address, the meeting duration, and the day and time window, for example `Find a 30-minute slot with kai@example.com next Thursday afternoon`. The service adds today's date (UTC) to every request so relative days such as "Thursday" resolve correctly.
+- **Query:** the colleague's email address, the meeting duration, and the day and time window, for example `Find a 30-minute slot with kai@example.com next Thursday afternoon`. The agent reads today's date (UTC) from a tool so relative days such as "Thursday" resolve correctly.
 - **Response:** a `string` with the proposed slots or, after confirmation, the booked time and the event link. The agent asks for the colleague's email address or the duration if either is missing.
-- **Tools:** `listBusySlots`, `findFreeSlots`, `createMeetingEvent`.
+- **Tools:** `getCurrentDate`, `listBusySlots`, `findFreeSlots`, `createMeetingEvent` (requires approval).
 - **Initialization parameters:** `model`, the model provider the agent uses.
 
 ## How it works
 
-- `agents.bal` defines the scheduling instructions and three tools.
+- `agents.bal` defines the scheduling instructions and four tools.
 - `connections.bal` creates the Google Calendar client from the OAuth 2.0 configuration.
-- `listBusySlots` reads the calendar's events between two timestamps, expanding recurring events, and returns their start and end times.
-- `findFreeSlots` takes the local midnight of the day, adds work hours from 9 AM to 5 PM, and returns back-to-back slots of the requested length that don't overlap a busy slot. After an overlap, it tries again 15 minutes later. It rejects a duration that isn't positive.
-- `createMeetingEvent` creates the event with the confirmed times, time zone, and attendees, and returns the event ID and link.
-- `automation.bal` adds today's date to the request and exposes `POST /meeting-scheduling-assistant/chat` through the AI listener.
+- `getCurrentDate` returns today's date in UTC.
+- `listBusySlots` reads the calendar's events between two timestamps, expanding recurring events, and returns their start and end times. An all-day event, such as a day off, blocks the whole day. It skips events marked as free.
+- `findFreeSlots` takes the local midnight of the day, adds work hours from 9 AM to 5 PM, and returns back-to-back slots of the requested length that don't overlap a busy slot. After an overlap, it tries again from the end of the conflicting event. It rejects a duration that isn't positive.
+- `createMeetingEvent` creates the event with the confirmed times, time zone, and attendees, and returns the event ID and link. Its `@ai:AgentTool` annotation sets `requiresApproval: true`, so every call pauses until the requester approves it.
+- `automation.bal` exposes `POST /meeting-scheduling-assistant/chat` for messages and `POST /meeting-scheduling-assistant/decision` for approval decisions through the AI listener.
 
 ## Limitations
 
-- `listBusySlots` ignores all-day events, such as a day marked out of office, and doesn't check whether an event is marked free.
 - The sample checks one colleague's calendar. It doesn't find a common slot across several calendars.
 - The model converts the requested day to timestamps. On days when daylight saving time changes, the work-hour window shifts by one hour.
+- `findFreeSlots` starts slots at 9 AM or at the end of an event. A requested window that starts at another time, such as 9:30 AM to 10:30 AM, can get no exact match even when it is free.
 - The agent doesn't handle recurring meetings, rescheduling, or cancellation.
 
 The model chooses which calendar to read and write. Authenticate requesters and restrict the calendars that the agent can access before you deploy it.

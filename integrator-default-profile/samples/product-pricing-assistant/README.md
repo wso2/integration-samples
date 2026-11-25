@@ -80,7 +80,7 @@ Calculates a monthly quote from the plan's live Stripe price. It never invents a
 
 - **Query:** a plan name and a user count.
 - **Response:** a `string` with the price per user per month and the total monthly price.
-- **Tools:** `lookupPlanPrice`, `calculatePlanQuote`.
+- **Tools:** `calculatePlanQuote`.
 
 All three agents take a `model` initialization parameter, the model provider the agent uses.
 
@@ -89,8 +89,8 @@ All three agents take a `model` initialization parameter, the model provider the
 - `productPricingCoordinatorAgent` delegates feature questions to `productSpecialistAgentTool` and quote requests to `pricingSpecialistAgentTool`.
 - Both delegation tools forward `ai:Context` to the specialist's `run` call. The coordinator's instructions require separate session IDs for independent specialist conversations.
 - `productSpecialistAgent` calls `retrieveProductCatalog` to retrieve evidence from an in-memory vector knowledge base.
-- `lookupPlanPrice` searches Stripe for a product with the plan's name, reads its first active recurring price, and converts `unit_amount` from cents.
-- `calculatePlanQuote` multiplies that price by the user count. It requires a positive user count.
+- `calculatePlanQuote` gets the price per user from the `lookupPlanPrice` helper and multiplies it by the user count. It requires a positive user count.
+- `lookupPlanPrice` searches Stripe for products with the plan's name and keeps only the product whose name matches exactly, ignoring case, so `Business` doesn't match `Business Plus`. It reads that product's first active recurring price and converts `unit_amount` from cents. It isn't an agent tool, so the agent makes one Stripe lookup per quote.
 - `connections.bal` creates the Stripe client and the knowledge base.
 - `main.bal` loads `resources/product-catalog.md` at startup. This step calls the embedding provider.
 - `automation.bal` exposes `POST /product-pricing-assistant/chat` through the AI listener.

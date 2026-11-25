@@ -2,6 +2,14 @@ import ballerina/ai;
 import ballerina/time;
 import ballerinax/googleapis.sheets;
 
+# Returns today's date in UTC, so relative dates such as Friday can be resolved.
+#
+# + return - today's date, in `YYYY-MM-DD` format
+@ai:AgentTool
+isolated function getCurrentDate() returns string {
+    return time:utcToString(time:utcNow()).substring(0, 10);
+}
+
 # Calculates the total cost of a quotation (unit price * quantity + shipping charge).
 #
 # + quotation - the quotation to calculate the total for
@@ -67,9 +75,9 @@ isolated function checkDeadline(string supplierName, string deliveryDate, string
 #
 # + requesterOrDepartment - the requester name or department to look up the approved budget for
 # + return - the approved budget found for that requester or department, or an error if no
-# matching row was found
+# matching row was found or its budget is not a number
 @ai:AgentTool
-@display {label: "", iconPath: "https://bcentral-packageicons.azureedge.net/images/ballerinax_googleapis.sheets_3.0.0.png"}
+@display {label: "", iconPath: "https://bcentral-packageicons.azureedge.net/images/ballerinax_googleapis.sheets_4.0.0.png"}
 isolated function lookupApprovedBudget(string requesterOrDepartment) returns ApprovedBudget|error {
     sheets:Range range = check budgetSheetsClient->getRange(budgetSpreadsheetId, budgetSheetName, "A1:B1000",
             "UNFORMATTED_VALUE");
@@ -87,7 +95,11 @@ isolated function lookupApprovedBudget(string requesterOrDepartment) returns App
             } else if budgetCell is int {
                 approvedBudget = <decimal>budgetCell;
             } else {
-                approvedBudget = check decimal:fromString(budgetCell);
+                decimal|error parsedBudget = decimal:fromString(budgetCell);
+                if parsedBudget is error {
+                    return error(string `The approved budget for ${requesterOrDepartment} is not a number: '${budgetCell}'`);
+                }
+                approvedBudget = parsedBudget;
             }
             ApprovedBudget result = {
                 requesterOrDepartment: requesterOrDepartment,

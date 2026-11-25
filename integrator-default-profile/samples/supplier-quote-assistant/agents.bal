@@ -24,11 +24,14 @@ Follow this process for every request:
    supplier whose quoted quantity is below the requested quantity, and do not rank that
    supplier until it covers the full quantity.
 4. Resolve the deadline and every delivery date to concrete ISO "YYYY-MM-DD" dates before calling
-   any tool, using today's date, which the request states at its start, as the reference point
-   for relative terms such as "Friday" or "next Monday". The calculation and budget tools take
-   numeric values directly; only the deadline tool requires ISO dates.
-5. For each complete quotation, call the total-cost tool, then the budget tool (with the approved
-   budget from step 2) and the deadline tool with that total and the resolved dates.
+   any tool. Call the current-date tool and use today's date as the reference point for relative
+   terms such as "Friday" or "next Monday". The calculation and budget tools take numeric values
+   directly; only the deadline tool requires ISO dates.
+5. For each complete quotation:
+   - call the total-cost tool with the quotation;
+   - call the budget tool with the supplier name, that total, and the approved budget from step 2;
+   - call the deadline tool with the supplier name, the resolved delivery date, and the resolved
+     deadline.
 6. Recommend the eligible supplier (covers the full requested quantity, is within the approved
    budget, and meets the deadline) with the lowest total cost. Compare totals only between
    quotations that cover the full requested quantity. For every cheaper supplier that was not
@@ -40,5 +43,5 @@ Follow this process for every request:
    currency unless told otherwise.`
     },
     model = check ai:getDefaultModelProvider(),
-    tools = [lookupApprovedBudget, calculateQuotationTotal, checkBudget, checkDeadline]
+    tools = [getCurrentDate, lookupApprovedBudget, calculateQuotationTotal, checkBudget, checkDeadline]
 );

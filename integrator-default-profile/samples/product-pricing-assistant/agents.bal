@@ -36,7 +36,7 @@ Follow this process for every request:
 4. Report the price per user per month and the total monthly price for the requested user count.`
     },
     model = check ai:getDefaultModelProvider(),
-    tools = [lookupPlanPrice, calculatePlanQuote]
+    tools = [calculatePlanQuote]
 );
 
 # Delegates a product feature question to the product specialist, who searches the product

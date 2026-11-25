@@ -2,8 +2,8 @@
 
 ## Return Window
 
-Customers may request a resolution within **30 days** of the delivery date. Requests made after
-30 days from delivery are not eligible for an automatic exchange or refund and must go through
+Customers may request a resolution within **30 days** of the date the item was shipped. Requests
+made more than 30 days after shipment are not eligible for an automatic exchange or refund and must go through
 manual review.
 
 ## Eligible Resolutions

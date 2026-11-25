@@ -4,14 +4,14 @@ import ballerinax/shopify.admin;
 
 final int returnWindowDays = 30;
 
-# Looks up a customer order from Shopify by its order reference and resolves its delivery date
-# from the order's fulfillment.
+# Looks up a customer order from Shopify by its order reference and lists every shipped item, with
+# the days since its shipment.
 #
 # + orderReference - the order reference to look up, e.g. "#1042"
-# + return - the matching order with its delivered-days-ago value, or an error if no order was
-# found or the order has not been fulfilled yet
+# + return - the matching order with its shipped items, or an error if no order was found or the
+# order has not been fulfilled yet
 @ai:AgentTool
-@display {label: "", iconPath: "https://bcentral-packageicons.azureedge.net/images/ballerinax_shopify.admin_1.0.0.png"}
+@display {label: "", iconPath: "https://bcentral-packageicons.azureedge.net/images/ballerinax_shopify.admin_3.0.0.png"}
 isolated function lookupOrder(string orderReference) returns Order|error {
     admin:OrdersList ordersList = check shopifyClient->retrieveAListOfOrders(name = orderReference, status = "any");
     admin:OrdersListOrders[]? orders = ordersList.orders;
@@ -32,45 +32,51 @@ isolated function lookupOrder(string orderReference) returns Order|error {
     if fulfillments is () || fulfillments.length() == 0 {
         return error("Order " + orderReference + " has not been fulfilled yet");
     }
-    admin:ReopenCloseOrderOrderFulfillments fulfillment = fulfillments[0];
-    admin:ReopenCloseOrderOrderLineItems[]? lineItems = fulfillment.lineItems;
-    if lineItems is () || lineItems.length() == 0 {
-        return error("Order " + orderReference + " has no line items");
+    OrderItem[] items = [];
+    foreach admin:ReopenCloseOrderOrderFulfillments fulfillment in fulfillments {
+        string? shippedAt = fulfillment.createdAt;
+        admin:ReopenCloseOrderOrderLineItems[]? lineItems = fulfillment.lineItems;
+        if shippedAt is () || lineItems is () {
+            continue;
+        }
+        int daysSinceShipment = check daysSince(shippedAt);
+        foreach admin:ReopenCloseOrderOrderLineItems lineItem in lineItems {
+            int? variantId = lineItem["variantId"];
+            if variantId is () {
+                continue;
+            }
+            string? lineItemTitle = lineItem.title;
+            string? lineItemName = lineItem["name"];
+            items.push({
+                itemName: lineItemTitle ?: (lineItemName ?: "Unknown item"),
+                variantId: variantId,
+                daysSinceShipment: daysSinceShipment
+            });
+        }
     }
-    admin:ReopenCloseOrderOrderLineItems lineItem = lineItems[0];
-    int? variantId = lineItem["variantId"];
-    if variantId is () {
-        return error("Order " + orderReference + " line item has no variant");
+    if items.length() == 0 {
+        return error("Order " + orderReference + " has no shipped items with a product variant");
     }
-    string? fulfillmentCreatedAt = fulfillment.createdAt;
-    if fulfillmentCreatedAt is () {
-        return error("Order " + orderReference + " fulfillment has no delivery timestamp");
-    }
-    int deliveredDaysAgo = check daysSince(fulfillmentCreatedAt);
-    string? lineItemTitle = lineItem.title;
-    string? lineItemName = lineItem["name"];
     Order result = {
         orderReference: orderReference,
-        itemName: lineItemTitle ?: (lineItemName ?: "Unknown item"),
-        variantId: variantId,
-        deliveredDaysAgo: deliveredDaysAgo
+        items: items
     };
     return result;
 }
 
-# Checks whether an order was delivered within the policy return window.
+# Checks whether an item was shipped within the policy return window.
 #
-# + deliveredDaysAgo - number of days since the order was delivered
-# + return - the eligibility result, or an error if the delivery age is negative
+# + daysSinceShipment - number of days since the item was shipped
+# + return - the eligibility result, or an error if the number of days is negative
 @ai:AgentTool
-isolated function checkReturnWindowEligibility(int deliveredDaysAgo) returns EligibilityResult|error {
-    if deliveredDaysAgo < 0 {
-        return error("Delivery age must not be negative");
+isolated function checkReturnWindowEligibility(int daysSinceShipment) returns EligibilityResult|error {
+    if daysSinceShipment < 0 {
+        return error("Days since shipment must not be negative");
     }
-    boolean withinWindow = deliveredDaysAgo <= returnWindowDays;
+    boolean withinWindow = daysSinceShipment <= returnWindowDays;
     EligibilityResult result = {
         withinReturnWindow: withinWindow,
-        deliveredDaysAgo: deliveredDaysAgo,
+        daysSinceShipment: daysSinceShipment,
         returnWindowDays: returnWindowDays
     };
     return result;
@@ -81,7 +87,7 @@ isolated function checkReturnWindowEligibility(int deliveredDaysAgo) returns Eli
 # + variantId - the Shopify product variant id to check stock for
 # + return - the number of replacement units available, or an error if the variant was not found
 @ai:AgentTool
-@display {label: "", iconPath: "https://bcentral-packageicons.azureedge.net/images/ballerinax_shopify.admin_1.0.0.png"}
+@display {label: "", iconPath: "https://bcentral-packageicons.azureedge.net/images/ballerinax_shopify.admin_3.0.0.png"}
 isolated function checkReplacementStock(int variantId) returns int|error {
     admin:ProductVariantResponse variantResponse = check shopifyClient->receiveASingleProductVariant(variantId.toString());
     admin:ProductVariantResponseVariant? variant = variantResponse.variant;

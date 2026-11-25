@@ -20,14 +20,15 @@ isolated function retrieveProductCatalog(string query) returns string|error {
 #
 # + planName - the name of the plan, e.g. "Business"
 # + return - the price per user per month, or an error if the plan or its price was not found
-@ai:AgentTool
-@display {label: "", iconPath: "https://bcentral-packageicons.azureedge.net/images/ballerinax_stripe_1.0.0.png"}
 isolated function lookupPlanPrice(string planName) returns decimal|error {
     string escapedPlanName = re `'`.replaceAll(planName, "\\'");
     stripe:SearchResult_5 productResult = check stripeClient->/products/search(
         query = string `name:'${escapedPlanName}'`
     );
-    stripe:Product[] products = productResult.data;
+    // The search also matches longer names, such as "Business Plus" for "Business", so keep only an exact match.
+    stripe:Product[] products = from stripe:Product candidate in productResult.data
+        where candidate.name.toLowerAscii() == planName.toLowerAscii()
+        select candidate;
     if products.length() == 0 {
         return error("No product found for plan " + planName);
     }
@@ -52,6 +53,7 @@ isolated function lookupPlanPrice(string planName) returns decimal|error {
 # + userCount - the number of users to quote for
 # + return - the calculated price quote, or an error if the plan or user count is invalid
 @ai:AgentTool
+@display {label: "", iconPath: "https://bcentral-packageicons.azureedge.net/images/ballerinax_stripe_2.0.1.png"}
 isolated function calculatePlanQuote(string planName, int userCount) returns PriceQuote|error {
     if userCount <= 0 {
         return error("User count must be positive");

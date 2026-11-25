@@ -39,7 +39,7 @@ Replace the following:
 - `SPREADSHEET_ID`: the ID in the sheet's URL, between `/d/` and `/edit`.
 - `SERVICE_URL` and `ACCESS_TOKEN`: the values that the provider command writes. This sample does not need an embedding provider.
 
-If your budget tab has a different name, add `budgetSheetName = "TAB_NAME"`. The client requests an access token at startup, so the integration doesn't start with invalid Google credentials. Do not commit `Config.toml`.
+If your budget tab has a different name, add `budgetSheetName = "TAB_NAME"` next to `budgetSpreadsheetId`, above the `[ballerina.ai.wso2ProviderConfig]` line. A setting placed below that line belongs to the provider table and has no effect on the sample. The client requests an access token at startup, so the integration doesn't start with invalid Google credentials. Do not commit `Config.toml`.
 
 ## Run the sample
 
@@ -73,19 +73,20 @@ A response contains a `message` field; its wording depends on the model. Run one
 
 Compares supplier quotations pasted into chat and recommends the lowest-cost supplier that covers the full quantity, stays within the approved budget, and meets the delivery deadline. It explains why each cheaper supplier does not qualify.
 
-- **Query:** the requester or department, the quantity, the deadline, and one quotation per supplier (unit price, shipping charge, delivery date). The service adds today's date (UTC) to every request so relative dates such as "Friday" resolve correctly.
+- **Query:** the requester or department, the quantity, the deadline, and one quotation per supplier (unit price, shipping charge, delivery date). The agent reads today's date (UTC) from a tool so relative dates such as "Friday" resolve correctly.
 - **Response:** a `string` with the recommended supplier and the reason each other supplier was excluded. The agent asks for a missing requester, shipping charge, delivery date, or full-quantity quotation before ranking a supplier.
-- **Tools:** `lookupApprovedBudget`, `calculateQuotationTotal`, `checkBudget`, `checkDeadline`.
+- **Tools:** `getCurrentDate`, `lookupApprovedBudget`, `calculateQuotationTotal`, `checkBudget`, `checkDeadline`.
 - **Initialization parameters:** `model`, the model provider the agent uses.
 
 ## How it works
 
-- `agents.bal` defines the comparison instructions and four tools.
+- `agents.bal` defines the comparison instructions and five tools.
+- `getCurrentDate` returns today's date in UTC.
 - `connections.bal` creates the Google Sheets client from the OAuth 2.0 configuration.
-- `lookupApprovedBudget` reads columns A and B of the budget tab and returns the budget of the first row whose name matches, ignoring case. The agent uses this value instead of a budget typed into chat.
+- `lookupApprovedBudget` reads columns A and B of the budget tab and returns the budget of the first row whose name matches, ignoring case. A budget cell that isn't a number returns an error that names the cell's value. The agent uses this value instead of a budget typed into chat.
 - `calculateQuotationTotal` calculates `unitPrice * quantity + shippingCharge` with decimal arithmetic. It requires a positive quantity and nonnegative charges.
 - `checkBudget` accepts totals less than or equal to the budget. It rejects negative totals or budgets.
 - `checkDeadline` compares delivery and deadline dates in `YYYY-MM-DD` format. Invalid dates return an error.
-- `automation.bal` adds today's date to the request and exposes `POST /supplier-quote-assistant/chat` through the AI listener.
+- `automation.bal` exposes `POST /supplier-quote-assistant/chat` through the AI listener.
 
 Use explicit dates for repeatable comparisons. The model extracts the quotation values and the requester name and passes them to tools, so it can look up another department's budget if asked. Taxes and currency conversion are outside this sample. Authenticate requesters and validate quantities, amounts, dates, and supplier data independently before you use a recommendation in a purchasing system.
