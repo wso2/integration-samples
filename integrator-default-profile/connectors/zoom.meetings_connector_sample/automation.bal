@@ -3,7 +3,8 @@ import ballerinax/zoom.meetings;
 
 public function main() returns error? {
     do {
-        meetings:InlineResponse20028 meetingsList = check meetingsClient->/users/[string `me`]/meetings.get();
+        meetings:ListMeetingsResponse meetings = check meetingsClient->listMeetings(string `${meetingsUserId}`);
+        log:printInfo(meetings.toString());
     } on fail error e {
         log:printError("Error occurred", 'error = e);
         return e;

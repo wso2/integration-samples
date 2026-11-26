@@ -1,3 +1,3 @@
 import ballerinax/zoom.scheduler;
 
-final scheduler:Client zoomSchedulerClient = check new ({auth: {refreshUrl: zoomRefreshUrl, refreshToken: zoomRefreshToken, clientId: zoomClientId, clientSecret: zoomClientSecret}});
+final scheduler:Client schedulerClient = check new ({auth: {clientId: schedulerClientId, clientSecret: schedulerClientSecret, refreshToken: schedulerRefreshToken, refreshUrl: schedulerRefreshUrl}}, string `${schedulerServiceUrl}`);
