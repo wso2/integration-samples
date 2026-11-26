@@ -1,9 +1,9 @@
 [package]
-org = "wso2"
-name = "zoom.scheduler_connector_sample"
+org = "choreolabs"
+name = "zoom_scheduler_connector_sample"
 version = "0.1.0"
-distribution = "2201.13.1"
-title = "zoom.scheduler-connector-sample"
+distribution = "2201.13.0"
+title = "zoom_scheduler_connector_sample"
 
 [build-options]
 sticky = true
