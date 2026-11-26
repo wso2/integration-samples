@@ -83,7 +83,7 @@ Compares supplier quotations pasted into chat and recommends the lowest-cost sup
 - `agents.bal` defines the comparison instructions and five tools.
 - `getCurrentDate` returns today's date in UTC.
 - `connections.bal` creates the Google Sheets client from the OAuth 2.0 configuration.
-- `lookupApprovedBudget` reads columns A and B of the budget tab and returns the budget of the first row whose name matches, ignoring case. A budget cell that isn't a number returns an error that names the cell's value. The agent uses this value instead of a budget typed into chat.
+- `lookupApprovedBudget` reads columns A and B of rows 1 to 1000 of the budget tab and returns the budget of the first row whose name matches, ignoring case. A name below row 1000 isn't found. An empty budget cell, or one that isn't a number, returns an error that names the cell's value. The agent uses this value instead of a budget typed into chat.
 - `calculateQuotationTotal` calculates `unitPrice * quantity + shippingCharge` with decimal arithmetic. It requires a positive quantity and nonnegative charges.
 - `checkBudget` accepts totals less than or equal to the budget. It rejects negative totals or budgets.
 - `checkDeadline` compares delivery and deadline dates in `YYYY-MM-DD` format. Invalid dates return an error.

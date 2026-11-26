@@ -4,8 +4,8 @@ import ballerinax/shopify.admin;
 
 final int returnWindowDays = 30;
 
-# Looks up a customer order from Shopify by its order reference and lists every shipped item, with
-# the days since its shipment.
+# Looks up a customer order from Shopify by its order reference and lists every item in a successful
+# fulfillment, with the days since its shipment.
 #
 # + orderReference - the order reference to look up, e.g. "#1042"
 # + return - the matching order with its shipped items, or an error if no order was found or the
@@ -34,6 +34,11 @@ isolated function lookupOrder(string orderReference) returns Order|error {
     }
     OrderItem[] items = [];
     foreach admin:ReopenCloseOrderOrderFulfillments fulfillment in fulfillments {
+        string? fulfillmentStatus = fulfillment?.status;
+        if fulfillmentStatus is string && fulfillmentStatus != "success" {
+            // A cancelled, failed, or still-open fulfillment hasn't shipped anything.
+            continue;
+        }
         string? shippedAt = fulfillment.createdAt;
         admin:ReopenCloseOrderOrderLineItems[]? lineItems = fulfillment.lineItems;
         if shippedAt is () || lineItems is () {
@@ -42,9 +47,6 @@ isolated function lookupOrder(string orderReference) returns Order|error {
         int daysSinceShipment = check daysSince(shippedAt);
         foreach admin:ReopenCloseOrderOrderLineItems lineItem in lineItems {
             int? variantId = lineItem["variantId"];
-            if variantId is () {
-                continue;
-            }
             string? lineItemTitle = lineItem.title;
             string? lineItemName = lineItem["name"];
             items.push({
@@ -55,7 +57,7 @@ isolated function lookupOrder(string orderReference) returns Order|error {
         }
     }
     if items.length() == 0 {
-        return error("Order " + orderReference + " has no shipped items with a product variant");
+        return error("Order " + orderReference + " has no shipped items");
     }
     Order result = {
         orderReference: orderReference,

@@ -23,7 +23,8 @@ isolated function retrieveProductCatalog(string query) returns string|error {
 isolated function lookupPlanPrice(string planName) returns decimal|error {
     string escapedPlanName = re `'`.replaceAll(planName, "\\'");
     stripe:SearchResult_5 productResult = check stripeClient->/products/search(
-        query = string `name:'${escapedPlanName}'`
+        query = string `name:'${escapedPlanName}'`,
+        'limit = 100
     );
     // The search also matches longer names, such as "Business Plus" for "Business", so keep only an exact match.
     stripe:Product[] products = from stripe:Product candidate in productResult.data

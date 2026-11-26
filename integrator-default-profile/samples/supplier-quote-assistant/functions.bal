@@ -83,12 +83,13 @@ isolated function lookupApprovedBudget(string requesterOrDepartment) returns App
             "UNFORMATTED_VALUE");
     (int|string|decimal)[][] rows = range.values;
     foreach (int|string|decimal)[] row in rows {
-        if row.length() < 2 {
+        if row.length() == 0 {
             continue;
         }
         (int|string|decimal) nameCell = row[0];
         if nameCell is string && nameCell.toLowerAscii() == requesterOrDepartment.toLowerAscii() {
-            (int|string|decimal) budgetCell = row[1];
+            // Google Sheets omits trailing empty cells, so a row with an empty budget has only one cell.
+            (int|string|decimal) budgetCell = row.length() < 2 ? "" : row[1];
             decimal approvedBudget;
             if budgetCell is decimal {
                 approvedBudget = budgetCell;

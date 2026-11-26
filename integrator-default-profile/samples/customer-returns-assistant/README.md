@@ -69,7 +69,7 @@ Recommends an exchange, a refund, or manual review for a faulty or defective ite
 
 - `agents.bal` defines the agent's instructions and four tools.
 - `connections.bal` creates the Shopify Admin client and the in-memory vector knowledge base for the return policy.
-- `lookupOrder` finds the order by its name (for example, `#1042`) and returns every shipped item with its variant ID and the whole days since its fulfillment was created. It skips items without a product variant.
+- `lookupOrder` finds the order by its name (for example, `#1042`) and returns every item in a successful fulfillment with its variant ID and the whole days since its fulfillment was created. It ignores cancelled, failed, and still-open fulfillments. An item without a product variant, such as a custom item, has no variant ID, so the agent recommends manual review for it.
 - `checkReturnWindowEligibility` compares the days since shipment with the 30-day return window. It rejects negative values.
 - `checkReplacementStock` reads the variant's inventory quantity from Shopify.
 - `retrieveReturnPolicy` retrieves the three most relevant passages from `resources/return-policy.md`.

@@ -5,12 +5,19 @@ import ballerinax/googleapis.calendar;
 final int workHoursStartHour = 9;
 final int workHoursEndHour = 17;
 
-# Returns today's date in UTC, so relative days such as Thursday can be resolved.
+# Returns today's date in the requester's time zone, so relative days such as Thursday can be resolved.
 #
-# + return - today's date, in `YYYY-MM-DD` format
+# + timeZone - the requester's IANA time zone, for example America/New_York
+# + return - today's date in that time zone, in `YYYY-MM-DD` format, or an error if the time zone is unknown
 @ai:AgentTool
-isolated function getCurrentDate() returns string {
-    return time:utcToString(time:utcNow()).substring(0, 10);
+isolated function getCurrentDate(string timeZone) returns string|error {
+    // getZone panics on an unknown zone ID, so trap it.
+    time:Zone?|error zone = trap time:getZone(timeZone);
+    if zone !is time:Zone {
+        return error("Unknown time zone: " + timeZone);
+    }
+    time:Civil today = zone.utcToCivil(time:utcNow());
+    return string `${today.year}-${today.month < 10 ? "0" : ""}${today.month}-${today.day < 10 ? "0" : ""}${today.day}`;
 }
 
 # Lists a colleague's existing calendar events that fall within a given day, so free slots can be

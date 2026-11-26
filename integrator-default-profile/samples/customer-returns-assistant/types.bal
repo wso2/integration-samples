@@ -11,11 +11,12 @@ public type Order record {|
 # A shipped item in a customer order.
 #
 # + itemName - the name of the item
-# + variantId - the Shopify product variant id, used to check replacement stock
+# + variantId - the Shopify product variant id, used to check replacement stock; empty when the item
+# has no variant, such as a custom item or a deleted product
 # + daysSinceShipment - number of days since the item was shipped (its fulfillment was created)
 public type OrderItem record {|
     string itemName;
-    int variantId;
+    int? variantId;
     int daysSinceShipment;
 |};
 

@@ -71,7 +71,7 @@ The client requests an access token at startup, so the integration doesn't start
      -d '{"sessionId":"meeting-1","decisions":{"APPROVAL_ID":{"outcome":"APPROVE"}}}'
    ```
 
-   The agent creates the event with the colleague as an attendee and returns the booked time and the event link. To decline, send `"outcome":"REJECT"` with an optional `"reason"`. Google Calendar doesn't email the invitation because the tool doesn't request notifications.
+   The agent creates the event with the colleague as an attendee and returns the booked time and the event link. To decline, send `"outcome":"REJECT"` with an optional `"reason"`. The tool doesn't ask Google Calendar to send notifications, so the attendee usually gets no invitation email, although Google might still send some emails.
 
 A response contains a `message` field; its wording depends on the model. Run one sample at a time because the samples use port `9090`.
 
@@ -81,8 +81,8 @@ A response contains a `message` field; its wording depends on the model. Run one
 
 Finds free slots on a colleague's Google Calendar within 9 AM to 5 PM and books the slot that the requester confirms and approves. It never proposes an overlapping slot.
 
-- **Query:** the colleague's email address, the meeting duration, and the day and time window, for example `Find a 30-minute slot with kai@example.com next Thursday afternoon`. The agent reads today's date (UTC) from a tool so relative days such as "Thursday" resolve correctly.
-- **Response:** a `string` with the proposed slots or, after confirmation, the booked time and the event link. The agent asks for the colleague's email address or the duration if either is missing.
+- **Query:** the colleague's email address, the meeting duration, and the day and time window, for example `Find a 30-minute slot with kai@example.com next Thursday afternoon`. The agent reads today's date in the requester's time zone from a tool so relative days such as "Thursday" resolve correctly.
+- **Response:** a `string` with the proposed slots or, after confirmation, the booked time and the event link. The agent asks for the colleague's email address, the duration, or the requester's time zone if any is missing.
 - **Tools:** `getCurrentDate`, `listBusySlots`, `findFreeSlots`, `createMeetingEvent` (requires approval).
 - **Initialization parameters:** `model`, the model provider the agent uses.
 
@@ -90,7 +90,7 @@ Finds free slots on a colleague's Google Calendar within 9 AM to 5 PM and books 
 
 - `agents.bal` defines the scheduling instructions and four tools.
 - `connections.bal` creates the Google Calendar client from the OAuth 2.0 configuration.
-- `getCurrentDate` returns today's date in UTC.
+- `getCurrentDate` returns today's date in the requester's IANA time zone, so "tomorrow" still means the requester's tomorrow late in their evening.
 - `listBusySlots` reads the calendar's events between two timestamps, expanding recurring events, and returns their start and end times. An all-day event, such as a day off, blocks the whole day. It skips events marked as free.
 - `findFreeSlots` takes the local midnight of the day, adds work hours from 9 AM to 5 PM, and returns back-to-back slots of the requested length that don't overlap a busy slot. After an overlap, it tries again from the end of the conflicting event. It rejects a duration that isn't positive.
 - `createMeetingEvent` creates the event with the confirmed times, time zone, and attendees, and returns the event ID and link. Its `@ai:AgentTool` annotation sets `requiresApproval: true`, so every call pauses until the requester approves it.
