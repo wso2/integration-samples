@@ -1,3 +1,3 @@
 import ballerinax/stripe;
 
-final stripe:Client stripeClient = check new ({auth: {token: stripeToken}});
+final stripe:Client stripeClient = check new ({auth: {token: stripeSecretKey}}, string `${stripeServiceUrl}`);

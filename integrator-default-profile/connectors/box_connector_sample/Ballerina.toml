@@ -1,0 +1,9 @@
+[package]
+org = "choreolabs"
+name = "box_connector_sample"
+version = "0.1.0"
+distribution = "2201.13.0"
+title = "box_connector_sample"
+
+[build-options]
+sticky = true

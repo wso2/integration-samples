@@ -1,0 +1,9 @@
+[package]
+org = "choreolabs"
+name = "bitbucket_connector_sample"
+version = "0.1.0"
+distribution = "2201.13.0"
+title = "bitbucket_connector_sample"
+
+[build-options]
+sticky = true

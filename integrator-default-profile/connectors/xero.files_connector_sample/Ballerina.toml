@@ -1,0 +1,9 @@
+[package]
+org = "choreolabs"
+name = "xero.files_connector_sample"
+version = "0.1.0"
+distribution = "2201.13.0"
+title = "xero.files_connector_sample"
+
+[build-options]
+sticky = true
