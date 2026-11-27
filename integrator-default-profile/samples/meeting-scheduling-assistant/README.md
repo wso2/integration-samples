@@ -112,6 +112,7 @@ The agent finds the free slots itself. It ignores events marked as free, treats 
 
 - The model finds the free slots and converts times to the requester's offset. It checks each slot against the busy ranges before it proposes it, but it can still miss an overlap. Review the proposed slot before you approve the booking.
 - The agent uses a fixed UTC offset, not a time zone, so it doesn't account for a daylight saving time change between today and the meeting day. Today's date is in UTC, so near midnight a relative day such as "tomorrow" can resolve to a different day than the requester's local date.
+- `listEvents` reads one page of events, up to 250 for the day. If a day has more events, or Google returns a shorter page with a `nextPageToken`, a busy event can be missing from the list. The approval step lets you check the slot before the event is created.
 - The sample checks one colleague's calendar. It doesn't find a common slot across several calendars.
 - The agent doesn't handle recurring meetings, rescheduling, or cancellation.
 

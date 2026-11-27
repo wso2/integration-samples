@@ -100,7 +100,7 @@ The tools wrap Stripe actions and the specialist agents, so the models do the re
 ## Limitations
 
 - The pricing specialist does the arithmetic. It shows the calculation so that you can check it, but a model can miscalculate. The division by 100 assumes a two-decimal currency.
-- `listPrices` returns every active price of the product, not only recurring ones, because the form can't set the type filter. The instructions tell the pricing specialist to use the recurring price. If a product has several active recurring prices, the model chooses one.
+- `listPrices` returns the first page of the product's active prices (Stripe returns 10 by default), not only recurring ones, because the form can't set the type filter. The instructions tell the pricing specialist to use the recurring price. If a product has more than 10 active prices, the recurring price can be missing from the page; if it has several active recurring prices, the model chooses one. Keep one active recurring price for each plan's product.
 - The specialist tools call each specialist without a session ID, so each specialist keeps one shared conversation history for all requests and all customers. For production use, pass a session ID to each specialist.
 - The product catalog is part of the product specialist's instructions. To change the plans, edit the instructions; the catalog isn't read from a file or a knowledge base.
 
