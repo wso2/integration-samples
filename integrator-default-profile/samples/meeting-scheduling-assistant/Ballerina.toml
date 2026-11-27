@@ -1,0 +1,9 @@
+[package]
+org = "wso2"
+name = "meeting_scheduling_assistant"
+version = "0.1.0"
+distribution = "2201.14.1"
+title = "Meeting scheduling assistant"
+
+[build-options]
+sticky = true
