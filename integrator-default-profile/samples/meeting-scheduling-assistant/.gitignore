@@ -1,8 +1,0 @@
-target/
-generated/
-Config.toml
-trace_enabled.bal
-Ballerina.lock
-.env
-.vscode/
-.DS_Store

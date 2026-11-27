@@ -1,9 +1,3 @@
-[package]
-org = "wso2"
-name = "supplier_quote_assistant"
-version = "0.1.0"
-distribution = "2201.14.1"
-title = "Supplier quote comparison assistant"
-
-[build-options]
-sticky = true
+[workspace]
+title = "Supplier quote assistant"
+packages = ["supplier_quote_assistant"]

@@ -1,0 +1,9 @@
+[package]
+org = "choreolabs"
+name = "product_pricing_assistant"
+version = "0.1.0"
+distribution = "2201.14.2"
+title = "Product pricing assistant"
+
+[build-options]
+sticky = true

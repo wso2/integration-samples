@@ -1,19 +1,21 @@
 # Product and pricing assistant
 
-This sample coordinates two specialist agents to answer product and pricing questions. A product specialist retrieves catalog evidence, and a pricing specialist calculates a monthly quote from live Stripe prices.
+This sample coordinates two specialist agents to answer product and pricing questions. A product specialist recommends a plan from the catalog in its instructions, and a pricing specialist calculates a monthly quote from live Stripe prices.
 
-Use this sample to explore agent delegation with a shared runtime context. It recommends plans and quotes prices, and it only reads from Stripe: it doesn't create customers or subscriptions, or take payments.
+Every file in this sample comes from Choreo Agent Builder's forms: the three agents, the Stripe connection and its configurable, two tools made from Stripe actions, two tools that call the specialist agents, and the Agent Chat entry point. You can build the same project in Agent Builder without writing code.
+
+The assistant recommends plans and quotes prices, and it only reads from Stripe. It doesn't create customers or subscriptions, or take payments.
 
 ## Prerequisites
 
-- Ballerina `2201.14.1` and WSO2 Integrator with Agent Builder support.
+- Ballerina `2201.14.2` and Choreo Agent Builder, or WSO2 Integrator with Agent Builder support.
 - The default WSO2 model provider configured. In the command palette, run **Configure default WSO2 model provider** for this sample.
 - A Stripe account. We recommend test mode.
 - One Stripe product for each catalog plan, named exactly `Starter`, `Pro`, `Business`, and `Enterprise`. Give each product an active, monthly recurring, per-unit price in a two-decimal currency such as USD, for example `5.00`, `9.00`, `12.00`, and `20.00`.
 
 ## Configuration
 
-Create `Config.toml` in the sample directory. The provider command adds the `[ballerina.ai.wso2ProviderConfig]` table; add the Stripe key yourself:
+The sample is a workspace with one package, `product_pricing_assistant`. Create `Config.toml` in the `product_pricing_assistant` directory. The provider command adds the `[ballerina.ai.wso2ProviderConfig]` table; add the Stripe key yourself, above that table:
 
 ```toml
 stripeSecretKey = "STRIPE_SECRET_KEY"
@@ -26,14 +28,14 @@ accessToken = "ACCESS_TOKEN"
 Replace the following:
 
 - `STRIPE_SECRET_KEY`: your Stripe secret key, or a restricted key with read access to products and prices.
-- `SERVICE_URL` and `ACCESS_TOKEN`: the values that the provider command writes. The model and the embedding provider use them.
+- `SERVICE_URL` and `ACCESS_TOKEN`: the values that the provider command writes. The model uses them.
 
 Do not commit `Config.toml`.
 
 ## Run the sample
 
-1. Open this sample directory in WSO2 Integrator.
-2. Run the integration with **Run**, or run `bal run` from this directory.
+1. Open this sample directory in Choreo Agent Builder or WSO2 Integrator.
+2. Run the integration with **Run**, or run `bal run` from the `product_pricing_assistant` directory.
 3. Ask for a plan and a quote:
 
    ```bash
@@ -42,7 +44,7 @@ Do not commit `Config.toml`.
      -d '{"sessionId":"pricing-1","message":"We need cloud meeting recording for 25 users. Which is the lowest-tier suitable plan, and what is the total monthly price?"}'
    ```
 
-   The catalog identifies Business as the lowest-tier plan with cloud meeting recording. With a Business price of `12.00` per user per month, 25 users cost `300.00` per month. The response includes supporting catalog evidence.
+   The catalog identifies Business as the lowest-tier plan with cloud meeting recording. With a Business price of `12.00` per user per month, 25 users cost `300.00` per month. The response includes the supporting catalog line and the calculation.
 
 4. Ask about a feature outside the catalog:
 
@@ -60,46 +62,46 @@ Reuse a `sessionId` for follow-up messages. A response contains a `message` fiel
 
 ### `productPricingCoordinatorAgent`
 
-Answers product-and-price questions by delegating to the two specialists in the following sections and combining their results into one answer. It never states product facts or prices itself. This is the agent the HTTP service calls.
+Answers the customer by delegating to the two specialists and combining their results. It never invents product facts or prices.
 
-- **Query:** a feature question, optionally with a plan and user count to price, for example `We need cloud meeting recording for 25 users. Which is the lowest-tier suitable plan, and what is the total monthly price?`.
-- **Response:** a `string` with the recommended plan, the supporting catalog evidence, and the calculated price when one was requested.
-- **Tools:** `productSpecialistAgentTool`, `pricingSpecialistAgentTool`.
+- **Query:** a feature question, optionally with a number of users to price, for example `We need cloud meeting recording for 25 users. Which plan, and what does it cost?`.
+- **Response:** a `string` with the recommended plan, the supporting catalog line, and the quote with its calculation when a price was requested.
+- **Tools:** `askProductSpecialist` and `askPricingSpecialist`, which pass a query to `productSpecialistAgent` and `pricingSpecialistAgent`.
+- **Model:** the default WSO2 model provider.
 
 ### `productSpecialistAgent`
 
-Finds which plans support a requested feature and recommends the lowest-tier plan that does, quoting the catalog passage as evidence. It reports a gap when no plan supports the feature.
-
-- **Query:** a product or feature question.
-- **Response:** a `string` with the recommended plan and the supporting evidence.
-- **Tools:** `retrieveProductCatalog`.
+Recommends the lowest-tier plan that supports a feature and quotes the catalog line that supports it. The product catalog is part of its instructions. It has no tools.
 
 ### `pricingSpecialistAgent`
 
-Calculates a monthly quote from the plan's live Stripe price. It never invents a price and reports plans without a Stripe product or active price.
+Calculates a monthly quote for a plan and a number of users from live Stripe prices. It finds the Stripe product whose name matches the plan exactly, reads its active recurring price, and shows the calculation.
 
-- **Query:** a plan name and a user count.
-- **Response:** a `string` with the price per user per month and the total monthly price.
-- **Tools:** `calculatePlanQuote`.
-
-All three agents take a `model` initialization parameter, the model provider the agent uses.
+- **Tools:** `searchProducts` and `listPrices`.
 
 ## How it works
 
-- `productPricingCoordinatorAgent` delegates feature questions to `productSpecialistAgentTool` and quote requests to `pricingSpecialistAgentTool`.
-- Both delegation tools forward `ai:Context` to the specialist's `run` call. The coordinator's instructions require separate session IDs for independent specialist conversations.
-- `productSpecialistAgent` calls `retrieveProductCatalog` to retrieve evidence from an in-memory vector knowledge base.
-- `calculatePlanQuote` gets the price per user from the `lookupPlanPrice` helper and multiplies it by the user count. It requires a positive user count.
-- `lookupPlanPrice` searches Stripe for products with the plan's name and keeps only the product whose name matches exactly, ignoring case, so `Business` doesn't match `Business Plus`. It reads that product's first active recurring price and converts `unit_amount` from cents. It isn't an agent tool, so the agent makes one Stripe lookup per quote.
-- `connections.bal` creates the Stripe client and the knowledge base.
-- `main.bal` loads `resources/product-catalog.md` at startup. This step calls the embedding provider.
-- `automation.bal` exposes `POST /product-pricing-assistant/chat` through the AI listener.
+All the code is in the `product_pricing_assistant` package:
+
+- `agents.bal` defines the three agents and their four tools.
+- `config.bal` declares the `stripeSecretKey` configurable.
+- `connections.bal` creates the Stripe client, `stripeClient`, with the secret key as a bearer token.
+- `main.bal` exposes `POST /product-pricing-assistant/chat` on `agentChatListener`, the shared listener on port `9090`, and runs the coordinator.
+- `automation.bal`, `data_mappings.bal`, `functions.bal`, and `types.bal` are empty files that Agent Builder creates with every project.
+
+The tools wrap Stripe actions and the specialist agents, so the models do the reasoning between them:
+
+- `searchProducts` calls the Stripe action that searches products. The pricing specialist passes a Stripe search query such as `name:'Business'` and keeps only the product whose name matches the plan exactly, ignoring case, because a search for `Business` can also return `Business Plus`.
+- `listPrices` calls the Stripe action that lists prices, for one product and active prices only. The pricing specialist picks the recurring price, divides its `unit_amount` by 100 to get the price in the currency's main unit, and multiplies it by the number of users.
+- `askProductSpecialist` and `askPricingSpecialist` run the specialist agent with the coordinator's query and return its answer.
+
+`bal build` reports no errors or warnings.
 
 ## Limitations
 
-- `lookupPlanPrice` uses the first active recurring price that Stripe returns and doesn't check its interval. Give each product a single active price, and make it monthly.
-- The price conversion divides by 100, so zero-decimal currencies such as JPY give wrong prices.
-- Tiered and volume prices have no `unit_amount`, so the pricing specialist reports them as unavailable.
-- Stripe can take up to a minute to include a new or renamed product in search results.
+- The pricing specialist does the arithmetic. It shows the calculation so that you can check it, but a model can miscalculate. The division by 100 assumes a two-decimal currency.
+- `listPrices` returns every active price of the product, not only recurring ones, because the form can't set the type filter. The instructions tell the pricing specialist to use the recurring price. If a product has several active recurring prices, the model chooses one.
+- The specialist tools call each specialist without a session ID, so each specialist keeps one shared conversation history for all requests and all customers. For production use, pass a session ID to each specialist.
+- The product catalog is part of the product specialist's instructions. To change the plans, edit the instructions; the catalog isn't read from a file or a knowledge base.
 
-The catalog is fictional, and the calculation excludes taxes and discounts. The model chooses the plan name and user count passed to tools. Validate those values and add authentication before you connect a real billing account.
+The models choose tool arguments and interpret the catalog; a quote is not an offer. Validate plans and prices with your billing system before you show them to customers.
