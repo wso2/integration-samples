@@ -1,0 +1,9 @@
+[package]
+org = "choreolabs"
+name = "supplier_quote_assistant"
+version = "0.1.0"
+distribution = "2201.14.2"
+title = "Supplier quote assistant"
+
+[build-options]
+sticky = true
