@@ -1,0 +1,9 @@
+[package]
+org = "choreolabs"
+name = "docusign.monitor_connector_sample"
+version = "0.1.0"
+distribution = "2201.14.0"
+title = "docusign.monitor_connector_sample"
+
+[build-options]
+sticky = true

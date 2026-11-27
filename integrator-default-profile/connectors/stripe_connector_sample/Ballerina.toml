@@ -1,9 +1,9 @@
 [package]
-org = "wso2"
+org = "choreolabs"
 name = "stripe_connector_sample"
 version = "0.1.0"
-distribution = "2201.13.1"
-title = "stripe-connector-sample"
+distribution = "2201.13.0"
+title = "stripe_connector_sample"
 
 [build-options]
 sticky = true
