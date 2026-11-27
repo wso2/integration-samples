@@ -78,39 +78,6 @@
       "imageUrl": "wso2integrations.azurecr.io/currency_converter:0.1.0"
     },
     {
-      "displayName": "AI Math Tutor Agent",
-      "description": "An AI-powered math tutor that uses Azure OpenAI's GPT models to assist with specific mathematical operations. This sample demonstrates how to integrate Ballerina with Azure OpenAI services and implement agent tools for three mathematical operations: sum, multiply, and square root.",
-      "componentType": "ai-agent",
-      "buildPack": "ballerina",
-      "repositoryUrl": "https://github.com/wso2/integration-samples/",
-      "componentPath": "/integrator-default-profile/samples/math-tutor",
-      "thumbnailPath": "https://devant-cdn.wso2.com/console/sample-icons/AIAgent.svg",
-      "tags": ["AzureOpenAi", "Integration"],
-      "imageUrl": "wso2integrations.azurecr.io/math_tutor:0.1.0"
-    },
-    {
-      "displayName": "Pizza Order Management Agent",
-      "description": "This project is developed with the assistance of the Ballerina Copilot feature and showcases the capabilities of the Ballerina AI agent in enhancing development workflows and intelligent assistance.",
-      "componentType": "ai-agent",
-      "buildPack": "ballerina",
-      "repositoryUrl": "https://github.com/wso2/integration-samples/",
-      "componentPath": "/integrator-default-profile/samples/pizza-shop-integration",
-      "thumbnailPath": "https://devant-cdn.wso2.com/console/sample-icons/AIAgent.svg",
-      "tags": ["OpenAI", "Integration"],
-      "imageUrl": "wso2integrations.azurecr.io/pizza_shop_integration:0.1.0"
-    },
-    {
-      "displayName": "HR Assistant",
-      "description": "This AI-powered chat agent provides assistance with HR-related inquiries by referencing company-specific HR policies, leveraging Retrieval-Augmented Generation (RAG).",
-      "componentType": "ai-agent",
-      "buildPack": "ballerina",
-      "repositoryUrl": "https://github.com/wso2/integration-samples/",
-      "componentPath": "/integrator-default-profile/samples/hr-ai-chat-agent",
-      "thumbnailPath": "https://devant-cdn.wso2.com/console/sample-icons/AIAgent.svg",
-      "tags": ["RAG", "OpenAI", "Pinecone", "Integration"],
-      "imageUrl": "wso2integrations.azurecr.io/hr_ai_chat_agent:0.1.0"
-    },
-    {
       "displayName": "Weather Based Activity Recommender",
       "description": "This sample demonstrates how to build a weather-based activity recommender using Ballerina and OpenWeatherMap API. The sample uses the OpenWeatherMap API to get the current weather information of a given location and recommend activities based on the current weather condition.",
       "componentType": "scheduled-task",
@@ -142,17 +109,6 @@
       "thumbnailPath": "https://devant-cdn.wso2.com/console/sample-icons/file.svg",
       "tags": ["EDI", "FTP", "File", "Integration"],
       "imageUrl": "wso2integrations.azurecr.io/edi_order_processing:0.1.0"
-    },
-    {
-      "displayName": "AI Chat Agent",
-      "description": "Create a conversational AI agent using an LLM, prompts and tools.",
-      "componentType": "ai-agent",
-      "buildPack": "ballerina",
-      "repositoryUrl": "https://github.com/wso2/integration-samples/",
-      "componentPath": "/integrator-default-profile/samples/ai-chat-agent",
-      "thumbnailPath": "https://devant-cdn.wso2.com/console/sample-icons/AIAgent.svg",
-      "tags": ["HTTP", "AI", "Agent"],
-      "imageUrl": "wso2integrations.azurecr.io/ai_chat_agent:0.1.0"
     },
     {
       "displayName": "Gmail Label Agent",

@@ -57,15 +57,6 @@
     "path": "integrator-default-profile/samples/currency-converter"
   },
   {
-    "path": "integrator-default-profile/samples/math-tutor"
-  },
-  {
-    "path": "integrator-default-profile/samples/pizza-shop-integration"
-  },
-  {
-    "path": "integrator-default-profile/samples/hr-ai-chat-agent"
-  },
-  {
     "path": "integrator-default-profile/samples/weather-based-activity-recommender"
   },
   {
@@ -73,9 +64,6 @@
   },
   {
     "path": "integrator-default-profile/samples/edi-purchase-order-processing/edi_order_processing"
-  },
-  {
-    "path": "integrator-default-profile/samples/ai-chat-agent"
   },
   {
     "path": "integrator-default-profile/samples/s3-file-event-listener"
